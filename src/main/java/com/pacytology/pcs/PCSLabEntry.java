@@ -1,10 +1,11 @@
+package com.pacytology.pcs;
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
     Copyright (C) 2001 by John Cardella
     All Rights Reserved
     
-    File:       PCSLabEntry.java
+    File:       PCSLabEntryJava
     Created By: John Cardella, Software Engineer
     
     Function:   Main application screen/project.
@@ -1601,7 +1602,7 @@ public class PCSLabEntry extends JFrame
     void getBillingQueueData() {
         try  {
             String query =
-                "SELECT job_status FROM pcs.job_control \n"+
+                "SELECT job_status FROM pcsJob_control \n"+
                 "WHERE job_descr='MID MONTH COUNT'";
             Statement stmt = dbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
@@ -2128,7 +2129,7 @@ public class PCSLabEntry extends JFrame
     void suspendJobs() {
         try  {
             String SQL = 
-                "UPDATE pcs.job_control \n"+
+                "UPDATE pcsJob_control \n"+
                 "SET job_status=3 \n"+ 
                 "WHERE job_descr='JOB_STATUS' \n";
             Statement stmt = dbConnection.process().createStatement();
@@ -2147,7 +2148,7 @@ public class PCSLabEntry extends JFrame
     void nightJobsOff() {
         try  {
             String SQL = 
-                "UPDATE pcs.job_control \n"+
+                "UPDATE pcsJob_control \n"+
                 "SET job_status=2 \n"+ 
                 "WHERE job_descr='JOB_STATUS' \n";
             Statement stmt = dbConnection.process().createStatement();
@@ -2386,7 +2387,7 @@ public class PCSLabEntry extends JFrame
 	    int status = 0;
         try  {
             String SQL = 
-                "SELECT job_status FROM pcs.job_control \n"+
+                "SELECT job_status FROM pcsJob_control \n"+
                 "WHERE job_descr='MID MONTH' \n";
             Statement stmt = dbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
@@ -2413,7 +2414,7 @@ public class PCSLabEntry extends JFrame
 			if (reply==JOptionPane.YES_OPTION) {
 			    try {
 			        String SQL =
-			            "UPDATE pcs.job_control SET \n"+
+			            "UPDATE pcsJob_control SET \n"+
 			            "   job_status=1 \n"+
 			            "WHERE job_descr='MID MONTH' \n";
                     Statement stmt = dbConnection.process().createStatement();
@@ -2425,7 +2426,7 @@ public class PCSLabEntry extends JFrame
 			else if (reply==JOptionPane.NO_OPTION) {
 			    try {
 			        String SQL =
-			            "UPDATE pcs.job_control SET \n"+
+			            "UPDATE pcsJob_control SET \n"+
 			            "   job_status=0 \n"+
 			            "WHERE job_descr='MID MONTH' \n";
                     Statement stmt = dbConnection.process().createStatement();

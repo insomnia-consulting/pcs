@@ -1,0 +1,1 @@
+public class ClaimSubmissionRec{    String tpp;    String batch_number;    String submission_number;    String creation_date;    String submission_date;    String control_number;    String ack_code;    String submission_status;    String number_of_claims;        public ClaimSubmissionRec() { }}
