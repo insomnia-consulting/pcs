@@ -1,8 +1,18 @@
-import java.awt.*;
-import java.sql.*;
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-import Square;
+package com.pacytology.pcs;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.swing.JTextField;
+
+import com.pacytology.pcs.ui.Square;
 
 public class DoctorForm extends javax.swing.JFrame
 {
@@ -687,22 +697,22 @@ public class DoctorForm extends javax.swing.JFrame
         try {
 	        int key=event.getKeyCode();
             switch (key) {
-                case event.VK_ESCAPE:
+                case KeyEvent.VK_ESCAPE:
 	                clearForm();
 	                msgLabel.setText(null);
 	                msgLabel.requestFocus();
 	                setEnableAllFields(false);
 	                break;
-	            case event.VK_F2:
+	            case KeyEvent.VK_F2:
 	                if (currMode==Lab.IDLE) addActions();
 	                break;
-	            case event.VK_F3:
+	            case KeyEvent.VK_F3:
 	                if (currMode==Lab.IDLE) updateActions();
 	                break;
-	            case event.VK_F4:
+	            case KeyEvent.VK_F4:
 	                if (currMode==Lab.IDLE && origin==PRACTICE) mergeActions();
 	                break;
-	            case event.VK_F9:
+	            case KeyEvent.VK_F9:
 	                if (currMode==Lab.IDLE) {
 	                    if (origin==PRACTICE) {
 	                        this.parent.setEnabled(true);

@@ -1,13 +1,16 @@
+package com.pacytology.pcs;
+
 /*
     PathHoldsForm.java
     Software Engineer: Jon Cardella
 */
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.sql.*;
 import javax.swing.*;
 import java.util.Vector;
-import Square;
+import com.pacytology.pcs.ui.Square;
 import javax.swing.border.TitledBorder;
 
 public class PathHoldsForm extends javax.swing.JFrame
@@ -240,7 +243,7 @@ public class PathHoldsForm extends javax.swing.JFrame
 	javax.swing.JLabel JLabel4 = new javax.swing.JLabel();
 	javax.swing.JLabel verifyDateLbl = new javax.swing.JLabel();
 	javax.swing.JLabel verifiedLbl = new javax.swing.JLabel();
-	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder();
+	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder("");
 	Square F1sq = new Square();
 	javax.swing.JLabel F1lbl = new javax.swing.JLabel();
 	Square F2sq = new Square();
@@ -302,10 +305,10 @@ public class PathHoldsForm extends javax.swing.JFrame
 		int ndx = 0;
 		boolean canProceed = true;
 		switch (key) {
-		    case event.VK_F9:
+		    case KeyEvent.VK_F9:
 		        this.dispose();
 		        break;
-            case event.VK_F2:
+            case KeyEvent.VK_F2:
                 if (!firstRelease && !hasVerification) {
                     firstRelease=true;
                     if (!confirmVerified()) {
@@ -332,12 +335,12 @@ public class PathHoldsForm extends javax.swing.JFrame
                 }
                 }
                 break;
-            case event.VK_F10:
+            case KeyEvent.VK_F10:
                 boolean verifyStatus = confirmVerified();
                 if (verifyStatus) disableVerified();
                 else enableVerified();
                 break;
-            case event.VK_DOWN:
+            case KeyEvent.VK_DOWN:
                 /*
                 ndx = pHoldList.getSelectedIndex();
                 if (ndx<0) ndx=0;
@@ -367,7 +370,7 @@ public class PathHoldsForm extends javax.swing.JFrame
                     }
                 }
                 break;
-            case event.VK_F8:
+            case KeyEvent.VK_F8:
                 if (resultCode.hasFocus()) {
                     String buf[] = new String [resultCodes.length];
 		            String buf2[] = new String [resultCodes.length];
@@ -402,7 +405,7 @@ public class PathHoldsForm extends javax.swing.JFrame
                     enableVerified();
                 }
                 break;
-            case event.VK_UP:
+            case KeyEvent.VK_UP:
                 ndx = pHoldList.getSelectedIndex();
                 if (ndx>0) ndx--;
                 else ndx=0;
@@ -412,7 +415,7 @@ public class PathHoldsForm extends javax.swing.JFrame
                 }
                 displayResultCodes(ndx);
                 break;
-            case event.VK_CONTROL:
+            case KeyEvent.VK_CONTROL:
                 resultCode.setText(null);
                 break;
 		}

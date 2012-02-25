@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -18,7 +20,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.io.File;
 import java.sql.*;
-import com.;
+import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 
 public class DocStmtDialog extends javax.swing.JDialog
@@ -76,10 +78,9 @@ public class DocStmtDialog extends javax.swing.JDialog
 		JLabel2.setBounds(20,60,78,14);
 		printerConfirm.setMessageType(javax.swing.JOptionPane.QUESTION_MESSAGE);
 		//$$ printerConfirm.move(0,408);
-		try {
+
 			JWrappingLabel1.setText("For ALL accounts leave practice blank.");
-		}
-		catch(java.beans.PropertyVetoException e) { }
+
 		getContentPane().add(JWrappingLabel1);
 		JWrappingLabel1.setForeground(java.awt.Color.blue);
 		JWrappingLabel1.setFont(new Font("SansSerif", Font.BOLD, 12));
@@ -151,7 +152,7 @@ public class DocStmtDialog extends javax.swing.JDialog
 	javax.swing.JLabel JLabel1 = new javax.swing.JLabel();
 	javax.swing.JLabel JLabel2 = new javax.swing.JLabel();
 	javax.swing.JOptionPane printerConfirm = new javax.swing.JOptionPane();
-	com. JWrappingLabel1 = new com.();
+	JLabel JWrappingLabel1 = new JLabel();
 	javax.swing.JCheckBox reprintBox = new javax.swing.JCheckBox();
 	//}}
 

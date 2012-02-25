@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -20,13 +22,25 @@
                   a type will now default to type PCS.
 */
 
-import java.awt.*;
-import java.sql.*;
-import javax.swing.*;
-import Square;
-import javax.swing.table.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
 import java.util.Vector;
-import com.symantec.itools.swing.JLookAndFeelComboBox;
+
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
+
+import com.pacytology.pcs.ui.Square;
+
 
 public class PracticesForm extends javax.swing.JFrame
 {
@@ -1125,19 +1139,19 @@ public class PracticesForm extends javax.swing.JFrame
             int ndx=0;
 	        int key=event.getKeyCode();
             switch (key) {
-                case event.VK_INSERT:
+                case KeyEvent.VK_INSERT:
                     if (practiceRec.practice>0) displayComments();
                     break;
-                case event.VK_ESCAPE:
+                case KeyEvent.VK_ESCAPE:
                     resetForm();
                     break;
-                case event.VK_F1:
+                case KeyEvent.VK_F1:
                     if (event.isShiftDown()) 
                         dateAddedList();
                     else if (fKeys.isOn(fKeys.F1)) 
                         queryActions();
                     break;
-                case event.VK_F4:
+                case KeyEvent.VK_F4:
                     if (currMode==Lab.UPDATE) {
                         if (practiceRec.active_status.equals("A")) {
                             practiceRec.active_status="I";
@@ -1151,7 +1165,7 @@ public class PracticesForm extends javax.swing.JFrame
                     }
                     break;
                 /*
-                case event.VK_F10:
+                case KeyEvent.VK_F10:
                     Vector v = dbOps.mailerData();
                     String[] s = new String[v.size()];
                     for (int i=0; i<v.size(); i++) {
@@ -1162,41 +1176,41 @@ public class PracticesForm extends javax.swing.JFrame
                               v.size(),s)).setVisible(true);
                     
                     break;
-                case event.VK_F11:
+                case KeyEvent.VK_F11:
                     mailerActions();
                     break;
                 */
-                case event.VK_F12:
+                case KeyEvent.VK_F12:
                     if (fKeys.isOn(fKeys.F12))
                         finalActions();
                     break;
-                case event.VK_F5:
+                case KeyEvent.VK_F5:
                     if (fKeys.isOn(fKeys.F5))
                         doctorActions();
                     break;
-                case event.VK_F2:
+                case KeyEvent.VK_F2:
                     if (fKeys.isOn(fKeys.F2))
                         addActions();
                     break;
-                case event.VK_F3:
+                case KeyEvent.VK_F3:
                     if (fKeys.isOn(fKeys.F3))
                         updateActions();
                     break;
-                case event.VK_F8:
+                case KeyEvent.VK_F8:
                     if (priceCode.hasFocus()) {
                         displayPriceCodes();
                     }
                     break;
-                case event.VK_F9:
+                case KeyEvent.VK_F9:
                     if (currMode==Lab.IDLE) closingActions();
                     break;
-                case event.VK_DOWN:
+                case KeyEvent.VK_DOWN:
                     increment();
                     break;
-                case event.VK_UP:
+                case KeyEvent.VK_UP:
                     decrement();
                     break;
-                case event.VK_CONTROL:
+                case KeyEvent.VK_CONTROL:
                     if (pZip.hasFocus()) {
                         pZip.setText(null);
                         pCity.setText(null);

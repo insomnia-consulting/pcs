@@ -1,14 +1,27 @@
-import java.awt.*;
-import javax.swing.*;
-import Square;
-import java.sql.*;
-import java.util.Vector;
-import javax.swing.table.*;
-import com.;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.util.Properties;
+package com.pacytology.pcs;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.PrintJob;
+import java.awt.event.KeyEvent;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Properties;
+import java.util.Vector;
+
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
+
+import com.pacytology.pcs.ui.Square;
 
 public class ResultCodeForm extends javax.swing.JFrame
 {
@@ -330,7 +343,7 @@ public class ResultCodeForm extends javax.swing.JFrame
 	javax.swing.JTextField papClass = new javax.swing.JTextField();
 	javax.swing.JTextField biopsy = new javax.swing.JTextField();
 	javax.swing.JTextField codeStatus = new javax.swing.JTextField();
-	com. descrLbl = new com.();
+	JLabel descrLbl = new JLabel();
 	javax.swing.JTextField termDate = new javax.swing.JTextField();
 	javax.swing.JLabel JLabel1 = new javax.swing.JLabel();
 	//}}
@@ -576,7 +589,7 @@ public class ResultCodeForm extends javax.swing.JFrame
                 displayList(0);
                 setEntryFields();
                 break;
-            case event.VK_CONTROL:                
+            case KeyEvent.VK_CONTROL:                
                 ((JTextField)getFocusOwner()).setText(null);
                 break;
                 

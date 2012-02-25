@@ -1,4 +1,7 @@
+package com.pacytology.pcs;
+
 /*
+
 		A basic implementation of the JFrame class.
 */
 
@@ -7,7 +10,9 @@ import javax.swing.*;
 import java.sql.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import symantec.itools.awt.shape.Rect;
+
+import com.pacytology.pcs.ui.Rect;
+
 
 public class TurnAroundForm extends javax.swing.JFrame
 {
@@ -493,8 +498,8 @@ public class TurnAroundForm extends javax.swing.JFrame
 	javax.swing.JTextField bar18 = new javax.swing.JTextField();
 	javax.swing.JTextField bar19 = new javax.swing.JTextField();
 	javax.swing.JTextField bar20 = new javax.swing.JTextField();
-	javax.swing.border.LineBorder lineBorder1 = new javax.swing.border.LineBorder();
-	symantec.itools.awt.shape.Rect rect1 = new symantec.itools.awt.shape.Rect();
+	LineBorder lineBorder1 = new LineBorder(java.awt.Color.lightGray);
+	Rect rect1 = new Rect();
 	javax.swing.JLabel dLbl01 = new javax.swing.JLabel();
 	javax.swing.JLabel dLbl02 = new javax.swing.JLabel();
 	javax.swing.JLabel dLbl03 = new javax.swing.JLabel();

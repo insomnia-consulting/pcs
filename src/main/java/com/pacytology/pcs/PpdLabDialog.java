@@ -1,10 +1,14 @@
+package com.pacytology.pcs;
+
 /*
 		A basic implementation of the JDialog class.
 */
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+
 import javax.swing.*;
-import Square;
+import com.pacytology.pcs.ui.Square;
 
 public class PpdLabDialog extends javax.swing.JDialog
 {
@@ -298,26 +302,26 @@ public class PpdLabDialog extends javax.swing.JDialog
 	{
 		int key = event.getKeyCode();
 		switch (key) {
-		    case event.VK_ESCAPE:
+		    case KeyEvent.VK_ESCAPE:
 		        if (formMode==LAB) initForm_lab();
 		        else if (formMode==BILLING) initForm_billing();
 		        break;
-            case event.VK_CONTROL:
+            case KeyEvent.VK_CONTROL:
                 ((JTextField)getFocusOwner()).setText(null);
                 dFlag=false;
                 break;
-            case event.VK_F9:
+            case KeyEvent.VK_F9:
                 if (formMode==LAB) { 
                     labParent.currentSection=1;
                     labParent.gotoNextSection();
                 }
                 this.dispose();
                 break;
-            case event.VK_F12:
+            case KeyEvent.VK_F12:
                 updateLab();
                 this.dispose();
                 break;
-            case event.VK_F3:
+            case KeyEvent.VK_F3:
                 if (currMode==Lab.UPDATE) {
                     checkNumber.setEnabled(true);
                     paymentAmount.setEnabled(true);

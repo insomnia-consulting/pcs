@@ -1,13 +1,19 @@
+package com.pacytology.pcs;
+
 /*
 		A basic implementation of the JFrame class.
 */
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Vector;
-import java.sql.*;
-import Square;
-import javax.swing.border.TitledBorder;
+
+import com.pacytology.pcs.ui.Square;
 
 public class SecurityForm extends javax.swing.JFrame
 {
@@ -215,7 +221,7 @@ public class SecurityForm extends javax.swing.JFrame
 	javax.swing.JPanel restrictUserPanel = new javax.swing.JPanel();
 	javax.swing.JScrollPane JScrollPane1 = new javax.swing.JScrollPane();
 	javax.swing.JList userList = new javax.swing.JList();
-	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder();
+	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder("");
 	javax.swing.JLabel msgLabel = new javax.swing.JLabel();
 	//}}
 
@@ -238,22 +244,22 @@ public class SecurityForm extends javax.swing.JFrame
 		int key = event.getKeyCode();
 		msgLabel.setText(null);
 		switch (key) {
-		    case event.VK_F3:
+		    case KeyEvent.VK_F3:
 		        changeStatus();
 		        break;
-		    case event.VK_F4:
+		    case KeyEvent.VK_F4:
 		        displayRestrictions();
 		        break;
-		    case event.VK_F9:
+		    case KeyEvent.VK_F9:
 		        closingActions();
 		        break;
-		    case event.VK_F12:
+		    case KeyEvent.VK_F12:
 		        setRestrictions();
 		        break;
-            case event.VK_DOWN:
+            case KeyEvent.VK_DOWN:
                 increment();
                 break;
-            case event.VK_UP:
+            case KeyEvent.VK_UP:
                 decrement();
                 break;
 		}

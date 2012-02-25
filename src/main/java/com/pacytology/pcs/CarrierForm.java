@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -13,11 +15,19 @@
     Date/Staff      Description:
 */
 
-import java.awt.*;
-import javax.swing.*;
-import Square;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
 import java.util.Vector;
-import javax.swing.border.TitledBorder;
+
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import com.pacytology.pcs.ui.Square;
 
 public class CarrierForm extends javax.swing.JFrame
 {
@@ -501,8 +511,8 @@ public class CarrierForm extends javax.swing.JFrame
 	javax.swing.JLabel F11action = new javax.swing.JLabel();
 	javax.swing.JLabel F12action = new javax.swing.JLabel();
 	javax.swing.JLabel recCountLbl = new javax.swing.JLabel();
-	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder();
-	javax.swing.border.TitledBorder titledBorder2 = new javax.swing.border.TitledBorder();
+	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder("");
+	javax.swing.border.TitledBorder titledBorder2 = new javax.swing.border.TitledBorder("");
 	javax.swing.JLabel JLabel9 = new javax.swing.JLabel();
 	javax.swing.JTextField mergeRetain = new javax.swing.JTextField();
 	javax.swing.JLabel JLabel10 = new javax.swing.JLabel();
@@ -743,14 +753,14 @@ public class CarrierForm extends javax.swing.JFrame
 		int key = event.getKeyCode();
         msgLabel.setText(null);
 		switch (key)  {
-            case event.VK_F1:
+            case KeyEvent.VK_F1:
                 if (fKeys.isOn(fKeys.F1)) {
                     currMode=Lab.QUERY;
                     queryActions();
                 }
                 else Utils.createErrMsg("F1 Key not available");
                 break;
-            case event.VK_F2:
+            case KeyEvent.VK_F2:
                 if (fKeys.isOn(fKeys.F2)) {
                     if (event.isControlDown()) updateBilling=true;
                     currMode=Lab.ADD;
@@ -758,7 +768,7 @@ public class CarrierForm extends javax.swing.JFrame
                 }
                 else Utils.createErrMsg("F2 Key not available");
                 break;
-            case event.VK_F3:
+            case KeyEvent.VK_F3:
                 if (fKeys.isOn(fKeys.F3)) {
                     if (event.isControlDown()) updateBilling=true;
                     currMode=Lab.UPDATE;
@@ -766,19 +776,19 @@ public class CarrierForm extends javax.swing.JFrame
                 }
                 else Utils.createErrMsg("F3 Key not available");
                 break;
-            case event.VK_F4:
+            case KeyEvent.VK_F4:
                 if (currMode==Lab.IDLE && formMode!=LAB && formMode!=BILL) {
                     mergeActions();
                 }
                 else Utils.createErrMsg("F4 Key not available");
                 break;
-            case event.VK_F9:
+            case KeyEvent.VK_F9:
                 if (fKeys.isOn(fKeys.F9)) {
                     closingActions();
                 }
                 else Utils.createErrMsg("F9 Key not available");
                 break;
-            case event.VK_F8:
+            case KeyEvent.VK_F8:
                 if (cBillingChoice.hasFocus()) {
                     int numItems = dbLogin.billingCodeVect.size();
                     String[] codeDesc = new String[numItems];
@@ -811,18 +821,18 @@ public class CarrierForm extends javax.swing.JFrame
                         numItems,tppDesc,tppList,cTPP)).setVisible(true);
                 }
                 break;
-            case event.VK_F11:
+            case KeyEvent.VK_F11:
                 if (fKeys.isOn(fKeys.F11))
                     selectActions();
                 break;
-            case event.VK_F12:
+            case KeyEvent.VK_F12:
                 if (fKeys.isOn(fKeys.F12)) finalActions();
                 else Utils.createErrMsg("F12 Key not available");
                 break;
-            case event.VK_ESCAPE:
+            case KeyEvent.VK_ESCAPE:
                 this.resetCarrierForm();
                 break;
-            case event.VK_INSERT:
+            case KeyEvent.VK_INSERT:
                 if (  ((currMode==Lab.IDLE)&&(cRec.carrier_id>0))
                     ||((currMode==Lab.UPDATE)&&(cRec.carrier_id>0))
                     || (currMode==Lab.ADD) ) {
@@ -832,10 +842,10 @@ public class CarrierForm extends javax.swing.JFrame
                         "Payer Comments",carrierComments,isUpdatable)).setVisible(true);
                     }
                 break;
-            case event.VK_CONTROL:
+            case KeyEvent.VK_CONTROL:
                 ((JTextField)getFocusOwner()).setText(null);
                 break;
-            case event.VK_DOWN:                
+            case KeyEvent.VK_DOWN:                
                 cVectNdx++;
                 if (cVectNdx==cVectSize) {
                     msgLabel.setText("Bottom of List");
@@ -843,7 +853,7 @@ public class CarrierForm extends javax.swing.JFrame
                 }
                 else fillForm();
                 break;
-            case event.VK_UP:
+            case KeyEvent.VK_UP:
                 cVectNdx--;
                 if (cVectNdx<0) {
                     msgLabel.setText("Top of List");
@@ -851,11 +861,11 @@ public class CarrierForm extends javax.swing.JFrame
                 }
                 else fillForm();
                 break;
-            case event.VK_HOME:
+            case KeyEvent.VK_HOME:
                 cVectNdx=0;
                 fillForm();
                 break;
-            case event.VK_END:
+            case KeyEvent.VK_END:
                 cVectNdx=cVectSize-1;
                 fillForm();
                 break;

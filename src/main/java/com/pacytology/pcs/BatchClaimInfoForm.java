@@ -1,3 +1,4 @@
+package com.pacytology.pcs ;
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -17,12 +18,14 @@
 */
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+
 import javax.swing.*;
 import java.io.*;
 import java.sql.*;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import Square;
+import com.pacytology.pcs.ui.Square;
 
 public class BatchClaimInfoForm extends javax.swing.JFrame
 {
@@ -481,7 +484,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
 	{
 		int key = event.getKeyCode();
 		switch (key) {
-		    case event.VK_F1:
+		    case KeyEvent.VK_F1:
 		        resetForm();
 		        if (event.isShiftDown()) {
                     fileName277.setEnabled(true);
@@ -493,19 +496,19 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
 		            tppCode.requestFocus();
 		        }
 		        break;
-		    case event.VK_F4:
+		    case KeyEvent.VK_F4:
 		        getPayerSummary();
 		        break;
-            case event.VK_ESCAPE:
+            case KeyEvent.VK_ESCAPE:
                 resetForm();
                 break;
-            case event.VK_F9:
+            case KeyEvent.VK_F9:
                 closingActions();
                 break;
-            case event.VK_F3:
+            case KeyEvent.VK_F3:
                 updateActions();
                 break;
-            case event.VK_DOWN:
+            case KeyEvent.VK_DOWN:
                 if (submitRecVect.size()>0) {
                     ndx++;
                     if (ndx>=submitRecVect.size()) ndx=submitRecVect.size()-1;
@@ -513,7 +516,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                     fillForm(submitRec);
                 }
                 break;
-            case event.VK_UP:                
+            case KeyEvent.VK_UP:                
                 if (submitRecVect.size()>0) {
                     ndx--;
                     if (ndx<0) ndx=0;
@@ -521,7 +524,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                     fillForm(submitRec);
                 }
                 break;
-            case event.VK_F12:
+            case KeyEvent.VK_F12:
                 finalActions();
                 String fName = 
                     submitRec.tpp.toLowerCase()+

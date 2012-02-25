@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -14,9 +16,10 @@
 */
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.sql.*;
 import javax.swing.*;
-import Square;
+import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 import javax.swing.border.TitledBorder;
 import java.util.Date;
@@ -1024,11 +1027,11 @@ public class LabForm extends javax.swing.JFrame
 	javax.swing.JPanel msgPanel = new javax.swing.JPanel();
 	javax.swing.JLabel msgLabel = new javax.swing.JLabel();
 	javax.swing.JLabel HPVmsgLabel = new javax.swing.JLabel();
-	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder();
-	javax.swing.border.TitledBorder titledBorder2 = new javax.swing.border.TitledBorder();
-	javax.swing.border.TitledBorder titledBorder3 = new javax.swing.border.TitledBorder();
-	javax.swing.border.TitledBorder titledBorder4 = new javax.swing.border.TitledBorder();
-	javax.swing.border.TitledBorder titledBorder5 = new javax.swing.border.TitledBorder();
+	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder("");
+	javax.swing.border.TitledBorder titledBorder2 = new javax.swing.border.TitledBorder("");
+	javax.swing.border.TitledBorder titledBorder3 = new javax.swing.border.TitledBorder("");
+	javax.swing.border.TitledBorder titledBorder4 = new javax.swing.border.TitledBorder("");
+	javax.swing.border.TitledBorder titledBorder5 = new javax.swing.border.TitledBorder("");
 	javax.swing.JLabel createdLbl = new javax.swing.JLabel();
 	javax.swing.JLabel changedLbl = new javax.swing.JLabel();
 	//}}
@@ -2656,18 +2659,18 @@ public class LabForm extends javax.swing.JFrame
 	{
 	    int key = event.getKeyCode();
 	    switch (key) {
-	        case event.VK_F1:
+	        case KeyEvent.VK_F1:
 		        if (fKeys.isOn(fKeys.F1)) queryActions();
 		        else Utils.createErrMsg("Query Option Not Available");
                 break;
-            case event.VK_F2:                
+            case KeyEvent.VK_F2:                
                 if (fKeys.isOn(fKeys.F2)) {
                     if (!prepFlag) setPreparation();
                     if (prepFlag) addActions();
                 }
                 else Utils.createErrMsg("Add Option Not Available");
                 break;
-            case event.VK_F3:                
+            case KeyEvent.VK_F3:                
                 if (fKeys.isOn(fKeys.F3)) {
                     if (labRec.billing.origin==2) {
                         String msg = null;
@@ -2688,7 +2691,7 @@ public class LabForm extends javax.swing.JFrame
                 }
                 else Utils.createErrMsg("Update Option Not Available");
                 break;
-            case event.VK_F4:                
+            case KeyEvent.VK_F4:                
                 if (currMode==Lab.IDLE) { 
                     if (faxLetterQueue.size()>0) { 
                         currMode=Lab.QUEUE;
@@ -2700,7 +2703,7 @@ public class LabForm extends javax.swing.JFrame
                 }
                 else Utils.createErrMsg("Queue Option Not Available");
                 break;
-            case event.VK_F5:                
+            case KeyEvent.VK_F5:                
                 if (event.isAltDown()) {
                     if (currentSection==1) invokeDoctorForm();
                     else Utils.createErrMsg("Doctor Form Not Available");
@@ -2710,7 +2713,7 @@ public class LabForm extends javax.swing.JFrame
                     else Utils.createErrMsg("Patient Form Not Available");
                 }
                 break;
-            case event.VK_F6:                
+            case KeyEvent.VK_F6:                
                 if (fKeys.isOn(fKeys.F6)) {
                     if ((labOtherInsurance.hasFocus())||
                         (labPayerID.hasFocus())||
@@ -2721,7 +2724,7 @@ public class LabForm extends javax.swing.JFrame
                 }
                 else Utils.createErrMsg("Payer Form Not Available");
                 break;
-            case event.VK_F7:                
+            case KeyEvent.VK_F7:                
                 if (currMode==Lab.IDLE && !Utils.isNull(labNumber.getText())) { 
                     String bChoice = labBillingChoice.getText();
                     /*
@@ -2755,7 +2758,7 @@ public class LabForm extends javax.swing.JFrame
                 }
                 else Utils.createErrMsg("Create Letter Option Not Available");
                 break;
-            case event.VK_F8:                
+            case KeyEvent.VK_F8:                
                 if (fKeys.isOn(fKeys.F8)) {
                     if (labDiagCode.hasFocus())  {
                         String[] buf = new String[MAX_DIAG_CODES];
@@ -2827,10 +2830,10 @@ public class LabForm extends javax.swing.JFrame
                 }
                 else Utils.createErrMsg("F8 Key not valid in this section");
                 break;
-            case event.VK_F9:
+            case KeyEvent.VK_F9:
                 closingActions();
                 break;
-            case event.VK_F10:                
+            case KeyEvent.VK_F10:                
                 if (currMode==Lab.ADD || currMode==Lab.UPDATE) fKeys.keyOn(fKeys.F10);
                 if (fKeys.isOn(fKeys.F10)) {
                     if (labBillingChoice.hasFocus()) {
@@ -2844,7 +2847,7 @@ public class LabForm extends javax.swing.JFrame
                 }
                 else Utils.createErrMsg("F10 Key not valid");
                 break;
-            case event.VK_RIGHT:
+            case KeyEvent.VK_RIGHT:
                 if (fKeys.isOn(fKeys.F10) && event.isAltDown()) {
                     if (labBillingChoice.hasFocus()) {
                         Utils.createErrMsg("F10 Key not valid");
@@ -2855,7 +2858,7 @@ public class LabForm extends javax.swing.JFrame
                 }
                 else Utils.createErrMsg("F10 Key not valid");
                 break;
-            case event.VK_LEFT:                
+            case KeyEvent.VK_LEFT:                
                 if (fKeys.isOn(fKeys.F10) && event.isAltDown()) {
                     event.consume();
                     currentSection++;
@@ -2864,7 +2867,7 @@ public class LabForm extends javax.swing.JFrame
                 }                
                 else Utils.createErrMsg("F10 Key not valid");
                 break;
-            case event.VK_F11:                
+            case KeyEvent.VK_F11:                
                 if (event.isAltDown() && !Utils.isNull(labPatientNumber.getText())) {
                     Vector vBuf = new Vector();
                     for (int i=0; i<detailRec.length; i++) {
@@ -2928,7 +2931,7 @@ public class LabForm extends javax.swing.JFrame
                     }
                 }
                 break;
-            case event.VK_F12:                
+            case KeyEvent.VK_F12:                
                 if (!patientQuery) {
                     if (!dbThreadRunning) { 
                         finalActions();
@@ -2939,7 +2942,7 @@ public class LabForm extends javax.swing.JFrame
                     }
                 }
                 break;
-            case event.VK_PAGE_DOWN:                
+            case KeyEvent.VK_PAGE_DOWN:                
                 if (currentSection==1) {
                     if (event.isShiftDown()) {
                         labPatientFirstName.setEnabled(false);
@@ -2957,7 +2960,7 @@ public class LabForm extends javax.swing.JFrame
                     else labDOB.requestFocus();
                 }
                 break;
-            case event.VK_ESCAPE:
+            case KeyEvent.VK_ESCAPE:
                 prepFlag=false;
                 if (!defaultPrep.equals("S")) {
                     defaultPrep="C";
@@ -2966,10 +2969,10 @@ public class LabForm extends javax.swing.JFrame
                 else prepFlag=true;
                 resetLabForm();
                 break;
-            case event.VK_INSERT:                
+            case KeyEvent.VK_INSERT:                
                 displayComments();
                 break;      
-            case event.VK_CONTROL:                
+            case KeyEvent.VK_CONTROL:                
                 if (labRelCode.hasFocus()) return;
                 ((JTextField)getFocusOwner()).setText(null);
                 if ((labOtherInsurance.hasFocus()) ||

@@ -1,13 +1,19 @@
+package com.pacytology.pcs;
 /*
 		A basic implementation of the JDialog class.
 */
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.sql.CallableStatement;
+import java.sql.SQLException;
 import javax.swing.*;
-import Square;
-import java.util.Vector;
-import java.sql.*;
-import com.;
+
+import com.pacytology.pcs.ui.Square;
+
 
 public class labChangeDialog extends javax.swing.JDialog
 {
@@ -75,10 +81,9 @@ public class labChangeDialog extends javax.swing.JDialog
 		getContentPane().add(F1action);
 		F1action.setForeground(java.awt.Color.black);
 		F1action.setBounds(0,28,70,18);
-		try {
-			warningMessage.setText("WARNING!!!  All instances in the Oracle Database of the INCORRECT Lab Number will be replaced with the CORRECT Lab Number.  It is recommended that the user of the system be sure of the desired results before submitting the change.");
-		}
-		catch(java.beans.PropertyVetoException e) { }
+
+		warningMessage.setText("WARNING!!!  All instances in the Oracle Database of the INCORRECT Lab Number will be replaced with the CORRECT Lab Number.  It is recommended that the user of the system be sure of the desired results before submitting the change.");
+
 		getContentPane().add(warningMessage);
 		warningMessage.setForeground(java.awt.Color.red);
 		warningMessage.setFont(new Font("Dialog", Font.BOLD, 12));
@@ -155,7 +160,7 @@ public class labChangeDialog extends javax.swing.JDialog
 	javax.swing.JLabel F2lbl = new javax.swing.JLabel();
 	javax.swing.JLabel F2action = new javax.swing.JLabel();
 	javax.swing.JLabel F1action = new javax.swing.JLabel();
-	com. warningMessage = new com.();
+	JLabel warningMessage = new JLabel();
 	javax.swing.JCheckBox updateLink = new javax.swing.JCheckBox();
 	//}}
 
@@ -269,8 +274,8 @@ public class labChangeDialog extends javax.swing.JDialog
 		            else if (mode==BIOPSY)
 		                msg="WARNING!!!  Next lab number for SURGICAL BIOPSY will be set to "+goodLabNumber.getText();
 		            if (mode==HPV || mode==BIOPSY) {
-		                try { warningMessage.setText(msg); }
-		                catch(java.beans.PropertyVetoException e) { }
+		                warningMessage.setText(msg);
+
 		            }
 		            warningMessage.setVisible(true); 
 		        }
@@ -301,8 +306,7 @@ public class labChangeDialog extends javax.swing.JDialog
 		        " will be removed.";
 		    previous_lab=0;
 		}
-		try { warningMessage.setText(msg); }
-		catch(java.beans.PropertyVetoException e) { }
+		warningMessage.setText(msg);
 		warningMessage.setVisible(true);
 	}
 	
@@ -351,14 +355,14 @@ public class labChangeDialog extends javax.swing.JDialog
         Utils.setColors(this.getContentPane());
     }
 
-	void labChangeDialog_keyPressed(java.awt.event.KeyEvent event)
+	void labChangeDialog_keyPressed(KeyEvent event)
 	{
 		int key = event.getKeyCode();
 		switch (key) {
-		    case event.VK_F9:   
+		    case KeyEvent.VK_F9:   
 		        closingActions();
 		        break;
-            case event.VK_F12:
+            case KeyEvent.VK_F12:
                 if (warningMessage.isVisible()) {
                     int old = 0;
                     if (mode==HPV) old=HPV;
@@ -377,7 +381,7 @@ public class labChangeDialog extends javax.swing.JDialog
 		        else Utils.createErrMsg(
 		            "Must press ENTER to verify correct lab does not exist");
 		        break;
-		    case event.VK_ESCAPE:
+		    case KeyEvent.VK_ESCAPE:
 		        resetForm();
 		        break;
 		}

@@ -1,10 +1,12 @@
+package com.pacytology.pcs;
+
 /*
 		A basic implementation of the JDialog class.
 */
 
 import java.awt.*;
 import javax.swing.*;
-import Square;
+import com.pacytology.pcs.ui.Square;
 
 public class PracticesHPVDialog extends javax.swing.JDialog
 {

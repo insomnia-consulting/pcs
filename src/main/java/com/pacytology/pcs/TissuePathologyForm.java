@@ -1,3 +1,4 @@
+package com.pacytology.pcs;
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -14,20 +15,22 @@
 */
 
 
-import java.awt.*;
-import javax.swing.*;
-import java.util.Vector;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.util.Properties;
-import java.util.Vector;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.PrintJob;
+import java.awt.event.KeyEvent;
+import java.util.Properties;
 import java.util.StringTokenizer;
-import com.;
-import Square;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.BevelBorder;
+import java.util.Vector;
+
+import javax.swing.JTextField;
+
+import com.pacytology.pcs.ui.Square;
 
 public class TissuePathologyForm extends javax.swing.JFrame
 {
@@ -523,23 +526,23 @@ public class TissuePathologyForm extends javax.swing.JFrame
 	javax.swing.JTextField resPathologist = new javax.swing.JTextField();
 	javax.swing.JLabel JLabel12 = new javax.swing.JLabel();
 	javax.swing.JLabel JLabel17 = new javax.swing.JLabel();
-	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder();
-	javax.swing.border.TitledBorder titledBorder2 = new javax.swing.border.TitledBorder();
-	javax.swing.border.TitledBorder titledBorder3 = new javax.swing.border.TitledBorder();
+	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder("");
+	javax.swing.border.TitledBorder titledBorder2 = new javax.swing.border.TitledBorder("");
+	javax.swing.border.TitledBorder titledBorder3 = new javax.swing.border.TitledBorder("");
 	javax.swing.JPanel remarksPanel = new javax.swing.JPanel();
 	javax.swing.JScrollPane JScrollPane1 = new javax.swing.JScrollPane();
 	javax.swing.JTextArea resRemarks = new javax.swing.JTextArea();
-	javax.swing.border.TitledBorder titledBorder4 = new javax.swing.border.TitledBorder();
+	javax.swing.border.TitledBorder titledBorder4 = new javax.swing.border.TitledBorder("");
 	javax.swing.JPanel descriptionListPanel = new javax.swing.JPanel();
 	javax.swing.JScrollPane JScrollPane2 = new javax.swing.JScrollPane();
 	javax.swing.JList textItemsList = new javax.swing.JList();
-	javax.swing.border.TitledBorder titledBorder5 = new javax.swing.border.TitledBorder();
+	javax.swing.border.TitledBorder titledBorder5 = new javax.swing.border.TitledBorder("");
 	javax.swing.JPanel JPanel1 = new javax.swing.JPanel();
 	javax.swing.JLabel createdLbl = new javax.swing.JLabel();
 	javax.swing.JLabel changedLbl = new javax.swing.JLabel();
-	javax.swing.border.LineBorder lineBorder1 = new javax.swing.border.LineBorder();
-	javax.swing.border.BevelBorder bevelBorder1 = new javax.swing.border.BevelBorder();
-	javax.swing.border.TitledBorder titledBorder6 = new javax.swing.border.TitledBorder();
+	javax.swing.border.LineBorder lineBorder1 = new javax.swing.border.LineBorder(null);
+	javax.swing.border.BevelBorder bevelBorder1 = new javax.swing.border.BevelBorder(3);
+	javax.swing.border.TitledBorder titledBorder6 = new javax.swing.border.TitledBorder("");
 	javax.swing.JLabel msgLabel = new javax.swing.JLabel();
 	//}}
 
@@ -610,19 +613,19 @@ public class TissuePathologyForm extends javax.swing.JFrame
 	{
 		int key=event.getKeyCode();
 		switch (key) {
-		    case event.VK_F1:
+		    case KeyEvent.VK_F1:
 		        queryActions();
 		        break;
-		    case event.VK_F2:
+		    case KeyEvent.VK_F2:
 		        addActions();
 		        break;
-		    case event.VK_F3:
+		    case KeyEvent.VK_F3:
 		        updateActions();
 		        break;
-		    case event.VK_F4:
+		    case KeyEvent.VK_F4:
 		        tissuePathologyReport();
                 break;
-            case event.VK_F5:
+            case KeyEvent.VK_F5:
                 if (!resRemarks.isEnabled()) {
                     resRemarks.setEnabled(true);
                     if (textItemsList.getSelectedIndex()<0)
@@ -640,7 +643,7 @@ public class TissuePathologyForm extends javax.swing.JFrame
                     resCompleted.requestFocus();
                 }
                 break;
-		    case event.VK_F8:
+		    case KeyEvent.VK_F8:
 		            if (resCytoTech.hasFocus()) {
 		                String buf[] = new String [MAX_TECHS];
 		                String buf2[] = new String [MAX_TECHS];
@@ -685,25 +688,25 @@ public class TissuePathologyForm extends javax.swing.JFrame
 		                    tissueCodes.size(),buf,buf2,resRemarks)).setVisible(true);
 		            }
 		        break;
-		    case event.VK_F9:
+		    case KeyEvent.VK_F9:
 		        closingActions();
 		        break;
-		    case event.VK_F12:
+		    case KeyEvent.VK_F12:
 		        finalActions();
 		        break;
-            case event.VK_ESCAPE:
+            case KeyEvent.VK_ESCAPE:
                 resetForm();
                 break;
-            case event.VK_INSERT:
+            case KeyEvent.VK_INSERT:
                 //displayComments();
                 break;
-		    case event.VK_DOWN:
+		    case KeyEvent.VK_DOWN:
 		        incrementTextList();
                 break;
-		    case event.VK_UP:
+		    case KeyEvent.VK_UP:
 		        decrementTextList();
                 break;
-            case event.VK_CONTROL:
+            case KeyEvent.VK_CONTROL:
                 ((JTextField)getFocusOwner()).setText(null);
                 break;
 		}

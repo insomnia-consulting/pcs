@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -18,7 +20,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import Square;
+import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 
 public class ReportViewer extends javax.swing.JFrame

@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
 		A basic implementation of the JWindow class.
 */

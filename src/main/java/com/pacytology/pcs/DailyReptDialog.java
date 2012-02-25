@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -13,8 +15,10 @@
     Date/Staff      Description:
 */
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
 import java.io.File;
 
 public class DailyReptDialog extends javax.swing.JDialog
@@ -171,10 +175,10 @@ public class DailyReptDialog extends javax.swing.JDialog
 	{
 	    int key = event.getKeyCode();
 	    switch (key) {
-		    case event.VK_F9:
+		    case KeyEvent.VK_F9:
 		        this.dispose();
 		        break;
-		    case event.VK_ESCAPE:
+		    case KeyEvent.VK_ESCAPE:
 		        stmtMonth.setText(null);
 		        stmtDay.setText(null);
 		        stmtYear.setText(null);

@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -21,7 +23,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.sql.*;
 import java.util.Vector;
-import com.;
+import com.pacytology.pcs.ui.Square;
 
 public class UnfinishDialog extends javax.swing.JDialog
 {
@@ -143,7 +145,7 @@ public class UnfinishDialog extends javax.swing.JDialog
 	//{{DECLARE_CONTROLS
 	javax.swing.JLabel JLabel11 = new javax.swing.JLabel();
 	javax.swing.JTextField labNumber = new javax.swing.JTextField();
-	com. messageText = new com.();
+	JLabel messageText = new JLabel();
 	//}}
 
 

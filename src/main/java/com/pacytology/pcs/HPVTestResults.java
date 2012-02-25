@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -15,7 +17,7 @@
 
 import java.awt.*;
 import javax.swing.*;
-import Square;
+import com.pacytology.pcs.ui.Square;
 import java.sql.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -279,7 +281,7 @@ public class HPVTestResults extends javax.swing.JDialog
 	javax.swing.JCheckBox resultLock = new javax.swing.JCheckBox();
 	javax.swing.JCheckBox dateLock = new javax.swing.JCheckBox();
 	javax.swing.JCheckBox techLock = new javax.swing.JCheckBox();
-	javax.swing.border.TitledBorder lockPanelBorder = new javax.swing.border.TitledBorder();
+	javax.swing.border.TitledBorder lockPanelBorder = new javax.swing.border.TitledBorder("");
 	Square F2sq = new Square();
 	javax.swing.JLabel F2lbl = new javax.swing.JLabel();
 	Square F3sq = new Square();

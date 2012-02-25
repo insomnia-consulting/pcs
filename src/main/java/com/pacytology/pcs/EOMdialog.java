@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -19,9 +21,9 @@
 
 import java.awt.*;
 import javax.swing.*;
-import Square;
+import com.pacytology.pcs.ui.Square;
 import java.sql.*;
-import com.;
+import com.pacytology.pcs.ui.Square;
 
 public class EOMdialog extends javax.swing.JDialog
 {
@@ -108,10 +110,10 @@ public class EOMdialog extends javax.swing.JDialog
 		getContentPane().add(summaryMode);
 		summaryMode.setFont(new Font("DialogInput", Font.PLAIN, 12));
 		summaryMode.setBounds(134,128,86,20);
-		try {
+		
 			InfoLabel.setText("CURRENT STATS:  End-Of-Month routines typically begin around 01:20 and end at 05:30; this includes generating all cytology summaries.");
-		}
-		catch(java.beans.PropertyVetoException e) { }
+		
+
 		getContentPane().add(InfoLabel);
 		InfoLabel.setBounds(20,164,210,70);
 		//}}
@@ -182,7 +184,7 @@ public class EOMdialog extends javax.swing.JDialog
 	javax.swing.JTextField runDate = new javax.swing.JTextField();
 	javax.swing.JLabel JLabel2 = new javax.swing.JLabel();
 	javax.swing.JTextField summaryMode = new javax.swing.JTextField();
-	com. InfoLabel = new com.();
+	JLabel InfoLabel = new JLabel();
 	//}}
 
 

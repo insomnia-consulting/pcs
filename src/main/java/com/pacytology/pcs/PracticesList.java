@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
 		A basic implementation of the JFrame class.
 */
@@ -6,7 +8,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.util.Vector;
 import javax.swing.table.*;
-import Square;
+import com.pacytology.pcs.ui.Square;
 import java.sql.*;
 import java.io.*;
 

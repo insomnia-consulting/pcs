@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -19,7 +21,7 @@ import javax.swing.*;
 import java.io.*;
 import java.sql.*;
 import java.util.Vector;
-import Square;
+import com.pacytology.pcs.ui.Square;
 
 public class PracticesAddedDialog extends javax.swing.JDialog
 {

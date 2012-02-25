@@ -1,8 +1,11 @@
+package com.pacytology.pcs;
+
 /*
 		A basic implementation of the JDialog class.
 */
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.sql.*;
 import javax.swing.*;
 import java.util.StringTokenizer;
@@ -10,7 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.Vector;
-import Square;
+import com.pacytology.pcs.ui.Square;
 
 public class PayerFileDialog extends javax.swing.JDialog
 {
@@ -355,34 +358,34 @@ public class PayerFileDialog extends javax.swing.JDialog
 	{
 	    int key = event.getKeyCode();
 	    switch (key) {
-	        case event.VK_F9:
+	        case KeyEvent.VK_F9:
 		        this.dispose();
 		        break;
-            case event.VK_F1:	
+            case KeyEvent.VK_F1:	
                 disableAllFields();
                 clearAllFields();
 	            fileName.setEnabled(true);
 		        fileName.requestFocus();
 		        break;
-            case event.VK_F10:
+            case KeyEvent.VK_F10:
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
                 getPending();
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
                 break;
-            case event.VK_DOWN:
+            case KeyEvent.VK_DOWN:
                 currNdx++;
                 displayRec();
                 break;
-            case event.VK_UP:
+            case KeyEvent.VK_UP:
                 currNdx--;
                 displayRec();
                 break;
-            case event.VK_ESCAPE:
+            case KeyEvent.VK_ESCAPE:
                 pendingVect = new Vector();
                 disableAllFields();
                 clearAllFields();
                 break;
-            case event.VK_F2:
+            case KeyEvent.VK_F2:
                 if (!Utils.isNull(pndStatus.getText())) {
                     CarrierRec cRec = (CarrierRec)pendingVect.elementAt(currNdx);
                     if (pndStatus.getText().equals("PENDING")) 
@@ -392,7 +395,7 @@ public class PayerFileDialog extends javax.swing.JDialog
                     pndStatus.setText(cRec.status_pnd);
                 }
                 break;
-            case event.VK_F3:
+            case KeyEvent.VK_F3:
                 if (!Utils.isNull(pndStatus.getText())) {
                     CarrierRec cRec = (CarrierRec)pendingVect.elementAt(currNdx);
                     if (pndStatus.getText().equals("EXISTS"))
@@ -402,7 +405,7 @@ public class PayerFileDialog extends javax.swing.JDialog
                     pndStatus.setText(cRec.status_pnd);
                 }
                 break;
-            case event.VK_F4:
+            case KeyEvent.VK_F4:
                 if (!Utils.isNull(pndStatus.getText())) {
                     CarrierRec cRec = (CarrierRec)pendingVect.elementAt(currNdx);
                     if (pndStatus.getText().equals("EXISTS")
@@ -413,7 +416,7 @@ public class PayerFileDialog extends javax.swing.JDialog
                     pndStatus.setText(cRec.status_pnd);
                 }
                 break;
-            case event.VK_F12:
+            case KeyEvent.VK_F12:
                 finalActions();
                 break;
 		}

@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -14,10 +16,23 @@
     Date/Staff      Description:
 */
 
-import java.awt.*;
-import javax.swing.*;
-import java.sql.*;
-import java.io.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class BuildClaimDialog extends javax.swing.JDialog
 {
@@ -559,10 +574,10 @@ public class BuildClaimDialog extends javax.swing.JDialog
 	{
 		int key = event.getKeyCode();
 		switch (key) {
-		    case event.VK_F9:
+		    case KeyEvent.VK_F9:
 		        closingActions();
 		        break;
-		    case event.VK_ESCAPE:
+		    case KeyEvent.VK_ESCAPE:
 		        tpps.setSelectedIndex(0);
 		        claimTypeLbl.setText(null);
 		        fnameLbl.setText(null);

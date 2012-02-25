@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -17,7 +19,7 @@
 import java.awt.*;
 import javax.swing.*;
 import java.sql.*;
-import Square;
+import com.pacytology.pcs.ui.Square;
 
 public class CommentForm extends javax.swing.JFrame
 {

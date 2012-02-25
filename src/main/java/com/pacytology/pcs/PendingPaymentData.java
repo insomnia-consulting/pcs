@@ -1,8 +1,10 @@
+package com.pacytology.pcs;
+
 import java.awt.*;
 import javax.swing.*;
 import java.util.Vector;
 import javax.swing.table.*;
-import Square;
+import com.pacytology.pcs.ui.Square;
 import java.sql.*;
 import java.io.*;
 

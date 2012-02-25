@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     CollectiosForm.java
     Software Engineer: Jon Cardella
@@ -6,10 +8,14 @@
     print various collections reports.
 */
 
-import java.awt.*;
-import javax.swing.*;
-import Square;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
 import java.util.Vector;
+
+import com.pacytology.pcs.ui.Square;
 
 public class CollectionsForm extends javax.swing.JFrame
 {
@@ -548,13 +554,13 @@ public class CollectionsForm extends javax.swing.JFrame
 	{
 		int key = event.getKeyCode();
 		switch (key) {
-		    case event.VK_F1:
+		    case KeyEvent.VK_F1:
 		        if (screenMode==QUEUE || screenMode==DEQUEUE) changeQueueStatus();
 		        break;
-		    case event.VK_F2:
+		    case KeyEvent.VK_F2:
 		        if (screenMode==NOTIFY) changeQueueStatus();
 		        break;
-		    case event.VK_F4:
+		    case KeyEvent.VK_F4:
 		        String rName=getReport();
 		        if (!Utils.isNull(rName))  {
 		            viewReport(rName);
@@ -562,20 +568,20 @@ public class CollectionsForm extends javax.swing.JFrame
 		                closingActions();
 		        }
 	            break;
-		    case event.VK_DOWN:
+		    case KeyEvent.VK_DOWN:
 		        if (rowCount>0) increment();
 		        break;
-		    case event.VK_UP:
+		    case KeyEvent.VK_UP:
 		        if (rowCount>0) decrement();
 		        break;
-		    case event.VK_F9:
+		    case KeyEvent.VK_F9:
 		        closingActions();
 		        break;
-		    case event.VK_ESCAPE:
+		    case KeyEvent.VK_ESCAPE:
 		        resetForm();
 		        openingActions();
 		        break;
-		    case event.VK_F3:
+		    case KeyEvent.VK_F3:
 		        if (internalComment.isEnabled()) {
 		            internalComment.setEnabled(false);
 		            msgLabel.requestFocus();
@@ -586,7 +592,7 @@ public class CollectionsForm extends javax.swing.JFrame
 		            internalComment.requestFocus();
 		        }
 		        break;
-            case event.VK_F11:
+            case KeyEvent.VK_F11:
                 if (currNdx>=0 && currNdx<rowCount) {
                     setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
                     (new BillingForm(

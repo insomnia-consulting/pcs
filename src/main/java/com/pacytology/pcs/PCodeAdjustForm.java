@@ -1,10 +1,15 @@
+package com.pacytology.pcs;
+
+
 /*
 		A basic implementation of the JFrame class.
 */
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+
 import javax.swing.*;
-import Square;
+import com.pacytology.pcs.ui.Square;
 
 public class PCodeAdjustForm extends javax.swing.JFrame
 {
@@ -188,15 +193,15 @@ public class PCodeAdjustForm extends javax.swing.JFrame
 		int key = event.getKeyCode();
 		int currNdx;
 		switch (key) {
-            case event.VK_F3:
+            case KeyEvent.VK_F3:
                 oldPCode.setEnabled(true);
                 oldPCode.requestFocus();
                 newPCode.setEnabled(true);
                 break;
-            case event.VK_F9:
+            case KeyEvent.VK_F9:
                 this.dispose();
                 break;
-            case event.VK_F12:
+            case KeyEvent.VK_F12:
                 this.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
                 //parent.labOps.updateProcedureCode(
                 //    oldPCode.getText(),newPCode.getText());

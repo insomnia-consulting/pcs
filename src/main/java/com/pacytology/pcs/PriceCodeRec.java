@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 public class PriceCodeRec
 {
     String price_code;

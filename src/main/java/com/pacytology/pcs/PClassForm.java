@@ -1,11 +1,14 @@
+package com.pacytology.pcs;
+
 /*
 		A basic implementation of the JFrame class.
 */
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.sql.*;
 import javax.swing.*;
-import Square;
+import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 
 public class PClassForm extends javax.swing.JFrame
@@ -294,41 +297,41 @@ public class PClassForm extends javax.swing.JFrame
 	    msgLabel.setText(null);
 		int key = event.getKeyCode();
 		switch (key) {
-		    case event.VK_DOWN:
+		    case KeyEvent.VK_DOWN:
 		        currNdx++;
 		        if (currNdx>=pclassVect.size())
 		            currNdx=pclassVect.size()-1;
 		        displayClass(currNdx);
 		        break;
-            case event.VK_UP:
+            case KeyEvent.VK_UP:
                 currNdx--;
                 if (currNdx<0) currNdx=0;
                 displayClass(currNdx);
                 break;
-            case event.VK_HOME:
+            case KeyEvent.VK_HOME:
                 currNdx=0;
                 displayClass(currNdx);
                 break;
-            case event.VK_END:
+            case KeyEvent.VK_END:
                 currNdx=pclassVect.size()-1;
                 displayClass(currNdx);
                 break;
-            case event.VK_F1:
+            case KeyEvent.VK_F1:
                 msgLabel.setText("Query function not yet implemented");
                 break;
-            case event.VK_F2:
+            case KeyEvent.VK_F2:
                 msgLabel.setText("Add function not yet implemented");
                 break;
-            case event.VK_F3:
+            case KeyEvent.VK_F3:
                 msgLabel.setText("Update function not yet implemented");
                 break;
-            case event.VK_F4:
+            case KeyEvent.VK_F4:
                 msgLabel.setText("Delete function not yet implemented");
                 break;
-            case event.VK_F12:
+            case KeyEvent.VK_F12:
                 msgLabel.setText("Submit function not yet implemented");
                 break;
-            case event.VK_F9:
+            case KeyEvent.VK_F9:
                 closingActions();
                 break;
 		}

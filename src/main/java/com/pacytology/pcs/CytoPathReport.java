@@ -1,3 +1,6 @@
+package com.pacytology.pcs;
+
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -23,8 +26,8 @@ import java.awt.Window;
 import java.util.Properties;
 import java.util.Vector;
 import java.awt.PrintJob;
-import symantec.itools.awt.shape.HorizontalLine;
-import com.symantec.itools.swing.JButtonGroupPanel;
+
+
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.SoftBevelBorder;
@@ -306,7 +309,7 @@ public class CytoPathReport extends javax.swing.JFrame
 	javax.swing.JButton printButton = new javax.swing.JButton();
 	javax.swing.JButton cancelButton = new javax.swing.JButton();
 	javax.swing.JLabel msgLabel = new javax.swing.JLabel();
-	com.symantec.itools.swing.JButtonGroupPanel printModePanel = new com.symantec.itools.swing.JButtonGroupPanel();
+	JPanel printModePanel = new JPanel();
 	javax.swing.JRadioButton currentDrafts = new javax.swing.JRadioButton();
 	javax.swing.JRadioButton currentFinals = new javax.swing.JRadioButton();
 	javax.swing.JRadioButton draftCopy = new javax.swing.JRadioButton();
@@ -322,7 +325,7 @@ public class CytoPathReport extends javax.swing.JFrame
 	javax.swing.JButton clearAllButton = new javax.swing.JButton();
 	javax.swing.JTextField practice = new javax.swing.JTextField();
 	javax.swing.JLabel JLabel4 = new javax.swing.JLabel();
-	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder();
+	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder("");
 	javax.swing.JOptionPane printerConfirm = new javax.swing.JOptionPane();
 	javax.swing.JLabel hpvLbl = new javax.swing.JLabel();
 	javax.swing.JTextField hpvPrints = new javax.swing.JTextField();

@@ -1,12 +1,22 @@
+package com.pacytology.pcs;
+
 /*
 		A basic implementation of the JDialog class.
 */
 
-import java.awt.*;
-import javax.swing.*;
-import Square;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Vector;
-import java.sql.*;
+
+import com.pacytology.pcs.ui.Square;
 
 public class HPVNoTest extends javax.swing.JDialog
 {
@@ -252,20 +262,20 @@ public class HPVNoTest extends javax.swing.JDialog
 	{
 		int key = event.getKeyCode();
 		switch (key) {
-		    case event.VK_F2:
+		    case KeyEvent.VK_F2:
 		        labNumber.setEnabled(true);
 		        labNumber.requestFocus();
 		        break;
-            case event.VK_F9:
+            case KeyEvent.VK_F9:
                 closingActions();
                 break;
-            case event.VK_F12:
+            case KeyEvent.VK_F12:
                 this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 updateActions();
                 resetForm();
                 this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 break;
-            case event.VK_ESCAPE:
+            case KeyEvent.VK_ESCAPE:
                 resetForm();
                 break;
 		}

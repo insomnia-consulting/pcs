@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 public class ProcedureCodeRec
 {
     String procedure_code;

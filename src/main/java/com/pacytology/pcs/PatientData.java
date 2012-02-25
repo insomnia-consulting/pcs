@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 class PatientData 
 {
     public String lname;

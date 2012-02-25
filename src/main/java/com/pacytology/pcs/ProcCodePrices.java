@@ -1,8 +1,17 @@
-import java.awt.*;
-import javax.swing.*;
-import Square;
-import java.sql.*;
+package com.pacytology.pcs;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Vector;
+
+import com.pacytology.pcs.ui.Square;
 
 public class ProcCodePrices extends javax.swing.JFrame
 {
@@ -476,19 +485,19 @@ public class ProcCodePrices extends javax.swing.JFrame
                 this.parent.setEnabled(true);
                 this.dispose();
                 break;
-            case event.VK_F2:
+            case KeyEvent.VK_F2:
                 billingCode.setEnabled(true);
                 chargeLimit.setEnabled(true);
                 billingCode.requestFocus();
                 break;
-            case event.VK_ESCAPE:
+            case KeyEvent.VK_ESCAPE:
                 billingCode.setText(null);
                 chargeLimit.setText(null);
                 billingCode.setEnabled(false);
                 chargeLimit.setEnabled(false);
                 procCodeLbl.requestFocus();
                 break;
-            case event.VK_F12:
+            case KeyEvent.VK_F12:
                 if (updateLimit()) refresh();
                 billingCode.setText(null);
                 chargeLimit.setText(null);

@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 class ResultCodeData 
 {
     public String bethesda_code;

@@ -1,3 +1,6 @@
+package com.pacytology.pcs;
+
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -16,9 +19,10 @@
 */
 
 import java.awt.*;
-import java.awt.Color;
+import java.awt.event.KeyEvent;
+
 import javax.swing.*;
-import Square;
+import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 
 public class PatientAccountsForm extends javax.swing.JFrame
@@ -692,7 +696,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
                 closingActions();
                 this.dispose();
                 break;
-            case event.VK_F8:
+            case KeyEvent.VK_F8:
                 if (payCode.hasFocus()) {
                     String[] buf = new String[payTypeVect.size()];
                     String[] buf2 = new String[payTypeVect.size()];
@@ -716,13 +720,13 @@ public class PatientAccountsForm extends javax.swing.JFrame
                     else Utils.createErrMsg("No accounts on hold.");
                 }
                 break;
-            case event.VK_ESCAPE:
+            case KeyEvent.VK_ESCAPE:
                 resetForm();
                 break;
-            case event.VK_F2:
+            case KeyEvent.VK_F2:
                 addActions();
                 break;
-            case event.VK_F3:
+            case KeyEvent.VK_F3:
                 if (currMode!=Lab.IDLE) {
                     if (pastDue==REBILL)
                         Utils.createErrMsg("Lab has been rebilled - cannot update.");
@@ -737,7 +741,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
                         Utils.createErrMsg("Lab charges paid in full - cannot update.");
                 }
                 break;
-            case event.VK_F4:
+            case KeyEvent.VK_F4:
                 if (!Utils.isNull(paLab.getText())) {
                     if (inBillingQueue)
                         Utils.createErrMsg(
@@ -754,7 +758,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
 			        }
 			    }
 			    break;
-			case event.VK_F5:
+			case KeyEvent.VK_F5:
 			    if (event.isShiftDown() && currLAB>0) {
                     (new DBCommentDialog(dbComments)).setVisible(true);
 			    }
@@ -768,7 +772,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
                         Utils.createErrMsg("Lab charges paid in full - cannot add release date");
                 }
 			    break;
-			case event.VK_F6:
+			case KeyEvent.VK_F6:
                 if (inBillingQueue)
                     Utils.createErrMsg("Cannot update account with a "+
                         "statement in the billing queue.");
@@ -777,10 +781,10 @@ public class PatientAccountsForm extends javax.swing.JFrame
                 else 
                     Utils.createErrMsg("Lab charges paid in full - cannot put on hold");
 			    break;
-		    case event.VK_INSERT:
+		    case KeyEvent.VK_INSERT:
 		        displayComments();
 		        break;
-            case event.VK_CONTROL:
+            case KeyEvent.VK_CONTROL:
                 ((JTextField)getFocusOwner()).setText(null);
                dFlag=false;
                break;

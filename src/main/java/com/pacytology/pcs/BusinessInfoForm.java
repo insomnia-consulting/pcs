@@ -1,3 +1,5 @@
+package com.pacytology.pcs;
+
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -17,8 +19,10 @@
 */
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+
 import javax.swing.*;
-import Square;
+import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 import java.io.*;
 import javax.swing.table.*;
@@ -449,28 +453,28 @@ public class BusinessInfoForm extends javax.swing.JFrame
 	{
 		int key = event.getKeyCode();
 		switch (key) {
-		    case event.VK_F9:
+		    case KeyEvent.VK_F9:
 		        this.dispose();
 		        break;
-            case event.VK_F3:
+            case KeyEvent.VK_F3:
                 updateActions();
                 break;
-            case event.VK_F12:
+            case KeyEvent.VK_F12:
                 finalActions();
                 break;
-            case event.VK_CONTROL:
+            case KeyEvent.VK_CONTROL:
                 ((JTextField)getFocusOwner()).setText(null);
                 break;
-            case event.VK_ESCAPE:
+            case KeyEvent.VK_ESCAPE:
                 resetForm();
                 break;
-            case event.VK_F5:
+            case KeyEvent.VK_F5:
                 idNumMaint();
                 break;
-            case event.VK_DOWN:
+            case KeyEvent.VK_DOWN:
                 increment();
                 break;
-            case event.VK_UP:
+            case KeyEvent.VK_UP:
                 decrement();
                 break;
                 

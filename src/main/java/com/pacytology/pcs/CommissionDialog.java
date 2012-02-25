@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.sql.*;
 import java.util.Vector;
 import java.io.File;
+import java.awt.event.KeyEvent;
 
 public class CommissionDialog extends javax.swing.JDialog
 {
@@ -56,10 +57,10 @@ public class CommissionDialog extends javax.swing.JDialog
 		getContentPane().add(end);
 		end.setFont(new Font("SansSerif", Font.BOLD, 12));
 		end.setBounds(130,58,80,20);
-		try {
-			msgLabel.setText("Reporting period from Beginning date to Ending date, both inclusive");
-		}
-		catch(java.beans.PropertyVetoException e) { }
+		
+		msgLabel.setText("Reporting period from Beginning date to Ending date, both inclusive");
+		
+		
 		getContentPane().add(msgLabel);
 		msgLabel.setForeground(java.awt.Color.blue);
 		msgLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
@@ -126,7 +127,7 @@ public class CommissionDialog extends javax.swing.JDialog
 	javax.swing.JTextField begin = new javax.swing.JTextField();
 	javax.swing.JLabel JLabel2 = new javax.swing.JLabel();
 	javax.swing.JTextField end = new javax.swing.JTextField();
-	msgLabel = new JLabel();
+	JLabel msgLabel = new JLabel();
 	//}}
 
 
@@ -294,14 +295,14 @@ public class CommissionDialog extends javax.swing.JDialog
 		resetForm();
 	}
 
-	void CommissionDialog_keyPressed(java.awt.event.KeyEvent event)
+	void CommissionDialog_keyPressed( KeyEvent event)
 	{
 		int key = event.getKeyCode();
 		switch (key) {
-		    case event.VK_F9:
+		    case KeyEvent.VK_F9:
 		        this.dispose();
 		        break;
-		    case event.VK_ESCAPE:
+		    case KeyEvent.VK_ESCAPE:
 		        resetForm();
 		        break;
 		}

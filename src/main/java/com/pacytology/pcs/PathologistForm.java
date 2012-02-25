@@ -1,3 +1,6 @@
+package com.pacytology.pcs;
+
+
 /*
     PathologistForm.java
     Software Engineer: Jon Cardella
@@ -5,9 +8,8 @@
 
 import java.awt.*;
 import javax.swing.*;
-import symantec.itools.awt.util.edit.LongZipCode;
-import symantec.itools.awt.util.edit.USLongDistPhoneNumber;
-import Square;
+
+import com.pacytology.pcs.ui.Square;
 
 public class PathologistForm extends javax.swing.JFrame
 {

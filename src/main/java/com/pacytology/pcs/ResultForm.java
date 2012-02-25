@@ -1,3 +1,4 @@
+package com.pacytology.pcs;
 /*
     PENNSYLVANIA CYTOLOGY SERVICES
     LABORATORY INFORMATION SYSTEM V1.0
@@ -14,11 +15,14 @@
 */
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+
 import javax.swing.*;
-import Square;
+
+import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 import javax.swing.table.*;
-import com.;
+import com.pacytology.pcs.ui.Square;
 import javax.swing.border.TitledBorder;
 
 public class ResultForm extends javax.swing.JFrame
@@ -44,10 +48,10 @@ public class ResultForm extends javax.swing.JFrame
     public int MAX_RESULT_CODES=0;
     public int matIndexRequested=0;
     final int NO_PRINT=0;
-    final int DRAFT = 1;
-    final int FINAL = 2;
-    final int DRAFT_COPY = 3;
-    final int FINAL_COPY = 4;
+    public static final int DRAFT = 1;
+    public static final int FINAL = 2;
+    public static final int DRAFT_COPY = 3;
+    public static final int FINAL_COPY = 4;
     ResultDbOps resDbOps;
     boolean dbThreadRunning=false;
     boolean completedFlag=false;
@@ -88,7 +92,7 @@ public class ResultForm extends javax.swing.JFrame
 		// what Visual Cafe can generate, or Visual Cafe may be unable to back
 		// parse your Java file into its visual environment.
 		//{{INIT_CONTROLS
-		setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		getContentPane().setLayout(null);
 		setSize(790,502);
 		setVisible(false);
@@ -517,15 +521,15 @@ public class ResultForm extends javax.swing.JFrame
 		resultTable.setAutoCreateColumnsFromModel(false);
 		resultTable.setModel(rData);
 
-		for (int k=0;k<rData.columns.length;k++) {
+		for (int k=0;k<ResultTableData.columns.length;k++) {
 		    DefaultTableCellRenderer renderer = new
 		        DefaultTableCellRenderer();
             renderer.setHorizontalAlignment(
-                rData.columns[k].alignment);
+                ResultTableData.columns[k].alignment);
             renderer.setFont(
-                rData.columns[k].font);
+                ResultTableData.columns[k].font);
             TableColumn column = new TableColumn(k,
-                rData.columns[k].width,renderer,null);
+                ResultTableData.columns[k].width,renderer,null);
             resultTable.addColumn(column);
 		}
 		
@@ -609,6 +613,7 @@ public class ResultForm extends javax.swing.JFrame
         this.resetResultForm();
     }        
 
+	@Override
 	public void setVisible(boolean b)
 	{
 		if (b) setLocation(0,0);
@@ -620,6 +625,7 @@ public class ResultForm extends javax.swing.JFrame
 		(new ResultForm()).setVisible(true);
 	}
 
+	@Override
 	public void addNotify()
 	{
 		// Record the size of the window prior to calling parents addNotify.
@@ -724,27 +730,27 @@ public class ResultForm extends javax.swing.JFrame
 	Square F5sq = new Square();
 	javax.swing.JLabel F5lbl = new javax.swing.JLabel();
 	javax.swing.JLabel F5action = new javax.swing.JLabel();
-	com. msgLabel = new com.();
-	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder();
-	javax.swing.border.TitledBorder titledBorder3 = new javax.swing.border.TitledBorder();
+	JLabel msgLabel = new JLabel();
+	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder("");
+	javax.swing.border.TitledBorder titledBorder3 = new javax.swing.border.TitledBorder("");
 	javax.swing.JOptionPane hxPopUp = new javax.swing.JOptionPane();
-	javax.swing.border.TitledBorder titledBorder4 = new javax.swing.border.TitledBorder();
-	javax.swing.border.TitledBorder titledBorder5 = new javax.swing.border.TitledBorder();
-	javax.swing.border.TitledBorder titledBorder6 = new javax.swing.border.TitledBorder();
-	javax.swing.border.TitledBorder titledBorder2 = new javax.swing.border.TitledBorder();
+	javax.swing.border.TitledBorder titledBorder4 = new javax.swing.border.TitledBorder("");
+	javax.swing.border.TitledBorder titledBorder5 = new javax.swing.border.TitledBorder("");
+	javax.swing.border.TitledBorder titledBorder6 = new javax.swing.border.TitledBorder("");
+	javax.swing.border.TitledBorder titledBorder2 = new javax.swing.border.TitledBorder("");
 	javax.swing.JButton noButton = new javax.swing.JButton();
 	javax.swing.JButton yesButton = new javax.swing.JButton();
 	javax.swing.JButton cancelButton = new javax.swing.JButton();
 	javax.swing.JPanel JPanel1 = new javax.swing.JPanel();
 	javax.swing.JLabel createdLbl = new javax.swing.JLabel();
 	javax.swing.JLabel changedLbl = new javax.swing.JLabel();
-	javax.swing.border.TitledBorder titledBorder7 = new javax.swing.border.TitledBorder();
+	javax.swing.border.TitledBorder titledBorder7 = new javax.swing.border.TitledBorder("");
 	Square F6sq = new Square();
 	javax.swing.JLabel F6lbl = new javax.swing.JLabel();
 	javax.swing.JLabel F6action = new javax.swing.JLabel();
 	javax.swing.JLabel HPVinfo = new javax.swing.JLabel();
 	javax.swing.JLabel PClass = new javax.swing.JLabel();
-	javax.swing.border.TitledBorder titledBorder8 = new javax.swing.border.TitledBorder();
+	javax.swing.border.TitledBorder titledBorder8 = new javax.swing.border.TitledBorder("");
 	//}}
 
 	//{{DECLARE_MENUS
@@ -845,6 +851,7 @@ public class ResultForm extends javax.swing.JFrame
     
 	class SymKey extends java.awt.event.KeyAdapter
 	{
+		@Override
 		public void keyTyped(java.awt.event.KeyEvent event)
 		{
 			Object object = event.getSource();
@@ -878,6 +885,7 @@ public class ResultForm extends javax.swing.JFrame
 				resRemarks_keyTyped(event);
 		}
 
+		@Override
 		public void keyPressed(java.awt.event.KeyEvent event)
 		{
 			Object object = event.getSource();
@@ -940,13 +948,13 @@ public class ResultForm extends javax.swing.JFrame
 
 	void resultCode_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if (event.getKeyCode()==event.VK_ENTER) {
+		if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 		    if (Utils.isNull(resultCode.getText())) {
 		        resultCode.transferFocus();
 		        return;
 		    }
 		    if (Utils.length(resultCode.getText())<1) return;
-            String nextCode=(String)resultCode.getText();		    
+            String nextCode=resultCode.getText();		    
             if (rData.resultEntered(nextCode,0)) {}
             else {
                 boolean addCode = resultCodeExists(nextCode);
@@ -976,7 +984,7 @@ public class ResultForm extends javax.swing.JFrame
                 if (bethesdaCode.equals("850")) {
                     if (!Utils.isNull(resultRec.Hx_comment) 
                     || !Utils.isNull(resultRec.LMP)) {
-                        if (displayHxPopUp()!=hxPopUp.YES_OPTION) {
+                        if (displayHxPopUp()!=JOptionPane.YES_OPTION) {
                             resultCode.setText(null);
                             hxOverride=false;
                             return;
@@ -1017,8 +1025,8 @@ public class ResultForm extends javax.swing.JFrame
             updateNumResults();
             resultCode.setText(null);
 		}
-		else if (event.getKeyCode()==event.VK_DELETE) {
-            String nextCode=(String)resultCode.getText();	
+		else if (event.getKeyCode()==KeyEvent.VK_DELETE) {
+            String nextCode=resultCode.getText();	
             numSCR=rData.removeSCR(nextCode,numSCR);
             removeBlankRows();
             resultCode.setText(null);
@@ -1085,16 +1093,16 @@ public class ResultForm extends javax.swing.JFrame
 	{
 		int key=event.getKeyCode();
 		switch (key) {
-		    case event.VK_F1:
+		    case KeyEvent.VK_F1:
 		        if (fKeys.isOn(fKeys.F1)) queryActions();
 		        break;
-		    case event.VK_F2:
+		    case KeyEvent.VK_F2:
 		        if (fKeys.isOn(fKeys.F2)) addActions();
 		        break;
-		    case event.VK_F3:
+		    case KeyEvent.VK_F3:
 		        if (fKeys.isOn(fKeys.F3)) updateActions();
 		        break;
-		    case event.VK_F4:
+		    case KeyEvent.VK_F4:
                 if (currMode==Lab.IDLE) {
 		            Vector v = new Vector();
                     setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
@@ -1112,10 +1120,10 @@ public class ResultForm extends javax.swing.JFrame
 		            else Utils.createErrMsg("No Pending Labs");
                 }
                 break;
-		    case event.VK_F5:
+		    case KeyEvent.VK_F5:
 		        if (fKeys.isOn(fKeys.F5)) updatePathHolds();
 		        break;
-		    case event.VK_F8:
+		    case KeyEvent.VK_F8:
 		        if (fKeys.isOn(fKeys.F8)) {
 		            if (resCytoTech.hasFocus()) {
 		                String buf[] = new String [MAX_TECHS];
@@ -1221,10 +1229,10 @@ public class ResultForm extends javax.swing.JFrame
 		            }
 		        }
 		        break;
-		    case event.VK_F9:
+		    case KeyEvent.VK_F9:
 		        closingActions();
 		        break;
-		    case event.VK_F6:
+		    case KeyEvent.VK_F6:
 		        if (fKeys.isOn(fKeys.F6)) {
 		            if (event.isShiftDown()) {
 		                removeQC();
@@ -1233,7 +1241,7 @@ public class ResultForm extends javax.swing.JFrame
                     qualityControl();
                 }
 		        break;
-		    case event.VK_F7:
+		    case KeyEvent.VK_F7:
 		        if (fKeys.isOn(fKeys.F7)) {
 		            if (event.isShiftDown()) {
 		                removePathologist();
@@ -1242,32 +1250,32 @@ public class ResultForm extends javax.swing.JFrame
                     pathologistControl();
                 }
 		        break;
-		    case event.VK_F10:
+		    case KeyEvent.VK_F10:
 		        if (currMode!=Lab.ADD) printHistory(); 
 		        break;
-		    case event.VK_F11:
+		    case KeyEvent.VK_F11:
 		        commentEntry();
 		        break;
-		    case event.VK_F12:
+		    case KeyEvent.VK_F12:
 		        if (fKeys.isOn(fKeys.F12)) finalActions();
 		        break;
-            case event.VK_ESCAPE:
+            case KeyEvent.VK_ESCAPE:
                 completedFlag=false;
                 ctFlag=false;
                 resetResultForm();
                 break;
-            case event.VK_INSERT:
+            case KeyEvent.VK_INSERT:
                 displayComments();
                 break;
-		    case event.VK_DOWN:
+		    case KeyEvent.VK_DOWN:
 		        if (currMode!=Lab.IDLE && buttonMode==Lab.IDLE)
 		            incrementResult();
                 break;
-		    case event.VK_UP:
+		    case KeyEvent.VK_UP:
 		        if (currMode!=Lab.IDLE && buttonMode==Lab.IDLE) 
 		            decrementResult();
                 break;
-            case event.VK_CONTROL:
+            case KeyEvent.VK_CONTROL:
                 ((JTextField)getFocusOwner()).setText(null);
                 break;
 		}
@@ -1386,35 +1394,35 @@ public class ResultForm extends javax.swing.JFrame
     
 	void resLabNumber_keyPressed(java.awt.event.KeyEvent event)
 	{
-	    if (event.getKeyCode()==event.VK_ENTER) {
+	    if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 	        if (currMode==Lab.ADD) {
 	            setMsgLabel(" ");
-	            resultRec.lab_number=(int)Integer.parseInt(resLabNumber.getText());
+	            resultRec.lab_number=Integer.parseInt(resLabNumber.getText());
                 boolean result=resDbOps.query(resultRec.lab_number);
                 if (result) {
                     if (resultRec.finished==(-1)) {
-                        Utils.createErrMsg("Lab #"+(String)resLabNumber.getText()+
+                        Utils.createErrMsg("Lab #"+resLabNumber.getText()+
                             " was an EXPIRED specimen - cannot add results.");
                         resetResultForm();                            
                         addActions();
                     }
                     if (resultRec.preparation==Lab.SURGICAL) {
                         Utils.createErrMsg("Lab #"+
-                            (String)resLabNumber.getText()+
+                            resLabNumber.getText()+
                             " is a tissue biopsy");
                         resetResultForm();
                         addActions();
                     }
                     else if (resultRec.finished>0) {
                         Utils.createErrMsg("Results for Lab #"+
-                            (String)resLabNumber.getText()+
+                            resLabNumber.getText()+
                             " have already been added");
                         resetResultForm();
                         addActions();
                     }
                     else if (Utils.isNull(resultRec.receive_date)) {
                         Utils.createErrMsg("No Receive Date for Lab #"+
-                            (String)resLabNumber.getText());
+                            resLabNumber.getText());
                         resetResultForm();
                         addActions();
                     }
@@ -1455,7 +1463,7 @@ public class ResultForm extends javax.swing.JFrame
 
 	void resCompleted_keyPressed(java.awt.event.KeyEvent event)
 	{
-	    if (event.getKeyCode()==event.VK_ENTER) {
+	    if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 	        if (!Utils.requiredField(resCompleted,"Date Completed")) 
 	            return;
 	        if (!Utils.dateVerify(resCompleted))
@@ -1466,7 +1474,7 @@ public class ResultForm extends javax.swing.JFrame
 	            return;
 	        }
 	        if (Utils.beforeDate(resCompleted.getText(),dateWindow)) {
-	            if (displayDatePopUp(resCompleted.getText())==hxPopUp.NO_OPTION) {
+	            if (displayDatePopUp(resCompleted.getText())==JOptionPane.NO_OPTION) {
 	                resCompleted.setText(null);
 	                return;
 	            }
@@ -1483,7 +1491,7 @@ public class ResultForm extends javax.swing.JFrame
 
 	void resCytoTech_keyPressed(java.awt.event.KeyEvent event)
 	{
-	    if (event.getKeyCode()==event.VK_ENTER) {
+	    if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 	        if (!Utils.requiredField(resCytoTech,"Cytotech")) 
 	            return;
 	        if (!cytoTechExists(resCytoTech.getText()))
@@ -1500,7 +1508,7 @@ public class ResultForm extends javax.swing.JFrame
 
 	void resPathologist_keyPressed(java.awt.event.KeyEvent event)
 	{
-	    if (event.getKeyCode()==event.VK_ENTER) {
+	    if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 	        if (!Utils.isNull(resPathologist.getText()) && 
 	            !pathExists(resPathologist.getText()))
 	            return;
@@ -1582,7 +1590,7 @@ System.out.println("one of the codes exists");
 	    else if (currMode==Lab.QUERY) {
             boolean rv = Utils.requiredField(resLabNumber,"Lab Number");	            
             if (rv) {
-	            int labNum=(int)Integer.parseInt(resLabNumber.getText());
+	            int labNum=Integer.parseInt(resLabNumber.getText());
 	            resultRec.lab_number=labNum;
 	            rv=resDbOps.query(labNum);
 	            if (rv) {
@@ -2050,13 +2058,13 @@ System.out.println("one of the codes exists");
 
 	void qcResultCode_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if (event.getKeyCode()==event.VK_ENTER) {
+		if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 		    if (Utils.isNull(qcResultCode.getText())) {
 		        qcResultCode.transferFocus();
 		        return;
 		    }
 		    if (Utils.length(qcResultCode.getText())<1) return;
-            String nextCode=(String)qcResultCode.getText();		    
+            String nextCode=qcResultCode.getText();		    
             if (rData.resultEntered(nextCode,1)) {}
             else {
                 boolean addCode = resultCodeExists(nextCode);
@@ -2065,7 +2073,7 @@ System.out.println("one of the codes exists");
                     || !Utils.isNull(resultRec.LMP))
                     && hxOverride) {
                         //Utils.createRedErrMsg("   ");
-                        if (displayHxPopUp()!=hxPopUp.YES_OPTION) {
+                        if (displayHxPopUp()!=JOptionPane.YES_OPTION) {
                             qcResultCode.setText(null);
                             hxOverride=false;
                             return;
@@ -2106,8 +2114,8 @@ System.out.println("one of the codes exists");
             updateNumResults();
             qcResultCode.setText(null);
 		}
-		else if (event.getKeyCode()==event.VK_DELETE) {
-            String nextCode=(String)qcResultCode.getText();		
+		else if (event.getKeyCode()==KeyEvent.VK_DELETE) {
+            String nextCode=qcResultCode.getText();		
             if (Utils.isNull(nextCode)) 
                 removeQC();
             else {
@@ -2120,7 +2128,7 @@ System.out.println("one of the codes exists");
                 updateNumResults();                
             }
 		}
-        else if (event.getKeyCode()==event.VK_HOME) 
+        else if (event.getKeyCode()==KeyEvent.VK_HOME) 
             copyScreeningResults();
 		
 	}
@@ -2133,7 +2141,7 @@ System.out.println("one of the codes exists");
 
 	void qcCompleted_keyPressed(java.awt.event.KeyEvent event)
 	{
-	    if (event.getKeyCode()==event.VK_ENTER) {
+	    if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 	        if (!Utils.requiredField(qcCompleted,"Date Completed")) 
 	            return;
 	        if (!Utils.dateVerify(qcCompleted))
@@ -2144,7 +2152,7 @@ System.out.println("one of the codes exists");
 	            return;
 	        }
 	        if (Utils.beforeDate(qcCompleted.getText(),dateWindow)) {
-	            if (displayDatePopUp(qcCompleted.getText())==hxPopUp.NO_OPTION) {
+	            if (displayDatePopUp(qcCompleted.getText())==JOptionPane.NO_OPTION) {
 	                qcCompleted.setText(null);
 	                return;
 	            }
@@ -2161,7 +2169,7 @@ System.out.println("one of the codes exists");
 
 	void qcCytoTech_keyPressed(java.awt.event.KeyEvent event)
 	{
-	    if (event.getKeyCode()==event.VK_ENTER) {
+	    if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 	        if (!Utils.requiredField(qcCytoTech,"Cytotech")) 
 	            return;
 	        if (qcCytoTech.getText().equals(resCytoTech.getText())) {
@@ -2189,7 +2197,7 @@ System.out.println("one of the codes exists");
 
 	void pathCompleted_keyPressed(java.awt.event.KeyEvent event)
 	{
-	    if (event.getKeyCode()==event.VK_ENTER) {
+	    if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 	        if (!Utils.requiredField(pathCompleted,"Date Completed")) 
 	            return;
 	        if (!Utils.dateVerify(pathCompleted))
@@ -2200,7 +2208,7 @@ System.out.println("one of the codes exists");
 	            return;
 	        }
 	        if (Utils.beforeDate(pathCompleted.getText(),dateWindow)) {
-	            if (displayDatePopUp(pathCompleted.getText())==hxPopUp.NO_OPTION) {
+	            if (displayDatePopUp(pathCompleted.getText())==JOptionPane.NO_OPTION) {
 	                pathCompleted.setText(null);
 	                return;
 	            }
@@ -2217,13 +2225,13 @@ System.out.println("one of the codes exists");
 
 	void pathCode_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if (event.getKeyCode()==event.VK_ENTER) {
+		if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 		    if (Utils.isNull(pathCode.getText())) {
 		        pathCode.transferFocus();
 		        return;
 		    }
 		    if (Utils.length(pathCode.getText())<1) return;
-            String nextCode=(String)pathCode.getText();		    
+            String nextCode=pathCode.getText();		    
             if (rData.resultEntered(nextCode,2)) {}
             else {
                 boolean addCode = resultCodeExists(nextCode);
@@ -2232,7 +2240,7 @@ System.out.println("one of the codes exists");
                     || !Utils.isNull(resultRec.LMP))
                     && hxOverride) {
                         //Utils.createRedErrMsg("   ");
-                        if (displayHxPopUp()!=hxPopUp.YES_OPTION) {
+                        if (displayHxPopUp()!=JOptionPane.YES_OPTION) {
                             pathCode.setText(null);
                             hxOverride=false;
                             return;
@@ -2273,8 +2281,8 @@ System.out.println("one of the codes exists");
             updateNumResults();
             pathCode.setText(null);
 		}
-		else if (event.getKeyCode()==event.VK_DELETE) {
-            String nextCode=(String)pathCode.getText();		 
+		else if (event.getKeyCode()==KeyEvent.VK_DELETE) {
+            String nextCode=pathCode.getText();		 
             if (Utils.isNull(nextCode))
                 removePathologist();
             else {
@@ -2287,13 +2295,13 @@ System.out.println("one of the codes exists");
                 updateNumResults();                
             }
 		}
-        else if (event.getKeyCode()==event.VK_HOME) 
+        else if (event.getKeyCode()==KeyEvent.VK_HOME) 
             copyScreeningResults();
 	}
 	
 	void resRemarks_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if ((event.getKeyCode()==event.VK_ENTER)
+		if ((event.getKeyCode()==KeyEvent.VK_ENTER)
 		    || (event.getKeyChar()=='\r'))
 		{
 		    setMsgLabel(" ");
@@ -2305,6 +2313,7 @@ System.out.println("one of the codes exists");
 
 	class SymAction implements java.awt.event.ActionListener
 	{
+		@Override
 		public void actionPerformed(java.awt.event.ActionEvent event)
 		{
 			Object object = event.getSource();
@@ -2329,6 +2338,7 @@ System.out.println("one of the codes exists");
 
 	class SymFocus extends java.awt.event.FocusAdapter
 	{
+		@Override
 		public void focusLost(java.awt.event.FocusEvent event)
 		{
 			Object object = event.getSource();
@@ -2344,6 +2354,7 @@ System.out.println("one of the codes exists");
 				resCytoTech_focusLost(event);
 		}
 
+		@Override
 		public void focusGained(java.awt.event.FocusEvent event)
 		{
 			Object object = event.getSource();
@@ -2419,7 +2430,7 @@ System.out.println("one of the codes exists");
 
 	void resSuper_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if (event.getKeyCode()==event.VK_ENTER) {
+		if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 		    if (Utils.isNull(resSuper.getText())) resSuper.setText("0");
 		    event.consume();
 		    resSuper.transferFocus();
@@ -2434,7 +2445,7 @@ System.out.println("one of the codes exists");
 
 	void resInter_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if (event.getKeyCode()==event.VK_ENTER) {
+		if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 		    if (Utils.isNull(resInter.getText())) resInter.setText("0");
 		    event.consume();
 		    resInter.transferFocus();
@@ -2449,7 +2460,7 @@ System.out.println("one of the codes exists");
 
 	void resPara_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if (event.getKeyCode()==event.VK_ENTER) {
+		if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 		    if (Utils.isNull(resPara.getText())) resPara.setText("0");
 		    event.consume();
 		    int MI_sum = addMI();
@@ -2543,9 +2554,8 @@ System.out.println("one of the codes exists");
 	
 	void setMsgLabel(String s)
 	{
-		try { msgLabel.setText(s); }
-		catch(java.beans.PropertyVetoException e) { 
-		    log.write("ERROR: Setting Message"); }
+		msgLabel.setText(s);
+
 	}
 	
 	String getCodeDescription(String rCode)
@@ -2750,14 +2760,14 @@ System.out.println("one of the codes exists");
 
 	void noButton_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if (event.getKeyCode()==event.VK_DOWN) {
+		if (event.getKeyCode()==KeyEvent.VK_DOWN) {
             noButton.setFont(new Font("Dialog", Font.PLAIN, 11));
             noButton.setForeground(Utils.BUTTON_FOREGROUND);
             yesButton.setFont(new Font("Dialog", Font.BOLD, 11));
             yesButton.setForeground(Utils.LABEL_FOREGROUND);
 		    yesButton.requestFocus();
 		}
-		else if (event.getKeyCode()==event.VK_UP) {
+		else if (event.getKeyCode()==KeyEvent.VK_UP) {
             noButton.setFont(new Font("Dialog", Font.PLAIN, 11));
             noButton.setForeground(Utils.BUTTON_FOREGROUND);
             cancelButton.setFont(new Font("Dialog", Font.BOLD, 11));
@@ -2768,14 +2778,14 @@ System.out.println("one of the codes exists");
 
 	void yesButton_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if (event.getKeyCode()==event.VK_DOWN) {
+		if (event.getKeyCode()==KeyEvent.VK_DOWN) {
             yesButton.setFont(new Font("Dialog", Font.PLAIN, 11));
             yesButton.setForeground(Utils.BUTTON_FOREGROUND);
             cancelButton.setFont(new Font("Dialog", Font.BOLD, 11));
             cancelButton.setForeground(Utils.LABEL_FOREGROUND);
 		    cancelButton.requestFocus();
 		}
-		else if (event.getKeyCode()==event.VK_UP) {
+		else if (event.getKeyCode()==KeyEvent.VK_UP) {
             yesButton.setFont(new Font("Dialog", Font.PLAIN, 11));
             yesButton.setForeground(Utils.BUTTON_FOREGROUND);
             noButton.setFont(new Font("Dialog", Font.BOLD, 11));
@@ -2786,14 +2796,14 @@ System.out.println("one of the codes exists");
 
 	void cancelButton_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if (event.getKeyCode()==event.VK_DOWN) {
+		if (event.getKeyCode()==KeyEvent.VK_DOWN) {
             cancelButton.setFont(new Font("Dialog", Font.PLAIN, 11));
             cancelButton.setForeground(Utils.BUTTON_FOREGROUND);
             noButton.setFont(new Font("Dialog", Font.BOLD, 11));
             noButton.setForeground(Utils.LABEL_FOREGROUND);
 		    noButton.requestFocus();
 		}
-		else if (event.getKeyCode()==event.VK_UP) {
+		else if (event.getKeyCode()==KeyEvent.VK_UP) {
             cancelButton.setFont(new Font("Dialog", Font.PLAIN, 11));
             cancelButton.setForeground(Utils.BUTTON_FOREGROUND);
             yesButton.setFont(new Font("Dialog", Font.BOLD, 11));
@@ -2887,6 +2897,7 @@ System.out.println("one of the codes exists");
 
 	class SymWindow extends java.awt.event.WindowAdapter
 	{
+		@Override
 		public void windowClosed(java.awt.event.WindowEvent event)
 		{
 			Object object = event.getSource();
@@ -2935,9 +2946,9 @@ System.out.println("one of the codes exists");
 	    }
 	    Utils.createRedErrMsg(titleMsg);
 		Object[] options = {"Yes","No"};
-		int rv = hxPopUp.showOptionDialog(this,titleMsg+"\n"+infoMsg+
+		int rv = JOptionPane.showOptionDialog(this,titleMsg+"\n"+infoMsg+
 		    "\nOK to use this code?",
-		    "Please Confirm",hxPopUp.YES_NO_OPTION,hxPopUp.QUESTION_MESSAGE,
+		    "Please Confirm",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,
 		    null,options,options[1]);
 	    return (rv);
 	}
@@ -2948,9 +2959,9 @@ System.out.println("one of the codes exists");
 	    String infoMsg = null;
 	    infoMsg="IS EARLIER THAN 30 DAYS";
 		Object[] options = {"Yes","No"};
-		int rv = hxPopUp.showOptionDialog(this,testDate+"\n"+infoMsg+
+		int rv = JOptionPane.showOptionDialog(this,testDate+"\n"+infoMsg+
 		    "\nOK to use this date?",
-		    "Please Confirm",hxPopUp.YES_NO_OPTION,hxPopUp.QUESTION_MESSAGE,
+		    "Please Confirm",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,
 		    null,options,options[1]);
 	    return (rv);
 	}
@@ -3158,7 +3169,8 @@ class ResultTableData extends AbstractTableModel
         return (codes.size());
     }
    
-    public void setValueAt(Object value, int row, int column) {
+    @Override
+	public void setValueAt(Object value, int row, int column) {
         ResultData cRow = (ResultData)rVect.elementAt(row);
         switch (column) {
             case 0: cRow.result_code=(String)value;break;
@@ -3169,7 +3181,8 @@ class ResultTableData extends AbstractTableModel
         rVect.setElementAt(cRow,row);
     }
 
-    public Object getValueAt(int row, int column) { 
+    @Override
+	public Object getValueAt(int row, int column) { 
         if (row<0 || row>=getRowCount()) return "";
         ResultData cRow = (ResultData)rVect.elementAt(row);
         switch (column) {
@@ -3181,9 +3194,13 @@ class ResultTableData extends AbstractTableModel
         return "";
     }
     
-    public int getRowCount() { return rVect.size(); }
-    public int getColumnCount() { return columns.length; }
-    public boolean isCellEditable(int row, int column) { return (true); }
-    public String getColumnName(int column) { return columns[column].title; }
+    @Override
+	public int getRowCount() { return rVect.size(); }
+    @Override
+	public int getColumnCount() { return columns.length; }
+    @Override
+	public boolean isCellEditable(int row, int column) { return (true); }
+    @Override
+	public String getColumnName(int column) { return columns[column].title; }
     
 }

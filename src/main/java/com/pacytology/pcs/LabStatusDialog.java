@@ -1,10 +1,16 @@
+package com.pacytology.pcs;
+
 /*
 		A basic implementation of the JDialog class.
 */
 
-import java.awt.*;
-import javax.swing.*;
-import java.sql.*;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.sql.CallableStatement;
+import java.sql.SQLException;
 
 public class LabStatusDialog extends javax.swing.JDialog
 {
@@ -251,8 +257,8 @@ public class LabStatusDialog extends javax.swing.JDialog
 	{
 		int key = event.getKeyCode();
 		switch (key) {
-		    case event.VK_ESCAPE: resetForm(); break;
-		    case event.VK_F9: closingActions(); break;
+		    case KeyEvent.VK_ESCAPE: resetForm(); break;
+		    case KeyEvent.VK_F9: closingActions(); break;
 		}
 	}
 	
