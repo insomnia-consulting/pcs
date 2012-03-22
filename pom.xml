@@ -13,7 +13,15 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<dependencies>
 
+		<dependency>
+			<groupId>oracle</groupId>
+			<artifactId>oracle</artifactId>
+			<version>1.2</version>
+
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
