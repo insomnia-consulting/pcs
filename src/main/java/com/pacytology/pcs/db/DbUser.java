@@ -43,7 +43,7 @@ public class DbUser extends JDialog
     public boolean pwdMode=false;
     private int dailyJobStatus;
     
-    public PCSLabEntry parent;
+	public PCSLabEntry parent;
 	
 	public DbUser()
 	{
