@@ -16,12 +16,17 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 import javax.swing.*;
 import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.JTextComponent;
+
 import java.util.Date;
 import java.io.*;
 import java.util.Properties;
@@ -89,6 +94,8 @@ public class LabForm extends javax.swing.JFrame
 	String defaultPrep = "C";
 	String defaultPrepLbl = "CONVENTIONAL";
 	boolean prepFlag = false;
+	SymKey aSymKey = new SymKey();
+	SymFocus aSymFocus = new SymFocus();
 
 	public LabForm()
 	{
@@ -754,8 +761,9 @@ public class LabForm extends javax.swing.JFrame
 	
 		//{{REGISTER_LISTENERS
 		SymAction lSymAction = new SymAction();
-		SymKey aSymKey = new SymKey();
+
 		labDetCodeEntry.addKeyListener(aSymKey);
+		
 		labRecDetInfo.addKeyListener(aSymKey);
 		labPrevLabNum.addKeyListener(aSymKey);
 		this.addKeyListener(aSymKey);
@@ -772,7 +780,7 @@ public class LabForm extends javax.swing.JFrame
 		labClientNotes.addKeyListener(aSymKey);
 		labDateCollected.addKeyListener(aSymKey);
 		labOtherInsurance.addKeyListener(aSymKey);
-		SymFocus aSymFocus = new SymFocus();
+
 		labBillingChoice.addKeyListener(aSymKey);
 		labDiagCode2.addKeyListener(aSymKey);
 		labDiagCode3.addKeyListener(aSymKey);
@@ -805,6 +813,13 @@ public class LabForm extends javax.swing.JFrame
 		labRelCode.addFocusListener(aSymFocus);
 		patRace.addKeyListener(aSymKey);
 		patRace.addFocusListener(aSymFocus);
+        fKeys.off();
+        fKeys.keyOn(fKeys.F1);
+        fKeys.keyOn(fKeys.F2);
+        fKeys.keyOn(fKeys.F9);
+        fKeys.keyOn(fKeys.F5);
+        
+
 		//}}
 		
 		/*
@@ -817,27 +832,75 @@ public class LabForm extends javax.swing.JFrame
         */
 
         // Add focus listener to all text fields
-		for (int i=0; i<this.getContentPane().getComponentCount(); i++) {
-		    Component c = this.getContentPane().getComponent(i);
-		    String s = c.getClass().getName();
-		    if (s.equals("javax.swing.JTextField")
-		    || s.equals("javax.swing.JTextArea")) {
-		        c.addFocusListener(aSymFocus);
-		    }
-		    else if (s.equals("javax.swing.JPanel")) {
-		        for (int j=0; j<((Container)c).getComponentCount(); j++) {
-		            Component d = ((Container)c).getComponent(j);
-		            String t = d.getClass().getName();
-		            if (t.equals("javax.swing.JTextField")
-		            || t.equals("javax.swing.JTextArea")) {
-		                d.addFocusListener(aSymFocus);
-		            }
-		        }
-		    }
+		for (Component c: this.getContentPane().getComponents()) {
+			setListener(c);
+			c.requestFocusInWindow();
 		}
+		labDetCodeEntry.requestFocusInWindow();
+		
+		
+		setupKeyPressMap();
 		
 	}
+	private void setupKeyPressMap() {
+		JRootPane rp = getRootPane();
+		KeyStroke f2 = KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false);
+		KeyStroke f3 = KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false);
+		
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f2, "F2");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f3, "F3");
+		rp.getActionMap().put("F2", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F2)) {
+                    if (!prepFlag) setPreparation();
+                    if (prepFlag) addActions();
+                }
+                else Utils.createErrMsg("Add Option Not Available");
 
+			}
+		});
+		rp.getActionMap().put("F3", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+                if (fKeys.isOn(fKeys.F3)) {
+                    if (labRec.billing.origin==2) {
+                        String msg = null;
+                        if (labRec.billing.in_queue==1)
+                            msg="Lab has a "+labRec.billing.letter_type+
+                                " letter not printed and created in Billing. "+
+                                "Lab must be updated there.";
+                        else if (labRec.billing.in_queue==0)
+                            msg="Lab has a "+labRec.billing.letter_type+
+                                " letter pending created in Billing. "+
+                                "Lab must be updated there.";
+                        Utils.createErrMsg(msg);
+                    }
+                    else {
+                    	
+                        if ((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0) updateHPV();
+                        else updateActions();
+                    }
+                }
+                else Utils.createErrMsg("Update Option Not Available");
+
+                }
+		});
+	}
+	private void setListener(Component c) {
+		if (c instanceof Container) for (Component d : ((Container)c).getComponents()) {
+			setListener(d);
+		}
+		try {
+			JTextComponent jc = (JTextComponent)c;
+
+			jc.addFocusListener(aSymFocus);
+			
+		} catch (Exception e) {
+			
+		}
+		c.addKeyListener(aSymKey);
+
+	}
+	
 	public LabForm(String sTitle)
 	{
 		this();
@@ -1311,6 +1374,8 @@ public class LabForm extends javax.swing.JFrame
 			else if (object == patRace)
 				patRace_keyPressed(event);
 		}
+
+		
 	}
 
 	void labDetCodeEntry_keyPressed(java.awt.event.KeyEvent event)
@@ -2663,33 +2728,8 @@ public class LabForm extends javax.swing.JFrame
 		        if (fKeys.isOn(fKeys.F1)) queryActions();
 		        else Utils.createErrMsg("Query Option Not Available");
                 break;
-            case KeyEvent.VK_F2:                
-                if (fKeys.isOn(fKeys.F2)) {
-                    if (!prepFlag) setPreparation();
-                    if (prepFlag) addActions();
-                }
-                else Utils.createErrMsg("Add Option Not Available");
-                break;
             case KeyEvent.VK_F3:                
-                if (fKeys.isOn(fKeys.F3)) {
-                    if (labRec.billing.origin==2) {
-                        String msg = null;
-                        if (labRec.billing.in_queue==1)
-                            msg="Lab has a "+labRec.billing.letter_type+
-                                " letter not printed and created in Billing. "+
-                                "Lab must be updated there.";
-                        else if (labRec.billing.in_queue==0)
-                            msg="Lab has a "+labRec.billing.letter_type+
-                                " letter pending created in Billing. "+
-                                "Lab must be updated there.";
-                        Utils.createErrMsg(msg);
-                    }
-                    else {
-                        if (event.isShiftDown()) updateHPV();
-                        else updateActions();
-                    }
-                }
-                else Utils.createErrMsg("Update Option Not Available");
+
                 break;
             case KeyEvent.VK_F4:                
                 if (currMode==Lab.IDLE) { 
