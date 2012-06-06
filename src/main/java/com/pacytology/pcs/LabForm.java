@@ -15,21 +15,35 @@ package com.pacytology.pcs;
     Date/Staff      Description:
 */
 
-import java.awt.*;
-
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.PrintJob;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.sql.*;
-import javax.swing.*;
-import com.pacytology.pcs.ui.Square;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
 import java.util.Vector;
-import javax.swing.border.TitledBorder;
-import javax.swing.text.DefaultEditorKit;
+
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.text.JTextComponent;
 
-import java.util.Date;
-import java.io.*;
-import java.util.Properties;
+import com.pacytology.pcs.ui.Square;
 
 public class LabForm extends javax.swing.JFrame
 {
@@ -569,18 +583,21 @@ public class LabForm extends javax.swing.JFrame
 		getContentPane().add(functionKeyPanel);
 		functionKeyPanel.setBounds(10,12,60,540);
 		functionKeyPanel.add(F1sq);
+		
 		F1sq.setBounds(20,17,20,20);
 		F1lbl.setRequestFocusEnabled(false);
 		F1lbl.setText("F1");
 		functionKeyPanel.add(F1lbl);
 		F1lbl.setForeground(java.awt.Color.black);
-		F1lbl.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		F1lbl.setFont(new Font("SansSerif", Font.PLAIN, 8));
 		F1lbl.setBounds(24,20,20,12);
 		F1action.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 		F1action.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		F1action.setText("Query");
+		
 		functionKeyPanel.add(F1action);
-		F1action.setForeground(java.awt.Color.black);
+		
+		F1action.setForeground(java.awt.Color.BLACK);
 		F1action.setBounds(5,37,50,16);
 		functionKeyPanel.add(F2sq);
 		F2sq.setBounds(20,70,20,20);
@@ -673,7 +690,7 @@ public class LabForm extends javax.swing.JFrame
 		functionKeyPanel.add(F10lbl);
 		F10lbl.setForeground(java.awt.Color.black);
 		F10lbl.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		F10lbl.setBounds(21,443,20,12);
+		F10lbl.setBounds(5,443,30,12);
 		F10action.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 		F10action.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		F10action.setText("Section");
@@ -692,7 +709,7 @@ public class LabForm extends javax.swing.JFrame
 		F12action.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		F12action.setText("Submit");
 		functionKeyPanel.add(F12action);
-		F12action.setForeground(java.awt.Color.black);
+		F12action.setForeground(java.awt.Color.BLACK);
 		F12action.setBounds(5,513,50,16);
 		functionKeyPanel.add(F7sq);
 		F7sq.setBounds(20,335,20,20);
@@ -844,16 +861,48 @@ public class LabForm extends javax.swing.JFrame
 	}
 	private void setupKeyPressMap() {
 		JRootPane rp = getRootPane();
+		KeyStroke f1 = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false);
 		KeyStroke f2 = KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false);
 		KeyStroke f3 = KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false);
+		KeyStroke f4 = KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false);
+		KeyStroke f5 = KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false);
+		KeyStroke f6 = KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false);
+		KeyStroke f7 = KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false);
+		KeyStroke f8 = KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false);
+		KeyStroke f9 = KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false);
+		KeyStroke f10 = KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0, false);
+		KeyStroke f11 = KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0, false);
+		KeyStroke f12 = KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0, false);		
 		
+		
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f1, "F1");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f2, "F2");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f3, "F3");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f4, "F4");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f5, "F5");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f6, "F6");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f7, "F7");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f8, "F8");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f9, "F9");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f10, "F10");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f11, "F11");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f12, "F12");
+		rp.getActionMap().put("F1", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F1)) queryActions();
+		        else Utils.createErrMsg("Query Option Not Available");
+			}
+		});
 		rp.getActionMap().put("F2", new AbstractAction() { 
 			public void actionPerformed(ActionEvent e) {
 				if (fKeys.isOn(fKeys.F2)) {
-                    if (!prepFlag) setPreparation();
-                    if (prepFlag) addActions();
+                    if (prepFlag) {
+                    	addActions();
+                    	
+                    }
+                    else {
+                    	setPreparation();
+                    }
                 }
                 else Utils.createErrMsg("Add Option Not Available");
 
@@ -883,6 +932,257 @@ public class LabForm extends javax.swing.JFrame
                 else Utils.createErrMsg("Update Option Not Available");
 
                 }
+		});
+
+		rp.getActionMap().put("F4", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+		                if (currMode==Lab.IDLE) { 
+	                    if (faxLetterQueue.size()>0) { 
+	                        currMode=Lab.QUEUE;
+	                        labNumber.setEnabled(true);
+	                        labNumber.requestFocus();
+	                        displayFaxQueue();
+	                    }
+	                    else Utils.createErrMsg("No Fax Letters in Queue");                        
+	                }
+	                else Utils.createErrMsg("Queue Option Not Available");
+			}
+		});
+		rp.getActionMap().put("F5", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				if ((e.getModifiers() & ActionEvent.ALT_MASK) != 0) {
+                    if (currentSection==1) invokeDoctorForm();
+                    else Utils.createErrMsg("Doctor Form Not Available");
+                }
+                else if (fKeys.isOn(fKeys.F5)) {
+                    if (currentSection==1 && currMode==Lab.ADD) invokePatientForm();
+                    else Utils.createErrMsg("Patient Form Not Available");
+                }
+			}
+		});
+		rp.getActionMap().put("F6", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				if (fKeys.isOn(fKeys.F6)) {
+                    if ((labOtherInsurance.hasFocus())||
+                        (labPayerID.hasFocus())||
+                        (labPCSID.hasFocus()) )
+                    {
+                        (new CarrierForm(LabForm.this)).setVisible(true);			
+                    }
+                }
+                else Utils.createErrMsg("Payer Form Not Available");
+			}
+		});
+		rp.getActionMap().put("F7", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				if (currMode==Lab.IDLE && !Utils.isNull(labNumber.getText())) { 
+                    String bChoice = labBillingChoice.getText();
+                    /*
+                        create a fax letter with blanks no matter
+                        what the billing is and put in info request
+                        letter queue
+                    */
+                    if ((e.getModifiers() & ActionEvent.ALT_MASK) != 0) labOps.blankLetter();
+                    /*
+                        check for missing information; if exists missing
+                        information put in info request letter queue;
+                        must be applicable billing choice
+                    */
+                    else if ((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0) {
+                        if (bChoice.equals("MED") || bChoice.equals("BS") ||
+                        bChoice.equals("DB") || bChoice.equals("OI"))
+                        {
+                            labOps.checkBilling();
+                        }
+                        else Utils.createErrMsg("Missing Info does not apply to code "+bChoice);
+                    }
+                    /*
+                        create medicare missing diagnosis code letter as
+                        long as billing choice is medicare; does so regardless
+                        of selected medicare type
+                    */    
+                    else {
+                        if (bChoice.equals("MED")) labOps.diagnosisLetter();
+                        else Utils.createErrMsg("Missing Diagnosis Codes letter for Medicare only");
+                    }
+                }
+                else Utils.createErrMsg("Create Letter Option Not Available");        
+			}
+		});
+		rp.getActionMap().put("F8", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				if (fKeys.isOn(fKeys.F8)) {
+                    if (labDiagCode.hasFocus())  {
+                        String[] buf = new String[MAX_DIAG_CODES];
+                        for (int i=0;i<MAX_DIAG_CODES;i++)
+                            buf[i]=labDiagnosisCodes[i].formattedString;
+                        (new PickList("Diagnosis Codes",200,10,376,
+                              MAX_DIAG_CODES,buf,diagnosisCodeList,
+                              labDiagCode)).setVisible(true);
+                    }                                              
+                    else if (labDiagCode2.hasFocus())  {
+                        String[] buf = new String[MAX_DIAG_CODES];
+                        for (int i=0;i<MAX_DIAG_CODES;i++)
+                            buf[i]=labDiagnosisCodes[i].formattedString;
+                        (new PickList("Diagnosis Codes",200,10,376,
+                              MAX_DIAG_CODES,buf,diagnosisCodeList,
+                              labDiagCode2)).setVisible(true);
+                    }                                              
+                    else if (labDiagCode3.hasFocus())  {
+                        String[] buf = new String[MAX_DIAG_CODES];
+                        for (int i=0;i<MAX_DIAG_CODES;i++)
+                            buf[i]=labDiagnosisCodes[i].formattedString;
+                        (new PickList("Diagnosis Codes",200,10,376,
+                              MAX_DIAG_CODES,buf,diagnosisCodeList,
+                              labDiagCode3)).setVisible(true);
+                    }                                              
+                    else if (labDiagCode4.hasFocus())  {
+                        String[] buf = new String[MAX_DIAG_CODES];
+                        for (int i=0;i<MAX_DIAG_CODES;i++)
+                            buf[i]=labDiagnosisCodes[i].formattedString;
+                        (new PickList("Diagnosis Codes",200,10,376,
+                              MAX_DIAG_CODES,buf,diagnosisCodeList,
+                              labDiagCode4)).setVisible(true);
+                    }                             
+                    else if (labBillingChoice.hasFocus())  {
+                        String[] text = new String[dbLogin.billingCodeVect.size()];
+                        String[] codes = new String[dbLogin.billingCodeVect.size()];
+                        for (int i=0; i<dbLogin.billingCodeVect.size(); i++) {
+                            BillingCodeRec b = 
+                                (BillingCodeRec)dbLogin.billingCodeVect.elementAt(i);
+                            text[i]=Utils.rpad(b.choice_code,4)+b.description;
+                            codes[i]=b.choice_code;
+                        }
+                        (new PickList("Billing Codes",200,200,240,190,
+                               dbLogin.billingCodeVect.size(),text,codes,
+                               labBillingChoice)).setVisible(true);
+                    }
+                    else if (doctorText.hasFocus()) {
+                        displayDoctorList();
+                    }
+                    else if (labNumber.hasFocus()) {
+                        if (!Utils.isNull(labPatientNumber.getText())) {
+                            LabForm.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                            Vector resultList = new Vector();
+                            int patNum = Integer.parseInt(
+                                labPatientNumber.getText());
+                            labOps.queryPatientLabs(patNum,resultList);
+                            int listSize=resultList.size()+1;
+                            String[] labList = new String[listSize];
+                            labList[0]="LAB:        PR:  COLLECTED:  ENTERED:    STATE:";
+                            for (int i=1;i<listSize;i++) {
+                                labList[i]=(String)resultList.elementAt(i-1);
+                            }
+                            String plTitle="Labs for: "+labRec.pat.lname+", "+labRec.pat.fname;
+                            LabForm.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                            (new PickList(plTitle,300,80,364,200,
+                                listSize,labList)).setVisible(true);
+                        }
+                    }
+                }
+                else Utils.createErrMsg("F8 Key not valid in this section");   
+			}
+		});
+		rp.getActionMap().put("F9", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				closingActions();
+			}
+		});
+		rp.getActionMap().put("F10", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				if (currMode==Lab.ADD || currMode==Lab.UPDATE) fKeys.keyOn(fKeys.F10);
+                if (fKeys.isOn(fKeys.F10)) {
+                    if (labBillingChoice.hasFocus()) {
+                        if (Utils.isNull(labOtherInsurance.getText())) {
+                            Utils.createErrMsg("F10 Key not valid");
+                            return;
+                        }
+                    }
+                    gotoNextSection();
+                }
+                else Utils.createErrMsg("F10 Key not valid");      
+			}
+		});
+		rp.getActionMap().put("F11", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				if (((e.getModifiers() & ActionEvent.ALT_MASK) != 0) 
+						&& !Utils.isNull(labPatientNumber.getText())) {
+                    Vector vBuf = new Vector();
+                    for (int i=0; i<detailRec.length; i++) {
+                        if (detailRec[i].isSelected 
+                        && detailRec[i].additional_info.equals("Y")) {
+                            String buf = detailRec[i].description.trim()+": "+
+                                detailRec[i].textEntered.trim();
+                            if (buf.length()>60) {
+                                String buf2 = buf;
+                                int endNdx = 0;
+                                while (buf2.length()>60) {
+                                    for (int j=0;j<60;j++) {
+                                        if (buf2.charAt(j)==' ')
+                                            endNdx=j;
+                                    }
+                                    buf=buf2.substring(0,endNdx);
+                                    buf2=buf2.substring(endNdx).trim();
+                                    vBuf.addElement(buf);
+                                }
+                                if (!Utils.isNull(buf2)) {
+                                    vBuf.addElement(buf2);
+                                }
+                            }
+                            else vBuf.addElement(buf);
+                            vBuf.addElement("   ");
+                        }
+                    }
+                    if (vBuf.size()>0) {
+                        String[] sBuf = new String[vBuf.size()];
+                        for (int i=0;i<vBuf.size();i++)
+                            sBuf[i]=(String)vBuf.elementAt(i);
+                        (new PickList("Additional Detail Information",50,128,450,400,
+                            vBuf.size(),sBuf)).setVisible(true);
+                    }
+                }
+                else {
+	                for (int i=0;i<doctorVect.size();i++)  {
+	                    DoctorRec doctorRec = (DoctorRec)doctorVect.elementAt(i);
+	                    if (doctorRec.doctor==labRec.doctor && doctorRec.doctor>0)  {
+                            String buf[] = new String[9];
+                            if (Utils.isNull(doctorRec.lname)) doctorRec.lname="  ";
+                            if (Utils.isNull(doctorRec.fname)) doctorRec.fname="  ";
+                            if (Utils.isNull(doctorRec.upin)) doctorRec.upin="  ";
+                            if (Utils.isNull(doctorRec.license)) doctorRec.license="  ";
+                            if (Utils.isNull(doctorRec.bs_provider)) doctorRec.bs_provider="  ";
+                            if (Utils.isNull(doctorRec.alt_state)) doctorRec.alt_state="  ";
+                            if (Utils.isNull(doctorRec.alt_license)) doctorRec.alt_license="  ";
+                            buf[0]="DOCTOR INFORMATION: #"+doctorRec.doctor;
+                            buf[1]="-------------------------------------------------";
+                            buf[2]="LAST:         "+doctorRec.lname;
+                            buf[3]="FIRST:        "+Utils.isNull(doctorRec.fname," ");
+                            buf[4]="UPIN:         "+Utils.isNull(doctorRec.upin," ");
+                            buf[5]="LICENSE:      "+Utils.isNull(doctorRec.license," ");
+                            buf[6]="BLUE SHIELD:  "+Utils.isNull(doctorRec.bs_provider," ");
+                            buf[7]="ALT STATE:    "+Utils.isNull(doctorRec.alt_state," ");
+                            buf[8]="ALT LICENSE:  "+Utils.isNull(doctorRec.alt_license," ");
+                            (new PickList("Doctor Information",
+                                100,270,380,230,9,buf)).setVisible(true);
+                            break;
+                        }
+                    }
+                }            
+			}
+		});
+		rp.getActionMap().put("F12", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				if (!patientQuery) {
+                    if (!dbThreadRunning) { 
+                        finalActions();
+                    }
+                    else {
+                        log.write("Database is busy");
+                        Utils.createErrMsg("Database is busy ... please retry");
+                    }
+                }
+
+			}
 		});
 	}
 	private void setListener(Component c) {
@@ -2724,169 +3024,8 @@ public class LabForm extends javax.swing.JFrame
 	{
 	    int key = event.getKeyCode();
 	    switch (key) {
-	        case KeyEvent.VK_F1:
-		        if (fKeys.isOn(fKeys.F1)) queryActions();
-		        else Utils.createErrMsg("Query Option Not Available");
-                break;
-            case KeyEvent.VK_F3:                
-
-                break;
-            case KeyEvent.VK_F4:                
-                if (currMode==Lab.IDLE) { 
-                    if (faxLetterQueue.size()>0) { 
-                        currMode=Lab.QUEUE;
-                        labNumber.setEnabled(true);
-                        labNumber.requestFocus();
-                        displayFaxQueue();
-                    }
-                    else Utils.createErrMsg("No Fax Letters in Queue");                        
-                }
-                else Utils.createErrMsg("Queue Option Not Available");
-                break;
-            case KeyEvent.VK_F5:                
-                if (event.isAltDown()) {
-                    if (currentSection==1) invokeDoctorForm();
-                    else Utils.createErrMsg("Doctor Form Not Available");
-                }
-                else if (fKeys.isOn(fKeys.F5)) {
-                    if (currentSection==1 && currMode==Lab.ADD) invokePatientForm();
-                    else Utils.createErrMsg("Patient Form Not Available");
-                }
-                break;
-            case KeyEvent.VK_F6:                
-                if (fKeys.isOn(fKeys.F6)) {
-                    if ((labOtherInsurance.hasFocus())||
-                        (labPayerID.hasFocus())||
-                        (labPCSID.hasFocus()) )
-                    {
-                        (new CarrierForm(this)).setVisible(true);			
-                    }
-                }
-                else Utils.createErrMsg("Payer Form Not Available");
-                break;
-            case KeyEvent.VK_F7:                
-                if (currMode==Lab.IDLE && !Utils.isNull(labNumber.getText())) { 
-                    String bChoice = labBillingChoice.getText();
-                    /*
-                        create a fax letter with blanks no matter
-                        what the billing is and put in info request
-                        letter queue
-                    */
-                    if (event.isAltDown()) labOps.blankLetter();
-                    /*
-                        check for missing information; if exists missing
-                        information put in info request letter queue;
-                        must be applicable billing choice
-                    */
-                    else if (event.isShiftDown()) {
-                        if (bChoice.equals("MED") || bChoice.equals("BS") ||
-                        bChoice.equals("DB") || bChoice.equals("OI"))
-                        {
-                            labOps.checkBilling();
-                        }
-                        else Utils.createErrMsg("Missing Info does not apply to code "+bChoice);
-                    }
-                    /*
-                        create medicare missing diagnosis code letter as
-                        long as billing choice is medicare; does so regardless
-                        of selected medicare type
-                    */    
-                    else {
-                        if (bChoice.equals("MED")) labOps.diagnosisLetter();
-                        else Utils.createErrMsg("Missing Diagnosis Codes letter for Medicare only");
-                    }
-                }
-                else Utils.createErrMsg("Create Letter Option Not Available");
-                break;
-            case KeyEvent.VK_F8:                
-                if (fKeys.isOn(fKeys.F8)) {
-                    if (labDiagCode.hasFocus())  {
-                        String[] buf = new String[MAX_DIAG_CODES];
-                        for (int i=0;i<MAX_DIAG_CODES;i++)
-                            buf[i]=labDiagnosisCodes[i].formattedString;
-                        (new PickList("Diagnosis Codes",200,10,376,
-                              MAX_DIAG_CODES,buf,diagnosisCodeList,
-                              labDiagCode)).setVisible(true);
-                    }                                              
-                    else if (labDiagCode2.hasFocus())  {
-                        String[] buf = new String[MAX_DIAG_CODES];
-                        for (int i=0;i<MAX_DIAG_CODES;i++)
-                            buf[i]=labDiagnosisCodes[i].formattedString;
-                        (new PickList("Diagnosis Codes",200,10,376,
-                              MAX_DIAG_CODES,buf,diagnosisCodeList,
-                              labDiagCode2)).setVisible(true);
-                    }                                              
-                    else if (labDiagCode3.hasFocus())  {
-                        String[] buf = new String[MAX_DIAG_CODES];
-                        for (int i=0;i<MAX_DIAG_CODES;i++)
-                            buf[i]=labDiagnosisCodes[i].formattedString;
-                        (new PickList("Diagnosis Codes",200,10,376,
-                              MAX_DIAG_CODES,buf,diagnosisCodeList,
-                              labDiagCode3)).setVisible(true);
-                    }                                              
-                    else if (labDiagCode4.hasFocus())  {
-                        String[] buf = new String[MAX_DIAG_CODES];
-                        for (int i=0;i<MAX_DIAG_CODES;i++)
-                            buf[i]=labDiagnosisCodes[i].formattedString;
-                        (new PickList("Diagnosis Codes",200,10,376,
-                              MAX_DIAG_CODES,buf,diagnosisCodeList,
-                              labDiagCode4)).setVisible(true);
-                    }                             
-                    else if (labBillingChoice.hasFocus())  {
-                        String[] text = new String[dbLogin.billingCodeVect.size()];
-                        String[] codes = new String[dbLogin.billingCodeVect.size()];
-                        for (int i=0; i<dbLogin.billingCodeVect.size(); i++) {
-                            BillingCodeRec b = 
-                                (BillingCodeRec)dbLogin.billingCodeVect.elementAt(i);
-                            text[i]=Utils.rpad(b.choice_code,4)+b.description;
-                            codes[i]=b.choice_code;
-                        }
-                        (new PickList("Billing Codes",200,200,240,190,
-                               dbLogin.billingCodeVect.size(),text,codes,
-                               labBillingChoice)).setVisible(true);
-                    }
-                    else if (doctorText.hasFocus()) {
-                        displayDoctorList();
-                    }
-                    else if (labNumber.hasFocus()) {
-                        if (!Utils.isNull(labPatientNumber.getText())) {
-                            this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                            Vector resultList = new Vector();
-                            int patNum = Integer.parseInt(
-                                labPatientNumber.getText());
-                            labOps.queryPatientLabs(patNum,resultList);
-                            int listSize=resultList.size()+1;
-                            String[] labList = new String[listSize];
-                            labList[0]="LAB:        PR:  COLLECTED:  ENTERED:    STATE:";
-                            for (int i=1;i<listSize;i++) {
-                                labList[i]=(String)resultList.elementAt(i-1);
-                            }
-                            String plTitle="Labs for: "+labRec.pat.lname+", "+labRec.pat.fname;
-                            this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                            (new PickList(plTitle,300,80,364,200,
-                                listSize,labList)).setVisible(true);
-                        }
-                    }
-                }
-                else Utils.createErrMsg("F8 Key not valid in this section");
-                break;
-            case KeyEvent.VK_F9:
-                closingActions();
-                break;
-            case KeyEvent.VK_F10:                
-                if (currMode==Lab.ADD || currMode==Lab.UPDATE) fKeys.keyOn(fKeys.F10);
-                if (fKeys.isOn(fKeys.F10)) {
-                    if (labBillingChoice.hasFocus()) {
-                        if (Utils.isNull(labOtherInsurance.getText())) {
-                            Utils.createErrMsg("F10 Key not valid");
-                            return;
-                        }
-                    }
-                    event.consume();
-                    gotoNextSection();
-                }
-                else Utils.createErrMsg("F10 Key not valid");
-                break;
+            
+            
             case KeyEvent.VK_RIGHT:
                 if (fKeys.isOn(fKeys.F10) && event.isAltDown()) {
                     if (labBillingChoice.hasFocus()) {
@@ -2907,81 +3046,8 @@ public class LabForm extends javax.swing.JFrame
                 }                
                 else Utils.createErrMsg("F10 Key not valid");
                 break;
-            case KeyEvent.VK_F11:                
-                if (event.isAltDown() && !Utils.isNull(labPatientNumber.getText())) {
-                    Vector vBuf = new Vector();
-                    for (int i=0; i<detailRec.length; i++) {
-                        if (detailRec[i].isSelected 
-                        && detailRec[i].additional_info.equals("Y")) {
-                            String buf = detailRec[i].description.trim()+": "+
-                                detailRec[i].textEntered.trim();
-                            if (buf.length()>60) {
-                                String buf2 = buf;
-                                int endNdx = 0;
-                                while (buf2.length()>60) {
-                                    for (int j=0;j<60;j++) {
-                                        if (buf2.charAt(j)==' ')
-                                            endNdx=j;
-                                    }
-                                    buf=buf2.substring(0,endNdx);
-                                    buf2=buf2.substring(endNdx).trim();
-                                    vBuf.addElement(buf);
-                                }
-                                if (!Utils.isNull(buf2)) {
-                                    vBuf.addElement(buf2);
-                                }
-                            }
-                            else vBuf.addElement(buf);
-                            vBuf.addElement("   ");
-                        }
-                    }
-                    if (vBuf.size()>0) {
-                        String[] sBuf = new String[vBuf.size()];
-                        for (int i=0;i<vBuf.size();i++)
-                            sBuf[i]=(String)vBuf.elementAt(i);
-                        (new PickList("Additional Detail Information",50,128,450,400,
-                            vBuf.size(),sBuf)).setVisible(true);
-                    }
-                }
-                else {
-	                for (int i=0;i<doctorVect.size();i++)  {
-	                    DoctorRec doctorRec = (DoctorRec)doctorVect.elementAt(i);
-	                    if (doctorRec.doctor==labRec.doctor && doctorRec.doctor>0)  {
-                            String buf[] = new String[9];
-                            if (Utils.isNull(doctorRec.lname)) doctorRec.lname="  ";
-                            if (Utils.isNull(doctorRec.fname)) doctorRec.fname="  ";
-                            if (Utils.isNull(doctorRec.upin)) doctorRec.upin="  ";
-                            if (Utils.isNull(doctorRec.license)) doctorRec.license="  ";
-                            if (Utils.isNull(doctorRec.bs_provider)) doctorRec.bs_provider="  ";
-                            if (Utils.isNull(doctorRec.alt_state)) doctorRec.alt_state="  ";
-                            if (Utils.isNull(doctorRec.alt_license)) doctorRec.alt_license="  ";
-                            buf[0]="DOCTOR INFORMATION: #"+doctorRec.doctor;
-                            buf[1]="-------------------------------------------------";
-                            buf[2]="LAST:         "+doctorRec.lname;
-                            buf[3]="FIRST:        "+Utils.isNull(doctorRec.fname," ");
-                            buf[4]="UPIN:         "+Utils.isNull(doctorRec.upin," ");
-                            buf[5]="LICENSE:      "+Utils.isNull(doctorRec.license," ");
-                            buf[6]="BLUE SHIELD:  "+Utils.isNull(doctorRec.bs_provider," ");
-                            buf[7]="ALT STATE:    "+Utils.isNull(doctorRec.alt_state," ");
-                            buf[8]="ALT LICENSE:  "+Utils.isNull(doctorRec.alt_license," ");
-                            (new PickList("Doctor Information",
-                                100,270,380,230,9,buf)).setVisible(true);
-                            break;
-                        }
-                    }
-                }
-                break;
-            case KeyEvent.VK_F12:                
-                if (!patientQuery) {
-                    if (!dbThreadRunning) { 
-                        finalActions();
-                    }
-                    else {
-                        log.write("Database is busy");
-                        Utils.createErrMsg("Database is busy ... please retry");
-                    }
-                }
-                break;
+            
+
             case KeyEvent.VK_PAGE_DOWN:                
                 if (currentSection==1) {
                     if (event.isShiftDown()) {
@@ -3667,8 +3733,9 @@ public class LabForm extends javax.swing.JFrame
 	void labSSN_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER) {
+			//QUES:  Why was the null check removed?
 		    //if (!Utils.isNull(labRec.prac.practice_type)) {
-		        if (labRec.prac.practice_type.equals("ADPH")) {
+		        if ("ADPH".equals(labRec.prac.practice_type)) {
 		            getADPHProgramType();
 		        }
 		    //}
@@ -4409,7 +4476,8 @@ public class LabForm extends javax.swing.JFrame
         labPatientMI.setBackground(Color.white);
         labPatientMI.setForeground(Color.black);
         labPatientMI.setCaretColor(Color.black);
-        labPatientLastName.requestFocus();
+        labPatientLastName.requestFocusInWindow();
+       
 	}
 
 	void labRush_keyPressed(java.awt.event.KeyEvent event)

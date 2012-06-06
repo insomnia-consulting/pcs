@@ -16,7 +16,11 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
 import javax.swing.*;
+
 import com.pacytology.pcs.ui.Square;
 import java.sql.*;
 import java.util.Vector;
@@ -165,6 +169,14 @@ public class HPVTestDialog extends javax.swing.JDialog
 		additionalInfo.addKeyListener(aSymKey);
 		this.addKeyListener(aSymKey);
 		//}}
+		JRootPane rp = getRootPane();
+		KeyStroke f9 = KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false);
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f9, "F9");
+		rp.getActionMap().put("F9", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				closingActions();
+			}
+		});
 	}
 
 	public HPVTestDialog(HPVRec hpv, int labNumber)
@@ -309,7 +321,7 @@ public class HPVTestDialog extends javax.swing.JDialog
 				resultsReceived_keyPressed(event);
 			else if (object == additionalInfo)
 				additionalInfo_keyPressed(event);
-			else if (object == HPVTestDialog.this)
+			else
 				HPVTestDialog_keyPressed(event);
 		}
 
