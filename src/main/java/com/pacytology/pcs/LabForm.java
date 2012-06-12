@@ -1508,7 +1508,6 @@ public class LabForm extends javax.swing.JFrame
 			}
 			KeyboardFocusManager mgr = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 	        Component focusOwner = mgr.getFocusOwner();
-	        System.out.println("Focus is owned by " + focusOwner.toString());
 	        object = focusOwner;
 			if (object == labRecDetInfo)
 				labRecDetInfo_keyTyped(event);
@@ -1863,7 +1862,8 @@ public class LabForm extends javax.swing.JFrame
 		        return;
 		    }
 		    findLastLab();
-        }	
+		    labPrevLabNum.transferFocus();	
+	    }	
 	}
 	
 	public void findLastLab()
