@@ -128,6 +128,7 @@ public class PatientForm extends javax.swing.JFrame
 		PatientTable.setBounds(0,0,775,195);
         PatientTable.setRowHeight(11);
         PatientTable.setCellSelectionEnabled(false);
+        PatientTable.setRowSelectionAllowed(true);
         
         for (int i=0;i<paMaxRecs;i++)  { paRec[i] = new PatientRec(); }            
 

@@ -896,12 +896,11 @@ public class LabForm extends javax.swing.JFrame
 		rp.getActionMap().put("F2", new AbstractAction() { 
 			public void actionPerformed(ActionEvent e) {
 				if (fKeys.isOn(fKeys.F2)) {
+                    if (!prepFlag) {
+                    	setPreparation();
+                    }
                     if (prepFlag) {
                     	addActions();
-                    	
-                    }
-                    else {
-                    	setPreparation();
                     }
                 }
                 else Utils.createErrMsg("Add Option Not Available");
@@ -1822,7 +1821,7 @@ public class LabForm extends javax.swing.JFrame
         foundPrevLab=false;
 		setEnableAllFields(false);
 		labPrevLabNum.setEnabled(true);
-		labPrevLabNum.requestFocus();
+		labPrevLabNum.requestFocusInWindow();
 		labPrevLabNum.setBackground(Color.red);
 		labPrevLabNum.setForeground(Color.white);
 		msgLabel.setText("Type Last Lab Number and Press ENTER");
@@ -1844,7 +1843,8 @@ public class LabForm extends javax.swing.JFrame
         */            
 		if (event.getKeyCode()==event.VK_ENTER)  {
 		    if (patientQuery) {
-		        labPrevLabNum.transferFocus();
+		        //labPrevLabNum.transferFocus();
+		    	labPatientLastName.requestFocusInWindow();
 		        return;
 		    }
 		    findLastLab();
@@ -3100,13 +3100,12 @@ public class LabForm extends javax.swing.JFrame
     void setPreparation()
     {
         if (defaultPrep.equals("S")) return;
-	    JOptionPane prepChoices = new javax.swing.JOptionPane();
         Object[] possibleValues = 
             {"Conventional", "Thin Layer", "HPV Only", "Expired", "Surgical Pathololgy","Imaged Slide"}; 
         Object selectedValue = "Conventional";
-        selectedValue = prepChoices.showInputDialog(
+        selectedValue = JOptionPane.showInputDialog(
             this, "Select Preparation for this Batch", "Preparation", 
-            prepChoices.INFORMATION_MESSAGE, null, 
+            JOptionPane.INFORMATION_MESSAGE, null, 
             possibleValues, possibleValues[0]); 
         if (possibleValues[1].equals(selectedValue)) {
             defaultPrep="T";
