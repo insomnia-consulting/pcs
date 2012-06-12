@@ -385,8 +385,9 @@ public class PatientForm extends javax.swing.JFrame
             parent.labRec.pat.patient=paRec[0].patient;
             parent.labRec.pat.newPatientAdd=true;
             parent.labPatientNumber.setText(Integer.toString(paRec[0].patient));
-            parent.labNumber.requestFocus();
+            parent.labNumber.requestFocusInWindow();
         }
+        
         parent.patientQuery=false;
         this.dispose();
     }        

@@ -22,8 +22,11 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.KeyboardFocusManager;
 import java.awt.PrintJob;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +39,7 @@ import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.JTextArea;
@@ -696,7 +700,7 @@ public class LabForm extends javax.swing.JFrame
 		F10action.setText("Section");
 		functionKeyPanel.add(F10action);
 		F10action.setForeground(java.awt.Color.black);
-		F10action.setBounds(5,460,50,16);
+		F10action.setBounds(5,355,50,16);
 		functionKeyPanel.add(F12sq);
 		F12sq.setBounds(20,493,20,20);
 		F12lbl.setRequestFocusEnabled(false);
@@ -954,7 +958,10 @@ public class LabForm extends javax.swing.JFrame
                     else Utils.createErrMsg("Doctor Form Not Available");
                 }
                 else if (fKeys.isOn(fKeys.F5)) {
-                    if (currentSection==1 && currMode==Lab.ADD) invokePatientForm();
+                    if (currentSection==1 && currMode==Lab.ADD) {
+                    	invokePatientForm();
+
+                    }
                     else Utils.createErrMsg("Patient Form Not Available");
                 }
 			}
@@ -1275,31 +1282,31 @@ public class LabForm extends javax.swing.JFrame
 	javax.swing.JTextField patRace = new javax.swing.JTextField();
 	javax.swing.JCheckBox labRush = new javax.swing.JCheckBox();
 	javax.swing.JTextField doctorText = new javax.swing.JTextField();
-	javax.swing.JLabel labNumLbl = new javax.swing.JLabel();
-	javax.swing.JLabel labPatientIDlbl = new javax.swing.JLabel();
-	javax.swing.JLabel labSSNLbl = new javax.swing.JLabel();
-	javax.swing.JLabel labPracticeLbl = new javax.swing.JLabel();
-	javax.swing.JLabel labCollDateLbl = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel21 = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel11 = new javax.swing.JLabel();
-	javax.swing.JLabel labAddrLbl = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel15 = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel16 = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel17 = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel18 = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel6 = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel20 = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel22 = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel23 = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel24 = new javax.swing.JLabel();
-	javax.swing.JLabel labPracticeName = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel1 = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel3 = new javax.swing.JLabel();
-	javax.swing.JLabel pgmLabel = new javax.swing.JLabel();
+	JLabel labNumLbl = new JLabel();
+	JLabel labPatientIDlbl = new JLabel();
+	JLabel labSSNLbl = new JLabel();
+	JLabel labPracticeLbl = new JLabel();
+	JLabel labCollDateLbl = new JLabel();
+	JLabel JLabel21 = new JLabel();
+	JLabel JLabel11 = new JLabel();
+	JLabel labAddrLbl = new JLabel();
+	JLabel JLabel15 = new JLabel();
+	JLabel JLabel16 = new JLabel();
+	JLabel JLabel17 = new JLabel();
+	JLabel JLabel18 = new JLabel();
+	JLabel JLabel6 = new JLabel();
+	JLabel JLabel20 = new JLabel();
+	JLabel JLabel22 = new JLabel();
+	JLabel JLabel23 = new JLabel();
+	JLabel JLabel24 = new JLabel();
+	JLabel labPracticeName = new JLabel();
+	JLabel JLabel1 = new JLabel();
+	JLabel JLabel3 = new JLabel();
+	JLabel pgmLabel = new JLabel();
 	javax.swing.JTextField labParent = new javax.swing.JTextField();
-	javax.swing.JLabel JLabel5 = new javax.swing.JLabel();
-	javax.swing.JLabel pracType = new javax.swing.JLabel();
-	javax.swing.JLabel recvLbl = new javax.swing.JLabel();
+	JLabel JLabel5 = new JLabel();
+	JLabel pracType = new JLabel();
+	JLabel recvLbl = new JLabel();
 	javax.swing.JPanel billingPanel = new javax.swing.JPanel();
 	javax.swing.JTextField labBillingChoice = new javax.swing.JTextField();
 	javax.swing.JTextField labOtherInsurance = new javax.swing.JTextField();
@@ -1317,26 +1324,26 @@ public class LabForm extends javax.swing.JFrame
 	javax.swing.JTextField labSubscrLName = new javax.swing.JTextField();
 	javax.swing.JTextField labSubscrFName = new javax.swing.JTextField();
 	javax.swing.JTextField labFormSigned = new javax.swing.JTextField();
-	javax.swing.JLabel labBillingChoiceLbl = new javax.swing.JLabel();
-	javax.swing.JLabel labGrpNumLbl = new javax.swing.JLabel();
-	javax.swing.JLabel labBillingIDLbl = new javax.swing.JLabel();
-	javax.swing.JLabel subscrLastLbl = new javax.swing.JLabel();
-	javax.swing.JLabel subscrFirstLbl = new javax.swing.JLabel();
-	javax.swing.JLabel labMedTypeLbl = new javax.swing.JLabel();
-	javax.swing.JLabel diag1lbl = new javax.swing.JLabel();
-	javax.swing.JLabel diag2lbl = new javax.swing.JLabel();
-	javax.swing.JLabel diag3lbl = new javax.swing.JLabel();
-	javax.swing.JLabel diag4lbl = new javax.swing.JLabel();
-	javax.swing.JLabel signedLbl = new javax.swing.JLabel();
-	javax.swing.JLabel labDPAStateLbl = new javax.swing.JLabel();
-	javax.swing.JLabel ICD9Lbl = new javax.swing.JLabel();
-	javax.swing.JLabel CarrierNameLbl = new javax.swing.JLabel();
-	javax.swing.JLabel payerLbl = new javax.swing.JLabel();
-	javax.swing.JLabel altLbl = new javax.swing.JLabel();
-	javax.swing.JLabel subscrLbl = new javax.swing.JLabel();
-	javax.swing.JLabel payerNameLbl = new javax.swing.JLabel();
-	javax.swing.JLabel labSubscriber = new javax.swing.JLabel();
-	javax.swing.JLabel labMedLbl = new javax.swing.JLabel();
+	JLabel labBillingChoiceLbl = new JLabel();
+	JLabel labGrpNumLbl = new JLabel();
+	JLabel labBillingIDLbl = new JLabel();
+	JLabel subscrLastLbl = new JLabel();
+	JLabel subscrFirstLbl = new JLabel();
+	JLabel labMedTypeLbl = new JLabel();
+	JLabel diag1lbl = new JLabel();
+	JLabel diag2lbl = new JLabel();
+	JLabel diag3lbl = new JLabel();
+	JLabel diag4lbl = new JLabel();
+	JLabel signedLbl = new JLabel();
+	JLabel labDPAStateLbl = new JLabel();
+	JLabel ICD9Lbl = new JLabel();
+	JLabel CarrierNameLbl = new JLabel();
+	JLabel payerLbl = new JLabel();
+	JLabel altLbl = new JLabel();
+	JLabel subscrLbl = new JLabel();
+	JLabel payerNameLbl = new JLabel();
+	JLabel labSubscriber = new JLabel();
+	JLabel labMedLbl = new JLabel();
 	javax.swing.JPanel detailPanel = new javax.swing.JPanel();
 	javax.swing.JTextField labPrep = new javax.swing.JTextField();
 	javax.swing.JTextField HPVrequest = new javax.swing.JTextField();
@@ -1347,55 +1354,55 @@ public class LabForm extends javax.swing.JFrame
 	javax.swing.JTextField labRecDetInfo = new javax.swing.JTextField();
 	javax.swing.JScrollPane labDetailPane = new javax.swing.JScrollPane();
 	javax.swing.JList labDetailList = new javax.swing.JList();
-	javax.swing.JLabel JLabel9 = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel10 = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel4 = new javax.swing.JLabel();
-	javax.swing.JLabel prepLbl = new javax.swing.JLabel();
-	javax.swing.JLabel labRecDetInfoLbl = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel19 = new javax.swing.JLabel();
-	javax.swing.JLabel slideLbl = new javax.swing.JLabel();
-	javax.swing.JLabel JLabel2 = new javax.swing.JLabel();
+	JLabel JLabel9 = new JLabel();
+	JLabel JLabel10 = new JLabel();
+	JLabel JLabel4 = new JLabel();
+	JLabel prepLbl = new JLabel();
+	JLabel labRecDetInfoLbl = new JLabel();
+	JLabel JLabel19 = new JLabel();
+	JLabel slideLbl = new JLabel();
+	JLabel JLabel2 = new JLabel();
 	javax.swing.JPanel functionKeyPanel = new javax.swing.JPanel();
 	Square F1sq = new Square();
-	javax.swing.JLabel F1lbl = new javax.swing.JLabel();
-	javax.swing.JLabel F1action = new javax.swing.JLabel();
+	JLabel F1lbl = new JLabel();
+	JLabel F1action = new JLabel();
 	Square F2sq = new Square();
-	javax.swing.JLabel F2lbl = new javax.swing.JLabel();
-	javax.swing.JLabel F2action = new javax.swing.JLabel();
+	JLabel F2lbl = new JLabel();
+	JLabel F2action = new JLabel();
 	Square F3sq = new Square();
-	javax.swing.JLabel F3lbl = new javax.swing.JLabel();
-	javax.swing.JLabel F3action = new javax.swing.JLabel();
+	JLabel F3lbl = new JLabel();
+	JLabel F3action = new JLabel();
 	Square F4sq = new Square();
-	javax.swing.JLabel F4lbl = new javax.swing.JLabel();
-	javax.swing.JLabel F4action = new javax.swing.JLabel();
+	JLabel F4lbl = new JLabel();
+	JLabel F4action = new JLabel();
 	Square F5sq = new Square();
-	javax.swing.JLabel F5lbl = new javax.swing.JLabel();
-	javax.swing.JLabel F5action = new javax.swing.JLabel();
+	JLabel F5lbl = new JLabel();
+	JLabel F5action = new JLabel();
 	Square F6sq = new Square();
-	javax.swing.JLabel F6lbl = new javax.swing.JLabel();
-	javax.swing.JLabel F6action = new javax.swing.JLabel();
+	JLabel F6lbl = new JLabel();
+	JLabel F6action = new JLabel();
 	Square F9sq = new Square();
-	javax.swing.JLabel F9lbl = new javax.swing.JLabel();
-	javax.swing.JLabel F9action = new javax.swing.JLabel();
+	JLabel F9lbl = new JLabel();
+	JLabel F9action = new JLabel();
 	Square F10sq = new Square();
-	javax.swing.JLabel F10lbl = new javax.swing.JLabel();
-	javax.swing.JLabel F10action = new javax.swing.JLabel();
+	JLabel F10lbl = new JLabel();
+	JLabel F10action = new JLabel();
 	Square F12sq = new Square();
-	javax.swing.JLabel F12lbl = new javax.swing.JLabel();
-	javax.swing.JLabel F12action = new javax.swing.JLabel();
+	JLabel F12lbl = new JLabel();
+	JLabel F12action = new JLabel();
 	Square F7sq = new Square();
-	javax.swing.JLabel F7lbl = new javax.swing.JLabel();
-	javax.swing.JLabel F7action = new javax.swing.JLabel();
+	JLabel F7lbl = new JLabel();
+	JLabel F7action = new JLabel();
 	javax.swing.JPanel msgPanel = new javax.swing.JPanel();
-	javax.swing.JLabel msgLabel = new javax.swing.JLabel();
-	javax.swing.JLabel HPVmsgLabel = new javax.swing.JLabel();
+	JLabel msgLabel = new JLabel();
+	JLabel HPVmsgLabel = new JLabel();
 	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder("");
 	javax.swing.border.TitledBorder titledBorder2 = new javax.swing.border.TitledBorder("");
 	javax.swing.border.TitledBorder titledBorder3 = new javax.swing.border.TitledBorder("");
 	javax.swing.border.TitledBorder titledBorder4 = new javax.swing.border.TitledBorder("");
 	javax.swing.border.TitledBorder titledBorder5 = new javax.swing.border.TitledBorder("");
-	javax.swing.JLabel createdLbl = new javax.swing.JLabel();
-	javax.swing.JLabel changedLbl = new javax.swing.JLabel();
+	JLabel createdLbl = new JLabel();
+	JLabel changedLbl = new JLabel();
 	//}}
 	//{{DECLARE_MENUS
 	//}}
@@ -1495,6 +1502,14 @@ public class LabForm extends javax.swing.JFrame
 		public void keyTyped(java.awt.event.KeyEvent event)
 		{
 			Object object = event.getSource();
+			if (object instanceof JLabel){
+				Component component = (Component)object;
+				component.transferFocus();
+			}
+			KeyboardFocusManager mgr = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+	        Component focusOwner = mgr.getFocusOwner();
+	        System.out.println("Focus is owned by " + focusOwner.toString());
+	        object = focusOwner;
 			if (object == labRecDetInfo)
 				labRecDetInfo_keyTyped(event);
 			else if (object == labPrevLabNum)
@@ -1870,9 +1885,9 @@ public class LabForm extends javax.swing.JFrame
             setBillingLabels(labBillingChoice.getText());
             setEnableAllFields(false);
             setEnablePatientFields(true);
-            labPrevLabNum.transferFocus();
             fKeys.keyOn(fKeys.F5);
-            labNumber.requestFocus();
+
+
         }
 	}
 	
