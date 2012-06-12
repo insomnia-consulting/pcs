@@ -18,7 +18,11 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
 import javax.swing.*;
+
 import com.pacytology.pcs.ui.Square;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -122,8 +126,58 @@ public class PickList extends javax.swing.JDialog
 		SymKey aSymKey = new SymKey();
 		this.addKeyListener(aSymKey);
 		//}}
+		JRootPane rp = this.setupKeyPressMap();
+		rp.getActionMap().put("F1", new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				if (verifyPrinter()) genericPrint(true);	
+			}
+		});
+		rp.getActionMap().put("F9", new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				if (!infoOnly) pickListField.setText(null);
+				Component comp = (Component) e.getSource();
+				Window window = SwingUtilities.windowForComponent(comp);
+				if(window instanceof Dialog){
+					window.dispose();
+				}	
+			}
+		});
+		AbstractAction exitAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (ItemList.getSelectedIndex()!=(-1))  {
+	                if (isText) {
+	                    pickListText.append(actualList[ItemList.getSelectedIndex()]);
+	                    pickListText.requestFocus();
+	                }
+	                else {
+	                    pickListField.setText(actualList[ItemList.getSelectedIndex()]);
+	                    pickListField.requestFocus();
+	                }
+	            }
+	            PickList.this.dispose();
+
+			}			
+		};
+		rp.getActionMap().put("F11",exitAction);
+		rp.getActionMap().put("ENTER",exitAction);
 	}
 
+	public JRootPane setupKeyPressMap() {
+		JRootPane rp = getRootPane();
+		KeyStroke f1 = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false);
+		KeyStroke f9 = KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false);
+		KeyStroke f11 = KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0, false);
+		KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
+
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f1, "F1");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f9, "F9");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f11, "F11");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(enter, "ENTER");
+
+		return rp;
+	}
     public PickList(String sTitle,int x,int y,int width,int items,
                     String[] formattedList,
                     String[] actualList,
@@ -346,11 +400,10 @@ public class PickList extends javax.swing.JDialog
 		    else decrementList();
         }		        
         else if (event.getKeyCode()==event.VK_F1) {
-            if (verifyPrinter()) genericPrint(true);
+            
         }
         else if (event.getKeyCode()==java.awt.event.KeyEvent.VK_F9)  {
-            if (!infoOnly) pickListField.setText(null);
-            this.dispose();
+            
         }            
         else if (event.getKeyCode()==event.VK_ESCAPE) {
             this.dispose();
@@ -363,17 +416,7 @@ public class PickList extends javax.swing.JDialog
         */
         else if (event.getKeyCode()==java.awt.event.KeyEvent.VK_F11 ||
                  event.getKeyCode()==java.awt.event.KeyEvent.VK_ENTER)  {
-            if (ItemList.getSelectedIndex()!=(-1))  {
-                if (isText) {
-                    pickListText.append(actualList[ItemList.getSelectedIndex()]);
-                    pickListText.requestFocus();
-                }
-                else {
-                    pickListField.setText(actualList[ItemList.getSelectedIndex()]);
-                    pickListField.requestFocus();
-                }
-            }
-            this.dispose();
+            
         }            
         else if (event.getKeyCode()==event.VK_PAGE_DOWN) {
             int rows=ItemList.getVisibleRowCount();

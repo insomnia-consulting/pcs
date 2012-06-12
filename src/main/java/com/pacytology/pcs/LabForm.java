@@ -25,8 +25,6 @@ import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.PrintJob;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,18 +36,18 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.text.JTextComponent;
 
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
-public class LabForm extends javax.swing.JFrame
+
+public class LabForm extends PcsFrame
 {
     int MAX_DET_CODES = 0;
     int MAX_DIAG_CODES = 1000;
@@ -700,7 +698,7 @@ public class LabForm extends javax.swing.JFrame
 		F10action.setText("Section");
 		functionKeyPanel.add(F10action);
 		F10action.setForeground(java.awt.Color.black);
-		F10action.setBounds(5,355,50,16);
+		F10action.setBounds(5,465, 30,16);
 		functionKeyPanel.add(F12sq);
 		F12sq.setBounds(20,493,20,20);
 		F12lbl.setRequestFocusEnabled(false);
@@ -787,19 +785,18 @@ public class LabForm extends javax.swing.JFrame
 		
 		labRecDetInfo.addKeyListener(aSymKey);
 		labPrevLabNum.addKeyListener(aSymKey);
-		this.addKeyListener(aSymKey);
-		labNumber.addKeyListener(aSymKey);
+		//labNumber.addKeyListener(aSymKey);
 		labPatientID.addKeyListener(aSymKey);
 		labGrpNum.addKeyListener(aSymKey);
 		labBillingID.addKeyListener(aSymKey);
-		labPractice.addKeyListener(aSymKey);
+		//labPractice.addKeyListener(aSymKey);
 		labSubscrLName.addKeyListener(aSymKey);
 		labSubscrFName.addKeyListener(aSymKey);
 		labDPAState.addKeyListener(aSymKey);
 		labLMP.addKeyListener(aSymKey);
 		labAge.addKeyListener(aSymKey);
 		labClientNotes.addKeyListener(aSymKey);
-		labDateCollected.addKeyListener(aSymKey);
+		//labDateCollected.addKeyListener(aSymKey);
 		labOtherInsurance.addKeyListener(aSymKey);
 
 		labBillingChoice.addKeyListener(aSymKey);
@@ -811,7 +808,7 @@ public class LabForm extends javax.swing.JFrame
 		labPayerID.addKeyListener(aSymKey);
 		labPCSID.addKeyListener(aSymKey);
 		labPaAddress.addKeyListener(aSymKey);
-		labSSN.addKeyListener(aSymKey);
+
 		labDOB.addKeyListener(aSymKey);
 		labZip.addKeyListener(aSymKey);
 		labState.addKeyListener(aSymKey);
@@ -826,8 +823,8 @@ public class LabForm extends javax.swing.JFrame
 		labRush.addKeyListener(aSymKey);
 		SymWindow aSymWindow = new SymWindow();
 		this.addWindowListener(aSymWindow);
-		doctorText.addKeyListener(aSymKey);
-		labPrep.addKeyListener(aSymKey);
+//		doctorText.addKeyListener(aSymKey);
+//	    labPrep.addKeyListener(aSymKey);
 		labMedicareType.addKeyListener(aSymKey);
 		labFormSigned.addKeyListener(aSymKey);
 		HPVrequest.addKeyListener(aSymKey);
@@ -863,35 +860,13 @@ public class LabForm extends javax.swing.JFrame
 		setupKeyPressMap();
 		
 	}
-	private void setupKeyPressMap() {
-		JRootPane rp = getRootPane();
-		KeyStroke f1 = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false);
-		KeyStroke f2 = KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false);
-		KeyStroke f3 = KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false);
-		KeyStroke f4 = KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false);
-		KeyStroke f5 = KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false);
-		KeyStroke f6 = KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false);
-		KeyStroke f7 = KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false);
-		KeyStroke f8 = KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false);
-		KeyStroke f9 = KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false);
-		KeyStroke f10 = KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0, false);
-		KeyStroke f11 = KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0, false);
-		KeyStroke f12 = KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0, false);		
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
 		
 		
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f1, "F1");
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f2, "F2");
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f3, "F3");
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f4, "F4");
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f5, "F5");
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f6, "F6");
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f7, "F7");
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f8, "F8");
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f9, "F9");
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f10, "F10");
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f11, "F11");
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f12, "F12");
-		rp.getActionMap().put("F1", new AbstractAction() { 
+
+		rp.getActionMap().put("F1", new AbstractAction() {
+
 			public void actionPerformed(ActionEvent e) {
 				if (fKeys.isOn(fKeys.F1)) queryActions();
 		        else Utils.createErrMsg("Query Option Not Available");
@@ -1190,6 +1165,7 @@ public class LabForm extends javax.swing.JFrame
 
 			}
 		});
+		return rp;
 	}
 	private void setListener(Component c) {
 		if (c instanceof Container) for (Component d : ((Container)c).getComponents()) {
@@ -2071,7 +2047,10 @@ public class LabForm extends javax.swing.JFrame
                                 labBillingChoice.setText("DOC");
                                 labBillingID.setText(labPractice.getText());
                                 labOtherInsurance.setText(labPracticeName.getText());
+                                //GAK It appears that the intention was to change the secton and allow this to 
+                                //  fall through to the next case "block"
                                 currentSection=3;
+                                
                             }      
                             else  {
                                 labBillingChoice.setEnabled(true);
@@ -3198,6 +3177,7 @@ public class LabForm extends javax.swing.JFrame
                 doctorVect.size(),buf,buf,doctorText)).setVisible(true);
         }
         else doctorText.setText(buf[0]);
+        labBillingChoice.requestFocusInWindow();
         return;            
     }
 
