@@ -781,22 +781,22 @@ public class LabForm extends PcsFrame
 		//{{REGISTER_LISTENERS
 		SymAction lSymAction = new SymAction();
 
-		labDetCodeEntry.addKeyListener(aSymKey);
+		//labDetCodeEntry.addKeyListener(aSymKey);
 		
 		labRecDetInfo.addKeyListener(aSymKey);
 		labPrevLabNum.addKeyListener(aSymKey);
-		//labNumber.addKeyListener(aSymKey);
+
 		labPatientID.addKeyListener(aSymKey);
 		labGrpNum.addKeyListener(aSymKey);
 		labBillingID.addKeyListener(aSymKey);
-		//labPractice.addKeyListener(aSymKey);
+
 		labSubscrLName.addKeyListener(aSymKey);
 		labSubscrFName.addKeyListener(aSymKey);
 		labDPAState.addKeyListener(aSymKey);
 		labLMP.addKeyListener(aSymKey);
 		labAge.addKeyListener(aSymKey);
 		labClientNotes.addKeyListener(aSymKey);
-		//labDateCollected.addKeyListener(aSymKey);
+
 		labOtherInsurance.addKeyListener(aSymKey);
 
 		labBillingChoice.addKeyListener(aSymKey);
@@ -820,11 +820,10 @@ public class LabForm extends PcsFrame
 		labPhone.addKeyListener(aSymKey);
 		labNumSlides.addKeyListener(aSymKey);
 		labRelCode.addKeyListener(aSymKey);
-		labRush.addKeyListener(aSymKey);
+
 		SymWindow aSymWindow = new SymWindow();
 		this.addWindowListener(aSymWindow);
-//		doctorText.addKeyListener(aSymKey);
-//	    labPrep.addKeyListener(aSymKey);
+
 		labMedicareType.addKeyListener(aSymKey);
 		labFormSigned.addKeyListener(aSymKey);
 		HPVrequest.addKeyListener(aSymKey);
@@ -1668,8 +1667,7 @@ public class LabForm extends PcsFrame
 	}
 
 	void labDetCodeEntry_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    int key = event.getKeyCode();
+	{	    int key = event.getKeyCode();
 	    if (key==event.VK_F10) { 
 	        currentSection=4;
 	        keyActions(event);
