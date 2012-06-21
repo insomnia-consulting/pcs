@@ -15,17 +15,19 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 import javax.swing.table.*;
 import com.pacytology.pcs.ui.Square;
 import javax.swing.border.TitledBorder;
 
-public class ResultForm extends javax.swing.JFrame
+public class ResultForm extends PcsFrame
 {
     Login dbLogin;
     Vector labResults = new Vector();
@@ -321,6 +323,7 @@ public class ResultForm extends javax.swing.JFrame
 		F1sq.setBounds(25,6,20,20);
 		F1lbl.setRequestFocusEnabled(false);
 		F1lbl.setText("F1");
+		
 		getContentPane().add(F1lbl);
 		F1lbl.setForeground(java.awt.Color.black);
 		F1lbl.setFont(new Font("SansSerif", Font.PLAIN, 10));
@@ -595,8 +598,199 @@ public class ResultForm extends javax.swing.JFrame
 		pathCompleted.addFocusListener(aSymFocus);
 		resRemarks.addFocusListener(aSymFocus);
 		//}}
+		
+		setupKeyPressMap();
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+		rp.getActionMap().put("F1", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 if (fKeys.isOn(fKeys.F1)) queryActions();
+			}
+		});
+		rp.getActionMap().put("F2", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F2)) addActions();
+			}
+		});
+		rp.getActionMap().put("F3", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+		        if (fKeys.isOn(fKeys.F3)) updateActions();
+			}
+		});
+		rp.getActionMap().put("F4", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode==Lab.IDLE) {
+		            Vector v = new Vector();
+                    setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+                    setMsgLabel("Retrieving pending lab list ...");
+		            resDbOps.getPending(v);
+		            setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+		            setMsgLabel(" ");
+		            if (v.size()>0) {
+		                String buf[] = new String [v.size()];
+		                for (int i=0;i<v.size();i++) 
+		                    buf[i]=(String)v.elementAt(i);
+                        (new PickList("Results Pending",
+                            60,20,600,500,v.size(),buf)).setVisible(true);
+                    }
+		            else Utils.createErrMsg("No Pending Labs");
+                }
+			}
+		});
+		rp.getActionMap().put("F5", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F5)) updatePathHolds();
+			}
+		});
+		rp.getActionMap().put("F6", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F6)) {
+					if ((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0){
+		                ResultForm.this.removeQC();
+		            }
+                    qualityControl();
+                }
+			}
+		});
+		rp.getActionMap().put("F7", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F7)) {
+					if ((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0){
+		                ResultForm.this.removePathologist();
+		            }
+                    pathologistControl();
+                }
+			}
+		});
+		rp.getActionMap().put("F8", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F8)) {
+					if (resCytoTech.hasFocus()) {
+						String buf[] = new String[MAX_TECHS];
+						String buf2[] = new String[MAX_TECHS];
+						for (int i = 0; i < MAX_TECHS; i++) {
+							buf[i] = techs[i].cytotech_code + "   "
+									+ techs[i].lname + ", " + techs[i].fname;
+							buf2[i] = techs[i].cytotech_code;
+						}
+						(new PickList("Cytotechnologists", 200, 50, 220, 200,
+								MAX_TECHS, buf, buf2, resCytoTech))
+								.setVisible(true);
+					} else if (qcCytoTech.hasFocus()) {
+						String buf[] = new String[MAX_TECHS];
+						String buf2[] = new String[MAX_TECHS];
+						for (int i = 0; i < MAX_TECHS; i++) {
+							buf[i] = techs[i].cytotech_code + "   "
+									+ techs[i].lname + ", " + techs[i].fname;
+							buf2[i] = techs[i].cytotech_code;
+						}
+						(new PickList("Cytotechnologists", 200, 50, 220, 200,
+								MAX_TECHS, buf, buf2, qcCytoTech))
+								.setVisible(true);
+					} else if (resPathologist.hasFocus()) {
+						String buf[] = new String[MAX_PATHS];
+						String buf2[] = new String[MAX_PATHS];
+						for (int i = 0; i < MAX_PATHS; i++) {
+							buf[i] = paths[i].pathologist_code + "   "
+									+ paths[i].lname + ", " + paths[i].fname;
+							buf2[i] = paths[i].pathologist_code;
+						}
+						(new PickList("Pathologists", 200, 50, 220, 200,
+								MAX_PATHS, buf, buf2, resPathologist))
+								.setVisible(true);
+					} else if (resPathologist.hasFocus()) {
+						String buf[] = new String[MAX_PATHS];
+						String buf2[] = new String[MAX_PATHS];
+						for (int i = 0; i < MAX_PATHS; i++) {
+							buf[i] = paths[i].pathologist_code + "   "
+									+ paths[i].lname + ", " + paths[i].fname;
+							buf2[i] = paths[i].pathologist_code;
+						}
+						(new PickList("Pathologists", 200, 50, 220, 200,
+								MAX_PATHS, buf, buf2, resPathologist))
+								.setVisible(true);
+					} else if (resultCode.hasFocus()) {
+						String buf[] = new String[MAX_RESULT_CODES];
+						String buf2[] = new String[MAX_RESULT_CODES];
+						for (int i = 0; i < MAX_RESULT_CODES; i++) {
+							buf[i] = resultCodes[i].bethesda_code + "   "
+									+ resultCodes[i].description;
+							buf2[i] = resultCodes[i].bethesda_code;
+						}
+						(new PickList("Result Codes", 200, 40, 320, 360,
+								MAX_RESULT_CODES, buf, buf2, resultCode))
+								.setVisible(true);
+					} else if (qcResultCode.hasFocus()) {
+						String buf[] = new String[MAX_RESULT_CODES];
+						String buf2[] = new String[MAX_RESULT_CODES];
+						for (int i = 0; i < MAX_RESULT_CODES; i++) {
+							buf[i] = resultCodes[i].bethesda_code + "   "
+									+ resultCodes[i].description;
+							buf2[i] = resultCodes[i].bethesda_code;
+						}
+						(new PickList("Result Codes", 200, 40, 320, 360,
+								MAX_RESULT_CODES, buf, buf2, qcResultCode))
+								.setVisible(true);
+					} else if (pathCode.hasFocus()) {
+						String buf[] = new String[MAX_RESULT_CODES];
+						String buf2[] = new String[MAX_RESULT_CODES];
+						for (int i = 0; i < MAX_RESULT_CODES; i++) {
+							buf[i] = resultCodes[i].bethesda_code + "   "
+									+ resultCodes[i].description;
+							buf2[i] = resultCodes[i].bethesda_code;
+						}
+						(new PickList("Result Codes", 200, 40, 320, 360,
+								MAX_RESULT_CODES, buf, buf2, pathCode))
+								.setVisible(true);
+					}
+				}
+			}
+		});
+            
+		rp.getActionMap().put("F9", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+			    closingActions();
+			}
+		});
+		rp.getActionMap().put("F10", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+			    ResultForm.this.printHistory();
+			}
+		});
+		rp.getActionMap().put("F11", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+		        commentEntry();
+			}
+		});
+		rp.getActionMap().put("F12", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F12)) finalActions();
+			}
+		});
+		rp.getActionMap().put("ESC", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				completedFlag=false;
+		        ctFlag=false;
+		        resetResultForm();
+			}
+		});
+		AbstractAction showRemarks = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				
+				displayComments();
+			}
+		};
+		rp.getActionMap().put("INSERT", showRemarks);
+		//Let's add 'I' as a way of calling VK_INSERT ON Mac
+		String osName = System.getProperty("os.name").toLowerCase();
+		boolean isMacOs = osName.startsWith("mac os x");
+		if (isMacOs) rp.getActionMap().put("VK_I", showRemarks);
 
+
+	    
+		return rp;
+	}
 	public ResultForm(String sTitle)
 	{
 		this();
@@ -1093,180 +1287,6 @@ public class ResultForm extends javax.swing.JFrame
 	{
 		int key=event.getKeyCode();
 		switch (key) {
-		    case KeyEvent.VK_F1:
-		        if (fKeys.isOn(fKeys.F1)) queryActions();
-		        break;
-		    case KeyEvent.VK_F2:
-		        if (fKeys.isOn(fKeys.F2)) addActions();
-		        break;
-		    case KeyEvent.VK_F3:
-		        if (fKeys.isOn(fKeys.F3)) updateActions();
-		        break;
-		    case KeyEvent.VK_F4:
-                if (currMode==Lab.IDLE) {
-		            Vector v = new Vector();
-                    setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-                    setMsgLabel("Retrieving pending lab list ...");
-		            resDbOps.getPending(v);
-		            setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-		            setMsgLabel(" ");
-		            if (v.size()>0) {
-		                String buf[] = new String [v.size()];
-		                for (int i=0;i<v.size();i++) 
-		                    buf[i]=(String)v.elementAt(i);
-                        (new PickList("Results Pending",
-                            60,20,600,500,v.size(),buf)).setVisible(true);
-                    }
-		            else Utils.createErrMsg("No Pending Labs");
-                }
-                break;
-		    case KeyEvent.VK_F5:
-		        if (fKeys.isOn(fKeys.F5)) updatePathHolds();
-		        break;
-		    case KeyEvent.VK_F8:
-		        if (fKeys.isOn(fKeys.F8)) {
-		            if (resCytoTech.hasFocus()) {
-		                String buf[] = new String [MAX_TECHS];
-		                String buf2[] = new String [MAX_TECHS];
-		                for (int i=0;i<MAX_TECHS;i++) {
-		                    buf[i]=
-		                        techs[i].cytotech_code+"   "+
-		                        techs[i].lname+", "+
-		                        techs[i].fname;
-                            buf2[i]=techs[i].cytotech_code;
-                        }
-                        (new PickList("Cytotechnologists",
-                              200,50,220,200,
-                              MAX_TECHS,buf,buf2,
-                              resCytoTech)).setVisible(true);
-		            }
-		            else if (qcCytoTech.hasFocus()) {
-		                String buf[] = new String [MAX_TECHS];
-		                String buf2[] = new String [MAX_TECHS];
-		                for (int i=0;i<MAX_TECHS;i++) {
-		                    buf[i]=
-		                        techs[i].cytotech_code+"   "+
-		                        techs[i].lname+", "+
-		                        techs[i].fname;
-                            buf2[i]=techs[i].cytotech_code;
-                        }
-                        (new PickList("Cytotechnologists",
-                              200,50,220,200,
-                              MAX_TECHS,buf,buf2,
-                              qcCytoTech)).setVisible(true);
-		            }
-		            else if (resPathologist.hasFocus()) {
-		                String buf[] = new String [MAX_PATHS];
-		                String buf2[] = new String [MAX_PATHS];
-		                for (int i=0;i<MAX_PATHS;i++) {
-		                    buf[i]=
-		                        paths[i].pathologist_code+"   "+
-		                        paths[i].lname+", "+
-		                        paths[i].fname;
-                            buf2[i]=paths[i].pathologist_code;
-                        }
-                        (new PickList("Pathologists",
-                              200,50,220,200,
-                              MAX_PATHS,buf,buf2,
-                              resPathologist)).setVisible(true);
-		            }
-		            else if (resPathologist.hasFocus()) {
-		                String buf[] = new String [MAX_PATHS];
-		                String buf2[] = new String [MAX_PATHS];
-		                for (int i=0;i<MAX_PATHS;i++) {
-		                    buf[i]=
-		                        paths[i].pathologist_code+"   "+
-		                        paths[i].lname+", "+
-		                        paths[i].fname;
-                            buf2[i]=paths[i].pathologist_code;
-                        }
-                        (new PickList("Pathologists",
-                              200,50,220,200,
-                              MAX_PATHS,buf,buf2,
-                              resPathologist)).setVisible(true);
-		            }
-		            else if (resultCode.hasFocus()) {
-		                String buf[] = new String [MAX_RESULT_CODES];
-		                String buf2[] = new String [MAX_RESULT_CODES];
-		                for (int i=0;i<MAX_RESULT_CODES;i++) {
-		                    buf[i]=
-		                        resultCodes[i].bethesda_code+"   "+
-		                        resultCodes[i].description;
-                            buf2[i]=resultCodes[i].bethesda_code;
-                        }
-                        (new PickList("Result Codes",
-                              200,40,320,360,
-                              MAX_RESULT_CODES,buf,buf2,
-                              resultCode)).setVisible(true);
-		            }
-		            else if (qcResultCode.hasFocus()) {
-		                String buf[] = new String [MAX_RESULT_CODES];
-		                String buf2[] = new String [MAX_RESULT_CODES];
-		                for (int i=0;i<MAX_RESULT_CODES;i++) {
-		                    buf[i]=
-		                        resultCodes[i].bethesda_code+"   "+
-		                        resultCodes[i].description;
-                            buf2[i]=resultCodes[i].bethesda_code;
-                        }
-                        (new PickList("Result Codes",
-                              200,40,320,360,
-                              MAX_RESULT_CODES,buf,buf2,
-                              qcResultCode)).setVisible(true);
-		            }
-		            else if (pathCode.hasFocus()) {
-		                String buf[] = new String [MAX_RESULT_CODES];
-		                String buf2[] = new String [MAX_RESULT_CODES];
-		                for (int i=0;i<MAX_RESULT_CODES;i++) {
-		                    buf[i]=
-		                        resultCodes[i].bethesda_code+"   "+
-		                        resultCodes[i].description;
-                            buf2[i]=resultCodes[i].bethesda_code;
-                        }
-                        (new PickList("Result Codes",
-                              200,40,320,360,
-                              MAX_RESULT_CODES,buf,buf2,
-                              pathCode)).setVisible(true);
-		            }
-		        }
-		        break;
-		    case KeyEvent.VK_F9:
-		        closingActions();
-		        break;
-		    case KeyEvent.VK_F6:
-		        if (fKeys.isOn(fKeys.F6)) {
-		            if (event.isShiftDown()) {
-		                removeQC();
-		                break;
-		            }
-                    qualityControl();
-                }
-		        break;
-		    case KeyEvent.VK_F7:
-		        if (fKeys.isOn(fKeys.F7)) {
-		            if (event.isShiftDown()) {
-		                removePathologist();
-		                break;
-		            }
-                    pathologistControl();
-                }
-		        break;
-		    case KeyEvent.VK_F10:
-		        if (currMode!=Lab.ADD) printHistory(); 
-		        break;
-		    case KeyEvent.VK_F11:
-		        commentEntry();
-		        break;
-		    case KeyEvent.VK_F12:
-		        if (fKeys.isOn(fKeys.F12)) finalActions();
-		        break;
-            case KeyEvent.VK_ESCAPE:
-                completedFlag=false;
-                ctFlag=false;
-                resetResultForm();
-                break;
-            case KeyEvent.VK_INSERT:
-                displayComments();
-                break;
 		    case KeyEvent.VK_DOWN:
 		        if (currMode!=Lab.IDLE && buttonMode==Lab.IDLE)
 		            incrementResult();

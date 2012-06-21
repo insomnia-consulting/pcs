@@ -19,6 +19,7 @@ package com.pacytology.pcs;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -26,12 +27,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
 
 import com.pacytology.pcs.ui.HorizontalLine;
 import com.pacytology.pcs.ui.Square;
+import com.pacytology.pcs.ui.PcsFrame;
 
-public class ReceiveDateForm extends javax.swing.JFrame {
+public class ReceiveDateForm extends PcsFrame {
 	private Login dbLogin;
 	private int iDate;
 	private String sDate;
@@ -329,10 +333,64 @@ public class ReceiveDateForm extends javax.swing.JFrame {
 		rBegin01.addFocusListener(aSymFocus);
 		// }}
 
+		setupKeyPressMap();
 		Utils.setColors(this.getContentPane());
 		this.repaint();
 	}
-
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+		rp.getActionMap().put("F1", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				currMode = Lab.QUERY;
+				rDay00.setText(null);
+				rBegin00.setText(null);
+				rEnd00.setText(null);
+				rTtl00.setText(null);
+				startingActions();
+				rEnd00.setEnabled(false);
+			}
+		});
+		rp.getActionMap().put("F4", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode != Lab.CURRENT) {
+					Utils.createErrMsg("Cannot delete old receive date");
+					return;
+				}
+				int rv = JOptionPane.showConfirmDialog(ReceiveDateForm.this,
+						"Delete current receive date", "Delete Rec'v Date",
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if (rv == JOptionPane.YES_OPTION) {
+					int maxLab = 0;
+					try {
+						maxLab = Integer.parseInt(rBegin00.getText());
+					} catch (Exception ex) {
+						maxLab = 0;
+					}
+					if (maxLab > 0) {
+						deleteReceiveDate(maxLab);
+						rDay00.setText(null);
+						rBegin00.setText(null);
+						rEnd00.setText(null);
+						rTtl00.setText(null);
+						getDates();
+						rDay00.requestFocus();
+					}
+				}
+			}
+		});
+		rp.getActionMap().put("F9", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				closingActions();
+			}
+		});
+		rp.getActionMap().put("F12", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				finalActions();
+			}
+		});
+		return rp;
+		
+	}
 	public ReceiveDateForm(String sTitle) {
 		this();
 		setTitle(sTitle);
@@ -783,19 +841,10 @@ public class ReceiveDateForm extends javax.swing.JFrame {
 		int key = event.getKeyCode();
 		switch (key) {
 		case KeyEvent.VK_F9:
-			closingActions();
+			
 			break;
 		case KeyEvent.VK_F12:
 			finalActions();
-			break;
-		case KeyEvent.VK_F1:
-			currMode = Lab.QUERY;
-			rDay00.setText(null);
-			rBegin00.setText(null);
-			rEnd00.setText(null);
-			rTtl00.setText(null);
-			startingActions();
-			rEnd00.setEnabled(false);
 			break;
 		case KeyEvent.VK_F3:
 			if (currMode != Lab.QUERY) {
@@ -810,32 +859,7 @@ public class ReceiveDateForm extends javax.swing.JFrame {
 			} catch (Exception e) {
 			}
 			break;
-		case KeyEvent.VK_F4:
-			if (currMode != Lab.CURRENT) {
-				Utils.createErrMsg("Cannot delete old receive date");
-				return;
-			}
-			int rv = JOptionPane.showConfirmDialog(this,
-					"Delete current receive date", "Delete Rec'v Date",
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (rv == JOptionPane.YES_OPTION) {
-				int maxLab = 0;
-				try {
-					maxLab = Integer.parseInt(rBegin00.getText());
-				} catch (Exception e) {
-					maxLab = 0;
-				}
-				if (maxLab > 0) {
-					deleteReceiveDate(maxLab);
-					rDay00.setText(null);
-					rBegin00.setText(null);
-					rEnd00.setText(null);
-					rTtl00.setText(null);
-					getDates();
-					rDay00.requestFocus();
-				}
-			}
-			break;
+		
 		case KeyEvent.VK_ESCAPE:
 			currMode = Lab.IDLE;
 			rBegin01.setEnabled(false);

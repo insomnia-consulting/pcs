@@ -902,7 +902,7 @@ public class LabForm extends PcsFrame
                     }
                     else {
                     	
-                        if ((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0) updateHPV();
+                    	if ((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0) updateHPV();
                         else updateActions();
                     }
                 }

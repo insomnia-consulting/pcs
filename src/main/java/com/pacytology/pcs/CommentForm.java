@@ -17,11 +17,16 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+
 import javax.swing.*;
+
 import java.sql.*;
+
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
-public class CommentForm extends javax.swing.JFrame
+public class CommentForm extends PcsFrame
 {
 
 	public JTextArea parentText = new javax.swing.JTextArea();
@@ -90,8 +95,24 @@ public class CommentForm extends javax.swing.JFrame
 		SymWindow aSymWindow = new SymWindow();
 		this.addWindowListener(aSymWindow);
 		//}}
+		
+		setupKeyPressMap();
 	}
 
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+
+		AbstractAction closeAction = new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				closingActions();
+			}
+		};
+
+		rp.getActionMap().put("F9", closeAction);
+		rp.getActionMap().put("ESC", closeAction);
+		return rp;
+	}
 	public CommentForm(String title, JTextArea parentText, boolean isUpdatable)
 	{
 		this();
