@@ -1,7 +1,9 @@
 package com.pacytology.pcs.ui;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JRootPane;
@@ -40,6 +42,8 @@ public abstract class PcsFrame extends JFrame {
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(esc, "ESC");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(insert, "INSERT");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(vk_i, "VK_I");
+		
+		
 		return rp;
 	}
 

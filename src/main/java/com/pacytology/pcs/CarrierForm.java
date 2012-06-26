@@ -21,15 +21,19 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
+import javax.swing.JRootPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
-public class CarrierForm extends javax.swing.JFrame
+public class CarrierForm extends PcsFrame
 {
     
     public Login dbLogin;
@@ -370,9 +374,132 @@ public class CarrierForm extends javax.swing.JFrame
 		        }
 		    }
 		}
-		
+		setupKeyPressMap();
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+		rp.getActionMap().put("F1", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 if (fKeys.isOn(fKeys.F1)) {
+	                    currMode=Lab.QUERY;
+	                    queryActions();
+	                }
+	                else Utils.createErrMsg("F1 Key not available");
+			}
+		});
+		rp.getActionMap().put("F2", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F2)) {
+					if ((e.getModifiers() & ActionEvent.CTRL_MASK) != 0){
+						updateBilling=true;
+					}
 
+                    currMode=Lab.ADD;
+                    addActions();
+                }
+                else Utils.createErrMsg("F2 Key not available");
+			}
+		});
+		rp.getActionMap().put("F3", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F3)) {
+					if ((e.getModifiers() & ActionEvent.CTRL_MASK) != 0){
+						updateBilling=true;
+					}
+                    currMode=Lab.UPDATE;
+                    updateActions();
+                }
+                else Utils.createErrMsg("F3 Key not available");
+			}
+		});
+		rp.getActionMap().put("F4", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 if (currMode==Lab.IDLE && formMode!=LAB && formMode!=BILL) {
+	                    mergeActions();
+	                }
+	                else Utils.createErrMsg("F4 Key not available");
+			}
+		});
+		rp.getActionMap().put("F9", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F9)) {
+                    closingActions();
+                }
+                else Utils.createErrMsg("F9 Key not available");
+			}
+		});
+		rp.getActionMap().put("F8", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (cBillingChoice.hasFocus()) {
+                    int numItems = dbLogin.billingCodeVect.size();
+                    String[] codeDesc = new String[numItems];
+                    String[] codeList = new String[numItems];
+                    for (int i=0; i<dbLogin.billingCodeVect.size(); i++) {
+                        BillingCodeRec bCode = 
+                            (BillingCodeRec)dbLogin.billingCodeVect.elementAt(i);
+                        if (bCode.choice_code.equals("OI") ||
+                            bCode.choice_code.equals("DPA") ||
+                            bCode.choice_code.equals("MED") ||
+                            bCode.choice_code.equals("BS")) 
+                        {
+                            codeDesc[i]=bCode.formattedString;
+                            codeList[i]=bCode.choice_code;
+                        }
+                    }
+                    (new PickList("Billing Codes",200,200,240,190,
+                        numItems,codeDesc,codeList,cBillingChoice)).setVisible(true);
+                }
+                else if (cTPP.hasFocus()) {
+                    int numItems = dbLogin.tppVect.size();
+                    String[] tppDesc = new String[numItems];
+                    String[] tppList = new String[numItems];
+                    for (int i=0; i<dbLogin.tppVect.size(); i++) {
+                        TppRec tppRec = (TppRec)dbLogin.tppVect.elementAt(i);
+                        tppDesc[i] = "["+tppRec.tpp+"] "+tppRec.tpp_name;
+                        tppList[i] = tppRec.tpp;
+                    }
+                    (new PickList("TPPs",200,200,240,190,
+                        numItems,tppDesc,tppList,cTPP)).setVisible(true);
+                }
+			}
+		});
+		rp.getActionMap().put("F11", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 if (fKeys.isOn(fKeys.F11))
+	                    selectActions();
+			}
+		});
+		rp.getActionMap().put("F12", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 if (fKeys.isOn(fKeys.F12)) finalActions();
+	                else Utils.createErrMsg("F12 Key not available");
+			}
+		});
+		rp.getActionMap().put("ESC", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				CarrierForm.this.resetCarrierForm();
+			}
+		});
+		AbstractAction showRemarks = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				
+				if (  ((currMode==Lab.IDLE)&&(cRec.carrier_id>0))
+	                    ||((currMode==Lab.UPDATE)&&(cRec.carrier_id>0))
+	                    || (currMode==Lab.ADD) ) {
+	                    boolean isUpdatable = false;
+	                    if (currMode==Lab.ADD || currMode==Lab.UPDATE) isUpdatable=true;
+	                    (new CommentForm(
+	                        "Payer Comments",carrierComments,isUpdatable)).setVisible(true);
+	                    }
+			}
+		};
+		rp.getActionMap().put("INSERT", showRemarks);
+		//Let's add 'I' as a way of calling VK_INSERT ON Mac
+		String osName = System.getProperty("os.name").toLowerCase();
+		boolean isMacOs = osName.startsWith("mac os x");
+		if (isMacOs) rp.getActionMap().put("VK_I", showRemarks);
+		return rp;
+	}
 	public CarrierForm(String sTitle)
 	{
 		this();
@@ -753,95 +880,6 @@ public class CarrierForm extends javax.swing.JFrame
 		int key = event.getKeyCode();
         msgLabel.setText(null);
 		switch (key)  {
-            case KeyEvent.VK_F1:
-                if (fKeys.isOn(fKeys.F1)) {
-                    currMode=Lab.QUERY;
-                    queryActions();
-                }
-                else Utils.createErrMsg("F1 Key not available");
-                break;
-            case KeyEvent.VK_F2:
-                if (fKeys.isOn(fKeys.F2)) {
-                    if (event.isControlDown()) updateBilling=true;
-                    currMode=Lab.ADD;
-                    addActions();
-                }
-                else Utils.createErrMsg("F2 Key not available");
-                break;
-            case KeyEvent.VK_F3:
-                if (fKeys.isOn(fKeys.F3)) {
-                    if (event.isControlDown()) updateBilling=true;
-                    currMode=Lab.UPDATE;
-                    updateActions();
-                }
-                else Utils.createErrMsg("F3 Key not available");
-                break;
-            case KeyEvent.VK_F4:
-                if (currMode==Lab.IDLE && formMode!=LAB && formMode!=BILL) {
-                    mergeActions();
-                }
-                else Utils.createErrMsg("F4 Key not available");
-                break;
-            case KeyEvent.VK_F9:
-                if (fKeys.isOn(fKeys.F9)) {
-                    closingActions();
-                }
-                else Utils.createErrMsg("F9 Key not available");
-                break;
-            case KeyEvent.VK_F8:
-                if (cBillingChoice.hasFocus()) {
-                    int numItems = dbLogin.billingCodeVect.size();
-                    String[] codeDesc = new String[numItems];
-                    String[] codeList = new String[numItems];
-                    for (int i=0; i<dbLogin.billingCodeVect.size(); i++) {
-                        BillingCodeRec bCode = 
-                            (BillingCodeRec)dbLogin.billingCodeVect.elementAt(i);
-                        if (bCode.choice_code.equals("OI") ||
-                            bCode.choice_code.equals("DPA") ||
-                            bCode.choice_code.equals("MED") ||
-                            bCode.choice_code.equals("BS")) 
-                        {
-                            codeDesc[i]=bCode.formattedString;
-                            codeList[i]=bCode.choice_code;
-                        }
-                    }
-                    (new PickList("Billing Codes",200,200,240,190,
-                        numItems,codeDesc,codeList,cBillingChoice)).setVisible(true);
-                }
-                else if (cTPP.hasFocus()) {
-                    int numItems = dbLogin.tppVect.size();
-                    String[] tppDesc = new String[numItems];
-                    String[] tppList = new String[numItems];
-                    for (int i=0; i<dbLogin.tppVect.size(); i++) {
-                        TppRec tppRec = (TppRec)dbLogin.tppVect.elementAt(i);
-                        tppDesc[i] = "["+tppRec.tpp+"] "+tppRec.tpp_name;
-                        tppList[i] = tppRec.tpp;
-                    }
-                    (new PickList("TPPs",200,200,240,190,
-                        numItems,tppDesc,tppList,cTPP)).setVisible(true);
-                }
-                break;
-            case KeyEvent.VK_F11:
-                if (fKeys.isOn(fKeys.F11))
-                    selectActions();
-                break;
-            case KeyEvent.VK_F12:
-                if (fKeys.isOn(fKeys.F12)) finalActions();
-                else Utils.createErrMsg("F12 Key not available");
-                break;
-            case KeyEvent.VK_ESCAPE:
-                this.resetCarrierForm();
-                break;
-            case KeyEvent.VK_INSERT:
-                if (  ((currMode==Lab.IDLE)&&(cRec.carrier_id>0))
-                    ||((currMode==Lab.UPDATE)&&(cRec.carrier_id>0))
-                    || (currMode==Lab.ADD) ) {
-                    boolean isUpdatable = false;
-                    if (currMode==Lab.ADD || currMode==Lab.UPDATE) isUpdatable=true;
-                    (new CommentForm(
-                        "Payer Comments",carrierComments,isUpdatable)).setVisible(true);
-                    }
-                break;
             case KeyEvent.VK_CONTROL:
                 ((JTextField)getFocusOwner()).setText(null);
                 break;

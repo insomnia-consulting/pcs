@@ -23,16 +23,20 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.PrintJob;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
+import javax.swing.JRootPane;
 import javax.swing.JTextField;
 
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
-public class TissuePathologyForm extends javax.swing.JFrame
+public class TissuePathologyForm extends PcsFrame
 {
     Vector labResults = new Vector();
     public int currMode=Lab.IDLE;
@@ -394,6 +398,7 @@ public class TissuePathologyForm extends javax.swing.JFrame
 		pathCompleted.addKeyListener(aSymKey);
 		resPathologist.addKeyListener(aSymKey);
 		//}}
+		setupKeyPressMap();
 		
 		for (int i=0; i<this.getContentPane().getComponentCount(); i++) {
 		    Component c = this.getContentPane().getComponent(i);
@@ -415,7 +420,113 @@ public class TissuePathologyForm extends javax.swing.JFrame
 		}
 		resetColors();
 	}
-	
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+		rp.getActionMap().put("F1", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				queryActions();       
+			}
+		});
+		rp.getActionMap().put("F2", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				addActions();
+			}
+		});
+		rp.getActionMap().put("F3", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				updateActions();
+			}
+		});
+		rp.getActionMap().put("F4", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				tissuePathologyReport();
+			}
+		});
+		rp.getActionMap().put("F5", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (!resRemarks.isEnabled()) {
+                    resRemarks.setEnabled(true);
+                    if (textItemsList.getSelectedIndex()<0)
+                        textItemsList.setSelectedIndex(0);
+                    String s =
+                        textBuffer[textItemsList.getSelectedIndex()];
+                    if (!Utils.isNull(s)) resRemarks.setText(s);
+                    resRemarks.requestFocus();
+                }
+                else {
+                    resRemarks.setEnabled(false);
+                    textBuffer[textItemsList.getSelectedIndex()]=resRemarks.getText();
+                    //resRemarks.setText(null);
+                    //resRemarks.transferFocus();
+                    resCompleted.requestFocus();
+                }
+			}
+		});
+		rp.getActionMap().put("F8", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 if (resCytoTech.hasFocus()) {
+		                String buf[] = new String [MAX_TECHS];
+		                String buf2[] = new String [MAX_TECHS];
+		                for (int i=0;i<MAX_TECHS;i++) {
+		                    buf[i]=
+		                        techs[i].cytotech_code+"   "+
+		                        techs[i].lname+", "+
+		                        techs[i].fname;
+                         buf2[i]=techs[i].cytotech_code;
+                     }
+                     (new PickList("Cytotechnologists",
+                           200,50,220,200,
+                           MAX_TECHS,buf,buf2,
+                           resCytoTech)).setVisible(true);
+		            }
+		            else if (resPathologist.hasFocus()) {
+		                String buf[] = new String [MAX_PATHS];
+		                String buf2[] = new String [MAX_PATHS];
+		                for (int i=0;i<MAX_PATHS;i++) {
+		                    buf[i]=
+		                        paths[i].pathologist_code+"   "+
+		                        paths[i].lname+", "+
+		                        paths[i].fname;
+                         buf2[i]=paths[i].pathologist_code;
+                     }
+                     (new PickList("Pathologists",
+                           200,50,220,200,
+                           MAX_PATHS,buf,buf2,
+                           resPathologist)).setVisible(true);
+		            }
+		            else if (resRemarks.hasFocus()) {
+		                String buf[] = new String [tissueCodes.size()];
+		                String buf2[] = new String [tissueCodes.size()];
+		                for (int i=0;i<tissueCodes.size();i++) {
+		                    String s1 = (String)tissueCodes.elementAt(i);
+		                    String s2 = (String)tissueCodeDescriptions.elementAt(i);
+		                    buf[i]=s1+" "+s2;
+		                    buf2[i]=s2;
+		                }
+		                (new PickList("Tissue Codes",
+		                    0,0,400,500,
+		                    tissueCodes.size(),buf,buf2,resRemarks)).setVisible(true);
+		            }
+			}
+		});
+		rp.getActionMap().put("F9", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				closingActions();
+			}
+		});
+		rp.getActionMap().put("F12", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				finalActions();
+			}
+		});
+		rp.getActionMap().put("ESC", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				resetForm();
+			}
+		});
+		
+		return rp;
+	}
     public TissuePathologyForm(Login dbLogin)  {
         this();
         this.log = new LogFile(
@@ -613,90 +724,6 @@ public class TissuePathologyForm extends javax.swing.JFrame
 	{
 		int key=event.getKeyCode();
 		switch (key) {
-		    case KeyEvent.VK_F1:
-		        queryActions();
-		        break;
-		    case KeyEvent.VK_F2:
-		        addActions();
-		        break;
-		    case KeyEvent.VK_F3:
-		        updateActions();
-		        break;
-		    case KeyEvent.VK_F4:
-		        tissuePathologyReport();
-                break;
-            case KeyEvent.VK_F5:
-                if (!resRemarks.isEnabled()) {
-                    resRemarks.setEnabled(true);
-                    if (textItemsList.getSelectedIndex()<0)
-                        textItemsList.setSelectedIndex(0);
-                    String s =
-                        textBuffer[textItemsList.getSelectedIndex()];
-                    if (!Utils.isNull(s)) resRemarks.setText(s);
-                    resRemarks.requestFocus();
-                }
-                else {
-                    resRemarks.setEnabled(false);
-                    textBuffer[textItemsList.getSelectedIndex()]=resRemarks.getText();
-                    //resRemarks.setText(null);
-                    //resRemarks.transferFocus();
-                    resCompleted.requestFocus();
-                }
-                break;
-		    case KeyEvent.VK_F8:
-		            if (resCytoTech.hasFocus()) {
-		                String buf[] = new String [MAX_TECHS];
-		                String buf2[] = new String [MAX_TECHS];
-		                for (int i=0;i<MAX_TECHS;i++) {
-		                    buf[i]=
-		                        techs[i].cytotech_code+"   "+
-		                        techs[i].lname+", "+
-		                        techs[i].fname;
-                            buf2[i]=techs[i].cytotech_code;
-                        }
-                        (new PickList("Cytotechnologists",
-                              200,50,220,200,
-                              MAX_TECHS,buf,buf2,
-                              resCytoTech)).setVisible(true);
-		            }
-		            else if (resPathologist.hasFocus()) {
-		                String buf[] = new String [MAX_PATHS];
-		                String buf2[] = new String [MAX_PATHS];
-		                for (int i=0;i<MAX_PATHS;i++) {
-		                    buf[i]=
-		                        paths[i].pathologist_code+"   "+
-		                        paths[i].lname+", "+
-		                        paths[i].fname;
-                            buf2[i]=paths[i].pathologist_code;
-                        }
-                        (new PickList("Pathologists",
-                              200,50,220,200,
-                              MAX_PATHS,buf,buf2,
-                              resPathologist)).setVisible(true);
-		            }
-		            else if (resRemarks.hasFocus()) {
-		                String buf[] = new String [tissueCodes.size()];
-		                String buf2[] = new String [tissueCodes.size()];
-		                for (int i=0;i<tissueCodes.size();i++) {
-		                    String s1 = (String)tissueCodes.elementAt(i);
-		                    String s2 = (String)tissueCodeDescriptions.elementAt(i);
-		                    buf[i]=s1+" "+s2;
-		                    buf2[i]=s2;
-		                }
-		                (new PickList("Tissue Codes",
-		                    0,0,400,500,
-		                    tissueCodes.size(),buf,buf2,resRemarks)).setVisible(true);
-		            }
-		        break;
-		    case KeyEvent.VK_F9:
-		        closingActions();
-		        break;
-		    case KeyEvent.VK_F12:
-		        finalActions();
-		        break;
-            case KeyEvent.VK_ESCAPE:
-                resetForm();
-                break;
             case KeyEvent.VK_INSERT:
                 //displayComments();
                 break;

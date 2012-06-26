@@ -16,7 +16,11 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
 import javax.swing.*;
+
 import com.pacytology.pcs.ui.Square;
 import java.sql.*;
 import javax.swing.border.LineBorder;
@@ -220,8 +224,57 @@ public class HPVTestResults extends javax.swing.JDialog
 		dateLock.addActionListener(lSymAction);
 		techLock.addActionListener(lSymAction);
 		//}}
+		setupKeyPressMap();
+		
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = getRootPane();
 
+		KeyStroke f2 = KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false);
+		KeyStroke f4 = KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false);
+		KeyStroke f9 = KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false);
+		KeyStroke esc = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);		
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f2, "F2");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f4, "F4");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f9, "F9");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(esc, "ESC");
+		rp.getActionMap().put("F2", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 if (!setLocks) addActions();
+			}
+		});
+		rp.getActionMap().put("F4", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (setLocks) {
+			        if (verifyLocks()) { 
+	                    if (initializeLockedFields()) {
+			                setLocks=false;
+			                message.setText(null);
+			                lockPanel.requestFocus();
+			            }
+			            else resetForm();
+			        }
+			        else resetForm();
+			    }
+			    else {
+			        setLocks=true;
+			        lockFields();
+			    }
+			}
+		});
+		rp.getActionMap().put("F9", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				HPVTestResults.this.dispose();
+			}
+		});
+		rp.getActionMap().put("ESC", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				HPVTestResults.this.resetForm();
+			}
+		});
+		
+		return rp;
+	}
 	public HPVTestResults()
 	{
 		this((Frame)null);
@@ -375,9 +428,7 @@ public class HPVTestResults extends javax.swing.JDialog
 		public void keyPressed(java.awt.event.KeyEvent event)
 		{
 			Object object = event.getSource();
-			if (object == HPVTestResults.this)
-				HPVTestResults_keyPressed(event);
-			else if (object == hpvResults)
+			if (object == hpvResults)
 				hpvResults_keyPressed(event);
 			else if (object == hpvCompleted)
 				hpvCompleted_keyPressed(event);
@@ -388,33 +439,7 @@ public class HPVTestResults extends javax.swing.JDialog
 		}
 	}
 
-	void HPVTestResults_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_F9) this.dispose();
-		else if (event.getKeyCode()==event.VK_ESCAPE) resetForm();
-		else if (event.getKeyCode()==event.VK_F1) { }
-		else if (event.getKeyCode()==event.VK_F2) { 
-		    if (!setLocks) addActions();
-		}
-		else if (event.getKeyCode()==event.VK_F3) { }
-		else if (event.getKeyCode()==event.VK_F4) { 
-		    if (setLocks) {
-		        if (verifyLocks()) { 
-                    if (initializeLockedFields()) {
-		                setLocks=false;
-		                message.setText(null);
-		                lockPanel.requestFocus();
-		            }
-		            else resetForm();
-		        }
-		        else resetForm();
-		    }
-		    else {
-		        setLocks=true;
-		        lockFields();
-		    }
-		}
-	}
+
 	
 	boolean initializeLockedFields()
 	{

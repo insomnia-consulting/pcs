@@ -26,10 +26,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.JLabel;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -39,10 +42,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
 
-public class PracticesForm extends javax.swing.JFrame
+public class PracticesForm extends PcsFrame
 {
     public Login dbLogin;
     public LogFile log;
@@ -551,8 +555,100 @@ public class PracticesForm extends javax.swing.JFrame
 		parentAccount.addFocusListener(aSymFocus);
 		pProgram.addKeyListener(aSymKey);
 		//}}
+		
+		setupKeyPressMap();
+		
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+		rp.getActionMap().put("F1", new AbstractAction() {
 
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F1)) queryActions();
+		        else Utils.createErrMsg("Query Option Not Available");
+			}
+		});
+		
+		rp.getActionMap().put("F2", new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F2))
+                    addActions();
+		        
+			}
+		});
+		rp.getActionMap().put("F3", new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F3))
+                    updateActions();
+		        
+			}
+		});
+		rp.getActionMap().put("F4", new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				if (currMode==Lab.UPDATE) {
+                    if (practiceRec.active_status.equals("A")) {
+                        practiceRec.active_status="I";
+                        practiceRec.practice_type="NOT USED";
+                        pStatus.setText("INACTIVE");
+                    }
+                    else {
+                        practiceRec.active_status="A";
+                        pStatus.setText("ACTIVE");
+                    }
+                }
+		        
+			}
+		});
+		rp.getActionMap().put("F5", new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+                if (fKeys.isOn(fKeys.F5))
+                    doctorActions();
+		        
+			}
+		});
+		rp.getActionMap().put("F8", new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				 if (priceCode.hasFocus()) {
+                     displayPriceCodes();
+                 }
+		        
+			}
+		});
+		rp.getActionMap().put("F9", new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+                if (currMode==Lab.IDLE) closingActions();
+			}
+		});
+		rp.getActionMap().put("F11", new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				mailerActions()	;
+			}
+		});
+		rp.getActionMap().put("ESC", new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				resetForm();
+			}
+		});
+		AbstractAction showRemarks = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (practiceRec.practice>0) displayComments();
+			}
+		};
+		rp.getActionMap().put("INSERT", showRemarks);
+		//Let's add 'I' as a way of calling VK_INSERT ON Mac
+		String osName = System.getProperty("os.name").toLowerCase();
+		boolean isMacOs = osName.startsWith("mac os x");
+		if (isMacOs) rp.getActionMap().put("VK_I", showRemarks);
+		return rp; 
+	}
 	public PracticesForm(String sTitle)
 	{
 		this();
@@ -1139,71 +1235,18 @@ public class PracticesForm extends javax.swing.JFrame
             int ndx=0;
 	        int key=event.getKeyCode();
             switch (key) {
-                case KeyEvent.VK_INSERT:
-                    if (practiceRec.practice>0) displayComments();
-                    break;
+
                 case KeyEvent.VK_ESCAPE:
                     resetForm();
                     break;
-                case KeyEvent.VK_F1:
-                    if (event.isShiftDown()) 
-                        dateAddedList();
-                    else if (fKeys.isOn(fKeys.F1)) 
-                        queryActions();
-                    break;
-                case KeyEvent.VK_F4:
-                    if (currMode==Lab.UPDATE) {
-                        if (practiceRec.active_status.equals("A")) {
-                            practiceRec.active_status="I";
-                            practiceRec.practice_type="NOT USED";
-                            pStatus.setText("INACTIVE");
-                        }
-                        else {
-                            practiceRec.active_status="A";
-                            pStatus.setText("ACTIVE");
-                        }
-                    }
-                    break;
-                /*
-                case KeyEvent.VK_F10:
-                    Vector v = dbOps.mailerData();
-                    String[] s = new String[v.size()];
-                    for (int i=0; i<v.size(); i++) {
-                        s[i]=(String)v.elementAt(i);
-                    }
-                    (new PickList("Addresses",
-                              480,20,190,450,
-                              v.size(),s)).setVisible(true);
-                    
-                    break;
-                case KeyEvent.VK_F11:
-                    mailerActions();
-                    break;
-                */
+
+
                 case KeyEvent.VK_F12:
                     if (fKeys.isOn(fKeys.F12))
                         finalActions();
                     break;
-                case KeyEvent.VK_F5:
-                    if (fKeys.isOn(fKeys.F5))
-                        doctorActions();
-                    break;
-                case KeyEvent.VK_F2:
-                    if (fKeys.isOn(fKeys.F2))
-                        addActions();
-                    break;
-                case KeyEvent.VK_F3:
-                    if (fKeys.isOn(fKeys.F3))
-                        updateActions();
-                    break;
-                case KeyEvent.VK_F8:
-                    if (priceCode.hasFocus()) {
-                        displayPriceCodes();
-                    }
-                    break;
-                case KeyEvent.VK_F9:
-                    if (currMode==Lab.IDLE) closingActions();
-                    break;
+
+
                 case KeyEvent.VK_DOWN:
                     increment();
                     break;

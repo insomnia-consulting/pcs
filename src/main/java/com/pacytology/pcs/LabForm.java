@@ -3067,9 +3067,7 @@ public class LabForm extends PcsFrame
                 else prepFlag=true;
                 resetLabForm();
                 break;
-            case KeyEvent.VK_INSERT:                
-                displayComments();
-                break;      
+
             case KeyEvent.VK_CONTROL:                
                 if (labRelCode.hasFocus()) return;
                 ((JTextField)getFocusOwner()).setText(null);
