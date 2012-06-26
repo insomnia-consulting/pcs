@@ -793,7 +793,7 @@ public class LabForm extends PcsFrame
 		labSubscrLName.addKeyListener(aSymKey);
 		labSubscrFName.addKeyListener(aSymKey);
 		labDPAState.addKeyListener(aSymKey);
-		labLMP.addKeyListener(aSymKey);
+		
 		labAge.addKeyListener(aSymKey);
 		labClientNotes.addKeyListener(aSymKey);
 
@@ -4327,7 +4327,6 @@ public class LabForm extends PcsFrame
 		    else labSubscrFName.transferFocus();
 		}
 	}
-
 	void labLMP_keyPressed(java.awt.event.KeyEvent event)
 	{
 	    int key = event.getKeyCode();
