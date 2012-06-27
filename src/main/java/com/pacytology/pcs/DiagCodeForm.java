@@ -371,11 +371,7 @@ public class DiagCodeForm extends PcsFrame
 		                }
 			}
 		});
-		rp.getActionMap().put("VK_CONTROL", new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				((JTextField)getFocusOwner()).setText(null);
-			}
-		});
+		
 		return rp;
 	}
 	public DiagCodeForm(String sTitle)

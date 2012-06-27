@@ -5,13 +5,20 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 import javax.swing.*;
+
+import org.apache.commons.lang.NotImplementedException;
+
+import com.pacytology.pcs.actions.PClassActionMap;
+import com.pacytology.pcs.actions.PcsActionMap;
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 
-public class PClassForm extends javax.swing.JFrame
+public class PClassForm extends PcsFrame
 {
     
     public Login dbLogin;
@@ -149,15 +156,55 @@ public class PClassForm extends javax.swing.JFrame
 		
 		resetColors();
 
-		//{{INIT_MENUS
-		//}}
-	
-		//{{REGISTER_LISTENERS
-		SymKey aSymKey = new SymKey();
-		this.addKeyListener(aSymKey);
-		//}}
+		actionMap = new PClassActionMap(this);
+		this.setupKeyPressMap();
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+		rp.getActionMap().put("F4", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				msgLabel.setText("Delete function not yet implemented");
+			}
+		});
+		rp.getActionMap().put("F12", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				msgLabel.setText("Submit function not yet implemented");
+			}
+		});
+		rp.getActionMap().put("VK_DOWN", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+			    msgLabel.setText(null);
+				currNdx++;
+		        if (currNdx>=pclassVect.size())
+		            currNdx=pclassVect.size()-1;
+		        displayClass(currNdx);
 
+			}
+		});
+		rp.getActionMap().put("VK_UP", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				msgLabel.setText(null);
+				currNdx--;
+                if (currNdx<0) currNdx=0;
+                displayClass(currNdx);
+			}
+		});
+		rp.getActionMap().put("VK_HOME", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				msgLabel.setText(null);
+				currNdx=0;
+                displayClass(currNdx);
+			}
+		});
+		rp.getActionMap().put("VK_END", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				msgLabel.setText(null);
+				currNdx=pclassVect.size()-1;
+                displayClass(currNdx);
+			}
+		});
+		return rp;
+	}
 	public PClassForm(Login dbLogin)
 	{
 	    this();
@@ -216,7 +263,7 @@ public class PClassForm extends javax.swing.JFrame
 	javax.swing.JLabel F3action = new javax.swing.JLabel();
 	javax.swing.JLabel F4action = new javax.swing.JLabel();
 	javax.swing.JLabel F9action = new javax.swing.JLabel();
-	javax.swing.JLabel msgLabel = new javax.swing.JLabel();
+	
 	Square F12sq = new Square();
 	javax.swing.JLabel F12lbl = new javax.swing.JLabel();
 	javax.swing.JLabel F12action = new javax.swing.JLabel();
@@ -281,61 +328,6 @@ public class PClassForm extends javax.swing.JFrame
 	    bcodeList.repaint();
 	}
 
-
-	class SymKey extends java.awt.event.KeyAdapter
-	{
-		public void keyPressed(java.awt.event.KeyEvent event)
-		{
-			Object object = event.getSource();
-			if (object == PClassForm.this)
-				PClassForm_keyPressed(event);
-		}
-	}
-
-	void PClassForm_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    msgLabel.setText(null);
-		int key = event.getKeyCode();
-		switch (key) {
-		    case KeyEvent.VK_DOWN:
-		        currNdx++;
-		        if (currNdx>=pclassVect.size())
-		            currNdx=pclassVect.size()-1;
-		        displayClass(currNdx);
-		        break;
-            case KeyEvent.VK_UP:
-                currNdx--;
-                if (currNdx<0) currNdx=0;
-                displayClass(currNdx);
-                break;
-            case KeyEvent.VK_HOME:
-                currNdx=0;
-                displayClass(currNdx);
-                break;
-            case KeyEvent.VK_END:
-                currNdx=pclassVect.size()-1;
-                displayClass(currNdx);
-                break;
-            case KeyEvent.VK_F1:
-                msgLabel.setText("Query function not yet implemented");
-                break;
-            case KeyEvent.VK_F2:
-                msgLabel.setText("Add function not yet implemented");
-                break;
-            case KeyEvent.VK_F3:
-                msgLabel.setText("Update function not yet implemented");
-                break;
-            case KeyEvent.VK_F4:
-                msgLabel.setText("Delete function not yet implemented");
-                break;
-            case KeyEvent.VK_F12:
-                msgLabel.setText("Submit function not yet implemented");
-                break;
-            case KeyEvent.VK_F9:
-                closingActions();
-                break;
-		}
-	}
 	
 	void resetColors()
 	{
@@ -346,6 +338,34 @@ public class PClassForm extends javax.swing.JFrame
 	void closingActions()
 	{
 	    this.dispose();
+	}
+	/**
+	 * Not Implemented
+	 */
+	@Override
+	public void queryActions() {
+		throw new NotImplementedException();
+	}
+	/**
+	 * Not Implemented
+	 */
+	@Override
+	public void addActions() {
+		throw new NotImplementedException();
+	}
+	/**
+	 * Not Implemented
+	 */
+	@Override
+	public void updateActions() {
+		throw new NotImplementedException();
+	}
+	/**
+	 * Not Implemented
+	 */
+	@Override
+	public void finalActions() {
+		throw new NotImplementedException();
 	}
 	
 }

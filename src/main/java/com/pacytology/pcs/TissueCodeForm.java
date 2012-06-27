@@ -11,6 +11,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.PrintJob;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +19,9 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.JLabel;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -26,9 +29,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
+import com.pacytology.pcs.actions.PcsActionMap;
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
-public class TissueCodeForm extends javax.swing.JFrame
+public class TissueCodeForm extends PcsFrame
 {
     public Login dbLogin;
     Vector resultCodeVect;
@@ -216,12 +221,74 @@ public class TissueCodeForm extends javax.swing.JFrame
 	
 		//{{REGISTER_LISTENERS
 		SymKey aSymKey = new SymKey();
-		this.addKeyListener(aSymKey);
 		tissueCode.addKeyListener(aSymKey);
 		tissueCodeDesc.addKeyListener(aSymKey);
 		//}}
+		
+		actionMap = new PcsActionMap(this);
+		this.setupKeyPressMap();
 	}
-
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+		rp.getActionMap().put("F4", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				printResultCodes();
+			}
+		});
+		rp.getActionMap().put("VK_DOWN", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode==Lab.IDLE) {
+		        	int ndx;
+		            increment();
+                    msgLabel.setText(null);
+                    if (tissueCodeTable.getSelectedRow()==(-1)) ndx=0;
+		            else ndx=tissueCodeTable.getSelectedRow()+1;
+                    if (ndx==resultCodeVect.size()) ndx--;
+		            setEntryFields();
+		        }
+			}
+		});
+		rp.getActionMap().put("VK_UP", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode==Lab.IDLE) {
+                	int ndx;
+                    decrement();
+                    msgLabel.setText(null);
+                    if (tissueCodeTable.getSelectedRow()==(-1)) ndx=0;
+		            else ndx=tissueCodeTable.getSelectedRow()-1;
+                    if (ndx==(-1)) ndx=0;
+		            setEntryFields();
+		        }
+			}
+		});
+		rp.getActionMap().put("VK_HOME", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 if (currMode==Lab.IDLE) {
+	                    displayRow(0);
+	                    msgLabel.setText(null);
+			            setEntryFields();
+	                }
+			}
+		});
+		rp.getActionMap().put("VK_END", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 if (currMode==Lab.IDLE) {
+	                    displayRow(resultCodeVect.size()-1);
+	                    msgLabel.setText(null);
+			            setEntryFields();
+	                }
+			}
+		});
+		rp.getActionMap().put("ESC", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				currMode=Lab.IDLE;
+                resetForm();
+                displayList(0);
+                setEntryFields();
+			}
+		});
+		return rp;
+	}
 	public TissueCodeForm(String sTitle)
 	{
 		this();
@@ -399,9 +466,7 @@ public class TissueCodeForm extends javax.swing.JFrame
 		public void keyPressed(java.awt.event.KeyEvent event)
 		{
 			Object object = event.getSource();
-			if (object == TissueCodeForm.this)
-				TissueCodeForm_keyPressed(event);
-			else if (object == activeStatus)
+			if (object == activeStatus)
 				activeStatus_keyPressed(event);
 			else if (object == tissueCode)
 				tissueCode_keyPressed(event);
@@ -410,83 +475,7 @@ public class TissueCodeForm extends javax.swing.JFrame
 		}
 	}
 
-	void TissueCodeForm_keyPressed(java.awt.event.KeyEvent event)
-	{
-		int ndx;
-		int key=event.getKeyCode();
-		switch (key) {
-		    case java.awt.event.KeyEvent.VK_DOWN:
-		        if (currMode==Lab.IDLE) {
-		            increment();
-                    msgLabel.setText(null);
-                    if (tissueCodeTable.getSelectedRow()==(-1)) ndx=0;
-		            else ndx=tissueCodeTable.getSelectedRow()+1;
-                    if (ndx==resultCodeVect.size()) ndx--;
-		            setEntryFields();
-		        }
-		        break;
-            case java.awt.event.KeyEvent.VK_UP:
-                if (currMode==Lab.IDLE) {
-                    decrement();
-                    msgLabel.setText(null);
-                    if (tissueCodeTable.getSelectedRow()==(-1)) ndx=0;
-		            else ndx=tissueCodeTable.getSelectedRow()-1;
-                    if (ndx==(-1)) ndx=0;
-		            setEntryFields();
-		        }
-		        break;
-            case java.awt.event.KeyEvent.VK_F1:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F1)==true) queryActions();
-                else msgLabel.setText("Query option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_F12:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F12)==true) finalActions();
-                else msgLabel.setText("Finalize option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_HOME:
-                if (currMode==Lab.IDLE) {
-                    displayRow(0);
-                    msgLabel.setText(null);
-		            setEntryFields();
-                }
-		        break; 
-            case java.awt.event.KeyEvent.VK_END:
-                if (currMode==Lab.IDLE) {
-                    displayRow(resultCodeVect.size()-1);
-                    msgLabel.setText(null);
-		            setEntryFields();
-                }
-		        break; 
-            case java.awt.event.KeyEvent.VK_F9:
-                this.dispose();
-                break;
-            case java.awt.event.KeyEvent.VK_F2:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F2)==true) addActions();
-                else msgLabel.setText("Add option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_F3:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F3)) updateActions();
-                else msgLabel.setText("Update option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_F4:
-                printResultCodes();
-                break;
-            case java.awt.event.KeyEvent.VK_ESCAPE:
-                currMode=Lab.IDLE;
-                resetForm();
-                displayList(0);
-                setEntryFields();
-                break;
-            case KeyEvent.VK_CONTROL:                
-                ((JTextField)getFocusOwner()).setText(null);
-                break;
-                
-		}
-	}
+	
 	
 	public void queryActions() {
 	    currMode=Lab.QUERY;

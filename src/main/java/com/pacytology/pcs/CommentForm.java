@@ -21,6 +21,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.*;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import java.sql.*;
 
 import com.pacytology.pcs.ui.PcsFrame;
@@ -98,7 +100,12 @@ public class CommentForm extends PcsFrame
 		
 		setupKeyPressMap();
 	}
-
+	/**
+	 * Not implemented
+	 */
+	public void queryActions() {
+		throw new NotImplementedException("Not implemented for this CommentForm");
+	} ; 
 	protected JRootPane setupKeyPressMap() {
 		JRootPane rp = super.setupKeyPressMap();
 
@@ -285,7 +292,7 @@ public class CommentForm extends PcsFrame
             pstmt=dbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,labNumber);
             pstmt.executeUpdate();
-            rs.close(); pstmt.close(); }
+            	rs.close(); pstmt.close(); }
             catch (SQLException f) { System.out.println("[U01] "+f.toString()); }
             catch (Exception f) { System.out.println("[U02] "+f); }
             return;
@@ -324,5 +331,27 @@ public class CommentForm extends PcsFrame
         catch (SQLException e) { System.out.println("[U09] "+e.toString()); }
         catch (Exception e) { System.out.println("[U10] "+e.toString()); }
     }
+    /**
+     * Not Implemented
+     */
+	@Override
+	public void addActions() {
+		throw new NotImplementedException();
+	}
+	/**
+     * Not Implemented
+     */
+	@Override
+	public void updateActions() {
+		throw new NotImplementedException();
+		
+	}
+	/** 
+	 * Not Implemented
+	 */
+	@Override
+	public void finalActions() {
+		throw new NotImplementedException();
+	}
 	
 }

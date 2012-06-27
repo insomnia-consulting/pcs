@@ -1,18 +1,26 @@
 package com.pacytology.pcs.ui;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JRootPane;
 import javax.swing.KeyStroke;
 
+import com.pacytology.pcs.FunctionKeyControl;
 import com.pacytology.pcs.actions.PcsActionMap;
 
 public abstract class PcsFrame extends JFrame {
 	protected PcsActionMap actionMap;
+	public JLabel msgLabel = new javax.swing.JLabel(); ; 
+	public FunctionKeyControl fKeys = new FunctionKeyControl();
+	
+	public abstract void queryActions();
+	public abstract void addActions();
+	public abstract void updateActions();
+	public abstract void finalActions();
+	
 	protected JRootPane setupKeyPressMap() {
 		JRootPane rp = getRootPane();
 		KeyStroke f1 = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false);
@@ -60,8 +68,12 @@ public abstract class PcsFrame extends JFrame {
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(end, "VK_END");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ctrl, "VK_CONTROL");
 		
-		rp.getActionMap().put("F9", actionMap.closeAction);
-		
+
+		rp.getActionMap().put("F1", actionMap.queryAction);
+		rp.getActionMap().put("F2", actionMap.addAction);
+		rp.getActionMap().put("F3", actionMap.updateAction);
+		rp.getActionMap().put("F9", actionMap.closeAction);		
+		rp.getActionMap().put("VK_CONTROL", actionMap.controlAction);		
 		return rp;
 	}
 

@@ -613,11 +613,7 @@ public class ResultForm extends PcsFrame
 				if (fKeys.isOn(fKeys.F2)) addActions();
 			}
 		});
-		rp.getActionMap().put("F3", new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-		        if (fKeys.isOn(fKeys.F3)) updateActions();
-			}
-		});
+
 		rp.getActionMap().put("F4", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				if (currMode==Lab.IDLE) {
@@ -1261,7 +1257,7 @@ public class ResultForm extends PcsFrame
 	    NUM_RESULTS=max;
 	}
 	
-	void updateActions() 
+	public void updateActions() 
 	{
         if (resultRec.finished==2) {
             setMsgLabel("Update will not affect billing as status is SUBMITTED");
@@ -1543,7 +1539,7 @@ public class ResultForm extends PcsFrame
 		Utils.forceUpper(event,3);
 	}
 	
-	void finalActions() 
+	public void finalActions() 
 	{
 	    boolean status=false;
 	    boolean codeExists=false;
@@ -1563,7 +1559,7 @@ public class ResultForm extends PcsFrame
 	        codeExists=hasCode("858");
 	        if (!codeExists) codeExists=hasCode("875");
 	        if (codeExists) {
-System.out.println("one of the codes exists");	            
+
 	            String s = resRemarks.getText();
 	            if (Utils.isNull(s)) {
 	                Utils.createErrMsg("Must enter REMARKS whenever an 858 or 875 "+

@@ -909,7 +909,7 @@ public class TissuePathologyForm extends PcsFrame
 	    textBuffer=null;
     }
 	
-	void finalActions() 
+	public void finalActions() 
 	{
 	    boolean status=false;
 	    if (currMode==Lab.ADD) {

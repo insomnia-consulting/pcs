@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.PrintJob;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,7 +14,9 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.JLabel;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -39,7 +42,7 @@ public class ResultCodeForm extends PcsFrame
     public int currMode=Lab.IDLE;    
     final int CODES_PER_SCREEN=15;
     public int rowID=1;
-    public FunctionKeyControl fKeys = new FunctionKeyControl();
+    
     public ResultCodeTableData dData;
     public JTable resultCodeTable;
     public JTableHeader header;
@@ -269,7 +272,69 @@ public class ResultCodeForm extends PcsFrame
 		this.setupKeyPressMap();
 		
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+		rp.getActionMap().put("F4", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				printResultCodes();
+			}
+		});
+		rp.getActionMap().put("VK_DOWN", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode==Lab.IDLE) {
+					int ndx;
+		            increment();
+                    msgLabel.setText(null);
+                    if (resultCodeTable.getSelectedRow()==(-1)) ndx=0;
+		            else ndx=resultCodeTable.getSelectedRow()+1;
+                    if (ndx==resultCodeVect.size()) ndx--;
+		            setEntryFields();
+		        }
+			}
+		});
+		rp.getActionMap().put("VK_UP", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				int ndx ; 
+				if (currMode==Lab.IDLE) {
+                    decrement();
+                    msgLabel.setText(null);
+                    if (resultCodeTable.getSelectedRow()==(-1)) ndx=0;
+		            else ndx=resultCodeTable.getSelectedRow()-1;
+                    if (ndx==(-1)) ndx=0;
+		            setEntryFields();
+		        }
+			}
+		});
+		rp.getActionMap().put("F12", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				msgLabel.setText(null);
+                if (fKeys.isOn(fKeys.F12)==true) finalActions();
+                else msgLabel.setText("Finalize option not available");
 
+			}
+		});
+		rp.getActionMap().put("VK_HOME", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode==Lab.IDLE) {
+                    displayRow(0);
+                    msgLabel.setText(null);
+		            setEntryFields();
+                }
+			}
+		});
+		rp.getActionMap().put("VK_END", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode==Lab.IDLE) {
+                    displayRow(resultCodeVect.size()-1);
+                    msgLabel.setText(null);
+		            setEntryFields();
+                }
+			}
+		});
+
+		
+		return rp;
+	}
 	public ResultCodeForm(String sTitle)
 	{
 		this();
@@ -336,7 +401,7 @@ public class ResultCodeForm extends PcsFrame
 	javax.swing.JLabel F4action = new javax.swing.JLabel();
 	javax.swing.JLabel F9action = new javax.swing.JLabel();
 	javax.swing.JLabel F12action = new javax.swing.JLabel();
-	javax.swing.JLabel msgLabel = new javax.swing.JLabel();
+
 	javax.swing.JLabel F1action = new javax.swing.JLabel();
 	javax.swing.JLabel resultCodeLbl = new javax.swing.JLabel();
 	javax.swing.JLabel resultCodeDescLbl = new javax.swing.JLabel();
@@ -494,9 +559,7 @@ public class ResultCodeForm extends PcsFrame
 		public void keyPressed(java.awt.event.KeyEvent event)
 		{
 			Object object = event.getSource();
-			if (object == ResultCodeForm.this)
-				ResultCodeForm_keyPressed(event);
-			else if (object == codeStatus)
+			if (object == codeStatus)
 				codeStatus_keyPressed(event);
 			else if (object == resultCode)
 				resultCode_keyPressed(event);
@@ -515,92 +578,6 @@ public class ResultCodeForm extends PcsFrame
 		}
 	}
 
-	void ResultCodeForm_keyPressed(java.awt.event.KeyEvent event)
-	{
-		int ndx;
-		int key=event.getKeyCode();
-		switch (key) {
-		    case java.awt.event.KeyEvent.VK_DOWN:
-		        if (currMode==Lab.IDLE) {
-		            increment();
-                    msgLabel.setText(null);
-                    if (resultCodeTable.getSelectedRow()==(-1)) ndx=0;
-		            else ndx=resultCodeTable.getSelectedRow()+1;
-                    if (ndx==resultCodeVect.size()) ndx--;
-		            setEntryFields();
-		        }
-		        break;
-            case java.awt.event.KeyEvent.VK_UP:
-                if (currMode==Lab.IDLE) {
-                    decrement();
-                    msgLabel.setText(null);
-                    if (resultCodeTable.getSelectedRow()==(-1)) ndx=0;
-		            else ndx=resultCodeTable.getSelectedRow()-1;
-                    if (ndx==(-1)) ndx=0;
-		            setEntryFields();
-		        }
-		        break;
-            case java.awt.event.KeyEvent.VK_F1:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F1)==true) queryActions();
-                else msgLabel.setText("Query option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_F12:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F12)==true) finalActions();
-                else msgLabel.setText("Finalize option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_HOME:
-                if (currMode==Lab.IDLE) {
-                    displayRow(0);
-                    msgLabel.setText(null);
-		            setEntryFields();
-                }
-		        break; 
-            case java.awt.event.KeyEvent.VK_END:
-                if (currMode==Lab.IDLE) {
-                    displayRow(resultCodeVect.size()-1);
-                    msgLabel.setText(null);
-		            setEntryFields();
-                }
-		        break; 
-            case java.awt.event.KeyEvent.VK_F9:
-                this.dispose();
-                break;
-            case java.awt.event.KeyEvent.VK_F2:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F2)==true) addActions();
-                else msgLabel.setText("Add option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_F3:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F3)) updateActions();
-                else msgLabel.setText("Update option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_F4:
-                printResultCodes();
-                /*
-                msgLabel.setText(null);
-                ndx = resultCodeTable.getSelectedRow();
-                if (ndx==(-1)) ndx=0;
-                else if (ndx>=resultCodeVect.size()) ndx=resultCodeVect.size()-1;
-                try { descrLbl.setText((String)dData.getValueAt(ndx,1)); }
-                catch (Exception e) { }
-                */
-                break;
-            case java.awt.event.KeyEvent.VK_ESCAPE:
-                currMode=Lab.IDLE;
-                resetForm();
-                displayList(0);
-                setEntryFields();
-                break;
-            case KeyEvent.VK_CONTROL:                
-                ((JTextField)getFocusOwner()).setText(null);
-                break;
-                
-		}
-	}
-	
 	public void queryActions() {
 	    currMode=Lab.QUERY;
 	    fKeys.off();

@@ -1,13 +1,18 @@
 package com.pacytology.pcs;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+
 import javax.swing.*;
+
+import com.pacytology.pcs.actions.PcsActionMap;
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import java.sql.*;
 import java.util.Vector;
 
 
-public class ProcedureCodeForm extends javax.swing.JFrame
+public class ProcedureCodeForm extends PcsFrame
 {
     public Login dbLogin;
     public int MAX_PROC_CODES=0;
@@ -201,9 +206,145 @@ public class ProcedureCodeForm extends javax.swing.JFrame
 		        }
 		    }
 		}
-		
+		actionMap = new PcsActionMap(this);
+		this.setupKeyPressMap();
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+		rp.getActionMap().put("F4", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 msgLabel.setText(null);
+	                if (fKeys.isOn(fKeys.F4)==true) {
+	                    (new ProcCodePrices(ProcedureCodeForm.this)).setVisible(true);
+	                }
+			}
+		});
+		rp.getActionMap().put("VK_DOWN", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode==Lab.IDLE) {
+					int ndx;
+					msgLabel.setText(null);
+			        if ((codeList.getSelectedIndex()==(-1))
+			         || (descList.getSelectedIndex()==(-1)))
+			        {
+			            ndx=0;
+			        }
+			        else ndx=descList.getSelectedIndex()+1;
+			        if (ndx==MAX_PROC_CODES) ndx--;
+	                codeList.setSelectedIndex(ndx);
+			        descList.setSelectedIndex(ndx);
+			        codeList.ensureIndexIsVisible(ndx);
+			        descList.ensureIndexIsVisible(ndx);
+	                codeList.revalidate();
+			        descList.revalidate();
+			        setEntryFields();
+			        }
+				}
+		});
 
+		rp.getActionMap().put("VK_UP", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				int ndx;
+				if (currMode == Lab.IDLE) {
+					msgLabel.setText(null);
+					if ((codeList.getSelectedIndex() == (-1))
+							|| (descList.getSelectedIndex() == (-1))) {
+						ndx = 0;
+					} else
+						ndx = descList.getSelectedIndex() - 1;
+					if (ndx == (-1))
+						ndx = 0;
+					codeList.setSelectedIndex(ndx);
+					descList.setSelectedIndex(ndx);
+					codeList.ensureIndexIsVisible(ndx);
+					descList.ensureIndexIsVisible(ndx);
+					codeList.revalidate();
+					descList.revalidate();
+					setEntryFields();
+				}
+			}
+		});
+		rp.getActionMap().put("VK_PAGE_DOWN", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode==Lab.IDLE) {
+					int ndx;
+	                msgLabel.setText(null);
+	                ndx=descList.getSelectedIndex();
+	                ndx+=CODES_PER_SCREEN+1;
+	                if (ndx>=MAX_PROC_CODES) ndx=MAX_PROC_CODES-1;
+	                codeList.setSelectedIndex(ndx);
+	                descList.setSelectedIndex(ndx);
+	                codeList.ensureIndexIsVisible(ndx);
+	                descList.ensureIndexIsVisible(ndx);
+	                codeList.revalidate();
+	                descList.revalidate();
+	                setEntryFields();
+	                }
+			}
+				 
+		});
+		rp.getActionMap().put("VK_PAGE_UP", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 if (currMode==Lab.IDLE) {
+					 int ndx;
+		                msgLabel.setText(null);
+		                ndx=descList.getSelectedIndex();
+		                ndx-=CODES_PER_SCREEN-1;
+		                if (ndx<0) ndx=0;
+		                codeList.setSelectedIndex(ndx);
+		                descList.setSelectedIndex(ndx);
+		                codeList.ensureIndexIsVisible(ndx);
+		                descList.ensureIndexIsVisible(ndx);
+		                codeList.revalidate();
+		                descList.revalidate();
+		                setEntryFields();
+		                }
+			}
+				 
+		});
+		rp.getActionMap().put("VK_HOME", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode==Lab.IDLE) {
+	                msgLabel.setText(null);
+	                codeList.setSelectedIndex(0);
+	                descList.setSelectedIndex(0);
+	                codeList.ensureIndexIsVisible(0);
+	                descList.ensureIndexIsVisible(0);
+	                codeList.revalidate();
+	                descList.revalidate();
+	                setEntryFields();
+	                }
+			}
+				 
+		});
+		rp.getActionMap().put("VK_END", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode==Lab.IDLE) {
+	                msgLabel.setText(null);
+	                codeList.setSelectedIndex(MAX_PROC_CODES-1);
+	                descList.setSelectedIndex(MAX_PROC_CODES-1);
+	                codeList.ensureIndexIsVisible(MAX_PROC_CODES-1);
+	                descList.ensureIndexIsVisible(MAX_PROC_CODES-1);
+	                codeList.revalidate();
+	                descList.revalidate();
+	                setEntryFields();
+	                }
+			}
+				 
+		});
+		rp.getActionMap().put("ESC", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				currMode=Lab.IDLE;
+                resetForm();
+                displayList(0);
+                setEntryFields();
+			}
+				 
+		});
+		
+			
+		return rp;
+	}
     public ProcedureCodeForm(Login dbLogin) {
         this();
         this.dbLogin=dbLogin;
@@ -365,149 +506,13 @@ public class ProcedureCodeForm extends javax.swing.JFrame
 		public void keyPressed(java.awt.event.KeyEvent event)
 		{
 			Object object = event.getSource();
-			if (object == ProcedureCodeForm.this)
-				ProcedureCodeForm_keyPressed(event);
-			else if (object == procCode)
+			if (object == procCode)
 				procCode_keyPressed(event);
 			else if (object == procCodeDesc)
 				procCodeDesc_keyPressed(event);
 		}
 	}
 
-	void ProcedureCodeForm_keyPressed(java.awt.event.KeyEvent event)
-	{
-		int ndx;
-		int key=event.getKeyCode();
-		switch (key) {
-		    case java.awt.event.KeyEvent.VK_DOWN:
-		        if (currMode==Lab.IDLE) {
-                msgLabel.setText(null);
-		        if ((codeList.getSelectedIndex()==(-1))
-		         || (descList.getSelectedIndex()==(-1)))
-		        {
-		            ndx=0;
-		        }
-		        else ndx=descList.getSelectedIndex()+1;
-                if (ndx==MAX_PROC_CODES) ndx--;
-                codeList.setSelectedIndex(ndx);
-		        descList.setSelectedIndex(ndx);
-		        codeList.ensureIndexIsVisible(ndx);
-		        descList.ensureIndexIsVisible(ndx);
-                codeList.revalidate();
-		        descList.revalidate();
-		        setEntryFields();
-		        }
-		        break;
-            case java.awt.event.KeyEvent.VK_UP:
-                if (currMode==Lab.IDLE) {
-                msgLabel.setText(null);
-		        if ((codeList.getSelectedIndex()==(-1))
-		         || (descList.getSelectedIndex()==(-1)))
-		        {
-		            ndx=0;
-		        }
-		        else ndx=descList.getSelectedIndex()-1;
-                if (ndx==(-1)) ndx=0;
-                codeList.setSelectedIndex(ndx);
-		        descList.setSelectedIndex(ndx);
-		        codeList.ensureIndexIsVisible(ndx);
-		        descList.ensureIndexIsVisible(ndx);
-                codeList.revalidate();
-		        descList.revalidate();
-		        setEntryFields();
-		        }
-		        break;
-            case java.awt.event.KeyEvent.VK_F1:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F1)) queryActions();
-                else msgLabel.setText("Query option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_F12:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F12)==true) finalActions();
-                else msgLabel.setText("Finalize option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_PAGE_DOWN:
-                if (currMode==Lab.IDLE) {
-                msgLabel.setText(null);
-                ndx=descList.getSelectedIndex();
-                ndx+=CODES_PER_SCREEN+1;
-                if (ndx>=MAX_PROC_CODES) ndx=MAX_PROC_CODES-1;
-                codeList.setSelectedIndex(ndx);
-                descList.setSelectedIndex(ndx);
-                codeList.ensureIndexIsVisible(ndx);
-                descList.ensureIndexIsVisible(ndx);
-                codeList.revalidate();
-                descList.revalidate();
-                setEntryFields();
-                }
-		        break; 
-            case java.awt.event.KeyEvent.VK_PAGE_UP:
-                if (currMode==Lab.IDLE) {
-                msgLabel.setText(null);
-                ndx=descList.getSelectedIndex();
-                ndx-=CODES_PER_SCREEN-1;
-                if (ndx<0) ndx=0;
-                codeList.setSelectedIndex(ndx);
-                descList.setSelectedIndex(ndx);
-                codeList.ensureIndexIsVisible(ndx);
-                descList.ensureIndexIsVisible(ndx);
-                codeList.revalidate();
-                descList.revalidate();
-                setEntryFields();
-                }
-		        break; 
-            case java.awt.event.KeyEvent.VK_HOME:
-                if (currMode==Lab.IDLE) {
-                msgLabel.setText(null);
-                codeList.setSelectedIndex(0);
-                descList.setSelectedIndex(0);
-                codeList.ensureIndexIsVisible(0);
-                descList.ensureIndexIsVisible(0);
-                codeList.revalidate();
-                descList.revalidate();
-                setEntryFields();
-                }
-		        break; 
-            case java.awt.event.KeyEvent.VK_END:
-                if (currMode==Lab.IDLE) {
-                msgLabel.setText(null);
-                codeList.setSelectedIndex(MAX_PROC_CODES-1);
-                descList.setSelectedIndex(MAX_PROC_CODES-1);
-                codeList.ensureIndexIsVisible(MAX_PROC_CODES-1);
-                descList.ensureIndexIsVisible(MAX_PROC_CODES-1);
-                codeList.revalidate();
-                descList.revalidate();
-                setEntryFields();
-                }
-		        break; 
-            case java.awt.event.KeyEvent.VK_F9:
-                this.dispose();
-                break;
-            case java.awt.event.KeyEvent.VK_F2:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F2)==true) addActions();
-                else msgLabel.setText("Add option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_F3:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F3)==true) updateActions();
-                else msgLabel.setText("Update option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_F4:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F4)==true) {
-                    (new ProcCodePrices(this)).setVisible(true);
-                }
-                break;
-            case java.awt.event.KeyEvent.VK_ESCAPE:
-                currMode=Lab.IDLE;
-                resetForm();
-                displayList(0);
-                setEntryFields();
-                break;
-		}
-	}
 	
 	public void queryActions() {
 	    currMode=Lab.QUERY;

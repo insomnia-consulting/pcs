@@ -2867,7 +2867,7 @@ public class LabForm extends PcsFrame
 		Utils.buildDateMask(event);
 	}
 	
-	void queryActions()  
+	public void queryActions()  
 	{
 		resetLabForm();
 		setEnableAllFields(false);

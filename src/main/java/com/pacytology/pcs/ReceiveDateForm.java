@@ -31,6 +31,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import com.pacytology.pcs.ui.HorizontalLine;
 import com.pacytology.pcs.ui.Square;
 import com.pacytology.pcs.ui.PcsFrame;
@@ -796,8 +798,8 @@ public class ReceiveDateForm extends PcsFrame {
 			}
 		}
 	}
-
-	void finalActions() {
+	@Override
+	public void finalActions() {
 		if (currMode == Lab.QUERY) {
 			getDates(Utils.stripDateMask(rDay00.getText()));
 			d00.setText(null);
@@ -1100,6 +1102,30 @@ public class ReceiveDateForm extends PcsFrame {
 
 	void rBegin01_focusGained(java.awt.event.FocusEvent event) {
 		Utils.deselect(event);
+	}
+	/**
+	 * Not Implemented
+	 */
+	@Override
+	public void queryActions() {
+		throw new NotImplementedException("Not implemented for ReceivedDateForm");
+	}
+	
+	/**
+     * Not Implemented
+     */
+	@Override
+	public void addActions() {
+		throw new NotImplementedException();
+		
+	}
+	/**
+     * Not Implemented
+     */
+	@Override
+	public void updateActions() {
+		throw new NotImplementedException();
+		
 	}
 
 }
