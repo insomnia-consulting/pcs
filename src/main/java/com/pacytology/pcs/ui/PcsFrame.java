@@ -9,7 +9,10 @@ import javax.swing.JFrame;
 import javax.swing.JRootPane;
 import javax.swing.KeyStroke;
 
+import com.pacytology.pcs.actions.PcsActionMap;
+
 public abstract class PcsFrame extends JFrame {
+	protected PcsActionMap actionMap;
 	protected JRootPane setupKeyPressMap() {
 		JRootPane rp = getRootPane();
 		KeyStroke f1 = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false);
@@ -27,6 +30,13 @@ public abstract class PcsFrame extends JFrame {
 		KeyStroke esc = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);		
 		KeyStroke insert= KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0, false);		
 		KeyStroke vk_i= KeyStroke.getKeyStroke(KeyEvent.VK_I, 0, false);		
+		KeyStroke down= KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false);		
+		KeyStroke up= KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false);		
+		KeyStroke page_down= KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0, false);		
+		KeyStroke page_up= KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0, false);		
+		KeyStroke home= KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0, false);		
+		KeyStroke end= KeyStroke.getKeyStroke(KeyEvent.VK_END, 0, false);		
+		KeyStroke ctrl= KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL, 0, false);		
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f1, "F1");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f2, "F2");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f3, "F3");
@@ -42,7 +52,15 @@ public abstract class PcsFrame extends JFrame {
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(esc, "ESC");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(insert, "INSERT");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(vk_i, "VK_I");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(down, "VK_DOWN");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(up, "VK_UP");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(page_down, "VK_PAGE_DOWN");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(page_up, "VK_PAGE_UP");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(home, "VK_HOME");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(end, "VK_END");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ctrl, "VK_CONTROL");
 		
+		rp.getActionMap().put("F9", actionMap.closeAction);
 		
 		return rp;
 	}

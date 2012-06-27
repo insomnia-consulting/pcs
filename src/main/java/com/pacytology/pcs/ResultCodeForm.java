@@ -21,9 +21,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
+import com.pacytology.pcs.actions.PcsActionMap;
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
-public class ResultCodeForm extends javax.swing.JFrame
+public class ResultCodeForm extends PcsFrame
 {
     public Login dbLogin;
     Vector resultCodeVect;
@@ -263,6 +265,9 @@ public class ResultCodeForm extends javax.swing.JFrame
 		codeStatus.addFocusListener(aSymFocus);
 		termDate.addKeyListener(aSymKey);
 		//}}
+		actionMap = new PcsActionMap(this);
+		this.setupKeyPressMap();
+		
 	}
 
 	public ResultCodeForm(String sTitle)
