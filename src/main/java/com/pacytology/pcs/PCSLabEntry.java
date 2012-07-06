@@ -42,6 +42,8 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
+import oracle.jdbc.OracleTypes;
+
 import com.pacytology.pcs.db.DbUser;
 import com.pacytology.pcs.ui.JAboutDialog;
 
@@ -1514,7 +1516,7 @@ public class PCSLabEntry extends JFrame {
 			CallableStatement cstmt;
 			cstmt = dbConnection.process().prepareCall(
 					"{call pcs.build_1500_claim_forms(?,?,?)}");
-			cstmt.setString(1, "vol1:");
+			cstmt.setString(1, Utils.SERVER_DIR);
 			cstmt.setString(2, "ppr_clm");
 			cstmt.setString(3, billRoute);
 			cstmt.executeUpdate();
@@ -1525,13 +1527,13 @@ public class PCSLabEntry extends JFrame {
 			int batchClaimID = 0;
 			while (rs.next())
 				batchClaimID = rs.getInt(1);
-			File f = new File("g:\\", "ppr_clm");
+			File f = new File(Utils.ROOT_DIR, "ppr_clm");
 			long fLen = f.length();
 			if (fLen > 0) {
-				Utils.genericPrint("g:\\", "ppr_clm", false);
+				Utils.genericPrint(Utils.ROOT_DIR, "ppr_clm", false);
 				String fName = "ppr_clm" + batchClaimID;
 				try {
-					f.renameTo(new File("g:\\", fName));
+					f.renameTo(new File(Utils.ROOT_DIR, fName));
 				} catch (SecurityException e) {
 					log.write("ERROR: build HCFA1500\n" + e);
 				}
@@ -1546,7 +1548,7 @@ public class PCSLabEntry extends JFrame {
 			CallableStatement cstmt;
 			cstmt = dbConnection.process().prepareCall(
 					"{call pcs.build_ma319c_file(?,?,?)}");
-			cstmt.setString(1, "vol1:");
+			cstmt.setString(1, Utils.SERVER_DIR);
 			cstmt.setString(2, "pdw_clm");
 			cstmt.setString(3, billRoute);
 			cstmt.executeUpdate();
@@ -1557,13 +1559,13 @@ public class PCSLabEntry extends JFrame {
 			int batchClaimID = 0;
 			while (rs.next())
 				batchClaimID = rs.getInt(1);
-			File f = new File("g:\\", "pdw_clm");
+			File f = new File(Utils.ROOT_DIR, "pdw_clm");
 			long fLen = f.length();
 			if (fLen > 0) {
-				Utils.genericPrint("g:\\", "pdw_clm", false);
+				Utils.genericPrint(Utils.ROOT_DIR, "pdw_clm", false);
 				String fName = "pdw_clm" + batchClaimID;
 				try {
-					f.renameTo(new File("g:\\", fName));
+					f.renameTo(new File(Utils.ROOT_DIR, fName));
 				} catch (SecurityException e) {
 					log.write("ERROR: build MA319C\n" + e);
 				}
@@ -1697,10 +1699,10 @@ public class PCSLabEntry extends JFrame {
 			cstmt.setInt(1, Lab.CURR_WKS);
 			cstmt.setString(2, "curr_wks");
 			cstmt.executeUpdate();
-			File f = new File("g:\\", "curr_wks");
+			File f = new File(Utils.ROOT_DIR, "curr_wks");
 			long fLen = f.length();
 			if (fLen > 0) {
-				Utils.genericPrint("g:\\", "curr_wks", false);
+				Utils.genericPrint(Utils.ROOT_DIR, "curr_wks", false);
 			}
 		} catch (Exception e) {
 			log.write("ERROR: build worksheets\n" + e);
@@ -1733,10 +1735,10 @@ public class PCSLabEntry extends JFrame {
 						pprClaimOption.QUESTION_MESSAGE);
 		if (rv == pprClaimOption.YES_OPTION) {
 			String fName = "ppr_clm.lbl";
-			File f = new File("g:\\", fName);
+			File f = new File(Utils.ROOT_DIR, fName);
 			long fLen = f.length();
 			if (fLen > 0)
-				Utils.genericPrint("g:\\", fName, false);
+				Utils.genericPrint(Utils.ROOT_DIR, fName, false);
 		}
 	}
 
@@ -1755,7 +1757,7 @@ public class PCSLabEntry extends JFrame {
 			int numStmts = 0;
 			while (rs.next()) {
 				fName = rs.getString(1);
-				Utils.genericPrint("g:\\", fName, false, printerCodes);
+				Utils.genericPrint(Utils.ROOT_DIR, fName, false, printerCodes);
 				numStmts++;
 			}
 			if (numStmts == 0)
@@ -2047,14 +2049,14 @@ public class PCSLabEntry extends JFrame {
 			CallableStatement cstmt;
 			cstmt = dbConnection.process().prepareCall(
 					"{call pcs.build_claim_wks_file(?,?,?)}");
-			cstmt.setString(1, "vol1:");
+			cstmt.setString(1, Utils.SERVER_DIR);
 			cstmt.setString(2, "clm_wks");
 			cstmt.setString(3, billRoute);
 			cstmt.executeUpdate();
-			File f = new File("g:\\", "clm_wks");
+			File f = new File(Utils.ROOT_DIR, "clm_wks");
 			long fLen = f.length();
 			if (fLen > 0) {
-				Utils.genericPrint("g:\\", "clm_wks", false);
+				Utils.genericPrint(Utils.ROOT_DIR, "clm_wks", false);
 				try {
 					f.delete();
 				} catch (SecurityException e) {
@@ -2180,7 +2182,7 @@ public class PCSLabEntry extends JFrame {
 		try {
 			String fileName = "dailyjob.log";
 			String title = "Daily Job Log";
-			File f = new File("g:\\", fileName);
+			File f = new File(Utils.ROOT_DIR, fileName);
 			long fLen = f.length();
 			if (fLen > 0)
 				(new ReportViewer(fileName, title)).setVisible(true);
@@ -2195,7 +2197,7 @@ public class PCSLabEntry extends JFrame {
 		try {
 			String fileName = "oranw803\\rdbms80\\trace\\orclalrt.log";
 			String title = "Oracle Trace Log";
-			File f = new File("g:\\", fileName);
+			File f = new File(Utils.ROOT_DIR, fileName);
 			long fLen = f.length();
 			if (fLen > 0)
 				(new ReportViewer(fileName, title)).setVisible(true);
@@ -2269,14 +2271,22 @@ public class PCSLabEntry extends JFrame {
 	void HPVPendingItem_actionPerformed(java.awt.event.ActionEvent event) {
 		try {
 			CallableStatement cstmt;
+//			cstmt = dbConnection.process()
+//			.prepareCall("{call pcs.hpv_pending}");
 			cstmt = dbConnection.process()
-					.prepareCall("{call pcs.hpv_pending}");
-			cstmt.executeUpdate();
+					.prepareCall("{? = call pcs.hpv_pending }");
+			
+			cstmt.registerOutParameter(1, OracleTypes.CLOB);
+			cstmt.execute();
+			
+			String results = cstmt.getString(1);
+			results = results.replaceAll("\\\\n", "\n");
+			System.out.println("Results length is " + results.length());
 			cstmt.close();
-			(new ReportViewer("pending.hpv", "Pending HPV Requests"))
-					.setVisible(true);
+			ReportViewer viewer = ReportViewer.create(results, "Pending HPV Requests");
+			viewer.setVisible(true);
 		} catch (Exception e) {
-			log.write("ERROR: HPVPending\n" + e);
+			System.out.println("ERROR: HPVPending\n" + e);
 		}
 	}
 
@@ -2321,7 +2331,7 @@ public class PCSLabEntry extends JFrame {
 		PrintJob pjob;
 		Properties p = new java.util.Properties();
 		String name = new String("Recent " + ltrType + " Letters");
-		printLetterFile("g:\\", fileName, true);
+		printLetterFile(Utils.ROOT_DIR, fileName, true);
 		pjob = getToolkit().getPrintJob(this, name, p);
 		if (pjob != null) {
 		}

@@ -194,7 +194,7 @@ public class DocStmtDialog extends javax.swing.JDialog
 	                title+=" Statement";
 	                dir="reports\\invoice\\";
 	            }
-                File f = new File("g:\\",fName);
+                File f = new File(Utils.ROOT_DIR,fName);
                 if (f.exists()) {
                     long fLen = f.length();
                     if (fLen>0) { 
@@ -203,7 +203,7 @@ public class DocStmtDialog extends javax.swing.JDialog
                 }
                 else {
                     if (reportType.equals("SUMMARY")) {
-                        f = new File("g:\\"+dir,fName);
+                        f = new File(Utils.ROOT_DIR+dir,fName);
                         if (!f.exists()) {
                             dir+=stmtYear.getText()+"\\";
                         }
@@ -246,12 +246,12 @@ public class DocStmtDialog extends javax.swing.JDialog
 	                numCopies=1;
 	                v.addElement(Utils.COMPRESSED);
 	            }
-                File f = new File("g:\\",fName);
+                File f = new File(Utils.ROOT_DIR,fName);
                 if (f.exists()) {
                     long fLen = f.length();
                     if (fLen>0) { 
                         for (int i=0; i<numCopies; i++)
-                            Utils.genericPrint("g:\\",fName,true,v); 
+                            Utils.genericPrint(Utils.ROOT_DIR,fName,true,v); 
                     }
                 }
             }

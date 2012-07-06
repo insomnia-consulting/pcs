@@ -317,7 +317,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                     if (h<10) hour=".0"+h;
                     else hour="."+h;
                     fileName = prefix+inc+dbLogin.dayNumber+hour;
-                    f = new File("g:\\",fileName);
+                    f = new File(Utils.ROOT_DIR,fileName);
                     if (f.exists()) { 
                         fileFound=true;
                         break;
@@ -441,7 +441,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
 	void getClaimSubmissionData()
 	{
 	    String tpp=tppCode.getText();
-	    ackFile=new File("g:\\",fileName277.getText());
+	    ackFile=new File(Utils.ROOT_DIR,fileName277.getText());
 	    if (tpp.equals("DAS")) {
 	        if (ackFile.exists()) {
 	            query();
@@ -530,7 +530,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                     submitRec.tpp.toLowerCase()+
                     submitRec.batch_number+
                     submitRec.submission_number+".ack";
-                try { ackFile.renameTo(new File("g:\\",fName)); }
+                try { ackFile.renameTo(new File(Utils.ROOT_DIR,fName)); }
                 catch (SecurityException e) { log.write(e.toString()); }
                 break;
 		}
@@ -1045,7 +1045,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
 	{
         File f = null;
         boolean fileFound = false;
-        f = new File("g:\\",fileName);
+        f = new File(Utils.ROOT_DIR,fileName);
         if (f.exists()) { 
             getData(f,"DAS");
             insert277fileData();

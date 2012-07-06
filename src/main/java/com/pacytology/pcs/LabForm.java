@@ -43,6 +43,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
+import com.pacytology.pcs.actions.LabFormActionMap;
+import com.pacytology.pcs.actions.PClassActionMap;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
@@ -855,7 +857,7 @@ public class LabForm extends PcsFrame
 		}
 		labDetCodeEntry.requestFocusInWindow();
 		
-		
+		actionMap = new LabFormActionMap(this);
 		setupKeyPressMap();
 		
 	}
@@ -2118,7 +2120,7 @@ public class LabForm extends PcsFrame
                         break;
             }                
         }            
-    }        
+    }
 
 	public void fillForm(int mode)  
 	{
@@ -4914,7 +4916,7 @@ public class LabForm extends PcsFrame
 	    if (letterFileNames.size()>0) {
 	        for (int i=0; i<letterFileNames.size(); i++) {
 	            String f = (String)letterFileNames.elementAt(i);
-	            printLetterFile("g:\\",f,true);
+	            printLetterFile(Utils.ROOT_DIR,f,true);
 	        }
 	        pjob=getToolkit().getPrintJob(this,name,p);
 	        if (pjob!=null) {}
@@ -4975,7 +4977,7 @@ public class LabForm extends PcsFrame
         for (int i=0; i<3; i++) {
             try {
                 String fName = filePrefix[i]+".old";
-                File f = new File("g:\\",fName);
+                File f = new File(Utils.ROOT_DIR,fName);
                 if (f.exists()) {
                     fLen=f.length();
                     if (fLen>0) {
@@ -4984,11 +4986,11 @@ public class LabForm extends PcsFrame
                     }
                 }
                 fName = filePrefix[i]+".ltr";
-                f = new File("g:\\",fName);
+                f = new File(Utils.ROOT_DIR,fName);
                 if (f.exists()) {
                     fLen=f.length();
                     if (fLen>0) {
-                        try { f.renameTo(new File("g:\\",filePrefix[i]+".old")); }
+                        try { f.renameTo(new File(Utils.ROOT_DIR,filePrefix[i]+".old")); }
                         catch (SecurityException e) { log.write("ERROR: renaming "+filePrefix[i]+".ltr\n"+e); }
                     }
                 }

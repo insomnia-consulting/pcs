@@ -136,10 +136,10 @@ public class WksheetDialog extends javax.swing.JDialog
 	        cstmt.setInt(1,startLab);
 	        cstmt.setInt(2,endLab);
             cstmt.executeUpdate();
-            File f = new File("g:\\","copy_wks");
+            File f = new File(Utils.ROOT_DIR,"copy_wks");
             long fLen = f.length();
             if (fLen>0) { 
-                Utils.genericPrint("g:\\","copy_wks",false); 
+                Utils.genericPrint(Utils.ROOT_DIR,"copy_wks",false); 
                 this.dispose();
             }
         }

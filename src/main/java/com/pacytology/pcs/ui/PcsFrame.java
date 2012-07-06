@@ -67,8 +67,15 @@ public abstract class PcsFrame extends JFrame {
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(home, "VK_HOME");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(end, "VK_END");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ctrl, "VK_CONTROL");
-		
-
+		/*actionMap is assigned a actionMap that matches the form
+		 ie., LabFor => LabFormActionMap
+		 This only needs to happen if the actionMap has specific behaviors; if the default behaviors 
+		 are sufficient, the we can create an anonymous ActionMap for this case 
+		*/
+		if (actionMap == null) 
+		{
+			actionMap = new PcsActionMap(PcsFrame.this) {};
+		}
 		rp.getActionMap().put("F1", actionMap.queryAction);
 		rp.getActionMap().put("F2", actionMap.addAction);
 		rp.getActionMap().put("F3", actionMap.updateAction);

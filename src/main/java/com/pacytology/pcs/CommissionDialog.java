@@ -218,7 +218,7 @@ public class CommissionDialog extends javax.swing.JDialog
 	    generateReport();
 	    Vector printerCodes = new Vector();
 	    printerCodes.addElement(Utils.CONDENSED);
-        File f = new File("g:\\",fileName);
+        File f = new File(Utils.ROOT_DIR,fileName);
         if (f.exists()) {
             long fLen = f.length();
             if (fLen>0) { 

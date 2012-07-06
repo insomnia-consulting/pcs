@@ -37,7 +37,8 @@ import java.sql.Statement;
 public class BuildClaimDialog extends javax.swing.JDialog
 {
 
-    Login dbLogin;
+	
+	Login dbLogin;
     TppRec[] tppRec;
     int MAX_TPPS=0;
     boolean fileBuilt=false;
@@ -331,9 +332,9 @@ public class BuildClaimDialog extends javax.swing.JDialog
             ResultSet rs = stmt.executeQuery(query);
             int batchClaimID=0;
             while (rs.next()) batchClaimID=rs.getInt(1);   
-            File f = new File("g:\\","env_clm");
+            File f = new File(Utils.ROOT_DIR,"env_clm");
             fName = "env"+batchClaimID;
-            try { f.renameTo(new File("g:\\",fName)); }
+            try { f.renameTo(new File(Utils.ROOT_DIR,fName)); }
             catch (SecurityException e) { log.write(e); }
             fnameLbl.setText(fName);
             fileBuilt=true;
@@ -417,7 +418,9 @@ public class BuildClaimDialog extends javax.swing.JDialog
             fnameLbl.setText(fName+".das");
             fileBuilt=true;
         }
-        catch (Exception e) { log.write(e+" build DAS"); }
+        catch (Exception e) { 
+        	log.write(e+" build DAS"); 
+        	}
         log.write("CLAIM FILE: "+fName+".x12");
         this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
@@ -506,12 +509,12 @@ public class BuildClaimDialog extends javax.swing.JDialog
 	
 	private void stripReturns(String fName, String extn)
 	{
-        File f = new File("g:\\",fName);
+        File f = new File(Utils.ROOT_DIR,fName);
         long fLen = f.length();
         if (fLen>0) {
             try {
                 String newFName=fName+"."+extn;
-                File nf = new File("g:\\",newFName);
+                File nf = new File(Utils.ROOT_DIR,newFName);
                 FileReader fr = new FileReader(f);
                 FileWriter fw = new FileWriter(nf);
                 for (;;) {

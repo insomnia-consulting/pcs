@@ -250,7 +250,7 @@ public class LabStatusDialog extends javax.swing.JDialog
 	
 	void printReport()
 	{
-	    Utils.genericPrint("g:\\",fileName,false);
+	    Utils.genericPrint(Utils.ROOT_DIR,fileName,false);
 	}
 
 	void LabStatusDialog_keyPressed(java.awt.event.KeyEvent event)

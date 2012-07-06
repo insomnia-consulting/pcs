@@ -26,7 +26,7 @@ import java.util.Vector;
 public class ReportViewer extends javax.swing.JFrame
 {
     String fileName;
-    String dir = "g:\\";
+    String dir = Utils.ROOT_DIR;
     File f;
     FileInputStream fIN;
     Vector printerCodes = new Vector();
@@ -107,7 +107,7 @@ public class ReportViewer extends javax.swing.JFrame
 	    this();
 	    this.setTitle(sTitle);
 	    this.fileName=fileName;
-        f = new File("g:\\",fileName);
+        f = new File(Utils.ROOT_DIR,fileName);
         if (f.exists()) {
             long fLen = f.length();
             if (fLen>0) { 
@@ -129,14 +129,21 @@ public class ReportViewer extends javax.swing.JFrame
         }
 		else reportText.setText("Cannot locate report for "+fileName+"!!  Press F9 to Exit");
 	}
-
+	
+	public static ReportViewer create(String text, String title) {
+		ReportViewer viewer = new ReportViewer();
+		viewer.setTitle(title);
+		viewer.reportText.setText(text);
+		return viewer;
+	}
+	
 	public ReportViewer(String fileName, String sTitle, Vector printerCodes)
 	{
 	    this();
 	    this.setTitle(sTitle);
 	    this.printerCodes=printerCodes;
 	    this.fileName=fileName;
-        f = new File("g:\\",fileName);
+        f = new File(Utils.ROOT_DIR,fileName);
         if (f.exists()) {
             long fLen = f.length();
             if (fLen>0) { 
@@ -165,7 +172,7 @@ public class ReportViewer extends javax.swing.JFrame
 	    this.setTitle(sTitle);
 	    this.printerCodes=printerCodes;
 	    this.fileName=fileName;
-	    this.dir="g:\\"+dir;
+	    this.dir=Utils.ROOT_DIR+dir;
         f = new File(this.dir,fileName);
         if (f.exists()) {
             long fLen = f.length();
@@ -188,6 +195,7 @@ public class ReportViewer extends javax.swing.JFrame
         }
 		else reportText.setText("Cannot locate report for "+fileName+"!!  Press F9 to Exit");
 	}
+	
 	
 	public void setVisible(boolean b)
 	{

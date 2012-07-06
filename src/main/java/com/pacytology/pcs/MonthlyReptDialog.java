@@ -234,7 +234,7 @@ public class MonthlyReptDialog extends javax.swing.JDialog
                 else
                     fName=month+stmtYear.getText()+practiceNumber.getText()+"."+reptName;
                 String dir = "reports\\"+reptName+"\\";
-                File f = new File("g:\\",fName);
+                File f = new File(Utils.ROOT_DIR,fName);
                 if (f.exists()) {
                     long fLen = f.length();
                     if (fLen>0) { 

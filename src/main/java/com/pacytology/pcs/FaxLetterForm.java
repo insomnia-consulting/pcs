@@ -208,7 +208,7 @@ public class FaxLetterForm extends javax.swing.JFrame
 	    if (fileNames.size()>0) {
 	        for (int i=0; i<fileNames.size(); i++) {
 	            String f = (String)fileNames.elementAt(i);
-	            printLetterFile("g:\\",f,true);
+	            printLetterFile(Utils.ROOT_DIR,f,true);
 	        }
 	        pjob=getToolkit().getPrintJob(this,name,p);
 	        if (pjob!=null) {}

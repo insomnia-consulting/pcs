@@ -122,7 +122,7 @@ public class YearSummaryDialog extends javax.swing.JDialog
 	            String title = "Doctor Summary by Year";
 	            String fName=stmtYear.getText()+practiceNumber.getText();
                 fName=fName+".sby";
-                File f = new File("g:\\",fName);
+                File f = new File(Utils.ROOT_DIR,fName);
                 if (f.exists()) {
                     long fLen = f.length();
                     if (fLen>0) { 

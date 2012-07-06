@@ -299,7 +299,7 @@ public class PracticeAddrDialog extends javax.swing.JDialog
 	            "{call pcs.build_practice_label_file()}");
 	        cstmt.executeUpdate();
 	        if (verifyPrinter()) { 
-	            Utils.genericPrint("g:\\","practice.lbl",false);
+	            Utils.genericPrint(Utils.ROOT_DIR,"practice.lbl",false);
 	            labelsPrinted=true;
 	        }
 	        try { rs.close(); stmt.close(); cstmt.close(); }

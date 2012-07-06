@@ -1889,7 +1889,7 @@ public class CytoPathReport extends javax.swing.JFrame
                 cstmt.executeUpdate();
                 cstmt.close();
                 String fileName = "reports.lbl";
-                String dir = "g:\\";
+                String dir = Utils.ROOT_DIR;
 		        if (verifyPrinter()) {
 		            this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		            Utils.genericPrint(dir,fileName,false);

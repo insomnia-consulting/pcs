@@ -17,8 +17,8 @@
 
 		<dependency>
 			<groupId>oracle</groupId>
-			<artifactId>oracle</artifactId>
-			<version>1.2</version>
+			<artifactId>ojdbc</artifactId>
+			<version>6</version>
 
 		</dependency>
 		<dependency>

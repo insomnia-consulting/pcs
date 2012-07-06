@@ -129,7 +129,7 @@ public class DailyReptDialog extends javax.swing.JDialog
         else {
                 String fName = stmtYear.getText()+stmtMonth.getText()+stmtDay.getText()+".dwr";
                 String dir = "reports\\dwr\\";
-                File f = new File("g:\\",fName);
+                File f = new File(Utils.ROOT_DIR,fName);
                 if (f.exists()) {
                     long fLen = f.length();
                     if (fLen>0) { 

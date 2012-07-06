@@ -186,9 +186,7 @@ begin
    from pcs.billing_queue where billing_route=C_billing_route;
    if (C_claims>0 and C_billing_route<>'DUP') then
       if (C_retran_status=0) then
-	 select pcs.claim_submission_seq.nextval into claim_batch_number from du
-al;
-
+	 select pcs.claim_submission_seq.nextval into claim_batch_number from dual;
 	 transaction_ref:='01';
 	 C_tpp:=C_billing_route;
       else
@@ -214,22 +212,16 @@ al;
 	 (claim_batch_number,claim_ebill,C_claims,SysDate,UID,C_tpp);
    end if;
 
-   select id_number into receiver_id from pcs.business_id_nums where id_code='DA
-SID';
+   select id_number into receiver_id from pcs.business_id_nums where id_code='DASID';
 
-   select id_number into sender_id from pcs.business_id_nums where id_code=C_tpp
-;
+   select id_number into sender_id from pcs.business_id_nums where id_code=C_tpp;
 
-   select id_number into lab_CLIA from pcs.business_id_nums where id_code='CLIA'
-
-;
+   select id_number into lab_CLIA from pcs.business_id_nums where id_code='CLIA' ;
 
    select id_number into NPI_id from pcs.business_id_nums where id_code='NPI';
-   select id_number into security_id from pcs.business_id_nums where id_code='DA
-SSECID';
+   select id_number into security_id from pcs.business_id_nums where id_code='DASSECID';
 
-   select id_number into trading_id from pcs.business_id_nums where id_code='DAS
-TRID';
+   select id_number into trading_id from pcs.business_id_nums where id_code='DASTRID';
 
    select REPLACE(id_number,'-') into lab_tax_id
    from pcs.business_id_nums where id_code='TAXID';
@@ -244,7 +236,9 @@ TRID';
 
    x12_fname:=transaction_ref||LTRIM(RTRIM(TO_CHAR(claim_batch_number,'000009'))
 );
-
+DBMS_OUTPUT.ENABLE;
+   DBMS_OUTPUT.PUT_LINE('C_directory = ' || C_directory);
+   DBMS_OUTPUT.PUT_LINE('x12_fname = ' || x12_fname);
    file_handle:=UTL_FILE.FOPEN(C_directory,x12_fname,'w');
 
    P_code_area:='HEADERS';
@@ -407,9 +401,7 @@ TRID';
       if (C_retran_status=0 and last_carrier=0 and C_billing_route<>'DUP') then
 	 last_carrier:=carrier_idnum;
 	 insert into pcs.payer_batch_amounts
-	    (carrier_id,batch_number,amount_submitted,amount_recorded,amount_rec
-eived)
-
+	 	(carrier_id,batch_number,amount_submitted,amount_recorded,amount_received)
 	 values (carrier_idnum,claim_batch_number,0,0,0);
 	 commit;
       end if;
@@ -712,7 +704,7 @@ P
 	 */
 	 curr_line:='DTP*472*D8*'||lab_collected||'~';
 
-	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
+	 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 segment_count:=segment_count+1;
 	 rcnt:=rcnt+1;
       end loop;
@@ -776,9 +768,7 @@ P
 
    if (test_indicator<>'T') then
       delete from pcs.billing_queue where billing_route=C_billing_route;
-      insert into pcs.claim_submissions (batch_number,tpp,submission_number,crea
-tion_date)
-
+      insert into pcs.claim_submissions (batch_number,tpp,submission_number,creation_date)
       values (claim_batch_number,C_tpp,TO_NUMBER(transaction_ref),SysDate);
    end if;
 
@@ -789,9 +779,9 @@ tion_date)
    commit;
 
 exception
-   when UTL_FILE.INVALID_PATH then
-      UTL_FILE.FCLOSE(file_handle);
-      RAISE_APPLICATION_ERROR(-20051,'invalid path');
+--   when UTL_FILE.INVALID_PATH then
+--      UTL_FILE.FCLOSE(file_handle);
+--      RAISE_APPLICATION_ERROR(-20051,'invalid path');
    when UTL_FILE.INVALID_MODE then
       UTL_FILE.FCLOSE(file_handle);
       RAISE_APPLICATION_ERROR(-20052,'invalid mode');
@@ -808,20 +798,14 @@ exception
    when UTL_FILE.WRITE_ERROR then
       UTL_FILE.FCLOSE(file_handle);
       RAISE_APPLICATION_ERROR(-20056,'write error');
-   when OTHERS then
-
-      UTL_FILE.FCLOSE(file_handle);
-      P_error_code:=SQLCODE;
-      P_error_message:=SQLERRM;
-      claim_lab_number:=claim_lab_number;
-      insert into pcs.error_log (error_code,error_message,proc_name,code_area,da
-testamp,sys_user,ref_id)
-
-      values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,c
-laim_lab_number);
-
-      commit;
-      RAISE;
-
-
+--   when OTHERS then
+--      UTL_FILE.FCLOSE(file_handle);
+--      P_error_code:=SQLCODE;
+--      P_error_message:=SQLERRM;
+--      claim_lab_number:=claim_lab_number;
+--      insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)
+--      values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,claim_lab_number);
+--      commit;
+--      RAISE;
 end;
+/
