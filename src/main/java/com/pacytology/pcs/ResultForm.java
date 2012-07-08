@@ -3060,6 +3060,11 @@ System.out.println("      found match!");
 	    }
 	    return (codeEntered);
 	}
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
 /* END OF RESULT FORM */

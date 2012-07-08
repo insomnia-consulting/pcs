@@ -978,6 +978,11 @@ public class TissueCodeForm extends PcsFrame
         y+=24; lineCount+=2;
         pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,10));
     }
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 
 }

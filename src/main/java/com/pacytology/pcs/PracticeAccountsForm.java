@@ -1,16 +1,19 @@
 package com.pacytology.pcs;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.sql.*;
 import javax.swing.*;
-import javax.swing.ScrollPaneConstants;
+
+import com.pacytology.pcs.action.PracticeAccountsFormActionMap;
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 import java.io.*;
 import javax.swing.table.*;
 
 
-public class PracticeAccountsForm extends javax.swing.JFrame
+public class PracticeAccountsForm extends PcsFrame
 {
     public Login dbLogin;
     /*
@@ -23,7 +26,7 @@ public class PracticeAccountsForm extends javax.swing.JFrame
     public int currMode = Lab.IDLE;
     public PracticeRec practiceRec;
     public FunctionKeyControl fKeys = new FunctionKeyControl();
-    PracticeAccountDbOps dbOps;
+    public PracticeAccountDbOps dbOps;
     public PaymentTableData pData;
     public JTable PaymentTable; 
     public JTableHeader header;
@@ -469,8 +472,45 @@ public class PracticeAccountsForm extends javax.swing.JFrame
 		payCode.addKeyListener(aSymKey);
 		dateReceived.addKeyListener(aSymKey);
 		//}}
+		
+		actionMap = new PracticeAccountsFormActionMap(this);
+		setupKeyPressMap();
 	}
 
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+
+		rp.getActionMap().put("F8", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (payCode.hasFocus()) {
+					String[] buf = new String[paymentTypeVect.size()];
+					String[] buf2 = new String[paymentTypeVect.size()];
+					for (int i = 0; i < paymentTypeVect.size(); i++) {
+						buf[i] = (String) paymentCodeVect.elementAt(i);
+						buf2[i] = (String) paymentCodeVect.elementAt(i) + "  "
+								+ paymentTypeVect.elementAt(i);
+					}
+					(new PickList("Payment Types", 400, 180, 200, 160,
+							paymentTypeVect.size(), buf2, buf, payCode))
+							.setVisible(true);
+				}
+			}
+		});
+		rp.getActionMap().put("ESC", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				resetForm();
+			}
+		});
+		rp.getActionMap().put("F12", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+                if (fKeys.isOn(fKeys.F12))
+                    finalActions();
+			}
+		});
+		
+		
+		return rp;
+	}
 	public PracticeAccountsForm(String sTitle)
 	{
 		this();
@@ -486,6 +526,7 @@ public class PracticeAccountsForm extends javax.swing.JFrame
         this.resetForm();
     }        
 
+   
 	public void setVisible(boolean b)
 	{
 		if (b) setLocation(0,0);
@@ -945,51 +986,12 @@ public class PracticeAccountsForm extends javax.swing.JFrame
                 case java.awt.event.KeyEvent.VK_ESCAPE:
                     resetForm();
                     break;
-                case java.awt.event.KeyEvent.VK_F1:
-                    //if (fKeys.isOn(fKeys.F1)==true) 
-                        queryActions();
-                    break;
+                
                 case java.awt.event.KeyEvent.VK_F12:
-                    if (fKeys.isOn(fKeys.F12))
-                        finalActions();
+
                     break;
-                case java.awt.event.KeyEvent.VK_F5:
-                    //if (fKeys.isOn(fKeys.F5)) 
-                        displayStatement();
-                    break;
-                case java.awt.event.KeyEvent.VK_F2:
-                    //if (fKeys.isOn(fKeys.F2))
-                    //if (practiceRec.practice!=0)
-                        addActions();
-                    break;
-                case java.awt.event.KeyEvent.VK_F3:
-                    if (fKeys.isOn(fKeys.F3))
-                        updateActions();
-                    break;
-                case java.awt.event.KeyEvent.VK_F8:
-                    if (payCode.hasFocus()) {
-                        String[] buf = new String[paymentTypeVect.size()];
-                        String[] buf2 = new String[paymentTypeVect.size()];
-                        for (int i=0;i<paymentTypeVect.size();i++) {
-                            buf[i]=(String)paymentCodeVect.elementAt(i);
-                            buf2[i]=(String)paymentCodeVect.elementAt(i)+
-                                "  "+paymentTypeVect.elementAt(i);
-                        }
-                        (new PickList("Payment Types",
-                              400,180,200,160,
-                              paymentTypeVect.size(),
-                              buf2,buf,
-                              payCode)).setVisible(true);
-                    }
-                    break;
-                case java.awt.event.KeyEvent.VK_F9:
-                    dbOps.close();
-                    this.dispose();
-                    break;
-                case java.awt.event.KeyEvent.VK_DOWN:
-                    break;
-                case java.awt.event.KeyEvent.VK_UP:
-                    break;
+
+
                 case java.awt.event.KeyEvent.VK_CONTROL:
                     ((JTextField)getFocusOwner()).setText(null);
                     dFlag=false;
@@ -1303,6 +1305,12 @@ public class PracticeAccountsForm extends javax.swing.JFrame
 		        }
 	        }
 	    }
+	}
+
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 

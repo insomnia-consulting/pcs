@@ -34,7 +34,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class BuildClaimDialog extends javax.swing.JDialog
+import com.pacytology.pcs.ui.PcsDialog;
+
+public class BuildClaimDialog extends PcsDialog
 {
 
 	

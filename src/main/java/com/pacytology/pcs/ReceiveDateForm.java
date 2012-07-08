@@ -1127,5 +1127,10 @@ public class ReceiveDateForm extends PcsFrame {
 		throw new NotImplementedException();
 		
 	}
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

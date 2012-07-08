@@ -477,7 +477,7 @@ public class CarrierForm extends PcsFrame
 		});
 		rp.getActionMap().put("ESC", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				CarrierForm.this.resetCarrierForm();
+				CarrierForm.this.resetActions();
 			}
 		});
 		AbstractAction showRemarks = new AbstractAction() {
@@ -516,7 +516,7 @@ public class CarrierForm extends PcsFrame
         this.dbLogin=p.dbLogin;
         this.formMode=LAB;
         this.cDbOps = new CarrierDbOps(this);
-        resetCarrierForm();
+        resetActions();
         if (this.parent.labRec.carrier_id>0)  {
             this.autoQuery=true;
             this.cRec.carrier_id=this.parent.labRec.carrier_id;
@@ -535,7 +535,7 @@ public class CarrierForm extends PcsFrame
         this.dbLogin=p.dbLogin;
         this.formMode=BILL;
         this.cDbOps = new CarrierDbOps(this);
-        resetCarrierForm();
+        resetActions();
     }        
 
     public CarrierForm(Login dbLogin)  
@@ -546,7 +546,7 @@ public class CarrierForm extends PcsFrame
             dbLogin.logPath,"CarrierForm",dbLogin.dateToday,dbLogin.userName);
         this.hasParent=false;
         this.cDbOps = new CarrierDbOps(this);
-        this.resetCarrierForm();
+        this.resetActions();
     }        
 
 	public void setVisible(boolean b)
@@ -854,7 +854,8 @@ public class CarrierForm extends PcsFrame
 	    mergeRemove.setText(null);
     }        
     
-    public void resetCarrierForm() {
+    @Override
+    public void resetActions() {
         msgLabel.setText(null);
         carrierComments.setText(null);
         setEnableAllFields(false);
@@ -912,7 +913,7 @@ public class CarrierForm extends PcsFrame
 	
 	public void mergeActions()
 	{
-	    resetCarrierForm();
+	    resetActions();
 	    setEnableAllFields(false);
 	    currMode=Lab.MERGE;
 	    mergeRetain.setEnabled(true);
@@ -946,7 +947,7 @@ public class CarrierForm extends PcsFrame
     }
 	
 	public void queryActions() {
-	    resetCarrierForm();
+	    resetActions();
 	    currMode=Lab.QUERY;
 	    setEnableAllFields(false);
 	    fKeys.off();
@@ -1033,13 +1034,13 @@ public class CarrierForm extends PcsFrame
             int rv = mergeConfirm.showConfirmDialog(this,"Merge payers "+retain+" and "+remove+"?",
                 "Payer Merge",mergeConfirm.YES_NO_OPTION,mergeConfirm.QUESTION_MESSAGE);
             if (rv!=mergeConfirm.YES_OPTION) { 
-		        resetCarrierForm();
+		        resetActions();
 		        return;
             }
             success=cDbOps.merge();
             if (success) {
                 int id_save = retain;
-                resetCarrierForm();
+                resetActions();
                 cIDNum.setText(Integer.toString(id_save));
                 success=cDbOps.query();
                 if (success) {
@@ -1450,5 +1451,6 @@ System.out.println("updateBilling: "+updateBilling);
 	{
 		Utils.forceUpper(event,32);
 	}
+
 	
 }

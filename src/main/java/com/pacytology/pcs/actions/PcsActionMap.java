@@ -14,19 +14,29 @@ public class PcsActionMap {
 	public PcsActionMap(PcsFrame parentFrame) {
 		this.parentFrame = parentFrame;
 	}
-	
-	public final Action closeAction = new AbstractAction() {
+	public final Action resetAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-			PcsActionMap.this.parentFrame.dispose();
+			PcsActionMap.this.resetAction();
 		}
 	};
+
+	public final Action closeAction = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+			PcsActionMap.this.closeAction();
+		}
+	};
+	public void closeAction() {
+		PcsActionMap.this.parentFrame.dispose();
+	}
 	
 	public  Action queryAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 			PcsActionMap.this.queryAction();
 		}
 	};
-	
+	public void resetAction() {
+		PcsActionMap.this.parentFrame.resetActions();
+	}
 	public void queryAction() {
 		PcsActionMap.this.parentFrame.msgLabel.setText(null);
         if (PcsActionMap.this.parentFrame.fKeys.isOn(PcsActionMap.this.parentFrame.fKeys.F1)==true) {
@@ -37,10 +47,10 @@ public class PcsActionMap {
 	
 	public final Action addAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-			PcsActionMap.this.addAction();
+			PcsActionMap.this.addAction(e);
 		}
 	};
-	public void addAction() {
+	public void addAction(ActionEvent e) {
 		PcsActionMap.this.parentFrame.msgLabel.setText(null);
         if (PcsActionMap.this.parentFrame.fKeys.isOn(PcsActionMap.this.parentFrame.fKeys.F2)==true) {
         	PcsActionMap.this.parentFrame.addActions();
@@ -49,14 +59,30 @@ public class PcsActionMap {
 	}
 	public final Action updateAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-			PcsActionMap.this.updateAction();
+			PcsActionMap.this.updateAction(e);
 		}
 	};
-	
-	public void updateAction() {
+
+	public void updateAction(ActionEvent e) {
 		if (PcsActionMap.this.parentFrame.fKeys.isOn(PcsActionMap.this.parentFrame.fKeys.F3)==true) {
         	PcsActionMap.this.parentFrame.updateActions();
         }
+	}
+	public final Action f4Action = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+			PcsActionMap.this.f4Action(e);
+		}
+	};
+	public void f4Action(ActionEvent e) {
+
+	}
+	public final Action f5Action = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+			PcsActionMap.this.f4Action(e);
+		}
+	};
+	public void f5Action(ActionEvent e) {
+		
 	}
 	
 	public final Action finalAction = new AbstractAction() {
@@ -74,9 +100,14 @@ public class PcsActionMap {
 	
 	public final Action controlAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
-			((JTextField)PcsActionMap.this.parentFrame.getFocusOwner()).setText(null);
+			PcsActionMap.this.controlAction() ;
+			
 		}
 	};
+	public void controlAction() {
+		((JTextField)PcsActionMap.this.parentFrame.getFocusOwner()).setText(null);
+
+	}
 	
 	
 

@@ -22,16 +22,22 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
+import javax.swing.JRootPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
+import com.pacytology.pcs.actions.BillingFormActionMap;
+import com.pacytology.pcs.actions.LabFormActionMap;
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
 
-public class BillingForm extends javax.swing.JFrame
+public class BillingForm extends PcsFrame
 {
     
 	int MAX_BILLING_CODES=10;
@@ -68,13 +74,13 @@ public class BillingForm extends javax.swing.JFrame
     int originalBillingChoice = 0;
     boolean billingChanged = false;
     boolean dFlag = false;
-    boolean inBillingQueue = false;
-    boolean inRework = false;
-    boolean isClaimStatusLocked = false;
-    String lockedClaimStatus;
+    public boolean inBillingQueue = false;
+    public boolean inRework = false;
+    public boolean isClaimStatusLocked = false;
+    public String lockedClaimStatus;
     boolean patientQuery = false;
     boolean carrierChanged = false;
-    boolean hasLetter = false;
+    public boolean hasLetter = false;
     boolean inCollection = false;
     String collectionInfo;
 	public JTextArea labComments = new javax.swing.JTextArea();
@@ -82,7 +88,7 @@ public class BillingForm extends javax.swing.JFrame
 	public JTextArea dbComments = new javax.swing.JTextArea();
 	boolean hasSecondary = false;
 	boolean claimStatusChanged = false;
-	BillingDetails billingAdd;
+	public BillingDetails billingAdd;
 
 	public BillingForm()
 	{
@@ -875,9 +881,248 @@ public class BillingForm extends javax.swing.JFrame
 		        }
 		    }
 		}
+		actionMap = new BillingFormActionMap(this);
+		setupKeyPressMap();
 		
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+		
+		rp.getActionMap().put("F5", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 statusReset.setEnabled(false);
+		            if ((e.getModifiers() & ActionEvent.ALT_MASK) != 0) {
+		                BillingDetails bd = 
+		                    (BillingDetails)labRec.billing.details.elementAt(currNdx);
+		                if (bd.billing_choice==Lab.DB) 
+		                    (new PatientAccountsForm(
+		                        dbLogin,labRec.lab_number)).setVisible(true);
+		            }
+		            else if (((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0) && labRec.lab_number>0) {
+		                String s = labBillingChoice.getText();
+		                String c = Utils.isNull(claimStatus.getText()," ");
+		                if (c.equals("D")||c.equals("R")||c.equals("PP")||c.equals("N")
+		                ||c.equals("I")||(!Utils.isNull(s) && s.equals("DB")))
+		                    (new DBCommentDialog(dbComments)).setVisible(true);
+		                else
+		                    Utils.createErrMsg(
+		                        "Claim status is (D,R,PP,N,I) or billing choice is (DB)"+
+		                        " for direct bill comments");
+		            }
+		            else {
+		                if (globalFinished>=FINISHED)
+		                    Utils.createErrMsg("(1) No action permitted on finished work");
+		                else invokePatientForm();
+		            }
+			}
+		});
+		rp.getActionMap().put("F6", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				statusReset.setEnabled(false);
+	            if (globalFinished>=FINISHED)
+	                Utils.createErrMsg("(2) No action permitted on finished work");
+	            else if (fKeys.isOn(fKeys.F6)==true) {
+	                if ((labOtherInsurance.hasFocus()==true)||
+	                    (labPayerID.hasFocus()==true)||
+	                    (labPCSID.hasFocus()==true) )
+	                    (new CarrierForm(BillingForm.this)).setVisible(true);			
+	            }
+	            else createErrMsg("Carrier Form Not Available");
+			}
+		});
+		rp.getActionMap().put("F7", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (labRec.lab_number>0) {
+	                if ((e.getModifiers() & ActionEvent.ALT_MASK) != 0) {
+	                    if (labOps.buildBlankLetter())
+	                        msgLabel.setText("Blank letter sent to info request queue.");
+	                }
+	                else {
+	                    if (labBillingChoice.getText().equals("MED")) { 
+	                        if (labOps.buildDiagnosisLetter())
+	                            msgLabel.setText(
+	                                "Blank letter sent to info request queue.");
+	                    }
+	                }
+	            }
+			}
+		});
+		rp.getActionMap().put("F8", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 if (currMode==Lab.IDLE && reworkQueue.size()>0) {
+		                String[] buf = new String[reworkQueue.size()];
+		                for (int i=0;i<reworkQueue.size();i++) {
+		                    ClaimRec c = (ClaimRec)reworkQueue.elementAt(i);
+		                    buf[i]=Integer.toString(c.lab_number)+"  "+c.claim_status;
+		                }
+		                (new PickList("Rework Queue",50,50,160,400,
+		                              reworkQueue.size(),buf)).setVisible(true);
+		            }
+		            else if (labDiagCode.hasFocus())  {
+		                String[] buf = new String[MAX_DIAG_CODES];
+		                for (int i=0;i<MAX_DIAG_CODES;i++)
+		                    buf[i]=labDiagnosisCodes[i].formattedString;
+		                (new PickList("Diagnosis Codes",
+		                              200,10,376,
+		                              MAX_DIAG_CODES,
+		                              buf,diagnosisCodeList,
+		                              labDiagCode)).setVisible(true);
+		            }                                              
+		            else if (labDiagCode2.hasFocus())  {
+		                String[] buf = new String[MAX_DIAG_CODES];
+		                for (int i=0;i<MAX_DIAG_CODES;i++)
+		                    buf[i]=labDiagnosisCodes[i].formattedString;
+		                (new PickList("Diagnosis Codes",
+		                              200,10,376,
+		                              MAX_DIAG_CODES,
+		                              buf,diagnosisCodeList,
+		                              labDiagCode2)).setVisible(true);
+		            }                                              
+		            else if (labDiagCode3.hasFocus())  {
+		                String[] buf = new String[MAX_DIAG_CODES];
+		                for (int i=0;i<MAX_DIAG_CODES;i++)
+		                    buf[i]=labDiagnosisCodes[i].formattedString;
+		                (new PickList("Diagnosis Codes",
+		                              200,10,376,
+		                              MAX_DIAG_CODES,
+		                              buf,diagnosisCodeList,
+		                              labDiagCode3)).setVisible(true);
+		            }                                              
+		            else if (labDiagCode4.hasFocus())  {
+		                String[] buf = new String[MAX_DIAG_CODES];
+		                for (int i=0;i<MAX_DIAG_CODES;i++)
+		                    buf[i]=labDiagnosisCodes[i].formattedString;
+		                (new PickList("Diagnosis Codes",
+		                              200,10,376,
+		                              MAX_DIAG_CODES,
+		                              buf,diagnosisCodeList,
+		                              labDiagCode4)).setVisible(true);
+		            }                             
+		            else if (claimStatus.hasFocus()) {
+		                String[] buf1 = new String[claimStatusVect.size()];
+		                String[] buf2 = new String[claimStatusVect.size()];
+		                for (int i=0; i<claimStatusVect.size(); i++) {
+		                    ClaimStatusRec c = (ClaimStatusRec)claimStatusVect.elementAt(i);
+		                    buf1[i] = c.claim_status;
+		                    if (Utils.length(c.claim_status)==1)
+		                        buf2[i]=c.claim_status+"  "+c.description;
+		                    else
+		                        buf2[i]=c.claim_status+" "+c.description;
+		                }
+		                (new PickList("Claim Status Codes",
+		                               200,200,240,190,
+		                               claimStatusVect.size(),
+		                               buf2,buf1,claimStatus)).setVisible(true);
+		            }
+		            else if (labBillingChoice.hasFocus())  {
+		                String[] buf = new String[MAX_BILLING_CODES];
+		                for (int i=0;i<MAX_BILLING_CODES;i++)
+		                    buf[i]=labBillingCodes[i].formattedString;
+		                (new PickList("Billing Codes",
+		                               200,200,240,190,
+		                               MAX_BILLING_CODES,buf,
+		                               billingCodeList,
+		                               labBillingChoice)).setVisible(true);
+		            } 
+		            else if (doctorText.hasFocus()) displayDoctorList();
+			}
+		});
+		rp.getActionMap().put("F10", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				gotoNextSection();
+			}
+		});
+		rp.getActionMap().put("F11", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 if (((e.getModifiers() & ActionEvent.ALT_MASK) != 0) 
+						 && labRec.claimHistoryVect.size()>0) {
+		                String buf[] = new String[labRec.claimHistoryVect.size()+2];
+		                buf[0]="PAYER:                    "+
+		                    "ST: RECEIVED:   ENTERED:          USER:";
+		                buf[1]="---------------------------------------------------------------------";
+		                for (int i=2; i<labRec.claimHistoryVect.size()+2; i++) 
+		                    buf[i]=(String)labRec.claimHistoryVect.elementAt(i-2);
+		                (new PickList("Claim History",30,30,450,200,
+		                    labRec.claimHistoryVect.size()+2,buf)).setVisible(true);
+		            }
+		            else if (labRec.doc.doctor>0) {
+		                String buf[] = new String[9];
+		                buf[0]="DOCTOR INFORMATION";
+		                buf[1]="-------------------------------------------------";
+		                buf[2]="LAST:         "+labRec.doc.lname;
+		                buf[3]="FIRST:        "+Utils.isNull(labRec.doc.fname," ");
+		                buf[4]="UPIN:         "+Utils.isNull(labRec.doc.upin," ");
+		                buf[5]=Utils.isNull(labRec.doc.state,"  ")+" LICENSE:   "+
+		                    Utils.isNull(labRec.doc.license," ");
+		                buf[6]="BLUE SHIELD:  "+Utils.isNull(labRec.doc.bs_provider," ");
+		                buf[7]="ALT STATE:    "+Utils.isNull(labRec.doc.alt_state," ");
+		                buf[8]="ALT LICENSE:  "+Utils.isNull(labRec.doc.alt_license," ");
+		                (new PickList("Doctor Information",100,270,380,230,9,buf)).setVisible(true);
+		            }
+		            else Utils.createErrMsg("Doctor information not available");
+			}
+		});
+		rp.getActionMap().put("F12", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (globalFinished>=FINISHED)
+	                Utils.createErrMsg("(3) No action permitted on finished work");
+	            else if (!dbThreadRunning) {
+	                finalActions();
+	            }
+	            else createErrMsg("Database is busy ... please retry");
+			}
+		});
+		rp.getActionMap().put("ESC", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
 
+			}
+		});
+		AbstractAction insertAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				 if (!Utils.isNull(labRec.prac.comment_text))
+		                displayComments(practiceComments,"Practice Comments");
+		            if (labRec.lab_number>0) {
+		                (new CommentForm(dbLogin,labRec.lab_number)).setVisible(true);
+		            }
+			}
+		};
+		rp.getActionMap().put("INSERT", insertAction);
+		rp.getActionMap().put("VK_I", insertAction);
+		rp.getActionMap().put("VK_CONTROL", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				dFlag=false;
+                ((JTextField)getFocusOwner()).setText(null);
+                if ((labOtherInsurance.hasFocus()) ||
+                    (labPayerID.hasFocus()) ||
+                    (labPCSID.hasFocus())) {
+                        labOtherInsurance.setText(null);
+                        labPayerID.setText(null);
+                        labPCSID.setText(null);
+                }
+                else if (claimStatus.hasFocus()) {
+                    setEnableClaimFields(false);
+                    claimStatus.setEnabled(true);
+                    paymentAmount.setText(null);
+                    claimAllowable.setText(null);
+                    patientAmount.setText(null);
+                    altClaimID.setText(null);
+                    dateReceived.setText(null);
+                    claimComment.setText(null);
+                }
+			}
+		});
+		rp.getActionMap().put("VK_UP", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				increment();
+			}
+		});
+		rp.getActionMap().put("VK_DOWN", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				decrement();
+			}
+		});
+	    return rp;
+	}
 	public BillingForm(String sTitle)
 	{
 		this();
@@ -892,7 +1137,7 @@ public class BillingForm extends javax.swing.JFrame
             dbLogin.logPath,"BillingForm",dbLogin.dateToday,dbLogin.userName);
         this.labOps = new BillingDbOps(this);
         this.labOps.labFormInit();
-        this.resetLabForm();
+        this.resetActions();
         if (this.reworkQueue.size()>0)
             msgLabel.setText("There are "+reworkQueue.size()+
                 " items in the claim rework queue - F8 to list");
@@ -907,7 +1152,7 @@ public class BillingForm extends javax.swing.JFrame
             dbLogin.logPath,"BillingForm",dbLogin.dateToday,dbLogin.userName);
         this.labOps = new BillingDbOps(this);
         this.labOps.labFormInit();
-        this.resetLabForm();
+        this.resetActions();
         if (this.reworkQueue.size()>0)
             msgLabel.setText("There are "+reworkQueue.size()+
                 " items in the claim rework queue - F8 to list");
@@ -1017,7 +1262,7 @@ public class BillingForm extends javax.swing.JFrame
 	javax.swing.border.TitledBorder titledBorder6 = new javax.swing.border.TitledBorder("");
 	javax.swing.JPanel claimPanel = new javax.swing.JPanel();
 	javax.swing.JLabel JLabel19 = new javax.swing.JLabel();
-	javax.swing.JTextField claimStatus = new javax.swing.JTextField();
+	public javax.swing.JTextField claimStatus = new javax.swing.JTextField();
 	javax.swing.JTextField paymentAmount = new javax.swing.JTextField();
 	javax.swing.JTextField claimAllowable = new javax.swing.JTextField();
 	javax.swing.JLabel JLabel25 = new javax.swing.JLabel();
@@ -1031,8 +1276,8 @@ public class BillingForm extends javax.swing.JFrame
 	javax.swing.JTextArea claimComment = new javax.swing.JTextArea();
 	javax.swing.JLabel JLabel29 = new javax.swing.JLabel();
 	javax.swing.JLabel infoLbl = new javax.swing.JLabel();
-	javax.swing.JLabel lockLbl = new javax.swing.JLabel();
-	javax.swing.JButton statusReset = new javax.swing.JButton();
+	public javax.swing.JLabel lockLbl = new javax.swing.JLabel();
+	public javax.swing.JButton statusReset = new javax.swing.JButton();
 	javax.swing.border.TitledBorder titledBorder7 = new javax.swing.border.TitledBorder("");
 	javax.swing.JPanel functionKeyPanel = new javax.swing.JPanel();
 	Square F1sq = new Square();
@@ -1510,7 +1755,12 @@ public class BillingForm extends javax.swing.JFrame
 	    keyActions(event);
 	}
 
-    public void resetLabForm()  {
+	@Override
+    public void resetActions()  {
+    	
+		lockedClaimStatus=null;
+        isClaimStatusLocked=false;
+        lockLbl.setText(null);
         setEnableAllFields(false);
         msgLabel.requestFocus();
         resetColors();
@@ -2145,7 +2395,7 @@ public class BillingForm extends javax.swing.JFrame
                 currentSection=0;
             }
             else {
-                resetLabForm();
+                resetActions();
                 msgLabel.setText("Query Operation Failed");
             }
 		    this.setCursor(new Cursor(DEFAULT_CURSOR));
@@ -2181,7 +2431,7 @@ public class BillingForm extends javax.swing.JFrame
                 msgLabel.requestFocus();
                 String lnum = Integer.toString(labRec.lab_number);
                 currMode=Lab.IDLE;
-                resetLabForm();
+                resetActions();
                 success=labOps.query(lnum);
                 if (success) {
                     fillForm();
@@ -2221,7 +2471,7 @@ public class BillingForm extends javax.swing.JFrame
                     currentSection=0;
                 }
                 else {
-                    resetLabForm();
+                    resetActions();
                     msgLabel.setText("Query Operation Failed");
                 }
 		        this.setCursor(new Cursor(DEFAULT_CURSOR));
@@ -2258,7 +2508,7 @@ public class BillingForm extends javax.swing.JFrame
                 setEnableAllFields(false);
                 msgLabel.requestFocus();
                 String lnum = Integer.toString(labRec.lab_number);
-                resetLabForm();
+                resetActions();
                 success=labOps.query(lnum);
                 if (success) {
                     if (wasInCollection && !inCollection) {
@@ -2293,7 +2543,7 @@ public class BillingForm extends javax.swing.JFrame
             }
             else  {
                 currMode=Lab.IDLE;
-                resetLabForm();
+                resetActions();
                 Utils.createErrMsg("No data located");
             }                
         }
@@ -2308,7 +2558,7 @@ public class BillingForm extends javax.swing.JFrame
 	        if (hasSecondary) {
 	            String lnum = labNumber.getText();
 	            currMode=Lab.IDLE;
-	            resetLabForm();
+	            resetActions();
 	            labNumber.setText(lnum);
 	            labOps.query(lnum);
 	            if (wasInCollection && !inCollection) {
@@ -2323,7 +2573,7 @@ public class BillingForm extends javax.swing.JFrame
 	        else {
 	            this.setCursor(new Cursor(DEFAULT_CURSOR));
 	            currMode=Lab.IDLE;
-	            resetLabForm();
+	            resetActions();
 	            claimActions();
             }
         }
@@ -2338,7 +2588,7 @@ public class BillingForm extends javax.swing.JFrame
             if (success) {
 	            String lnum = labNumber.getText();
 	            currMode=Lab.IDLE;
-	            resetLabForm();
+	            resetActions();
 	            labNumber.setText(lnum);
 	            labOps.query(lnum);
 	            if (wasInCollection && !inCollection) {
@@ -2347,7 +2597,7 @@ public class BillingForm extends javax.swing.JFrame
 	        }
 	        else {
 	            currMode=Lab.IDLE;
-	            resetLabForm();
+	            resetActions();
 	        }
             this.setCursor(new Cursor(DEFAULT_CURSOR));
         }
@@ -2358,7 +2608,7 @@ public class BillingForm extends javax.swing.JFrame
             labOps.reversePayment(p.payment_id);
 		    String lnum = labNumber.getText();
 		    currMode=Lab.IDLE;
-		    resetLabForm();
+		    resetActions();
             if (labOps.query(lnum)) {
                 fillForm();
                 setEnableAllFields(false);
@@ -2586,11 +2836,11 @@ public class BillingForm extends javax.swing.JFrame
 		msgLabel.setText("F8 = Billing Code List");
 	}
 
-    void rebillActions(boolean canRebill)
+    public void rebillActions(boolean canRebill)
     {
         if (labRec.lab_number<=0) {
             currMode=Lab.IDLE;
-		    resetLabForm();
+		    resetActions();
 		    setEnableAllFields(false);
 		    labNumber.setEnabled(true);
 		    labNumber.setBackground(Color.white);
@@ -2617,295 +2867,8 @@ public class BillingForm extends javax.swing.JFrame
 	void keyActions(java.awt.event.KeyEvent event) {
 	    msgLabel.setText(null);
 	    msgLabel2.setText(null);
-		if (event.getKeyCode()==event.VK_F1)  {
-		    currMode=Lab.IDLE;
-		    queryActions();
-        }
-        else if (event.getKeyCode()==event.VK_F2) {
-            if (event.isAltDown()) {
-                if (claimStatus.hasFocus()) {
-                    if (isClaimStatusLocked) {
-                        lockedClaimStatus=null;
-                        isClaimStatusLocked=false;
-                        lockLbl.setText(null);
-                    }
-                    else if (!Utils.isNull(claimStatus.getText())) {
-                        lockedClaimStatus=claimStatus.getText();
-                        isClaimStatusLocked=true;
-                        lockLbl.setText("LOCKED");
-                    }
-                    else Utils.createErrMsg("Cannot lock claim status");
-                }
-            }
-            else { 
-                isClaimStatusLocked=false;
-                lockedClaimStatus=null;
-                lockLbl.setText(null);
-                claimActions();
-            }
-        }       
-        else if (event.getKeyCode()==event.VK_F3) {
-            statusReset.setEnabled(false);
-            if (event.isAltDown()) {
-                if (labRec.lab_number>=0) {
-                    patientActions();
-                }
-            }
-            else {
-            if (labRec.billing.origin==1) {
-                String msg = null;
-                if (labRec.billing.in_queue==1)
-                    msg="Lab has a "+labRec.billing.letter_type+
-                        " letter not printed and created in Requisitions. "+
-                        "Lab must be updated there.";
-                else if (labRec.billing.in_queue==0)
-                    msg="Lab has a "+labRec.billing.letter_type+
-                    " letter pending created in Requisitions. "+
-                    "Lab must be updated there.";
-                Utils.createErrMsg(msg);
-            }
-            else updateActions();
-            }
-        }            
-        else if (event.getKeyCode()==event.VK_F4) {
-            statusReset.setEnabled(false);
-            boolean canRebill = true;
-            if (inBillingQueue) { 
-                canRebill=false;
-                Utils.createErrMsg("Cannot rebill lab in billing queue.");
-                return;
-            }
-            if (hasLetter && canRebill) {
-                if (labRec.billing.in_queue==1) {
-                    canRebill=false;
-                    Utils.createErrMsg("Cannot rebill lab in fax letter queue.");
-                    return;
-                }
-            }
-            String s = claimStatus.getText();
-            if (inRework && canRebill) {
-                if (s.equals("LT") || s.equals("MR")) canRebill=true;
-                else {
-                    canRebill=false;
-                    Utils.createErrMsg("Cannot rebill this lab.");
-                    return;
-                }
-            }
-            if (canRebill) {
-                if (s.equals("P")) {
-                    Utils.createErrMsg("Cannot rebill claim status P.");
-                    return;
-                }
-                billingAdd = new BillingDetails();
-                rebillActions(canRebill);
-            }
-        }           
-        else if (event.getKeyCode()==event.VK_F5) {
-            statusReset.setEnabled(false);
-            if (event.isAltDown()) {
-                BillingDetails bd = 
-                    (BillingDetails)labRec.billing.details.elementAt(currNdx);
-                if (bd.billing_choice==Lab.DB) 
-                    (new PatientAccountsForm(
-                        dbLogin,labRec.lab_number)).setVisible(true);
-            }
-            else if (event.isShiftDown() && labRec.lab_number>0) {
-                String s = labBillingChoice.getText();
-                String c = Utils.isNull(claimStatus.getText()," ");
-                if (c.equals("D")||c.equals("R")||c.equals("PP")||c.equals("N")
-                ||c.equals("I")||(!Utils.isNull(s) && s.equals("DB")))
-                    (new DBCommentDialog(dbComments)).setVisible(true);
-                else
-                    Utils.createErrMsg(
-                        "Claim status is (D,R,PP,N,I) or billing choice is (DB)"+
-                        " for direct bill comments");
-            }
-            else {
-                if (globalFinished>=FINISHED)
-                    Utils.createErrMsg("(1) No action permitted on finished work");
-                else invokePatientForm();
-            }
-        }           
-        else if (event.getKeyCode()==event.VK_F6) {
-            statusReset.setEnabled(false);
-            if (globalFinished>=FINISHED)
-                Utils.createErrMsg("(2) No action permitted on finished work");
-            else if (fKeys.isOn(fKeys.F6)==true) {
-                if ((labOtherInsurance.hasFocus()==true)||
-                    (labPayerID.hasFocus()==true)||
-                    (labPCSID.hasFocus()==true) )
-                    (new CarrierForm(this)).setVisible(true);			
-            }
-            else createErrMsg("Carrier Form Not Available");
-        }            
-        else if (event.getKeyCode()==event.VK_F11) {
-            if (event.isAltDown() && labRec.claimHistoryVect.size()>0) {
-                String buf[] = new String[labRec.claimHistoryVect.size()+2];
-                buf[0]="PAYER:                    "+
-                    "ST: RECEIVED:   ENTERED:          USER:";
-                buf[1]="---------------------------------------------------------------------";
-                for (int i=2; i<labRec.claimHistoryVect.size()+2; i++) 
-                    buf[i]=(String)labRec.claimHistoryVect.elementAt(i-2);
-                (new PickList("Claim History",30,30,450,200,
-                    labRec.claimHistoryVect.size()+2,buf)).setVisible(true);
-            }
-            else if (labRec.doc.doctor>0) {
-                String buf[] = new String[9];
-                buf[0]="DOCTOR INFORMATION";
-                buf[1]="-------------------------------------------------";
-                buf[2]="LAST:         "+labRec.doc.lname;
-                buf[3]="FIRST:        "+Utils.isNull(labRec.doc.fname," ");
-                buf[4]="UPIN:         "+Utils.isNull(labRec.doc.upin," ");
-                buf[5]=Utils.isNull(labRec.doc.state,"  ")+" LICENSE:   "+
-                    Utils.isNull(labRec.doc.license," ");
-                buf[6]="BLUE SHIELD:  "+Utils.isNull(labRec.doc.bs_provider," ");
-                buf[7]="ALT STATE:    "+Utils.isNull(labRec.doc.alt_state," ");
-                buf[8]="ALT LICENSE:  "+Utils.isNull(labRec.doc.alt_license," ");
-                (new PickList("Doctor Information",100,270,380,230,9,buf)).setVisible(true);
-            }
-            else Utils.createErrMsg("Doctor information not available");
-        }
-        else if (event.getKeyCode()==event.VK_F8) {
-            if (currMode==Lab.IDLE && reworkQueue.size()>0) {
-                String[] buf = new String[reworkQueue.size()];
-                for (int i=0;i<reworkQueue.size();i++) {
-                    ClaimRec c = (ClaimRec)reworkQueue.elementAt(i);
-                    buf[i]=Integer.toString(c.lab_number)+"  "+c.claim_status;
-                }
-                (new PickList("Rework Queue",50,50,160,400,
-                              reworkQueue.size(),buf)).setVisible(true);
-            }
-            else if (labDiagCode.hasFocus())  {
-                String[] buf = new String[MAX_DIAG_CODES];
-                for (int i=0;i<MAX_DIAG_CODES;i++)
-                    buf[i]=labDiagnosisCodes[i].formattedString;
-                (new PickList("Diagnosis Codes",
-                              200,10,376,
-                              MAX_DIAG_CODES,
-                              buf,diagnosisCodeList,
-                              labDiagCode)).setVisible(true);
-            }                                              
-            else if (labDiagCode2.hasFocus())  {
-                String[] buf = new String[MAX_DIAG_CODES];
-                for (int i=0;i<MAX_DIAG_CODES;i++)
-                    buf[i]=labDiagnosisCodes[i].formattedString;
-                (new PickList("Diagnosis Codes",
-                              200,10,376,
-                              MAX_DIAG_CODES,
-                              buf,diagnosisCodeList,
-                              labDiagCode2)).setVisible(true);
-            }                                              
-            else if (labDiagCode3.hasFocus())  {
-                String[] buf = new String[MAX_DIAG_CODES];
-                for (int i=0;i<MAX_DIAG_CODES;i++)
-                    buf[i]=labDiagnosisCodes[i].formattedString;
-                (new PickList("Diagnosis Codes",
-                              200,10,376,
-                              MAX_DIAG_CODES,
-                              buf,diagnosisCodeList,
-                              labDiagCode3)).setVisible(true);
-            }                                              
-            else if (labDiagCode4.hasFocus())  {
-                String[] buf = new String[MAX_DIAG_CODES];
-                for (int i=0;i<MAX_DIAG_CODES;i++)
-                    buf[i]=labDiagnosisCodes[i].formattedString;
-                (new PickList("Diagnosis Codes",
-                              200,10,376,
-                              MAX_DIAG_CODES,
-                              buf,diagnosisCodeList,
-                              labDiagCode4)).setVisible(true);
-            }                             
-            else if (claimStatus.hasFocus()) {
-                String[] buf1 = new String[claimStatusVect.size()];
-                String[] buf2 = new String[claimStatusVect.size()];
-                for (int i=0; i<claimStatusVect.size(); i++) {
-                    ClaimStatusRec c = (ClaimStatusRec)claimStatusVect.elementAt(i);
-                    buf1[i] = c.claim_status;
-                    if (Utils.length(c.claim_status)==1)
-                        buf2[i]=c.claim_status+"  "+c.description;
-                    else
-                        buf2[i]=c.claim_status+" "+c.description;
-                }
-                (new PickList("Claim Status Codes",
-                               200,200,240,190,
-                               claimStatusVect.size(),
-                               buf2,buf1,claimStatus)).setVisible(true);
-            }
-            else if (labBillingChoice.hasFocus())  {
-                String[] buf = new String[MAX_BILLING_CODES];
-                for (int i=0;i<MAX_BILLING_CODES;i++)
-                    buf[i]=labBillingCodes[i].formattedString;
-                (new PickList("Billing Codes",
-                               200,200,240,190,
-                               MAX_BILLING_CODES,buf,
-                               billingCodeList,
-                               labBillingChoice)).setVisible(true);
-            } 
-            else if (doctorText.hasFocus()) displayDoctorList();
-        }            
-        else if (event.getKeyCode()==event.VK_F9) {
-            closingActions();
-        }   
-        else if (event.getKeyCode()==event.VK_F10) {
-            event.consume();
-            gotoNextSection();
-        }
-        else if (event.getKeyCode()==event.VK_F7) {
-            if (labRec.lab_number>0) {
-                if (event.isAltDown()) {
-                    if (labOps.buildBlankLetter())
-                        msgLabel.setText("Blank letter sent to info request queue.");
-                }
-                else {
-                    if (labBillingChoice.getText().equals("MED")) { 
-                        if (labOps.buildDiagnosisLetter())
-                            msgLabel.setText(
-                                "Blank letter sent to info request queue.");
-                    }
-                }
-            }
-        }            
-        else if (event.getKeyCode()==event.VK_F12) {
-            if (globalFinished>=FINISHED)
-                Utils.createErrMsg("(3) No action permitted on finished work");
-            else if (!dbThreadRunning) {
-                finalActions();
-            }
-            else createErrMsg("Database is busy ... please retry");
-        }            
-        else if (event.getKeyCode()==event.VK_ESCAPE) {
-            lockedClaimStatus=null;
-            isClaimStatusLocked=false;
-            lockLbl.setText(null);
-            resetLabForm();
-        }     
-        else if (event.getKeyCode()==event.VK_INSERT) {
-            if (!Utils.isNull(labRec.prac.comment_text))
-                displayComments(practiceComments,"Practice Comments");
-            if (labRec.lab_number>0) {
-                (new CommentForm(dbLogin,labRec.lab_number)).setVisible(true);
-            }
-        }
-        else if (event.getKeyCode()==event.VK_CONTROL) {
-                dFlag=false;
-                ((JTextField)getFocusOwner()).setText(null);
-                if ((labOtherInsurance.hasFocus()) ||
-                    (labPayerID.hasFocus()) ||
-                    (labPCSID.hasFocus())) {
-                        labOtherInsurance.setText(null);
-                        labPayerID.setText(null);
-                        labPCSID.setText(null);
-                }
-                else if (claimStatus.hasFocus()) {
-                    setEnableClaimFields(false);
-                    claimStatus.setEnabled(true);
-                    paymentAmount.setText(null);
-                    claimAllowable.setText(null);
-                    patientAmount.setText(null);
-                    altClaimID.setText(null);
-                    dateReceived.setText(null);
-                    claimComment.setText(null);
-                }
+	    if (event.getKeyCode()==event.VK_CONTROL) {
+                
         }
         else if (event.getKeyCode()==event.VK_DOWN) {
             decrement();
@@ -2915,7 +2878,7 @@ public class BillingForm extends javax.swing.JFrame
         }
     }	    
     
-    void patientActions()
+    public void patientActions()
     {
         currMode=Lab.PATIENT_UPDATE;
         setEnableAllFields(false);
@@ -3091,7 +3054,7 @@ public class BillingForm extends javax.swing.JFrame
 
 	public void updateActions() {
 	    if (currMode==Lab.IDLE) {
-	        resetLabForm();
+	        resetActions();
 	        currMode=Lab.UPDATE;
 	        labNumber.setBackground(Color.white);
 	        labNumber.setForeground(Color.black);
@@ -4615,9 +4578,9 @@ public class BillingForm extends javax.swing.JFrame
 		event.consume();
 	}
 	
-	void queryActions()
+	public void queryActions()
 	{
-	    resetLabForm();
+	    resetActions();
 	    currMode=Lab.QUERY;
 	    statusReset.setEnabled(true);
 	    labNumber.setBackground(Color.white);
@@ -4627,7 +4590,7 @@ public class BillingForm extends javax.swing.JFrame
 	    labNumber.requestFocus();
 	}
 	
-	void claimActions()
+	public void claimActions()
 	{
 	    if (!Utils.isNull(labNumber.getText()) && labRec.lab_number>0) {
             billingAdd = (BillingDetails)labRec.billing.details.elementAt(
@@ -4650,7 +4613,7 @@ public class BillingForm extends javax.swing.JFrame
 		            if (b) {
 		                String ln = labNumber.getText();
 		                currMode=Lab.IDLE;
-		                resetLabForm();
+		                resetActions();
 		                labNumber.setText(ln);
 		                currMode=Lab.QUERY;
 		                finalActions();
@@ -4701,7 +4664,7 @@ public class BillingForm extends javax.swing.JFrame
             }
         }
 	    else {
-	        resetLabForm();
+	        resetActions();
 	        currMode=Lab.CLAIM;
 	        labNumber.setBackground(Color.white);
 	        labNumber.setForeground(Color.black);
@@ -4899,5 +4862,6 @@ public class BillingForm extends javax.swing.JFrame
 		}
 		else Utils.createErrMsg("Illegal Operation");
 	}
+	
 	
 }   

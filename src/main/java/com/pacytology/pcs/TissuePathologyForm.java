@@ -1704,5 +1704,10 @@ public class TissuePathologyForm extends PcsFrame
 	    dbOps.queryReport(resultRec.lab_number);
 	}
     /* END PRINT REPORT METHODS **********************************************/
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

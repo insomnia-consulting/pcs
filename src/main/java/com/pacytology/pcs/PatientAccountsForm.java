@@ -19,13 +19,18 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.*;
+
+import com.pacytology.pcs.action.PracticeAccountsFormActionMap;
+import com.pacytology.pcs.actions.PatientAccountsFormActionMap;
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 
-public class PatientAccountsForm extends javax.swing.JFrame
+public class PatientAccountsForm extends PcsFrame
 {
     public Login dbLogin;
     public PatientAccountDbOps dbOps;
@@ -44,9 +49,9 @@ public class PatientAccountsForm extends javax.swing.JFrame
     public int currLAB = 0;
     public double currBAL = 0;
     // values for pastDue
-    final int REBILL = -5;
-    final int ACCOUNT_NOT_ACTIVATED = -4;
-    final int PAID_IN_FULL = -3;
+    public final int REBILL = -5;
+    public final int ACCOUNT_NOT_ACTIVATED = -4;
+    public final int PAID_IN_FULL = -3;
     final int INDEFINITE_HOLD = -2;
     final int HOLD_TO_DATE = -1;
     final int CURRENT = 0;
@@ -58,7 +63,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
     public boolean dFlag = false;
     public Vector payTypeVect = new Vector();
     public Vector payCodeVect = new Vector();
-    boolean inBillingQueue = false;
+    public boolean inBillingQueue = false;
     public LogFile log;
 	public JTextArea labComments = new javax.swing.JTextArea();
 	public JTextArea dbComments = new javax.swing.JTextArea();
@@ -446,8 +451,71 @@ public class PatientAccountsForm extends javax.swing.JFrame
 		dateReceived.addFocusListener(aSymFocus);
 		adjustReason.addFocusListener(aSymFocus);
 		//}}
+		actionMap = new PatientAccountsFormActionMap(this);
+		setupKeyPressMap();
+        fKeys.keyOn(fKeys.F2);
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
 
+		rp.getActionMap().put("F8", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (payCode.hasFocus()) {
+                    String[] buf = new String[payTypeVect.size()];
+                    String[] buf2 = new String[payTypeVect.size()];
+                    for (int i=0;i<payTypeVect.size();i++) {
+                        buf[i]=(String)payCodeVect.elementAt(i);
+                        buf2[i]=(String)payCodeVect.elementAt(i)+
+                            "  "+payTypeVect.elementAt(i);
+                    }
+                    (new PickList("Payment Types",400,80,200,200,
+                        payTypeVect.size(),buf2,buf,payCode)).setVisible(true);
+                }
+                else if (currMode==Lab.IDLE) {
+                    Vector v = dbOps.getAccountHolds();
+                    if (v.size()>0) {
+                        String[] buf = new String[v.size()];
+                        for (int i=0;i<v.size();i++)
+                            buf[i]=(String)v.elementAt(i);
+                        (new PickList("Direct Bills on Hold",50,50,370,400,
+                            v.size(),buf)).setVisible(true);
+                    }
+                    else Utils.createErrMsg("No accounts on hold.");
+                }
+			}
+		});
+		rp.getActionMap().put("F12", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+                if (inBillingQueue)
+                    Utils.createErrMsg(
+                        "Cannot submit changes on an account "+
+                        "with a statement in the billing queue.");
+                else
+                    finalActions();
+
+			}
+		});
+		AbstractAction insertAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				displayComments();
+			}
+		};
+		rp.getActionMap().put("INSERT",  insertAction);
+		rp.getActionMap().put("VK_I",  insertAction);
+		rp.getActionMap().put("F6", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (inBillingQueue)
+                    Utils.createErrMsg("Cannot update account with a "+
+                        "statement in the billing queue.");
+                else if (pastDue>PAID_IN_FULL)
+			        holdActions();
+                else 
+                    Utils.createErrMsg("Lab charges paid in full - cannot put on hold");
+			}
+		});
+
+		return rp;
+	}
 	public PatientAccountsForm(Login dbLogin)
 	{
 		this();
@@ -506,7 +574,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
 	boolean frameSizeAdjusted = false;
 
 	//{{DECLARE_CONTROLS
-	javax.swing.JTextField paLab = new javax.swing.JTextField();
+	public javax.swing.JTextField paLab = new javax.swing.JTextField();
 	javax.swing.JTextField patientID = new javax.swing.JTextField();
 	javax.swing.JTextField paLName = new javax.swing.JTextField();
 	javax.swing.JTextField paFName = new javax.swing.JTextField();
@@ -635,9 +703,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
 		public void keyPressed(java.awt.event.KeyEvent event)
 		{
 			Object object = event.getSource();
-			if (object == PatientAccountsForm.this)
-				PatientAccountsForm_keyPressed(event);
-			else if (object == paymentAmount)
+			if (object == paymentAmount)
 				paymentAmount_keyPressed(event);
 			else if (object == patientID)
 				patientID_keyPressed(event);
@@ -676,121 +742,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
 		}
 	}
 
-	void PatientAccountsForm_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    msgLabel.setText(null);
-		int key = event.getKeyCode();
-		switch (key) {
-		    case java.awt.event.KeyEvent.VK_F1:
-		        queryActions();
-		        break;
-            case java.awt.event.KeyEvent.VK_F12:
-                if (inBillingQueue)
-                    Utils.createErrMsg(
-                        "Cannot submit changes on an account "+
-                        "with a statement in the billing queue.");
-                else
-                    finalActions();
-                break;
-            case java.awt.event.KeyEvent.VK_F9:
-                closingActions();
-                this.dispose();
-                break;
-            case KeyEvent.VK_F8:
-                if (payCode.hasFocus()) {
-                    String[] buf = new String[payTypeVect.size()];
-                    String[] buf2 = new String[payTypeVect.size()];
-                    for (int i=0;i<payTypeVect.size();i++) {
-                        buf[i]=(String)payCodeVect.elementAt(i);
-                        buf2[i]=(String)payCodeVect.elementAt(i)+
-                            "  "+payTypeVect.elementAt(i);
-                    }
-                    (new PickList("Payment Types",400,80,200,200,
-                        payTypeVect.size(),buf2,buf,payCode)).setVisible(true);
-                }
-                else if (currMode==Lab.IDLE) {
-                    Vector v = dbOps.getAccountHolds();
-                    if (v.size()>0) {
-                        String[] buf = new String[v.size()];
-                        for (int i=0;i<v.size();i++)
-                            buf[i]=(String)v.elementAt(i);
-                        (new PickList("Direct Bills on Hold",50,50,370,400,
-                            v.size(),buf)).setVisible(true);
-                    }
-                    else Utils.createErrMsg("No accounts on hold.");
-                }
-                break;
-            case KeyEvent.VK_ESCAPE:
-                resetForm();
-                break;
-            case KeyEvent.VK_F2:
-                addActions();
-                break;
-            case KeyEvent.VK_F3:
-                if (currMode!=Lab.IDLE) {
-                    if (pastDue==REBILL)
-                        Utils.createErrMsg("Lab has been rebilled - cannot update.");
-                    else if (pastDue==ACCOUNT_NOT_ACTIVATED)
-                        Utils.createErrMsg("Account not activated - cannot update.");
-                    else if (inBillingQueue)
-                        Utils.createErrMsg("Cannot update account with a "+
-                            "statement in the billing queue.");
-                    else if (pastDue>PAID_IN_FULL)
-                        updateActions();
-                    else
-                        Utils.createErrMsg("Lab charges paid in full - cannot update.");
-                }
-                break;
-            case KeyEvent.VK_F4:
-                if (!Utils.isNull(paLab.getText())) {
-                    if (inBillingQueue)
-                        Utils.createErrMsg(
-                            "Cannot print a copy of statement "+
-                            "that is in the billing queue.");
-                    else {
-                        if (currMode==Lab.QUERY || currMode==Lab.IDLE) {
-                            String s = dbComments.getText();
-                            if (!Utils.isNull(s)) dbOps.addComment(s);
-                            dbComments.setText(null);
-                        }
-			            (new PatStmtCopyDialog(
-			                this,dbLogin,paLab.getText())).setVisible(true);
-			        }
-			    }
-			    break;
-			case KeyEvent.VK_F5:
-			    if (event.isShiftDown() && currLAB>0) {
-                    (new DBCommentDialog(dbComments)).setVisible(true);
-			    }
-			    else {
-                    if (inBillingQueue)
-                        Utils.createErrMsg("Cannot update account with a "+
-                            "statement in the billing queue.");
-                    else if (pastDue>PAID_IN_FULL)
-			            releaseActions();
-                    else 
-                        Utils.createErrMsg("Lab charges paid in full - cannot add release date");
-                }
-			    break;
-			case KeyEvent.VK_F6:
-                if (inBillingQueue)
-                    Utils.createErrMsg("Cannot update account with a "+
-                        "statement in the billing queue.");
-                else if (pastDue>PAID_IN_FULL)
-			        holdActions();
-                else 
-                    Utils.createErrMsg("Lab charges paid in full - cannot put on hold");
-			    break;
-		    case KeyEvent.VK_INSERT:
-		        displayComments();
-		        break;
-            case KeyEvent.VK_CONTROL:
-                ((JTextField)getFocusOwner()).setText(null);
-               dFlag=false;
-               break;
-		}
-	}
-	
+
 	public void forceDigits(java.awt.event.KeyEvent event, boolean b)  {
 	    msgLabel.setText(null);
 	    try {
@@ -805,7 +757,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
         catch (Exception e)  { log.write(e); }            
     }        
 	
-	void queryActions() 
+	public void queryActions() 
 	{
 	    if (currMode!=Lab.QUERY_FOR_ADD) currMode=Lab.QUERY;
         patientID.setEnabled(true);
@@ -819,7 +771,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
         paLab.requestFocus();
 	}
 	
-	void addActions() 
+	public void addActions() 
 	{
 	    if (currMode!=Lab.QUERY) {
 	        resetForm();
@@ -839,7 +791,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
 	    }
 	}
 	
-	void updateActions()
+	public void updateActions()
 	{
 	    currMode=Lab.UPDATE;
 	    paLName.setEnabled(true);
@@ -855,7 +807,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
 	    paLName.requestFocus();
 	}
 	
-	void releaseActions()
+	public void releaseActions()
 	{
 	    currMode=Lab.RELEASE;
 	    paLName.setEnabled(true);
@@ -918,7 +870,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
         setPastDueLabel();
 	}
 	
-	void finalActions() {
+	public void finalActions() {
 	    if (currMode==Lab.QUERY || currMode==Lab.QUERY_FOR_ADD) {
 	        try { currPID = (int)Integer.parseInt(patientID.getText()); }
 	        catch (Exception e) { currPID=0; }
@@ -1380,7 +1332,7 @@ public class PatientAccountsForm extends javax.swing.JFrame
 		closingActions();
 	}
 	
-	private void closingActions()
+	public void closingActions()
 	{
 	    dbOps.close();
 	    log.stop();
@@ -1657,6 +1609,11 @@ public class PatientAccountsForm extends javax.swing.JFrame
 	void adjustReason_focusGained(java.awt.event.FocusEvent event)
 	{
 		Utils.deselect(event);
+	}
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

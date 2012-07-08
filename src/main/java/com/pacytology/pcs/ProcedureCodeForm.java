@@ -844,5 +844,10 @@ public class ProcedureCodeForm extends PcsFrame
 	void procCodeDesc_keyPressed(java.awt.event.KeyEvent event)
 	{
 	}
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

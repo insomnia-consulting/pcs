@@ -353,5 +353,10 @@ public class CommentForm extends PcsFrame
 	public void finalActions() {
 		throw new NotImplementedException();
 	}
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

@@ -5027,6 +5027,11 @@ public class LabForm extends PcsFrame
         }
         return (result);
     }
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }   
 

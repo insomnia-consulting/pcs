@@ -1978,6 +1978,11 @@ public class PracticesForm extends PcsFrame
 	{
 		Utils.forceUpper(event,16);
 	}
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
 

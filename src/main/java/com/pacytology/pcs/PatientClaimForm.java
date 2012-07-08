@@ -315,7 +315,7 @@ public class PatientClaimForm extends javax.swing.JFrame
 	public void noDataFound()
 	{
 	    parent.currMode=Lab.IDLE;
-	    parent.resetLabForm();
+	    parent.resetActions();
         parent.resetColors();
         parent.clearForm();
         this.dispose();
@@ -334,7 +334,7 @@ public class PatientClaimForm extends javax.swing.JFrame
                 parent.setCursor(new Cursor(Cursor.WAIT_CURSOR));
                 int modeSave = parent.currMode;
                 parent.currMode=Lab.IDLE;
-                parent.resetLabForm();
+                parent.resetActions();
                 parent.labNumber.setText(Integer.toString(paRec[returnRow].last_lab));
                 parent.currMode=modeSave;
                 parent.finalActions();
@@ -344,7 +344,7 @@ public class PatientClaimForm extends javax.swing.JFrame
         }
         else {
             parent.currMode=Lab.IDLE;
-            parent.resetLabForm();
+            parent.resetActions();
         }
         this.dispose();
             

@@ -22,12 +22,14 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 import javax.swing.*;
+
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 import java.io.*;
 import javax.swing.table.*;
 
-public class BusinessInfoForm extends javax.swing.JFrame
+public class BusinessInfoForm extends PcsFrame
 {
 
     public Login dbLogin;
@@ -466,7 +468,7 @@ public class BusinessInfoForm extends javax.swing.JFrame
                 ((JTextField)getFocusOwner()).setText(null);
                 break;
             case KeyEvent.VK_ESCAPE:
-                resetForm();
+                resetActions();
                 break;
             case KeyEvent.VK_F5:
                 idNumMaint();
@@ -507,8 +509,8 @@ public class BusinessInfoForm extends javax.swing.JFrame
         BusinessIDTable.revalidate();
 	}
 	
-	
-	void updateActions() { 
+	@Override
+	public void updateActions() { 
 	    businessName.setEnabled(true);
 	    bAddress1.setEnabled(true);
 	    bAddress2.setEnabled(true);
@@ -523,17 +525,18 @@ public class BusinessInfoForm extends javax.swing.JFrame
 	    currMode=Lab.UPDATE;
     }
     
-	void finalActions() { 
+	@Override
+	public void finalActions() { 
 	    if (currMode==Lab.UPDATE) {
 	        dbOps.update();
-	        resetForm();
+	        resetActions();
 	    }
 	    else if (currMode==Lab.ADD) {
 	        boolean rv = dbOps.addID();
 	        if (rv==true) {
 	            bData.addRow(idCode.getText(),idNumber.getText(),idDescr.getText());
 	        }
-	        resetForm();
+	        resetActions();
 	        BusinessIDTable.revalidate();
 	        BusinessIDTable.repaint();
 	        if (rv==false) msgLabel.setText("Operation failed");
@@ -545,7 +548,7 @@ public class BusinessInfoForm extends javax.swing.JFrame
 	            BusinessIDTable.setValueAt((String)idNumber.getText(),row,1);
 	            BusinessIDTable.setValueAt((String)idDescr.getText(),row,2);
 	        }
-	        resetForm();
+	        resetActions();
 	        BusinessIDTable.revalidate();
 	        BusinessIDTable.repaint();
 	        if (rv==false) msgLabel.setText("Operation failed");
@@ -553,7 +556,7 @@ public class BusinessInfoForm extends javax.swing.JFrame
     }
 	
 	void idNumMaint() {
-	    resetForm();
+	    resetActions();
 	    BusinessIDTable.setRowSelectionInterval(0,0);
 	    idAddButton.setVisible(true);
 	    idUpdateButton.setVisible(true);
@@ -574,7 +577,8 @@ public class BusinessInfoForm extends javax.swing.JFrame
 	    idAddButton.requestFocus();
 	}
 	
-	public void resetForm() {
+	@Override
+	public void resetActions() {
 	    msgLabel.setText(null);
         businessName.setEnabled(false);
 	    bAddress1.setEnabled(false);
@@ -722,6 +726,20 @@ public class BusinessInfoForm extends javax.swing.JFrame
 			Utils.deselect(event);
 		}
 	}
+
+	@Override
+	public void queryActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 
 }
 

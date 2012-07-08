@@ -879,5 +879,11 @@ public class DiagCodeForm extends PcsFrame
 	{
 		Utils.deselect(event);
 	}
+
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
