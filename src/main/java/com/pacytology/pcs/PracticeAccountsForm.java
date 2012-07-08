@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import java.sql.*;
 import javax.swing.*;
 
-import com.pacytology.pcs.action.PracticeAccountsFormActionMap;
+import com.pacytology.pcs.actions.PracticeAccountsFormActionMap;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import java.util.Vector;

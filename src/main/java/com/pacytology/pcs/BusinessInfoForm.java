@@ -19,10 +19,13 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 
+import com.pacytology.pcs.actions.BusinessInfoFormActionMap;
+import com.pacytology.pcs.actions.PatientAccountsFormActionMap;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
@@ -274,9 +277,19 @@ public class BusinessInfoForm extends PcsFrame
 		    || s.equals("javax.swing.JTextArea"))
 		        obj.addFocusListener(aSymFocus);
 		}
-		
+		actionMap = new BusinessInfoFormActionMap(this);
+		setupKeyPressMap();
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
 
+		rp.getActionMap().put("F8", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		return rp;
+	}
 	public BusinessInfoForm(String sTitle)
 	{
 		this();
