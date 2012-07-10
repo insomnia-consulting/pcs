@@ -16,7 +16,7 @@ is
    rcnt number;                                                                 
    curr_line varchar2(128);                                                     
    line_cntr number;                                                            
-      index_cntr number;                                                            
+      
                                                                                 
    cursor hpv_list is                                                           
 	select lab_number, TO_CHAR(datestamp,'MM/DD/YYYY')                             
@@ -32,7 +32,7 @@ begin
    line_cntr:=0;                                                                
    reportOutput := '';
    open hpv_list; 
-   index_cntr := 0;
+   
    DBMS_LOB.CREATETEMPORARY(reportOutput,true);
    loop 
    	  
@@ -45,30 +45,30 @@ begin
          if (line_cntr>0) then                                                  
             dbms_lob.writeAppend(reportOutput, length(CHR(12)), chr(12));                                  
          end if;
---         dbms_lob.writeAppend(reportOutput, length('\n\n'), '\n\n');                                  
---         dbms_lob.writeAppend(reportOutput, length('\n\n'), '\n\n');                                  
---         curr_line:='PENDING HPV REQUESTS\n\n';
---         dbms_lob.writeAppend(reportOutput, length(curr_line), curr_line);
---         curr_line:='LAB#          ACCT    PATIENT';                    
---         dbms_lob.writeAppend(reportOutput, length(curr_line), curr_line);
---         line_cntr:=5;                                                          
+         dbms_lob.writeAppend(reportOutput, length('\n\n'), '\n\n');                                  
+         dbms_lob.writeAppend(reportOutput, length('\n\n'), '\n\n');                                  
+         curr_line:='PENDING HPV REQUESTS\n\n';
+         dbms_lob.writeAppend(reportOutput, length(curr_line), curr_line);
+         curr_line:='LAB#          ACCT    PATIENT';                    
+         dbms_lob.writeAppend(reportOutput, length(curr_line), curr_line);
+         line_cntr:=5;                                                          
       end if;                                                                   
---      curr_line:=  index_cntr || '--------------------------------------------------------------------------';
---      dbms_lob.writeAppend(reportOutput, length(curr_line), curr_line);
---    index_cntr := index_cntr + 1;
---      dbms_lob.writeAppend(reportOutput, length(curr_line), curr_line);    
---
---      line_cntr:=line_cntr+1;                                                   
---      select RPAD(SUBSTR(lname||', '||fname,1,24),26),TO_CHAR(b.practice,'009') 
---      into P_name,P_account                                                     
---      from pcs.patients a, pcs.lab_requisitions b                               
---      where a.patient=b.patient and b.lab_number=H_lab;                         
---      curr_line:=TO_CHAR(H_lab)||'    '||P_account||'    '||P_name;
---      dbms_lob.writeAppend(reportOutput, length(curr_line), curr_line);    
---      line_cntr:=line_cntr+1;                                                   
+      curr_line:=  '--------------------------------------------------------------------------';
+      dbms_lob.writeAppend(reportOutput, length(curr_line), curr_line);
+
+      dbms_lob.writeAppend(reportOutput, length(curr_line), curr_line);    
+
+      line_cntr:=line_cntr+1;                                                   
+      select RPAD(SUBSTR(lname||', '||fname,1,24),26),TO_CHAR(b.practice,'009') 
+      into P_name,P_account                                                     
+      from pcs.patients a, pcs.lab_requisitions b                               
+      where a.patient=b.patient and b.lab_number=H_lab;                         
+      curr_line:=TO_CHAR(H_lab)||'    '||P_account||'    '||P_name;
+      dbms_lob.writeAppend(reportOutput, length(curr_line), curr_line);    
+      line_cntr:=line_cntr+1;                                                   
    end loop;                                                                    
    close hpv_list;                                                         
---	dbms_lob.writeAppend(reportOutput, length(CHR(12)), chr(12));
+	dbms_lob.writeAppend(reportOutput, length(CHR(12)), chr(12));
    return reportOutput; 
                                                                                 
 --exception                                                                       

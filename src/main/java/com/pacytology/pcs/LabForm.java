@@ -25,6 +25,7 @@ import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.PrintJob;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,11 +37,13 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.text.JTextComponent;
 
 import com.pacytology.pcs.actions.LabFormActionMap;
@@ -93,7 +96,7 @@ public class LabForm extends PcsFrame
 	public boolean foundPrevLab;
 	public int currentSection=0;
     String[] diagnosisCodeList;
-    public FunctionKeyControl fKeys = new FunctionKeyControl();
+
     public boolean hasComments=false;
     protected boolean dbThreadRunning=false;
     public LabDbOps labOps;
@@ -111,7 +114,7 @@ public class LabForm extends PcsFrame
 	public JTextField ADPHpgm = new javax.swing.JTextField();
 	String defaultPrep = "C";
 	String defaultPrepLbl = "CONVENTIONAL";
-	boolean prepFlag = false;
+	public boolean prepFlag = false;
 	SymKey aSymKey = new SymKey();
 	SymFocus aSymFocus = new SymFocus();
 
@@ -785,7 +788,7 @@ public class LabForm extends PcsFrame
 
 		//labDetCodeEntry.addKeyListener(aSymKey);
 		
-		labRecDetInfo.addKeyListener(aSymKey);
+		//labRecDetInfo.addKeyListener(aSymKey);
 		labPrevLabNum.addKeyListener(aSymKey);
 
 		labPatientID.addKeyListener(aSymKey);
@@ -797,8 +800,7 @@ public class LabForm extends PcsFrame
 		labDPAState.addKeyListener(aSymKey);
 		
 		labAge.addKeyListener(aSymKey);
-		labClientNotes.addKeyListener(aSymKey);
-
+		
 		labOtherInsurance.addKeyListener(aSymKey);
 
 		labBillingChoice.addKeyListener(aSymKey);
@@ -833,10 +835,10 @@ public class LabForm extends PcsFrame
 		patRace.addKeyListener(aSymKey);
 		patRace.addFocusListener(aSymFocus);
         fKeys.off();
-        fKeys.keyOn(fKeys.F1);
-        fKeys.keyOn(fKeys.F2);
-        fKeys.keyOn(fKeys.F9);
-        fKeys.keyOn(fKeys.F5);
+        fKeys.keyOn(FunctionKeyControl.F1);
+        fKeys.keyOn(FunctionKeyControl.F2);
+        fKeys.keyOn(FunctionKeyControl.F9);
+        fKeys.keyOn(FunctionKeyControl.F5);
         
 
 		//}}
@@ -863,30 +865,8 @@ public class LabForm extends PcsFrame
 	}
 	protected JRootPane setupKeyPressMap() {
 		JRootPane rp = super.setupKeyPressMap();
-		
-		
 
-		rp.getActionMap().put("F1", new AbstractAction() {
 
-			public void actionPerformed(ActionEvent e) {
-				if (fKeys.isOn(fKeys.F1)) queryActions();
-		        else Utils.createErrMsg("Query Option Not Available");
-			}
-		});
-		rp.getActionMap().put("F2", new AbstractAction() { 
-			public void actionPerformed(ActionEvent e) {
-				if (fKeys.isOn(fKeys.F2)) {
-                    if (!prepFlag) {
-                    	setPreparation();
-                    }
-                    if (prepFlag) {
-                    	addActions();
-                    }
-                }
-                else Utils.createErrMsg("Add Option Not Available");
-
-			}
-		});
 		rp.getActionMap().put("F3", new AbstractAction() { 
 			public void actionPerformed(ActionEvent e) { 
                 if (fKeys.isOn(fKeys.F3)) {
@@ -991,6 +971,7 @@ public class LabForm extends PcsFrame
                 else Utils.createErrMsg("Create Letter Option Not Available");        
 			}
 		});
+
 		rp.getActionMap().put("F8", new AbstractAction() { 
 			public void actionPerformed(ActionEvent e) { 
 				if (fKeys.isOn(fKeys.F8)) {
@@ -1247,9 +1228,9 @@ public class LabForm extends PcsFrame
 	javax.swing.JTextField labPatientFirstName = new javax.swing.JTextField();
 	javax.swing.JTextField labPatientMI = new javax.swing.JTextField();
 	javax.swing.JTextField labPaAddress = new javax.swing.JTextField();
-	javax.swing.JTextField labZip = new javax.swing.JTextField();
-	javax.swing.JTextField labCity = new javax.swing.JTextField();
-	javax.swing.JTextField labState = new javax.swing.JTextField();
+	public javax.swing.JTextField labZip = new javax.swing.JTextField();
+	public javax.swing.JTextField labCity = new javax.swing.JTextField();
+	public javax.swing.JTextField labState = new javax.swing.JTextField();
 	javax.swing.JTextField labPhone = new javax.swing.JTextField();
 	javax.swing.JTextField labDOB = new javax.swing.JTextField();
 	javax.swing.JTextField labSSN = new javax.swing.JTextField();
@@ -1286,13 +1267,13 @@ public class LabForm extends PcsFrame
 	JLabel recvLbl = new JLabel();
 	javax.swing.JPanel billingPanel = new javax.swing.JPanel();
 	javax.swing.JTextField labBillingChoice = new javax.swing.JTextField();
-	javax.swing.JTextField labOtherInsurance = new javax.swing.JTextField();
-	javax.swing.JTextField labPayerID = new javax.swing.JTextField();
-	javax.swing.JTextField labPCSID = new javax.swing.JTextField();
+	public javax.swing.JTextField labOtherInsurance = new javax.swing.JTextField();
+	public javax.swing.JTextField labPayerID = new javax.swing.JTextField();
+	public javax.swing.JTextField labPCSID = new javax.swing.JTextField();
 	javax.swing.JTextField labDPAState = new javax.swing.JTextField();
 	javax.swing.JTextField labBillingID = new javax.swing.JTextField();
 	javax.swing.JTextField labGrpNum = new javax.swing.JTextField();
-	javax.swing.JTextField labRelCode = new javax.swing.JTextField();
+	public javax.swing.JTextField labRelCode = new javax.swing.JTextField();
 	javax.swing.JTextField labMedicareType = new javax.swing.JTextField();
 	javax.swing.JTextField labDiagCode = new javax.swing.JTextField();
 	javax.swing.JTextField labDiagCode2 = new javax.swing.JTextField();
@@ -1669,7 +1650,9 @@ public class LabForm extends PcsFrame
 	}
 
 	void labDetCodeEntry_keyPressed(java.awt.event.KeyEvent event)
-	{	    int key = event.getKeyCode();
+	{	    
+
+		int key = event.getKeyCode();
 	    if (key==event.VK_F10) { 
 	        currentSection=4;
 	        keyActions(event);
@@ -1831,7 +1814,7 @@ public class LabForm extends PcsFrame
             if a last lab is found, OK, otherwise transfer to patient
             lookup screen.
         */            
-		if (event.getKeyCode()==event.VK_ENTER)  {
+		if (event.getKeyCode()==KeyEvent.VK_ENTER)  {
 		    if (patientQuery) {
 		        //labPrevLabNum.transferFocus();
 		    	labPatientLastName.requestFocusInWindow();
@@ -3071,25 +3054,12 @@ public class LabForm extends PcsFrame
                 break;
 
             case KeyEvent.VK_CONTROL:                
-                if (labRelCode.hasFocus()) return;
-                ((JTextField)getFocusOwner()).setText(null);
-                if ((labOtherInsurance.hasFocus()) ||
-                    (labPayerID.hasFocus()) ||
-                    (labPCSID.hasFocus())) {
-                        labOtherInsurance.setText(null);
-                        labPayerID.setText(null);
-                        labPCSID.setText(null);
-                }
-                else if (labZip.hasFocus()) {
-                    labZip.setText(null);
-                    labCity.setText(null);
-                    labState.setText(null);
-                }
+                
                 break;
 	    }
     }	    
     
-    void setPreparation()
+    public void setPreparation()
     {
         if (defaultPrep.equals("S")) return;
         Object[] possibleValues = 
@@ -3175,7 +3145,7 @@ public class LabForm extends PcsFrame
                 doctorVect.size(),buf,buf,doctorText)).setVisible(true);
         }
         else doctorText.setText(buf[0]);
-        labBillingChoice.requestFocusInWindow();
+        //labBillingChoice.requestFocusInWindow();
         return;            
     }
 
@@ -4991,7 +4961,7 @@ public class LabForm extends PcsFrame
                     fLen=f.length();
                     if (fLen>0) {
                         try { f.renameTo(new File(Utils.ROOT_DIR,filePrefix[i]+".old")); }
-                        catch (SecurityException e) { log.write("ERROR: renaming "+filePrefix[i]+".ltr\n"+e); }
+                        catch (SecurityException e) { log.write("5: renaming "+filePrefix[i]+".ltr\n"+e); }
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.pacytology.pcs.ui;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JComponent;
@@ -45,7 +46,7 @@ public abstract class PcsFrame extends JFrame {
 		KeyStroke page_up= KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0, false);		
 		KeyStroke home= KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0, false);		
 		KeyStroke end= KeyStroke.getKeyStroke(KeyEvent.VK_END, 0, false);		
-		KeyStroke ctrl= KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL, 0, false);		
+		KeyStroke ctrl = KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL,InputEvent.CTRL_DOWN_MASK, false);
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f1, "F1");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f2, "F2");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f3, "F3");

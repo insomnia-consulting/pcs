@@ -1692,13 +1692,16 @@ public class PCSLabEntry extends JFrame {
 
 	void buildWorksheets() {
 		try {
-			Class.forName(dbLogin.driver);
-			CallableStatement cstmt;
-			cstmt = dbConnection.process().prepareCall(
-					"{call pcs.build_hm_worksheets(?,?)}");
-			cstmt.setInt(1, Lab.CURR_WKS);
-			cstmt.setString(2, "curr_wks");
-			cstmt.executeUpdate();
+			CallableStatement cstmt = dbConnection.process()
+					.prepareCall("{? = call pcs.build_hm_worksheets(?,?,?)}");
+			cstmt.setInt(2, Lab.CURR_WKS);
+			cstmt.setString(3, "curr_wks");
+			cstmt.setString(4, Utils.SERVER_DIR);
+			cstmt.registerOutParameter(1, OracleTypes.CLOB);
+			cstmt.execute();
+			String results = cstmt.getString(1);
+			cstmt.close();
+
 			File f = new File(Utils.ROOT_DIR, "curr_wks");
 			long fLen = f.length();
 			if (fLen > 0) {
