@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -1699,14 +1700,13 @@ public class PCSLabEntry extends JFrame {
 			cstmt.setString(4, Utils.SERVER_DIR);
 			cstmt.registerOutParameter(1, OracleTypes.CLOB);
 			cstmt.execute();
-			String results = cstmt.getString(1);
+			Clob results = cstmt.getClob(1);
 			cstmt.close();
-
-			File f = new File(Utils.ROOT_DIR, "curr_wks");
-			long fLen = f.length();
-			if (fLen > 0) {
-				Utils.genericPrint(Utils.ROOT_DIR, "curr_wks", false);
+			String printString = results.getSubString(1, (int)results.length()); 
+			if (printString.length() > 0) {
+				Utils.genericPrint(printString);
 			}
+
 		} catch (Exception e) {
 			log.write("ERROR: build worksheets\n" + e);
 		}
