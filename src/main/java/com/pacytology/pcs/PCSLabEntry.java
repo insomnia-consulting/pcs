@@ -1702,7 +1702,8 @@ public class PCSLabEntry extends JFrame {
 			cstmt.execute();
 			Clob results = cstmt.getClob(1);
 			cstmt.close();
-			String printString = results.getSubString(1, (int)results.length()); 
+			String printString = results.getSubString(1, (int)results.length());
+			printString = printString.replaceAll("\\\\n", "\n");
 			if (printString.length() > 0) {
 				Utils.genericPrint(printString);
 			}
@@ -2273,10 +2274,7 @@ public class PCSLabEntry extends JFrame {
 
 	void HPVPendingItem_actionPerformed(java.awt.event.ActionEvent event) {
 		try {
-			CallableStatement cstmt;
-//			cstmt = dbConnection.process()
-//			.prepareCall("{call pcs.hpv_pending}");
-			cstmt = dbConnection.process()
+			CallableStatement cstmt = dbConnection.process()
 					.prepareCall("{? = call pcs.hpv_pending }");
 			
 			cstmt.registerOutParameter(1, OracleTypes.CLOB);
