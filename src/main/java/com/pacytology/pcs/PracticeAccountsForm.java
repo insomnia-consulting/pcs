@@ -11,7 +11,7 @@ import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 import java.io.*;
 import javax.swing.table.*;
-
+	
 
 public class PracticeAccountsForm extends PcsFrame
 {

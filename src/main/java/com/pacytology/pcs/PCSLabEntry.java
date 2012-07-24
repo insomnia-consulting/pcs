@@ -47,11 +47,12 @@ import oracle.jdbc.OracleTypes;
 
 import com.pacytology.pcs.db.DbUser;
 import com.pacytology.pcs.ui.JAboutDialog;
+import com.pacytology.pcs.ui.PcsFrame;
 
 /**
  * Pennyslvania Cytology Services - Laboratory Information System
  */
-public class PCSLabEntry extends JFrame {
+public class PCSLabEntry extends PcsFrame {
 
 	public Login dbLogin;
 	public PatientStatement pStmt;
@@ -1583,7 +1584,7 @@ public class PCSLabEntry extends JFrame {
 
 	void getBillingQueueData() {
 		try {
-			String query = "SELECT job_status FROM pcsJob_control \n"
+			String query = "SELECT job_status FROM pcs.job_control \n"
 					+ "WHERE job_descr='MID MONTH COUNT'";
 			Statement stmt = dbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(query);
@@ -2269,7 +2270,7 @@ public class PCSLabEntry extends JFrame {
 	}
 
 	void changeLabItem_actionPerformed(java.awt.event.ActionEvent event) {
-		(new labChangeDialog(this)).setVisible(true);
+		(new LabChangeDialog(this)).setVisible(true);
 	}
 
 	void HPVPendingItem_actionPerformed(java.awt.event.ActionEvent event) {
@@ -2498,6 +2499,36 @@ public class PCSLabEntry extends JFrame {
 
 	void eomItem_actionPerformed(java.awt.event.ActionEvent event) {
 		(new EOMdialog()).setVisible(true);
+	}
+
+	@Override
+	public void queryActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void finalActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

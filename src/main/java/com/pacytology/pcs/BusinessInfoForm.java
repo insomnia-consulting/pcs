@@ -340,8 +340,6 @@ public class BusinessInfoForm extends PcsFrame
 	// Used by addNotify
 	boolean frameSizeAdjusted = false;
 
-	//{{DECLARE_CONTROLS
-	javax.swing.JLabel msgLabel = new javax.swing.JLabel();
 	Square F3sq = new Square();
 	javax.swing.JLabel F3lbl = new javax.swing.JLabel();
 	Square F9sq = new Square();

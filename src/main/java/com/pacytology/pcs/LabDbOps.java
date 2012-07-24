@@ -1007,7 +1007,7 @@ public class LabDbOps implements Runnable {
 				cstmt.setInt(2, detail_code);
 				cstmt.setString(3, null);
 				cstmt.executeUpdate();
-				cstmt.close();
+
 			}
 			while (cstmt.getMoreResults()) {
 				try {
@@ -1015,6 +1015,7 @@ public class LabDbOps implements Runnable {
 				} catch (SQLException e) {
 				}
 			}
+			
 
 		} catch (Exception e) {
 			parent.log.write("ERROR add\n" + e);

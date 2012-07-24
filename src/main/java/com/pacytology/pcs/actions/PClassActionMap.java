@@ -2,11 +2,9 @@ package com.pacytology.pcs.actions;
 
 import java.awt.event.ActionEvent;
 
-import com.pacytology.pcs.ui.PcsFrame;
-
 public class PClassActionMap extends PcsActionMap {
 
-	public PClassActionMap(PcsFrame parentFrame) {
+	public PClassActionMap(Object parentFrame) {
 		super(parentFrame);
 	}
 

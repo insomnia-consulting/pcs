@@ -26,7 +26,11 @@
 	<artifactId>commons-lang</artifactId>
 	<version>2.6</version>
 </dependency>
-            
+            <dependency>
+            <groupId>org.rev6</groupId>
+  	<artifactId>SecureChannelFacade</artifactId>
+  	<version>0.2</version>
+            </dependency>
 	</dependencies>
 
 	<build>

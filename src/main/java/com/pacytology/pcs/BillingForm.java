@@ -1074,7 +1074,7 @@ public class BillingForm extends PcsFrame
 		});
 		rp.getActionMap().put("ESC", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-
+				
 			}
 		});
 		AbstractAction insertAction = new AbstractAction() {

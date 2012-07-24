@@ -2,14 +2,13 @@ package com.pacytology.pcs.actions;
 
 import java.awt.event.ActionEvent;
 
-import com.pacytology.pcs.PracticeAccountsForm;
-import com.pacytology.pcs.actions.PcsActionMap;
-import com.pacytology.pcs.ui.PcsFrame;
 import javax.swing.JTextField;
+
+import com.pacytology.pcs.PracticeAccountsForm;
 
 public class PracticeAccountsFormActionMap extends PcsActionMap {
 
-	public PracticeAccountsFormActionMap(PcsFrame parentFrame) {
+	public PracticeAccountsFormActionMap(Object parentFrame) {
 		super(parentFrame);
 	}
 	@Override

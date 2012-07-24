@@ -7,11 +7,15 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+
 import javax.swing.*;
 
+import com.pacytology.pcs.actions.BusinessInfoFormActionMap;
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
-public class PathologistForm extends javax.swing.JFrame
+public class PathologistForm extends PcsFrame
 {
     
     public Login dbLogin;
@@ -194,6 +198,18 @@ public class PathologistForm extends javax.swing.JFrame
 		pathTitle.addKeyListener(aSymKey);
 		pathDegree.addKeyListener(aSymKey);
 		//}}
+		
+		setupKeyPressMap();
+	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+
+		rp.getActionMap().put("F8", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		return rp;
 	}
 
 	public PathologistForm(String sTitle)
@@ -479,6 +495,16 @@ public class PathologistForm extends javax.swing.JFrame
 	void resetColors()
 	{
 	    format.setColors(this.getContentPane());
+	}
+	@Override
+	public void updateActions() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

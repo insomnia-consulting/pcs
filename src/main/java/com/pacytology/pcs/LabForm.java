@@ -822,7 +822,7 @@ public class LabForm extends PcsFrame
 		labPatientFirstName.addKeyListener(aSymKey);
 		labPatientMI.addKeyListener(aSymKey);
 		labPhone.addKeyListener(aSymKey);
-		labNumSlides.addKeyListener(aSymKey);
+
 		labRelCode.addKeyListener(aSymKey);
 
 		SymWindow aSymWindow = new SymWindow();
@@ -1352,7 +1352,6 @@ public class LabForm extends PcsFrame
 	JLabel F7lbl = new JLabel();
 	JLabel F7action = new JLabel();
 	javax.swing.JPanel msgPanel = new javax.swing.JPanel();
-	JLabel msgLabel = new JLabel();
 	JLabel HPVmsgLabel = new JLabel();
 	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder("");
 	javax.swing.border.TitledBorder titledBorder2 = new javax.swing.border.TitledBorder("");
@@ -2097,7 +2096,9 @@ public class LabForm extends PcsFrame
                             HPVrequest.setEnabled(false);
                             HPVrequest.setText("R");
                         }
-                        if (labPrep.isEnabled()) labPrep.requestFocus();
+                        if (labPrep.isEnabled()) {
+                        	labPrep.requestFocusInWindow();
+                        }
                         else if (HPVrequest.isEnabled()) HPVrequest.requestFocus();
                         else labDetCodeEntry.requestFocus();
                         break;

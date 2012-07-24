@@ -8,9 +8,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -19,9 +22,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
-public class TechForm extends javax.swing.JFrame {
+public class TechForm extends PcsFrame {
 
 	public Login tLogin;
 	public int MAX_TECHS = 0;
@@ -229,8 +233,18 @@ public class TechForm extends javax.swing.JFrame {
 		ctMI.addKeyListener(aSymKey);
 		ctStatus.addKeyListener(aSymKey);
 		// }}
+		setupKeyPressMap();
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
 
+		rp.getActionMap().put("F8", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		return rp;
+	}
 	public TechForm(String sTitle) {
 		this();
 		setTitle(sTitle);
@@ -665,6 +679,11 @@ public class TechForm extends javax.swing.JFrame {
 		// ctFNameLbl.setForeground(Color.white):
 		ctFNameLbl.setForeground(Color.white);
 		miLbl.setForeground(Color.white);
+	}
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

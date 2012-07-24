@@ -9,11 +9,24 @@ import javax.swing.JTextField;
 import com.pacytology.pcs.FunctionKeyControl;
 import com.pacytology.pcs.ui.PcsFrame;
 
+import com.pacytology.pcs.ui.PcsDialog;
+import java.awt.Window;
+
 public class PcsActionMap {
 	protected PcsFrame parentFrame ;
+	protected PcsDialog parentDialog ;
 	
-	public PcsActionMap(PcsFrame parentFrame) {
-		this.parentFrame = parentFrame;
+	public Object getParent() {
+		return (parentFrame != null) ? parentFrame : parentDialog;
+	}
+
+	public PcsActionMap(Object parentFrame) {
+		if (parentFrame instanceof PcsFrame) {
+			this.parentFrame = (PcsFrame)parentFrame;
+		}
+		else if (parentFrame instanceof PcsDialog){
+			this.parentDialog = (PcsDialog)parentFrame;
+		}
 	}
 	public final Action resetAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
@@ -27,7 +40,7 @@ public class PcsActionMap {
 		}
 	};
 	public void closeAction() {
-		PcsActionMap.this.parentFrame.dispose();
+		((Window)PcsActionMap.this.getParent()).dispose();
 	}
 	
 	public  Action queryAction = new AbstractAction() {

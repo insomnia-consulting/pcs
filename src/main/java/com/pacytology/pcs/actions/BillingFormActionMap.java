@@ -5,13 +5,11 @@ import java.awt.event.ActionEvent;
 import com.pacytology.pcs.BillingDetails;
 import com.pacytology.pcs.BillingForm;
 import com.pacytology.pcs.Utils;
-import com.pacytology.pcs.ui.PcsFrame;
 
 public class BillingFormActionMap extends PcsActionMap {
 
-	public BillingFormActionMap(PcsFrame parentFrame) {
+	public BillingFormActionMap(Object parentFrame) {
 		super(parentFrame);
-
 	}
 
 	@Override

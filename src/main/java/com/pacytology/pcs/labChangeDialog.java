@@ -352,15 +352,16 @@ public class LabChangeDialog extends PcsDialog
 	void makeCorrection(int oldLab, int newLab)
 	{
         try {
-            CallableStatement cstmt;
-            cstmt=dbConnection.process().prepareCall(
+            CallableStatement cstmt=dbConnection.process().prepareCall(
                 "{call pcs.change_lab_number(?,?)}");
             cstmt.setInt(1,oldLab);
             cstmt.setInt(2,newLab);
             cstmt.executeUpdate();
             cstmt.close();
         }
-        catch (SQLException e) { }
+        catch (SQLException e) {
+        	e.printStackTrace();
+        }
         catch (Exception e) { }
 	}
 	
