@@ -3045,18 +3045,10 @@ public class LabForm extends PcsFrame
                 }
                 break;
             case KeyEvent.VK_ESCAPE:
-                prepFlag=false;
-                if (!defaultPrep.equals("S")) {
-                    defaultPrep="C";
-                    defaultPrepLbl="CONVENTIONAL";
-                }
-                else prepFlag=true;
-                resetLabForm();
+               
                 break;
 
-            case KeyEvent.VK_CONTROL:                
-                
-                break;
+
 	    }
     }	    
     
@@ -5000,8 +4992,13 @@ public class LabForm extends PcsFrame
     }
 	@Override
 	public void resetActions() {
-		// TODO Auto-generated method stub
-		
+		 prepFlag=false;
+         if (!defaultPrep.equals("S")) {
+             defaultPrep="C";
+             defaultPrepLbl="CONVENTIONAL";
+         }
+         else prepFlag=true;
+         resetLabForm();
 	}
 	
 }   
