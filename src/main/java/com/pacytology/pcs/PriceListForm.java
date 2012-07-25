@@ -1,13 +1,19 @@
 package com.pacytology.pcs;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+
 import javax.swing.*;
+
+import com.pacytology.pcs.actions.LabFormActionMap;
+import com.pacytology.pcs.actions.PriceListFormActionMap;
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import java.sql.*;
 import java.util.Vector;
 
 
-public class PriceListForm extends javax.swing.JFrame
+public class PriceListForm extends PcsFrame
 {
     public Login dbLogin;
     public int MAX_PRICE_CODES=0;
@@ -236,8 +242,20 @@ public class PriceListForm extends javax.swing.JFrame
 		basePrice.addKeyListener(aSymKey);
 		priceCode.addKeyListener(aSymKey);
 		//}}
+		
+		actionMap = new PriceListFormActionMap(this);
+		setupKeyPressMap();
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
 
+
+		rp.getActionMap().put("F3", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		return rp;
+	}
 	public PriceListForm(String sTitle)
 	{
 		this();
@@ -309,7 +327,7 @@ public class PriceListForm extends javax.swing.JFrame
 	javax.swing.JLabel F4action = new javax.swing.JLabel();
 	javax.swing.JLabel F9action = new javax.swing.JLabel();
 	javax.swing.JLabel F12action = new javax.swing.JLabel();
-	javax.swing.JLabel msgLabel = new javax.swing.JLabel();
+	
 	javax.swing.JLabel F1action = new javax.swing.JLabel();
 	javax.swing.JTextField procCode = new javax.swing.JTextField();
 	javax.swing.JTextField basePrice = new javax.swing.JTextField();
@@ -317,7 +335,7 @@ public class PriceListForm extends javax.swing.JFrame
 	javax.swing.JLabel JLabel3 = new javax.swing.JLabel();
 	javax.swing.JLabel JLabel1 = new javax.swing.JLabel();
 	javax.swing.JTextField codeStatus = new javax.swing.JTextField();
-	javax.swing.JTextField priceCode = new javax.swing.JTextField();
+	public JTextField priceCode = new javax.swing.JTextField();
 	javax.swing.JLabel JLabel4 = new javax.swing.JLabel();
 	javax.swing.JScrollPane basePane = new javax.swing.JScrollPane();
 	javax.swing.JList baseList = new javax.swing.JList();
@@ -481,19 +499,8 @@ public class PriceListForm extends javax.swing.JFrame
                 setEntryFields();
 		        }
 		        break;
-            case java.awt.event.KeyEvent.VK_F1:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F1)==true) queryActions();
-                else msgLabel.setText("Query option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_F5:
-                displayPractices((String)priceCode.getText());
-                break;
-            case java.awt.event.KeyEvent.VK_F12:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F12)==true) finalActions();
-                else msgLabel.setText("Finalize option not available");
-                break;
+            
+
             case java.awt.event.KeyEvent.VK_PAGE_DOWN:
                 if (currMode==Lab.IDLE) {
                 msgLabel.setText(null);
@@ -539,29 +546,7 @@ public class PriceListForm extends javax.swing.JFrame
                     setEntryFields();
                 }
 		        break; 
-            case java.awt.event.KeyEvent.VK_F9:
-                this.dispose();
-                break;
-            case java.awt.event.KeyEvent.VK_F2:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F2)==true) addActions();
-                else msgLabel.setText("Add option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_F3:
-                msgLabel.setText(null);
-                if (fKeys.isOn(fKeys.F3)==true) updateActions();
-                else msgLabel.setText("Update option not available");
-                break;
-            case java.awt.event.KeyEvent.VK_F4:
-                msgLabel.setText(null);
-                deleteActions();
-                break;
-            case java.awt.event.KeyEvent.VK_ESCAPE:
-                currMode=Lab.IDLE;
-                resetForm();
-                displayList(0,priceNdx);
-                setEntryFields();
-                break;
+
             case java.awt.event.KeyEvent.VK_LEFT:
                 msgLabel.setText(null);
                 priceNdx--;
@@ -1041,6 +1026,12 @@ public class PriceListForm extends javax.swing.JFrame
     {
         Utils.setColors(this.getContentPane());
         msgLabel.setForeground(Color.green.brighter());
-    }        
+    }
+
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
+	}        
 	
 }

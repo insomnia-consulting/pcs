@@ -498,6 +498,41 @@ public class CarrierForm extends PcsFrame
 		String osName = System.getProperty("os.name").toLowerCase();
 		boolean isMacOs = osName.startsWith("mac os x");
 		if (isMacOs) rp.getActionMap().put("VK_I", showRemarks);
+
+		rp.getActionMap().put("VK_DOWN", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				cVectNdx++;
+                if (cVectNdx==cVectSize) {
+                    msgLabel.setText("Bottom of List");
+                    cVectNdx--;
+                }
+                else fillForm();
+			}
+		});
+		rp.getActionMap().put("VK_UP", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				cVectNdx--;
+                if (cVectNdx<0) {
+                    msgLabel.setText("Top of List");
+                    cVectNdx++;
+                }
+                else fillForm();
+			}
+		});
+		rp.getActionMap().put("VK_HOME", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				cVectNdx=0;
+                fillForm();
+			}
+		});
+		rp.getActionMap().put("VK_END", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				cVectNdx=cVectSize-1;
+                fillForm();
+			}
+		});
+		
+		
 		return rp;
 	}
 	public CarrierForm(String sTitle)
@@ -656,9 +691,7 @@ public class CarrierForm extends PcsFrame
 		public void keyPressed(java.awt.event.KeyEvent event)
 		{
 			Object object = event.getSource();
-			if (object == CarrierForm.this)
-				CarrierForm_keyPressed(event);
-			else if (object == cName)
+			if (object == cName)
 				cName_keyPressed(event);
 			else if (object == cAddress1)
 				cAddress1_keyPressed(event);
@@ -876,41 +909,6 @@ public class CarrierForm extends PcsFrame
 	    updateBilling=false;
     }
 
-	void CarrierForm_keyPressed(java.awt.event.KeyEvent event)
-	{
-		int key = event.getKeyCode();
-        msgLabel.setText(null);
-		switch (key)  {
-            case KeyEvent.VK_CONTROL:
-                ((JTextField)getFocusOwner()).setText(null);
-                break;
-            case KeyEvent.VK_DOWN:                
-                cVectNdx++;
-                if (cVectNdx==cVectSize) {
-                    msgLabel.setText("Bottom of List");
-                    cVectNdx--;
-                }
-                else fillForm();
-                break;
-            case KeyEvent.VK_UP:
-                cVectNdx--;
-                if (cVectNdx<0) {
-                    msgLabel.setText("Top of List");
-                    cVectNdx++;
-                }
-                else fillForm();
-                break;
-            case KeyEvent.VK_HOME:
-                cVectNdx=0;
-                fillForm();
-                break;
-            case KeyEvent.VK_END:
-                cVectNdx=cVectSize-1;
-                fillForm();
-                break;
-		}
-	}
-	
 	public void mergeActions()
 	{
 	    resetActions();

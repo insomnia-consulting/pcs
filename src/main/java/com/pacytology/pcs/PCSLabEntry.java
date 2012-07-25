@@ -1678,16 +1678,16 @@ public class PCSLabEntry extends PcsFrame {
 	}
 
 	void wksheetItem_actionPerformed(java.awt.event.ActionEvent event) {
-		int rv = wksheetOption
+		int rv = JOptionPane
 				.showConfirmDialog(
 						this,
 						"Make sure printer is ready. \nPrint history match worksheets now?",
 						"History Match Worksheets",
-						wksheetOption.YES_NO_OPTION,
-						wksheetOption.QUESTION_MESSAGE);
-		if (rv == wksheetOption.YES_OPTION) {
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE);
+		if (rv == JOptionPane.YES_OPTION) {
 			this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-			buildWorksheets();
+			//buildWorksheets();
 			this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
 	}

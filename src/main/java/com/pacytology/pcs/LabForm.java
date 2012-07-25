@@ -508,6 +508,7 @@ public class LabForm extends PcsFrame
 		detailPanel.add(labPrep);
 		labPrep.setFont(new Font("DialogInput", Font.PLAIN, 12));
 		labPrep.setBounds(18,32,22,18);
+		labPrep.setBackground(Color.WHITE);
 		HPVrequest.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		HPVrequest.setEnabled(false);
 		detailPanel.add(HPVrequest);
@@ -793,7 +794,6 @@ public class LabForm extends PcsFrame
 
 		labPatientID.addKeyListener(aSymKey);
 		labGrpNum.addKeyListener(aSymKey);
-		labBillingID.addKeyListener(aSymKey);
 
 		labSubscrLName.addKeyListener(aSymKey);
 		labSubscrFName.addKeyListener(aSymKey);
@@ -803,11 +803,6 @@ public class LabForm extends PcsFrame
 		
 		labOtherInsurance.addKeyListener(aSymKey);
 
-		labBillingChoice.addKeyListener(aSymKey);
-		labDiagCode2.addKeyListener(aSymKey);
-		labDiagCode3.addKeyListener(aSymKey);
-		labDiagCode4.addKeyListener(aSymKey);
-		labDiagCode.addKeyListener(aSymKey);
 		labDPAState.addActionListener(lSymAction);
 		labPayerID.addKeyListener(aSymKey);
 		labPCSID.addKeyListener(aSymKey);
@@ -821,7 +816,7 @@ public class LabForm extends PcsFrame
 		labPatientLastName.addKeyListener(aSymKey);
 		labPatientFirstName.addKeyListener(aSymKey);
 		labPatientMI.addKeyListener(aSymKey);
-		labPhone.addKeyListener(aSymKey);
+
 
 		labRelCode.addKeyListener(aSymKey);
 
@@ -1993,6 +1988,7 @@ public class LabForm extends PcsFrame
 
     public void gotoNextSection()  
     {
+    	System.out.println("gotoNextSection()");
         fKeys.keyOff(fKeys.F5);
         fKeys.keyOff(fKeys.F6);
         fKeys.keyOff(fKeys.F7);
@@ -2097,10 +2093,17 @@ public class LabForm extends PcsFrame
                             HPVrequest.setText("R");
                         }
                         if (labPrep.isEnabled()) {
+
+                        	labPrep.setEnabled(true);
                         	labPrep.requestFocusInWindow();
+
                         }
-                        else if (HPVrequest.isEnabled()) HPVrequest.requestFocus();
-                        else labDetCodeEntry.requestFocus();
+                        else if (HPVrequest.isEnabled()) {
+                        	HPVrequest.requestFocus();
+                        }
+                        else {
+                        	labDetCodeEntry.requestFocus();
+                        }
                         break;
             }                
         }            
@@ -4199,8 +4202,13 @@ public class LabForm extends PcsFrame
 		    }
 		    labRec.diagnosis_code2=labDiagCode2.getText();
 		    diag2lbl.setText(getDiagDescr(labDiagCode2.getText()));
-		    if (transfer) gotoNextSection();
-            else labDiagCode2.transferFocus();
+		    if (transfer) {
+		    	gotoNextSection();
+		    }
+            else {
+            	labDiagCode2.transferFocus();
+            }
+
 		}
 	}
 

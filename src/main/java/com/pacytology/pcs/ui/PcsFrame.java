@@ -95,6 +95,7 @@ public abstract class PcsFrame extends JFrame {
 		rp.getActionMap().put("F4", actionMap.f4Action);
 		rp.getActionMap().put("F5", actionMap.f5Action);
 		rp.getActionMap().put("F9", actionMap.closeAction);
+		rp.getActionMap().put("F12", actionMap.finalAction);
 		rp.getActionMap().put("ESC", actionMap.resetAction);
 		rp.getActionMap().put("VK_CONTROL", actionMap.controlAction);
 		return rp;
