@@ -313,7 +313,7 @@ public class ClaimReprintDialog extends javax.swing.JDialog
 	                    cstmt=dbConnection.process().prepareCall(
 	                        "{call pcs.build_1500_claim_forms(?,?,?)}");
                     }
-                    cstmt.setString(1,Utils.SERVER_DIR);
+                    cstmt.setString(1,Utils.UTL_FILE_DIR);
                     cstmt.setString(2,fName);
                     cstmt.setString(3,"DUP");
                     try { cstmt.executeUpdate(); }

@@ -1518,7 +1518,7 @@ public class PCSLabEntry extends PcsFrame {
 			CallableStatement cstmt;
 			cstmt = dbConnection.process().prepareCall(
 					"{call pcs.build_1500_claim_forms(?,?,?)}");
-			cstmt.setString(1, Utils.SERVER_DIR);
+			cstmt.setString(1, Utils.UTL_FILE_DIR);
 			cstmt.setString(2, "ppr_clm");
 			cstmt.setString(3, billRoute);
 			cstmt.executeUpdate();
@@ -1550,7 +1550,7 @@ public class PCSLabEntry extends PcsFrame {
 			CallableStatement cstmt;
 			cstmt = dbConnection.process().prepareCall(
 					"{call pcs.build_ma319c_file(?,?,?)}");
-			cstmt.setString(1, Utils.SERVER_DIR);
+			cstmt.setString(1, Utils.UTL_FILE_DIR);
 			cstmt.setString(2, "pdw_clm");
 			cstmt.setString(3, billRoute);
 			cstmt.executeUpdate();
@@ -1698,7 +1698,7 @@ public class PCSLabEntry extends PcsFrame {
 					.prepareCall("{? = call pcs.build_hm_worksheets(?,?,?)}");
 			cstmt.setInt(2, Lab.CURR_WKS);
 			cstmt.setString(3, "curr_wks");
-			cstmt.setString(4, Utils.SERVER_DIR);
+			cstmt.setString(4, Utils.UTL_FILE_DIR);
 			cstmt.registerOutParameter(1, OracleTypes.CLOB);
 			cstmt.execute();
 			Clob results = cstmt.getClob(1);
@@ -2054,7 +2054,7 @@ public class PCSLabEntry extends PcsFrame {
 			CallableStatement cstmt;
 			cstmt = dbConnection.process().prepareCall(
 					"{call pcs.build_claim_wks_file(?,?,?)}");
-			cstmt.setString(1, Utils.SERVER_DIR);
+			cstmt.setString(1, Utils.UTL_FILE_DIR);
 			cstmt.setString(2, "clm_wks");
 			cstmt.setString(3, billRoute);
 			cstmt.executeUpdate();

@@ -30,6 +30,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -4826,7 +4827,7 @@ public class LabForm extends PcsFrame
                 msg+=s[1]+"\n";
                 letterFiles.addElement(s[0]);
             }
-	        JOptionPane confirmPrintLetters = new javax.swing.JOptionPane();
+	        JOptionPane confirmPrintLetters = new JOptionPane();
             int rv = confirmPrintLetters.showConfirmDialog(
 		                this,msg,
 		                "Fax Letters",confirmPrintLetters.YES_NO_OPTION,
@@ -4898,31 +4899,14 @@ public class LabForm extends PcsFrame
 	private void printLetterFile(
 	String filePath, String fileName, boolean forcePage)
 	{
-        File f;
-        File f2;
-        FileInputStream fIN;
-        FileOutputStream fOUT;
-        f = new File(filePath,fileName);
-        f2 = new File("c:\\","lpt2");
-        if (f.exists()) {
-            long fLen = f.length();
-            if (fLen>0) { 
-                try {
-                    fIN = new FileInputStream(f);
-                    fOUT = new FileOutputStream(f2);
-                    for (int k=0; k<fLen-2; k++) {
-                        int x = fIN.read();
-                        if (x==-1) break;
-                        fOUT.write(x);
-                    }
-                    if (forcePage) fOUT.write(12);
-                    fIN.close();
-                    fOUT.close();
-                }
-                catch (Exception e) { log.write(e); }
-            }	    
+        OutputStream out = Export.getFile(Utils.SERVER_DIR + "generic.ltr" );
+
+        if (out.toString().length() < 1) {
+        	Utils.createErrMsg("Cannot locate report: "+fileName); 
         }
-		else Utils.createErrMsg("Cannot locate report: "+fileName); 
+		else {
+			Utils.genericPrint(out.toString());
+		}
 	}
 	
 	private void dequeueFaxLetters()
