@@ -1,3 +1,6 @@
+drop procedure hpv_pending
+/
+
 CREATE OR REPLACE function hpv_pending
 return clob
 is                                                                              
@@ -26,8 +29,8 @@ is
    	order by lab_number;                                                        
 
 begin                                                                           
-                                                                                
-   P_proc_name:='HPV_PENDING';                                                  
+return null;                                                                                
+										  P_proc_name:='HPV_PENDING';                                                  
    P_code_area:='PREP';                                                         
    line_cntr:=0;                                                                
    reportOutput := '';
@@ -71,18 +74,19 @@ begin
 	dbms_lob.writeAppend(reportOutput, length(CHR(12)), chr(12));
    return reportOutput; 
                                                                                 
---exception                                                                       
---
---   when OTHERS then                                                             
---
---      P_error_code:=SQLCODE;                                                    
---      P_error_message:=SQLERRM;                                                 
---      insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)                                                        
---      values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,H_lab);                                                                          
---                                                                                
---      commit;                                                                   
---      RAISE;                                                                    
+exception                                                                       
+
+  when OTHERS then                                                             
+
+     P_error_code:=SQLCODE;                                                    
+     P_error_message:=SQLERRM;                                                 
+     insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)                                                        
+     values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,H_lab);                                                                          
+                                                                               
+     commit;                                                                   
+     RAISE;                                                                    
 
 
 end;
 /
+

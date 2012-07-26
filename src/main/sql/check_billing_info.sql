@@ -1,4 +1,4 @@
-create or replace procedure     check_billing_info
+create or replace procedure check_billing_info
 (
    M_lab_number in number,
    M_rebilling in number,

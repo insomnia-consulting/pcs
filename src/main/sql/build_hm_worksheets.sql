@@ -1,3 +1,6 @@
+drop procedure build_hm_worksheets
+/
+
 create or replace function build_hm_worksheets
 (
    P_mode in number,
@@ -80,8 +83,8 @@ begin
    loop
       fetch m_list into m_fields;
       exit when m_list%NOTFOUND;
-      /* clear all variables
-      */
+
+      -- clear all variables
       P_lname:=NULL;
       P_fname:=NULL;
       P_dob:=NULL;
@@ -179,7 +182,7 @@ begin
 		  curr_line:=curr_line||'  [HPV '||hpv_result||' ]';
 	       end if;
 	    end if;
-	    /* pap class 17 is tissue biopsy */
+	    -- pap class 17 is tissue biopsy 
 	    if (pclass_num=17) then
 	       curr_line:=curr_line||'	[PLEASE PRINT REPORT]';
 	    end if;
@@ -194,7 +197,7 @@ begin
    end loop;
    close m_list;
 	return reportOutput;
-   /**************/
+   -- *****************
    update pcs.job_control set job_status=0 where job_descr='MATCH_COUNT';
    UTL_FILE.PUT(file_handle,CHR(12));
    dbms_lob.writeAppend(reportOutput, length(CHR(12)), CHR(12));

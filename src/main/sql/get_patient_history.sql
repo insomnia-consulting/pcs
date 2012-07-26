@@ -63,10 +63,10 @@ begin
    select min(lab_number) into min_lab
    from pcs.lab_requisitions;
 
-   /* Last and first name, DOB and SSN of
-      the current requisition.
+   --Last and first name, DOB and SSN of
+   --   the current requisition.
 
-   */
+
    select lname,fname,NVL(dob,P_NULL_dob),NVL(ssn,P_NULL_ssn)
    into P_lname,P_fname,P_dob,P_ssn
    from pcs.patients where patient=P_patient;
@@ -76,9 +76,9 @@ begin
    where job_descr='MATCH_COUNT';
    commit;
 
-   /* Level 1
-      Only these records will get an M_level of 1
-   */
+   -- Level 1
+   --    Only these records will get an M_level of 1
+   
 
    P_code_area:='LEVEL_1';
    M_level:=1;
@@ -108,9 +108,9 @@ begin
    end loop;
 
 
-   /* Level 2
-      Only these records will get an M_level of 2
-   */
+   --  Level 2
+   --    Only these records will get an M_level of 2
+   -- 
    P_code_area:='LEVEL_2';
    M_level:=2;
    if (P_dob<>P_NULL_dob AND P_ssn<>P_NULL_ssn) then
@@ -134,14 +134,14 @@ begin
       close DOB_SSN_list;
    end if;
 
-   /* Level 3
+    -- Level 3
 
-      These records get an M_level between 3 and 5 as follows:
-      All records will have a match of first and last name.
-      M_level=3: The practice and one of either the ssn or dob matches.
-      M_level=4: One of either the ssn or dob matches.
-      M_level=5: Only the practice matches.
-   */
+    --   These records get an M_level between 3 and 5 as follows:
+    --   All records will have a match of first and last name.
+    --   M_level=3: The practice and one of either the ssn or dob matches.
+    --   M_level=4: One of either the ssn or dob matches.
+    --   M_level=5: Only the practice matches.
+   
    P_code_area:='LEVEL_3';
    open NAME_list;
    loop
@@ -180,12 +180,8 @@ exception
    when OTHERS then
       P_error_code:=SQLCODE;
       P_error_message:=SQLERRM;
-      insert into pcs.error_log (error_code,error_message,proc_name,code_area,da
-testamp,sys_user,ref_id)
-
-      values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,P
-_lab_number);
-
+      insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)
+      values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,P_lab_number);
       commit;
       RAISE;
 

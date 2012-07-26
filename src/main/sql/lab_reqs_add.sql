@@ -1,4 +1,4 @@
-create or replace procedure     lab_reqs_add
+create or replace procedure lab_reqs_add
 (
    L_lab_number in number,
    L_patient in number,
@@ -116,15 +116,15 @@ begin
 	 commit;
       end if;
       P_code_area:='VALIDATE DOCTOR';
-      /*
-	 Validate doctor; select default if not valid
-      */
+
+--	 Validate doctor; select default if not valid
+
       dr_id:=pcs.validate_doctor
 	 (L_lab_number,L_practice,L_doctor,L_carrier_id,L_choice_code);
-      /* If the doctor validation results in the default doctor being selected
-	 to facilitate billing then update the req table; also add comment
+       -- If the doctor validation results in the default doctor being selected
+       -- 	 to facilitate billing then update the req table; also add comment
 
-      */
+      
       if (L_doctor<>dr_id) then
 	 update pcs.lab_requisitions set doctor=dr_id where lab_number=L_lab_number;
 
@@ -237,7 +237,7 @@ begin
 	 insert into pcs.adph_lab_whp (lab_number,adph_program)
 	 values (L_lab_number,L_ADPH_program);
       end if;
-      /* Added for surgical pathology; system keeps track of next lab number */
+      --Added for surgical pathology; system keeps track of next lab number 
       if (L_prep=6) then
 	 update pcs.job_control set job_status=job_status+1
 
@@ -249,17 +249,14 @@ begin
 	 	pcs.check_billing_info(L_lab_number,0,1,1);
       end if;
 
-      /* for HPV only testing a "stub" lab_results record must be
-	 created; no patient history needed for HPV only
-      */
+       -- for HPV only testing a "stub" lab_results record must be
+       -- 	 created; no patient history needed for HPV only
+      
       if (L_prep=5) then
-	 insert into pcs.lab_results
-	    (lab_number,date_completed,cytotech,pathologist,pap_class,
-	     qc_status,datestamp,sys_user,first_print,path_status,
-	     biopsy_code,limited,change_date,change_user)
+	 insert into pcs.lab_results (lab_number,date_completed,cytotech,pathologist,pap_class,
+	     qc_status,datestamp,sys_user,first_print,path_status, biopsy_code,limited,change_date,change_user)
 	  values
-	     (L_lab_number,SysDate,2981,NULL,18,'N',SysDate,UID,2,
-	      'N',NULL,0,SysDate,UID);
+	     (L_lab_number,SysDate,2981,NULL,18,'N',SysDate,UID,2, 'N',NULL,0,SysDate,UID);
 	  commit;
 	  pcs.set_hpv(L_lab_number);
 	  update pcs.job_control set job_status=job_status+1
@@ -272,18 +269,14 @@ begin
 
    commit;
 
---exception
---   when OTHERS then
---      P_error_code:=SQLCODE;
---      P_error_message:=SQLERRM;
---      insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user)
---
---      values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID);
---
---
---
---      commit;
---      RAISE;
+exception
+  when OTHERS then
+     P_error_code:=SQLCODE;
+     P_error_message:=SQLERRM;
+     insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user)
+     values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID);
 
+     commit;
+     RAISE;
 end;
 /

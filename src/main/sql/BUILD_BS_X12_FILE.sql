@@ -140,7 +140,7 @@ as
 
    file_handle UTL_FILE.FILE_TYPE;
 
-   /************************************/
+   --************************************
    sender_id varchar2(15);
    receiver_id varchar2(15);
    trading_id varchar2(32);
@@ -160,11 +160,11 @@ as
 
    NPI_id varchar2(64);
 
-   /* Health Care Provider Taxonomy Code */
+   -- Health Care Provider Taxonomy Code
    PXC_taxonomy_code CONSTANT varchar2(50) := '291U00000X';
-   /* Place of Service Code for Professional Services */
+   -- Place of Service Code for Professional Services
    POS_code CONSTANT varchar2(2) := '81';
-   /* Implementation Convention Reference */
+   -- Implementation Convention Reference
 
    impl_conv_ref CONSTANT varchar2(16) := '005010X222A1';
 
@@ -242,10 +242,8 @@ DBMS_OUTPUT.ENABLE;
    file_handle:=UTL_FILE.FOPEN(C_directory,x12_fname,'w');
 
    P_code_area:='HEADERS';
-   /*
+   --   Interchange Control Header (ISA)
 
-      Interchange Control Header (ISA)
-   */
    interchange_control_header:='ISA*00* 	 *00*	       *ZZ*'||
       RPAD(security_id,15)||'*33*'||
       RPAD(receiver_id,15)||'*'||interchange_date||'*'||
@@ -255,10 +253,10 @@ DBMS_OUTPUT.ENABLE;
 
    select RTRIM(LTRIM(TO_CHAR(group_control_num_seq.nextval)))
    into group_control_num from dual;
-   /*
-      Functional Group Header (GS)
 
-   */
+      -- Functional Group Header (GS)
+
+
    functional_group_header:='GS*HC*'||RTRIM(trading_id)||'*'||RTRIM(receiver_id)
 ||
 
@@ -266,9 +264,9 @@ DBMS_OUTPUT.ENABLE;
       '*X*'||impl_conv_ref||'~';
    UTL_FILE.PUTF(file_handle,'%s\n',functional_group_header);
 
-   /*
-      Transaction Set Header (ST)
-   */
+
+      -- Transaction Set Header (ST)
+
    segment_count:=1;
    select RTRIM(LTRIM(TO_CHAR(transet_id_seq.nextval,'000009')))
 
@@ -278,9 +276,9 @@ DBMS_OUTPUT.ENABLE;
 
    UTL_FILE.PUTF(file_handle,'%s\n',transaction_set_header);
 
-   /*
-      Beginning of Hierarchical Transaction (BHT)
-   */
+
+      -- Beginning of Hierarchical Transaction (BHT)
+
    select TO_CHAR(SysDate,'HH24MISS') into interchange_time from dual;
    if (transaction_ref='01') then
       transaction_ref:='00';
@@ -294,69 +292,61 @@ DBMS_OUTPUT.ENABLE;
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    segment_count:=segment_count+1;
 
-/********** LOOP 1000 SUBMITTER AND RECEIVER INFORMATION **********/
+-- ********* LOOP 1000 SUBMITTER AND RECEIVER INFORMATION
 
-   /* LOOP 1000A SUBMITTER */
-   /*
-      Submitter Name (NM1)
+   -- LOOP 1000A SUBMITTER
+   
+   --    Submitter Name (NM1)
 
-   */
    curr_line:='NM1*41*2*PENNSYLVANIA CYTOLOGY SERVICES*****46*'||
       RTRIM(trading_id)||'~';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    segment_count:=segment_count+1;
-   /*
-      Submitter EDI Contact Information (PER)
-   */
+   -- Submitter EDI Contact Information (PER)
    curr_line:='PER*IC*LISA RITCHEY*TE*4123738300*FX*4123737027~';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    segment_count:=segment_count+1;
 
-   /* LOOP 1000B RECEIVER */
+   -- LOOP 1000B RECEIVER
 
-   /*
-      Receiver Name (NM1)
-   */
+   
+   --   Receiver Name (NM1)
    curr_line:='NM1*40*2*HIGHMARK*****46*'||receiver_id||'~';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    segment_count:=segment_count+1;
 
-/********** HL - BILLING PROVIDER HIERARCHICAL LEVEL **********/
+-- ********* HL - BILLING PROVIDER HIERARCHICAL LEVEL
 
-   /* LOOP 2000A BILLING PROVIDER HIERARCHICAL LEVEL */
+   -- LOOP 2000A BILLING PROVIDER HIERARCHICAL LEVEL
    curr_line:='HL*'||TO_CHAR(HL_count)||'**20*1~';
    HL_count:=HL_count+1;
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 
    segment_count:=segment_count+1;
-   /*
-      Billing Provider Specialty Information (PRV)
-   */
+   
+      -- Billing Provider Specialty Information (PRV)
    curr_line:='PRV*BI*PXC*'||PXC_taxonomy_code||'~';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    segment_count:=segment_count+1;
 
-   /* LOOP 2010AA BILLING PROVIDER NAME */
+   -- LOOP 2010AA BILLING PROVIDER NAME
    curr_line:='NM1*85*2*PENNSYLVANIA CYTOLOGY SERVICES*****XX*'||NPI_id||'~';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    segment_count:=segment_count+1;
-   /*
+   
 
-      Billing Provider Address (N3)
-   */
+      -- Billing Provider Address (N3)
    curr_line:='N3*SUITE 1700 PARKWAY BUILDING*339 OLD HAYMAKER ROAD~';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    segment_count:=segment_count+1;
-   /*
-      Billing Provider City/State/Zip Code (N4)
-   */
+   
+      -- Billing Provider City/State/Zip Code (N4)
    curr_line:='N4*MONROEVILLE*PA*151461447~';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    segment_count:=segment_count+1;
-   /*
-      Billing Provider Tax ID (Now required with Version 5010)
+   
+      -- Billing Provider Tax ID (Now required with Version 5010)
 
-   */
    curr_line:='REF*EI*'||lab_tax_id||'~';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    segment_count:=segment_count+1;
@@ -418,10 +408,9 @@ DBMS_OUTPUT.ENABLE;
 	 end if;
       end if;
 
-	/*
-	 values are from old X12 specs
-	 if insurer_type ends up null then policy_subscriber is OTHER
-      */
+	
+	 -- values are from old X12 specs
+	 -- if insurer_type ends up null then policy_subscriber is OTHER
       insurer_type:=null;
 
       if (policy_subscriber='SELF') then
@@ -432,9 +421,9 @@ DBMS_OUTPUT.ENABLE;
 	 insurer_type:='02';
       end if;
 
-/********** HL SUBSCRIBER HIERARCHICAL LEVEL **********/
+-- ********* HL SUBSCRIBER HIERARCHICAL LEVEL
 
-      /* LOOP 2000B SUBSCRIBER HIERARCHICAL LEVEL */
+      -- LOOP 2000B SUBSCRIBER HIERARCHICAL LEVEL
       curr_line:='HL*'||TO_CHAR(HL_count)||'*1*22*';
       HL_count:=HL_count+1;
 
@@ -453,15 +442,14 @@ P
 	 payment_type not in ('PLUS ADJUST','MINUS ADJUST');
 
 
-      /*
-	 Subscriber Information (SBR)
-	 If the group num is null, default to six nines
-      */
+      
+	 -- Subscriber Information (SBR)
+	 -- If the group num is null, default to six nines
       if (policy_group is null) then
 	 policy_group:='999999';
       end if;
       curr_line:='SBR*P*';
-      /* Subscriber and Patient are the same person */
+      -- Subscriber and Patient are the same person
       if (policy_subscriber='SELF') then
 	   curr_line:=curr_line||insurer_type;
       end if;
@@ -470,10 +458,8 @@ P
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
       segment_count:=segment_count+1;
 
-      /* LOOP 2010BA SUBSCRIBER NAME */
-      /*
-	 Subscriber Name (NM1)
-      */
+      -- LOOP 2010BA SUBSCRIBER NAME
+      -- 	 Subscriber Name (NM1)
       cbuf1:=pcs.strip_chars(policy_lname);
       cbuf2:=pcs.strip_chars(policy_fname);
       curr_line:='NM1*IL*1*'||RTRIM(cbuf1)||'*'||RTRIM(cbuf2)||
@@ -482,55 +468,46 @@ P
 
       segment_count:=segment_count+1;
       if (policy_subscriber='SELF') then
-      /*
-	 Subscriber Address (N3)
-      */
+      
+	 -- Subscriber Address (N3)
 	 cbuf1:=pcs.strip_chars(patient_addr);
 	 curr_line:='N3*'||cbuf1||'~';
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 segment_count:=segment_count+1;
-      /*
-	 Subscriber City/State/Zip Code (N4)
-      */
+      
+	 -- Subscriber City/State/Zip Code (N4)
 	 cbuf1:=pcs.strip_chars(patient_city);
 
 	 curr_line:='N4*'||cbuf1||'*'||patient_state||'*'||patient_zip||'~';
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 segment_count:=segment_count+1;
-      /*
-	 Subscriber Demographic Information (DMG)
-	 NOTE: Assume F always for sex
-      */
+      
+	 -- Subscriber Demographic Information (DMG)
+	 -- NOTE: Assume F always for sex
 	 curr_line:='DMG*D8*'||patient_dob||'*F~';
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 segment_count:=segment_count+1;
       end if;
 
-      /* LOOP 2010BB PAYER NAME */
+      -- LOOP 2010BB PAYER NAME
+      -- 	 Payer Name (NM1)
 
-      /*
-	 Payer Name (NM1)
-      */
       curr_line:='NM1*PR*2*HIGHMARK*****PI*'||receiver_id||'~';
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
       segment_count:=segment_count+1;
 
-      /* Subscriber and Patient are different people */
+      -- Subscriber and Patient are different people
       if (policy_subscriber<>'SELF') then
-	 /*
-	    Patient Hierarchical Level (HL)
-	 */
-	 curr_line:='HL*'||TO_CHAR(HL_count)||'*'||TO_CHAR(HL_count-1)||'*23*0~'
-
-;
+	 
+	    -- Patient Hierarchical Level (HL)
+	 curr_line:='HL*'||TO_CHAR(HL_count)||'*'||TO_CHAR(HL_count-1)||'*23*0~';
 
 	 HL_count:=HL_count+1;
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 segment_count:=segment_count+1;
-	 /*
-	    Patient Information (PAT)
-	    Assumes policy subscriber is not SELF
-	 */
+	 
+	    -- Patient Information (PAT)
+	    -- Assumes policy subscriber is not SELF
 	 curr_line:='PAT*';
 	 if (policy_subscriber='DEPENDENT') then
 	    curr_line:=curr_line||'19~';
@@ -542,9 +519,8 @@ P
 	 end if;
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 segment_count:=segment_count+1;
-	 /*
-	    Patient Name (NM1)
-	 */
+	 
+	    -- Patient Name (NM1)
 	 cbuf1:=pcs.strip_chars(SUBSTR(patient_lname,1,20));
 	 cbuf2:=pcs.strip_chars(SUBSTR(patient_fname,1,12));
 	 curr_line:='NM1*QC*1*'||cbuf1||'*'||cbuf2;
@@ -555,79 +531,72 @@ P
 	 curr_line:=curr_line||'~';
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 segment_count:=segment_count+1;
-	 /*
-	    Patient Address (N3)
-	 */
+	 
+	    -- Patient Address (N3)
 	 cbuf1:=pcs.strip_chars(patient_addr);
 	 curr_line:='N3*'||cbuf1||'~';
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 segment_count:=segment_count+1;
-	 /*
+	 
 
-	    Patient City/State/Zip Code (N4)
-	 */
+	    -- Patient City/State/Zip Code (N4)
 	 cbuf1:=pcs.strip_chars(patient_city);
 	 curr_line:='N4*'||cbuf1||'*'||patient_state||'*'||patient_zip||'~';
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 segment_count:=segment_count+1;
-	 /*
-	    Patient Demographic Information (DMG)
-	    Assumes sex is F always
-	 */
+	 
+	    -- Patient Demographic Information (DMG)
+	    -- Assumes sex is F always
 	 curr_line:='DMG*D8*'||patient_dob||'*F~';
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 segment_count:=segment_count+1;
 
       end if;
 
-      /* LOOP 2300 CLAIM INFORMATION
-      /*
-	 Health Care Claim (CLM)
-	 NOTE: claim_total holds lab_billings.bill_amount which is programmed
-	 to hold the sum of all lab_billing_items.item_amount (line items)
-      */
+      -- LOOP 2300 CLAIM INFORMATION
+      -- 
+      -- 	 Health Care Claim (CLM)
+      -- 	 NOTE: claim_total holds lab_billings.bill_amount which is programmed
+      -- 	 to hold the sum of all lab_billing_items.item_amount (line items)
       cbuf1:=TO_CHAR(claim_total);
       curr_line:='CLM*'||claim_lab_number||'*'||cbuf1||'***'||POS_code||
 	 ':B:1*Y*A*Y*I*P~';
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
       segment_count:=segment_count+1;
 
-      /*
-	 Patient Amount Paid (AMT)
-      */
+      
+	 -- Patient Amount Paid (AMT)
       if (patient_payments>0) then
 	 cbuf1:=TO_CHAR(patient_payments);
 	 curr_line:='AMT*F5*'||cbuf1||'~';
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 segment_count:=segment_count+1;
       end if;
-      /*
-	 CLIA Number (REF)
-      */
+      
+	 -- CLIA Number (REF)
       curr_line:='REF*X4*'||lab_CLIA||'~';
 
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
       segment_count:=segment_count+1;
-      /*
-	 Health Care Information Codes (HI)
-	 NOTE: When ICD10 is implemented BK becomes ABK and
-	 BF becomes ABF
-      */
+       
+      	 -- Health Care Information Codes (HI)
+      	 -- NOTE: When ICD10 is implemented BK becomes ABK and
+      	 -- BF becomes ABF
       curr_line:='HI';
       num_diags:=0;
       open diagnosis_list;
       loop
-	 fetch diagnosis_list into diagnosis_fields;
-	 exit when diagnosis_list%NOTFOUND;
+      	 fetch diagnosis_list into diagnosis_fields;
+      	 exit when diagnosis_list%NOTFOUND;
 
-	 cbuf1:=REPLACE(diagnosis_fields.diagnosis_code,'.');
-	 if (diagnosis_fields.d_seq=1) then
-	    cbuf2:='BK';
-	 else
-	    cbuf2:='BF';
-	 end if;
-	 curr_line:=curr_line||'*'||cbuf2||':'||cbuf1;
-	 num_diags:=num_diags+1;
+      	 cbuf1:=REPLACE(diagnosis_fields.diagnosis_code,'.');
+      	 if (diagnosis_fields.d_seq=1) then
+      	    cbuf2:='BK';
+      	 else
+      	    cbuf2:='BF';
+      	 end if;
+      	 curr_line:=curr_line||'*'||cbuf2||':'||cbuf1;
+      	 num_diags:=num_diags+1;
       end loop;
       close diagnosis_list;
       curr_line:=curr_line||'~';
@@ -635,21 +604,21 @@ P
       segment_count:=segment_count+1;
 
 
-      /* LOOP 2310A REFERRING PROVIDER NAME */
+      -- LOOP 2310A REFERR
+      -- ING PROVIDER NAME
       select lname,fname,npi into dr_lname,dr_fname,dr_npi
       from pcs.doctors where doctor=lab_doctor;
       if (dr_lname is NOT NULL and dr_fname is NOT NULL
       and dr_npi is NOT NULL) then
-	 curr_line:='NM1*DN*1*'||dr_lname||'*'||dr_fname||'****XX*'||dr_npi||'~'
-;
+	 curr_line:='NM1*DN*1*'||dr_lname||'*'||dr_fname||'****XX*'||dr_npi||'~';
 
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 segment_count:=segment_count+1;
       end if;
 
 
-/********** LX SERVICE LINE NUMBER **********/
-      /* SERVICE LINE LOOP 2400 */
+-- ********* LX SERVICE LINE NUMBER
+--       SERVICE LINE LOOP 2400
       rcnt:=1;
       open procedure_list;
       loop
@@ -699,9 +668,8 @@ P
 	 end if;
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 segment_count:=segment_count+1;
-	 /*
-	    Date of Service (DTP)
-	 */
+	 
+	    -- Date of Service (DTP)
 	 curr_line:='DTP*472*D8*'||lab_collected||'~';
 
 	 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
@@ -749,20 +717,17 @@ P
    segment_count:=segment_count+1;
 
    P_code_area:='TRAILERS';
-   /*
-      Transaction Set Trailer
-   */
+   
+      -- Transaction Set Trailer
    curr_line:='SE*'||segment_count||'*'||trx_set_control_num||'~';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-   /*
-      Functional Group Trailer (GE)
-   */
+   
+      -- Functional Group Trailer (GE)
    curr_line:='GE*1*'||group_control_num||'~';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 
-   /*
-      Interchange Control Trailer (ISA)
-   */
+   
+      -- Interchange Control Trailer (ISA)
    curr_line:='IEA*1*'||LPAD(interchange_number,9,'0')||'~';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 
@@ -774,14 +739,14 @@ P
 
    update pcs.tpps set file_name=x12_fname where tpp=C_tpp;
 
-   /**************/
+   --**************
    UTL_FILE.FCLOSE(file_handle);
    commit;
 
 exception
---   when UTL_FILE.INVALID_PATH then
---      UTL_FILE.FCLOSE(file_handle);
---      RAISE_APPLICATION_ERROR(-20051,'invalid path');
+  when UTL_FILE.INVALID_PATH then
+     UTL_FILE.FCLOSE(file_handle);
+     RAISE_APPLICATION_ERROR(-20051,'invalid path');
    when UTL_FILE.INVALID_MODE then
       UTL_FILE.FCLOSE(file_handle);
       RAISE_APPLICATION_ERROR(-20052,'invalid mode');
@@ -798,14 +763,14 @@ exception
    when UTL_FILE.WRITE_ERROR then
       UTL_FILE.FCLOSE(file_handle);
       RAISE_APPLICATION_ERROR(-20056,'write error');
---   when OTHERS then
---      UTL_FILE.FCLOSE(file_handle);
---      P_error_code:=SQLCODE;
---      P_error_message:=SQLERRM;
---      claim_lab_number:=claim_lab_number;
---      insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)
---      values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,claim_lab_number);
---      commit;
---      RAISE;
+  when OTHERS then
+     UTL_FILE.FCLOSE(file_handle);
+     P_error_code:=SQLCODE;
+     P_error_message:=SQLERRM;
+     claim_lab_number:=claim_lab_number;
+     insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)
+     values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,claim_lab_number);
+     commit;
+     RAISE;
 end;
 /

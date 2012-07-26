@@ -905,13 +905,13 @@ begin
 	 else
 	    cbuf1:=lab_completed||' '||lab_completed;
 	 end if;
-	 /* PLACE OF SERVICE (24B)
-	 */
+	 -- PLACE OF SERVICE (24B)
+
 
 	 -- Type of Service code eliminated on new claim form
 	 cbuf1:=RPAD(cbuf1,18)||'81   ';
-	 /* PROCEDURE CODE AND MODIFIERS (24D)
-	 */
+	 -- PROCEDURE CODE AND MODIFIERS (24D)
+
 	 cbuf1:=RPAD(cbuf1,24)||procedure_fields.procedure_code;
 	 if (C_choice_code='MED' and policy_sign is NOT NULL) then
 	    cbuf1:=cbuf1||'  GA';
@@ -919,8 +919,8 @@ begin
 	 elsif (C_choice_code='DPA' AND carrier_idnum<>1046) then
 	    cbuf1:=cbuf1||'  FP';
 	 end if;
-	 /* THIS IS WHERE THE DIAGNOSIS POINTER GOES (24E)
-	 */
+	 -- THIS IS WHERE THE DIAGNOSIS POINTER GOES (24E)
+
 
 	 --   The procedure codes 88141 and 87621 should not include
 	 --   diag_1, so we extract the '1,' from diag_5 into diag_string
@@ -954,7 +954,7 @@ begin
 	 cbuf1:=cbuf1||cbuf2||' ';
 	 cbuf2:=substr(curr_line,8,2);
 	 cbuf1:=cbuf1||cbuf2;
-	 /* Units:  always one, unless biopsies we go with number of vials */
+	 -- Units:  always one, unless biopsies we go with number of vials */
 	 if (lab_prep=6) then
 	    cbuf3:=RTRIM(LTRIM(TO_CHAR(lab_vials)));
 	 else
@@ -964,11 +964,10 @@ begin
 	 -- PA DPA IS 1048; OH DPA IS 1046
 	 -- take next three lines out; put npi on all claims for 24J
 
-	 /*
-	 if (carrier_idnum IN (1046,1048) OR trav_med='Y') then
-	    cbuf1:=cbuf1||'	  '||lab_npi;
-	 end if;
-	 */
+	 -- if (carrier_idnum IN (1046,1048) OR trav_med='Y') then
+	 --    cbuf1:=cbuf1||'	  '||lab_npi;
+	 -- end if;
+
 	 cbuf1:=cbuf1||'       '||lab_npi;
 	 curr_line:=margin||cbuf1;
 	 curr_line:=REPLACE(curr_line,' 081 ','  81 ');
@@ -1004,16 +1003,16 @@ begin
       -- temporarily use old tax id for PA DPA
       -- added 1/26; use new tax id for DOS later than 1/21
       -- No longer need old tax id (11/29/06)
-      /*
 
-      if (carrier_idnum in (1048,1047)) then
-	 cbuf1:=RPAD(lab_tax_id,18)||'X';
-      elsif (C_choice_code='DPA') then
-	 cbuf1:=RPAD(' ',18)||' ';
-      else
-	 cbuf1:=RPAD(lab_tax_id,18)||'X';
-      end if;
-      */
+
+      -- if (carrier_idnum in (1048,1047)) then
+      -- 	 cbuf1:=RPAD(lab_tax_id,18)||'X';
+      -- elsif (C_choice_code='DPA') then
+      -- 	 cbuf1:=RPAD(' ',18)||' ';
+      -- else
+      -- 	 cbuf1:=RPAD(lab_tax_id,18)||'X';
+      -- end if;
+
       cbuf1:=RPAD(lab_tax_id,18)||'X';
       cbuf1:=RPAD(cbuf1,22);
       cbuf2:='	  '||SUBSTR(RTRIM(LTRIM(TO_CHAR(claim_lab_number))),3);
@@ -1147,7 +1146,7 @@ begin
       cbuf2:=null;
 
       curr_line:=null;
-      -- values hardcoded for UPMC HealthPlan w/Pgh addresses
+      -- values hardcoded for UPMC HealthPlan with Pgh addresses
       if (carrier_idnum in (2575,2695,4008)) then
 	 cbuf2:=RPAD('R H SWEDARSKY  ',49);
 	 cbuf1:=cbuf2||'MONROEVILLE PA	15146';
