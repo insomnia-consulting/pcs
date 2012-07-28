@@ -4896,8 +4896,7 @@ public class LabForm extends PcsFrame
 	    }
 	}
 	
-	private void printLetterFile(
-	String filePath, String fileName, boolean forcePage)
+	private void printLetterFile(String filePath, String fileName, boolean forcePage)
 	{
         OutputStream out = Export.getFile(Utils.SERVER_DIR + "generic.ltr" );
 

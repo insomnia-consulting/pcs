@@ -17,11 +17,16 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+
 import javax.swing.*;
+
+import com.pacytology.pcs.actions.CurrentMessageDialogActionMap;
+import com.pacytology.pcs.ui.PcsDialog;
 import com.pacytology.pcs.ui.Square;
 import java.sql.*;
 
-public class CurrentMessageDialog extends javax.swing.JDialog
+public class CurrentMessageDialog extends PcsDialog
 {
     PCSLabEntry parent;
     int[] colorArray = new int[8];
@@ -123,8 +128,20 @@ public class CurrentMessageDialog extends javax.swing.JDialog
 		this.addKeyListener(aSymKey);
 		messageText.addKeyListener(aSymKey);
 		//}}
+		
+		this.actionMap = new CurrentMessageDialogActionMap(this);
+		this.setupKeyPressMap();
+		
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
 
+
+		rp.getActionMap().put("F12", actionMap.finalAction);
+		rp.getActionMap().put("ENTER", actionMap.finalAction);
+
+		return rp;
+	}
 	public CurrentMessageDialog(PCSLabEntry p)
 	{
 		this();
@@ -164,9 +181,9 @@ public class CurrentMessageDialog extends javax.swing.JDialog
 	boolean frameSizeAdjusted = false;
 
 	//{{DECLARE_CONTROLS
-	javax.swing.JTextArea messageText = new javax.swing.JTextArea();
-	javax.swing.JComboBox fgColors = new javax.swing.JComboBox();
-	javax.swing.JComboBox bgColors = new javax.swing.JComboBox();
+	public javax.swing.JTextArea messageText = new javax.swing.JTextArea();
+	public javax.swing.JComboBox fgColors = new javax.swing.JComboBox();
+	public javax.swing.JComboBox bgColors = new javax.swing.JComboBox();
 	javax.swing.JLabel JLabel1 = new javax.swing.JLabel();
 	javax.swing.JLabel JLabel2 = new javax.swing.JLabel();
 	Square F1sq = new Square();
@@ -224,17 +241,15 @@ public class CurrentMessageDialog extends javax.swing.JDialog
 		    this.dispose();
 		}
 		else if (key==event.VK_F12 || key==event.VK_ENTER) {
-		    finalActions();
+			finalActions();
 		    this.dispose();
 		}
 		else if (key==event.VK_ESCAPE) {
-		    messageText.setText(null);
-		    fgColors.setSelectedIndex(1);
-		    bgColors.setSelectedIndex(3);
+		    
 		}
 	}
 	
-	void finalActions()
+	public void finalActions()
 	{
 	    int F = colorArray[fgColors.getSelectedIndex()];
 	    int B = colorArray[bgColors.getSelectedIndex()];
@@ -287,5 +302,25 @@ public class CurrentMessageDialog extends javax.swing.JDialog
         }
         return exitStatus;
     }
+	@Override
+	public void queryActions() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void addActions() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void updateActions() {
+		
+		
+	}
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+
+	}
 	
 }

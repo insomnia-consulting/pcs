@@ -54,6 +54,7 @@ public abstract class PcsFrame extends JFrame {
 		KeyStroke end = KeyStroke.getKeyStroke(KeyEvent.VK_END, 0, false);
 		KeyStroke ctrl = KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL,
 				InputEvent.CTRL_DOWN_MASK, false);
+		KeyStroke vk_enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f1, "F1");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f2, "F2");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f3, "F3");
@@ -79,6 +80,7 @@ public abstract class PcsFrame extends JFrame {
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(end, "VK_END");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ctrl,
 				"VK_CONTROL");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(vk_enter, "VK_ENTER");
 		/*
 		 * actionMap is assigned a actionMap that matches the form ie., LabFor
 		 * => LabFormActionMap This only needs to happen if the actionMap has
