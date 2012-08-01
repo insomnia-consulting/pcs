@@ -194,7 +194,7 @@ public class DbUser extends JDialog
         this.setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
         parent.setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
 		userName=userTextField.getText();
-		userPassword=userPwdField.getText();
+		userPassword=new String(userPwdField.getPassword());
         dailyJobStatus=999;
         try  {
             Class.forName(parent.dbLogin.driver);

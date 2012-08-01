@@ -1,4 +1,4 @@
-create or replace procedure     daily_jobs
+create or replace procedure daily_jobs
 as
 
    P_error_code number;
@@ -59,6 +59,18 @@ as
 begin
 
    commit;
+   dbms_output.put_line('Starting Daily Jobs');
+   /* open log file */
+   file_handle:=UTL_FILE.FOPEN('REPORTS_DIR','dailyjob.log','a');
+      /* throughout program date_today records date and time and curr_line formats
+      message in log; used to track time it takes the various programs to run
+   */
+   select TO_CHAR(SysDate-1,'MM/DD/YYYY HH24:Mi:SS') into date_today from dual;
+   select rtrim(to_char(SysDate,'DAY')) into day_of_week from dual;
+   UTL_FILE.PUTF(file_handle,'%s\n',day_of_week);
+   curr_line:='DAILY JOB LOG FOR: '||date_today;
+   UTL_FILE.PUTF(file_handle,'%s\n\n',curr_line);
+   
    set transaction use rollback segment pcs_rbs1;
 
    /* indicates the which state the daily jobs program is in:
@@ -90,20 +102,7 @@ begin
       goto exit_point;
    end if;
 
-   /* open log file */
-   file_handle:=UTL_FILE.FOPEN(REPORTS_DIR,'dailyjob.log','a');
-
    P_code_area:='HEADER';
-
-
-   /* throughout program date_today records date and time and curr_line formats
-      message in log; used to track time it takes the various programs to run
-   */
-   select TO_CHAR(SysDate-1,'MM/DD/YYYY HH24:Mi:SS') into date_today from dual;
-   select rtrim(to_char(SysDate,'DAY')) into day_of_week from dual;
-   UTL_FILE.PUTF(file_handle,'%s\n',day_of_week);
-   curr_line:='DAILY JOB LOG FOR: '||date_today;
-   UTL_FILE.PUTF(file_handle,'%s\n\n',curr_line);
 
    /* if the jobs are set to not run for THIS day (3); or to not run at
       all for any day (2) then exit
@@ -112,7 +111,7 @@ begin
 
       goto exit_point;
    end if;
-
+	dbms_output.put_line("Jobs are running for "|| date_today);
    /* indicates daily jobs are now running; will block users from
       getting into the system
    */
@@ -327,7 +326,7 @@ begin
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 
       P_code_area:='EOM.INIT_SCREENING_STATS';
-      curr_line:='INITIALIZE FOR CT & PATH SUMMARIES: ';
+      curr_line:='INITIALIZE FOR CT' || chr(38) || 'PATH SUMMARIES: ';
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
       pcs.init_screening_stats_table(S_month);
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
@@ -623,8 +622,9 @@ begin
       commit;
       /* INSERT CODE TO RUN HERE *************************************************/
       P_code_area:='SPECIAL.INIT_SCREENING_STATS1';
-      curr_line:='INITIALIZE FOR CT & PATH SUMMARIES JANUARY 2012: ';
+      curr_line:='INITIALIZE FOR CT' || chr(38) || 'PATH SUMMARIES JANUARY 2012: ';
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
+      dbms_output.put_line('Running init_screening_stats_table');
       pcs.init_screening_stats_table(201201);
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
 
@@ -634,6 +634,7 @@ begin
       P_code_area:='SPECIAL.CYTOTECH_SUMMARY1';
       curr_line:='     CYTOTECH SUMMARY(201201): ';
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
+      dbms_output.put_line('build_cytotech_summary_file');
       pcs.build_cytotech_summary_file(201201);
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
       curr_line:=curr_line||procedure_begin||' to '||procedure_end;
@@ -643,13 +644,14 @@ begin
       curr_line:='     PATH0LOGIST SUMMARY(201201): ';
 
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
+      dbms_output.put_line('build_pathologist_summary_file');
       pcs.build_pathologist_summary_file(201201);
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
       curr_line:=curr_line||procedure_begin||' to '||procedure_end;
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 
       P_code_area:='SPECIAL.INIT_SCREENING_STATS2';
-      curr_line:='INITIALIZE FOR CT & PATH SUMMARIES FEBRUARY 2012: ';
+      curr_line:='INITIALIZE FOR CT' || chr(38) || 'PATH SUMMARIES FEBRUARY 2012: ';
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
       pcs.init_screening_stats_table(201202);
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
@@ -675,7 +677,7 @@ begin
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 
       P_code_area:='SPECIAL.INIT_SCREENING_STATS3';
-      curr_line:='INITIALIZE FOR CT & PATH SUMMARIES MARCH 2012: ';
+      curr_line:='INITIALIZE FOR CT ' || chr(38) || ' PATH SUMMARIES MARCH 2012: ';
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
       pcs.init_screening_stats_table(201203);
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
@@ -776,78 +778,79 @@ begin
 
    UTL_FILE.FCLOSE(file_handle);
 
-exception
-   when UTL_FILE.INVALID_PATH then
-      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
-      commit;
-      UTL_FILE.FCLOSE(file_handle);
-
-      RAISE_APPLICATION_ERROR(-20051,'invalid path');
-   when UTL_FILE.INVALID_MODE then
-      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
-      commit;
-      UTL_FILE.FCLOSE(file_handle);
-      RAISE_APPLICATION_ERROR(-20052,'invalid mode');
-   when UTL_FILE.INVALID_FILEHANDLE then
-      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
-      commit;
-      UTL_FILE.FCLOSE(file_handle);
-      RAISE_APPLICATION_ERROR(-20053,'invalid file handle');
-   when UTL_FILE.INVALID_OPERATION then
-      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
-
-      commit;
-      UTL_FILE.FCLOSE(file_handle);
-      RAISE_APPLICATION_ERROR(-20054,'invalid operation');
-   when UTL_FILE.READ_ERROR then
-      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
-      commit;
-      UTL_FILE.FCLOSE(file_handle);
-      RAISE_APPLICATION_ERROR(-20055,'read error');
-   when UTL_FILE.WRITE_ERROR then
-      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
-      commit;
-      UTL_FILE.FCLOSE(file_handle);
-      RAISE_APPLICATION_ERROR(-20056,'write error');
-
-   when OTHERS then
-      curr_line:='END DAILY JOBS WITH ERROR: '||date_today;
-      UTL_FILE.PUTF(file_handle,'\n%s\n\n',curr_line);
-      curr_line:='------------------------------------'||
-	 '-------------------------------------------';
-      UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-      UTL_FILE.FCLOSE(file_handle);
-      P_error_code:=SQLCODE;
-      P_error_message:=SQLERRM;
-      insert into pcs.error_log
-	 (error_code,error_message,proc_name,code_area,datestamp,sys_user)
-      values
-	 (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID);
-
-      update job_control set job_status=-1 where job_descr='JOB_STATUS';
-      insert into pcs.daily_job_record (j_rec_number) values (j_rec_num);
-      curr_line:='WARNING! NIGHT JOB FAILURE, '||P_code_area;
-      if (job_indicator=DAILY) then
-	 curr_line:=curr_line||' [daily]';
-      elsif (job_indicator=WEEKLY) then
-	 curr_line:=curr_line||' [weekly]';
-      elsif (job_indicator=EOM) then
-	 curr_line:=curr_line||' [monthly]';
-      elsif (job_indicator=MID_MONTH) then
-	 curr_line:=curr_line||' [mid_month]';
-      elsif (job_indicator=SUMMARIES) then
-	 curr_line:=curr_line||' [summaries]';
-
-      elsif (job_indicator=DATA_PURGE) then
-	 curr_line:=curr_line||' [data_purge]';
-      elsif (job_indicator=SPECIAL) then
-	 curr_line:=curr_line||' [special]';
-      end if;
-      update business_info set
-	 current_message=curr_line,
-	 message_foreground=-65536,
-	 message_background=-16777216;
-      commit;
-      RAISE;
+--exception
+--   when UTL_FILE.INVALID_PATH then
+--      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
+--      commit;
+--      UTL_FILE.FCLOSE(file_handle);
+--
+--      RAISE_APPLICATION_ERROR(-20051,'invalid path');
+--   when UTL_FILE.INVALID_MODE then
+--      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
+--      commit;
+--      UTL_FILE.FCLOSE(file_handle);
+--      RAISE_APPLICATION_ERROR(-20052,'invalid mode');
+--   when UTL_FILE.INVALID_FILEHANDLE then
+--      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
+--      commit;
+--      UTL_FILE.FCLOSE(file_handle);
+--      RAISE_APPLICATION_ERROR(-20053,'invalid file handle');
+--   when UTL_FILE.INVALID_OPERATION then
+--      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
+--
+--      commit;
+--      UTL_FILE.FCLOSE(file_handle);
+--      RAISE_APPLICATION_ERROR(-20054,'invalid operation');
+--   when UTL_FILE.READ_ERROR then
+--      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
+--      commit;
+--      UTL_FILE.FCLOSE(file_handle);
+--      RAISE_APPLICATION_ERROR(-20055,'read error');
+--   when UTL_FILE.WRITE_ERROR then
+--      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
+--      commit;
+--      UTL_FILE.FCLOSE(file_handle);
+--      RAISE_APPLICATION_ERROR(-20056,'write error');
+--
+--   when OTHERS then
+--      curr_line:='END DAILY JOBS WITH ERROR: '||date_today;
+--      UTL_FILE.PUTF(file_handle,'\n%s\n\n',curr_line);
+--      curr_line:='------------------------------------'||
+--	 '-------------------------------------------';
+--      UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
+--      UTL_FILE.FCLOSE(file_handle);
+--      P_error_code:=SQLCODE;
+--      P_error_message:=SQLERRM;
+--      insert into pcs.error_log
+--	 (error_code,error_message,proc_name,code_area,datestamp,sys_user)
+--      values
+--	 (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID);
+--
+--      update job_control set job_status=-1 where job_descr='JOB_STATUS';
+--      insert into pcs.daily_job_record (j_rec_number) values (j_rec_num);
+--      curr_line:='WARNING! NIGHT JOB FAILURE, '||P_code_area;
+--      if (job_indicator=DAILY) then
+--	 curr_line:=curr_line||' [daily]';
+--      elsif (job_indicator=WEEKLY) then
+--	 curr_line:=curr_line||' [weekly]';
+--      elsif (job_indicator=EOM) then
+--	 curr_line:=curr_line||' [monthly]';
+--      elsif (job_indicator=MID_MONTH) then
+--	 curr_line:=curr_line||' [mid_month]';
+--      elsif (job_indicator=SUMMARIES) then
+--	 curr_line:=curr_line||' [summaries]';
+--
+--      elsif (job_indicator=DATA_PURGE) then
+--	 curr_line:=curr_line||' [data_purge]';
+--      elsif (job_indicator=SPECIAL) then
+--	 curr_line:=curr_line||' [special]';
+--      end if;
+--      update business_info set
+--	 current_message=curr_line,
+--	 message_foreground=-65536,
+--	 message_background=-16777216;
+--      commit;
+--      RAISE;
 
 end;
+/
