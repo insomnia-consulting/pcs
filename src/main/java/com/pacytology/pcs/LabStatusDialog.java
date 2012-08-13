@@ -9,8 +9,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
+import java.io.OutputStream;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 
 public class LabStatusDialog extends javax.swing.JDialog
 {
@@ -250,7 +252,8 @@ public class LabStatusDialog extends javax.swing.JDialog
 	
 	void printReport()
 	{
-	    Utils.genericPrint(Utils.ROOT_DIR,fileName,false);
+		OutputStream out = Export.getFile(Utils.SERVER_DIR+fileName);
+	    Utils.genericPrint(out.toString(), new MessageFormat(""), new MessageFormat(""));
 	}
 
 	void LabStatusDialog_keyPressed(java.awt.event.KeyEvent event)

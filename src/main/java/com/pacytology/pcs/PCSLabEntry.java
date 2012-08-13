@@ -24,11 +24,13 @@ import java.awt.PrintJob;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -1706,7 +1708,7 @@ public class PCSLabEntry extends PcsFrame {
 			String printString = results.getSubString(1, (int)results.length());
 			printString = printString.replaceAll("\\\\n", "\n");
 			if (printString.length() > 0) {
-				Utils.genericPrint(printString);
+				Utils.genericPrint(printString, new MessageFormat(""), new MessageFormat(""));
 			}
 
 		} catch (Exception e) {
@@ -1821,8 +1823,15 @@ public class PCSLabEntry extends PcsFrame {
 	void noResponseClaimItem_actionPerformed(java.awt.event.ActionEvent event) {
 		printerCodes.removeAllElements();
 		printerCodes.addElement(Utils.ELITE);
-		(new ReportViewer("claim.rpt", "No Response Claims", printerCodes))
-				.setVisible(true);
+		OutputStream out = Export.getFile(Utils.SERVER_DIR + "claim.rpt");
+    	if (out != null && out.toString().length() > 0) {
+			ReportViewer viewer = ReportViewer.create(out.toString(), "No Response Claims");
+			viewer.setVisible(true);
+        }
+		else {
+        	Utils.createErrMsg("Cannot locate report: claim.rpt"); 
+		}
+
 	}
 
 	void ackItem_actionPerformed(java.awt.event.ActionEvent event) {
@@ -2486,11 +2495,11 @@ public class PCSLabEntry extends PcsFrame {
 	}
 
 	void invSummItemFPP_actionPerformed(java.awt.event.ActionEvent event) {
-		printMonthlyReport("fp1");
+		printMonthlyReport("FP1");
 	}
 
 	void invSummItemBCCSP_actionPerformed(java.awt.event.ActionEvent event) {
-		printMonthlyReport("bc1");
+		printMonthlyReport("BC1");
 	}
 
 	void hpvItem_actionPerformed(java.awt.event.ActionEvent event) {

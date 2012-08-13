@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import com.pacytology.pcs.ui.Square;
+
+import java.text.MessageFormat;
 import java.util.Vector;
 
 public class ReportViewer extends javax.swing.JFrame
@@ -265,7 +267,7 @@ public class ReportViewer extends javax.swing.JFrame
 		else if (event.getKeyCode()==event.VK_F1) {
 		    if (verifyPrinter()) {
 		        this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-		        Utils.genericPrint(dir,fileName,false,printerCodes);
+		        Utils.genericPrint(this.reportText.getText(), new MessageFormat(""), new MessageFormat(""));
 		        this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		    }
 		}

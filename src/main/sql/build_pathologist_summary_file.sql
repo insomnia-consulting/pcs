@@ -9,15 +9,14 @@ as
    P_proc_name varchar2(32);
    P_code_area varchar2(32);
 
-   /************************************************************************************/
-   /* CONSTANTS 								       */
+   
+   -- CONSTANTS
 
 
 
-   /************************************************************************************/
-   /* These constants refer to a particular stat_code in the
-      screening_stats_work table.
-   */
+   
+   -- These constants refer to a particular stat_code in the
+   --    screening_stats_work table.
    TOTALS constant number := -99;
    SGL_SLIDE constant number := -98;
    DBL_SLIDE constant number := -97;
@@ -26,56 +25,51 @@ as
    QC_CASE constant number := 102;
 
 
-   /* These constants refer to the type of preparation that was used
-      for a test; it is stored in lab_requisitions.preparation and is
-      a numeric value the same that is assigned here. There is also a
-      table pcs.preparations that holds the general information about
-      the various preparations that are used.
-   */
+   -- These constants refer to the type of preparation that was used
+   --    for a test; it is stored in lab_requisitions.preparation and is
+   --    a numeric value the same that is assigned here. There is also a
+   --    table pcs.preparations that holds the general information about
+   --    the various preparations that are used.
    CONVENTIONAL constant number := 1;
    THIN_PREP constant number := 2;
    NON_GYN constant number := 4;
    IMAGED constant number := 7;
 
-   /* These constants correspond to the field lab_results.pap_class which is
-      a numeric value. This is a category that test results fall under, and
+   -- These constants correspond to the field lab_results.pap_class which is
+   --    a numeric value. This is a category that test results fall under, and
 
-      there are a total of 15 different ones that are listed in the table
-      pcs.pap_classes; in addition, in this table, there are a few others
-      that are not part of the actual pap_class set, but are used mostly
-      for purposes of consistency.
-   */
+   --    there are a total of 15 different ones that are listed in the table
+   --    pcs.pap_classes; in addition, in this table, there are a few others
+   --    that are not part of the actual pap_class set, but are used mostly
+   --    for purposes of consistency.
    ORGANISMS constant number := 3;
    REACTIVE_CELL_CHNG constant number := 4;
    INFLAMMATION constant number := 12;
    UNSATISFACTORY constant number := 1;
    OTHER_NEOPLASM_TYPE constant number := 15;
 
-   /* These constants refer to a specific area of the report, and correspond
-      to the field screening_stats_work.staff_code; prior to this version the
+   -- These constants refer to a specific area of the report, and correspond
+   --    to the field screening_stats_work.staff_code; prior to this version the
 
-      staff_code field indicated a specific staff member, but with this version
-      the screening_stats_work table is not longer populated with the entire
-      data set before the report is output. The staff_code field is being reused,
-      or has been overloaded, for this different use.
-   */
+   --    staff_code field indicated a specific staff member, but with this version
+   --    the screening_stats_work table is not longer populated with the entire
+   --    data set before the report is output. The staff_code field is being reused,
+   --    or has been overloaded, for this different use.
    DAILY_TOTALS constant number := -200;
    SLIDES_SCREENED constant number := -999;
    SPECIMEN_ADEQUACY constant number := -100;
    NEXT_PATH constant number := 0;
 
-   /* Printing Constants
-   */
+   -- Printing Constants
    MARGIN constant varchar2(16) := '	      ';
 
    INDENT constant varchar2(8) := '   ';
    LAB_NAME constant varchar2(128) := RPAD('PENNSYLVANIA CYTOLOGY SERVICES',90);
    REPT_NAME constant varchar2(128) := RPAD(
       'SUMMARY OF SLIDES SCREENED BY PATHOLOGIST',108);
-   /************************************************************************************/
+   
 
-   /* Accumulator Values and Percentage holders
-   */
+   -- Accumulator Values and Percentage holders
    num_conv number;
    num_tp number;
    num_img number;
@@ -89,21 +83,20 @@ as
    begin_date date;
    end_date date;
 
-   /* This cursor is used to retrieve each pathologist
-      who performed work in the reporting period of the report.
-      Note that this date is based on the year and month when
-      the results were actually entered. Thus, say for example
-      the report is being done for SEP of 2011. The value of
-      S_month will be 201109. However, for results entered in
+   -- This cursor is used to retrieve each pathologist
+   --    who performed work in the reporting period of the report.
+   --    Note that this date is based on the year and month when
+   --    the results were actually entered. Thus, say for example
+   --    the report is being done for SEP of 2011. The value of
+   --    S_month will be 201109. However, for results entered in
 
-      SEP of 2011, there could have been some that had a value
-      for the field lab_results.lab_completed that was not in
-      SEP of 2011. For example, some results are entered on the
-      1st day of the month. Some of these could be for test
-      that were completed on the last day of AUG. For this reason,
-      the daily totals section of the report can include dates
-      that are not in the actual reporting month.
-   */
+   --    SEP of 2011, there could have been some that had a value
+   --    for the field lab_results.lab_completed that was not in
+   --    SEP of 2011. For example, some results are entered on the
+   --    1st day of the month. Some of these could be for test
+   --    that were completed on the last day of AUG. For this reason,
+   --    the daily totals section of the report can include dates
+   --    that are not in the actual reporting month.
    cursor pathologist_list is
       SELECT DISTINCT lr.pathologist,p.pathologist
       FROM pcs.lab_results lr, pcs.pathologists p
@@ -117,11 +110,10 @@ as
    S_lname varchar2(32);
    S_fname varchar2(32);
 
-   /* This cursor is used to get totals for each individual pap_class
-      for a specific pathologist. Each of these different categories,
-      of pap classes, is listed on the report, except as noted prior
-      all that are an 8 are added in with ones that are 7.
-   */
+   -- This cursor is used to get totals for each individual pap_class
+   --    for a specific pathologist. Each of these different categories,
+   --    of pap classes, is listed on the report, except as noted prior
+   --    all that are an 8 are added in with ones that are 7.
    cursor pclass_list is
 
       SELECT pap_class
@@ -130,9 +122,8 @@ as
       AND pap_class<=OTHER_NEOPLASM_TYPE;
    p_code number;
 
-   /* This cursor is used to get totals for each bethesda code that
-      is in the S category (specimen adequacy) for a specific pathologist.
-   */
+    -- This cursor is used to get totals for each bethesda code that
+    --   is in the S category (specimen adequacy) for a specific pathologist.
    cursor adequacy_list is
       SELECT stat_code,RTRIM(LTRIM(TO_CHAR(stat_code)))
       FROM pcs.screening_stats_work
@@ -142,11 +133,10 @@ as
    b_code varchar2(4);
    s_code number;
 
-   /* This cursor is used get the total number of slides that were screened
-      by a particular pathologist. As noted prior (see comment for pathologist_list
-      cursor), there may be dates reported in the daily total list that
-      are not in the year and month of the reporting period of the report.
-   */
+   -- This cursor is used get the total number of slides that were screened
+   --    by a particular pathologist. As noted prior (see comment for pathologist_list
+   --    cursor), there may be dates reported in the daily total list that
+   --    are not in the year and month of the reporting period of the report.
    cursor daily_total is
       SELECT date_completed, COUNT(date_completed)
       FROM pcs.lab_results
@@ -164,13 +154,12 @@ as
    col_ptr number;
    sort_num number;
 
-   /* This cursor is used to retrieve all of the data in the table
+   -- This cursor is used to retrieve all of the data in the table
 
-      pcs.screening_stats_work; with prior versions of this program
-      that table held the data for the entire report. With this version
-      the table only holds the data for the current tech whose info is
-      being output to the report file.
-   */
+   --    pcs.screening_stats_work; with prior versions of this program
+   --    that table held the data for the entire report. With this version
+   --    the table only holds the data for the current tech whose info is
+   --    being output to the report file.
    cursor stat_list is
       SELECT * FROM pcs.screening_stats_work
       ORDER by reporting_sort;
@@ -178,16 +167,14 @@ as
    curr_mode number;
    prior_mode number;
 
-   /* Variables used for output file
+   -- Variables used for output file
 
-   */
    S_file_name varchar2(12);
    dir_name varchar2(128);
    last_date date;
    file_handle UTL_FILE.FILE_TYPE;
 
-   /* Formatting, couting, and misc. variables
-   */
+   -- Formatting, couting, and misc. variables
    header_01 varchar2(256);
    header_02 varchar2(256);
    header_03 varchar2(256);
@@ -209,8 +196,7 @@ begin
    P_code_area:='PREP';
 
 
-   /* Date ranges for reporting period
-   */
+   -- Date ranges for reporting period
    begin_date:=TO_DATE(TO_CHAR(S_month),'YYYYMM');
    end_date:=LAST_DAY(TO_DATE(TO_CHAR(S_month),'YYYYMM'))+1;
 
@@ -225,24 +211,22 @@ begin
       RTRIM(LTRIM(TO_CHAR(last_date,'YYYY')));
    header_01:=MARGIN||LAB_NAME||cbuf1;
 
-   /************************************************************************************/
-   /* THE ASSUMPTION IS MADE THAT TABLE SCREEN_STATS_WORK HAS BEEN INITIALIZED	       */
-   /************************************************************************************/
+   
+   -- THE ASSUMPTION IS MADE THAT TABLE SCREEN_STATS_WORK HAS BEEN INITIALIZED
+   
    open pathologist_list;
    loop
       fetch pathologist_list into S_pathologist_initials,S_pathologist;
       exit when pathologist_list%NOTFOUND;
-      /*
-	 Initialize accumulating fields to zero for current pathologist
-      */
+      
+	 -- Initialize accumulating fields to zero for current pathologist
 
       UPDATE pcs.screening_stats_work SET
 	 month_total=0,month_thin=0,month_conv=0,month_img=0;
-      /*
-	 Retrieve total number of tests screened for each day completed.
-	 The temp_table is used to store the text value of the date and
-	 corresponding number of tests that were screened.
-      */
+      
+	 -- Retrieve total number of tests screened for each day completed.
+	 -- The temp_table is used to store the text value of the date and
+	 -- corresponding number of tests that were screened.
       P_code_area:='DAILY TOTAL: '||S_pathologist_initials;
       DELETE FROM pcs.temp_table;
       DELETE FROM pcs.screening_stats_work
@@ -261,18 +245,17 @@ begin
       end loop;
       close daily_total;
       commit ; 
-      /* This extra line is added for the times when there is an odd number of
-	 total days, making it even.  Keep in mind that upon exit of the cursor,
-	 the value of row_num will be one more than it actually is; hence an even
+      -- This extra line is added for the times when there is an odd number of
+      -- 	 total days, making it even.  Keep in mind that upon exit of the cursor,
+      -- 	 the value of row_num will be one more than it actually is; hence an even
 
-	 value indicates an odd number of rows, and an odd value indicates an
-	 even number of rows. In the first case we set num_ttl to the value of
-	 row_num because after adding the "dummy" row the total number of rows
-	 is equal to the value of row_num. In the second case, that is row_num
-	 is an odd number and there is an even number of rows, we set num_ttl
-	 to row_num-1, subtracting one to compensate for row_num being one greater
-	 than the actual number of rows.
-      */
+      -- 	 value indicates an odd number of rows, and an odd value indicates an
+      -- 	 even number of rows. In the first case we set num_ttl to the value of
+      -- 	 row_num because after adding the "dummy" row the total number of rows
+      -- 	 is equal to the value of row_num. In the second case, that is row_num
+      -- 	 is an odd number and there is an even number of rows, we set num_ttl
+      -- 	 to row_num-1, subtracting one to compensate for row_num being one greater
+      -- 	 than the actual number of rows.
       P_code_area:='FORMAT DAILY TOTAL: '||S_pathologist_initials;
       if (MOD(row_num,2)=0) then
 	 INSERT INTO pcs.temp_table
@@ -282,10 +265,9 @@ begin
       else
 	 num_ttl:=row_num-1;
       end if;
-      /* If there are less than 11 daily totals to report, then output all of the
-	 data in one column; otherwise use two columns. The variable col_ptr is used
-	 to keep track of which row_id in the temp table to use for the second column.
-      */
+      -- If there are less than 11 daily totals to report, then output all of the
+      -- 	 data in one column; otherwise use two columns. The variable col_ptr is used
+      -- 	 to keep track of which row_id in the temp table to use for the second column.
       if (num_ttl<11) then
 	 num_daily_ttls:=num_ttl;
 	 num_columns:=1;
@@ -315,15 +297,14 @@ begin
 	 sort_num:=sort_num+1;
       end loop;
       commit ; 
-      /*
-	 Get accumulated values for TOTALS
-	 Note that the lab_requisitions.preparation NON_GYN is included with the
-	 preparation THIN_PREP; this is probably to compensate for the fact that
-	 a NON_GYN type of test is indicated by both lab_requisitions.preparation
-	 and lab_results.pap_class (the value of the NON_GYN preparation is 4,
+      
+	 -- Get accumulated values for TOTALS
+	 -- Note that the lab_requisitions.preparation NON_GYN is included with the
+	 -- preparation THIN_PREP; this is probably to compensate for the fact that
+	 -- a NON_GYN type of test is indicated by both lab_requisitions.preparation
+	 -- and lab_results.pap_class (the value of the NON_GYN preparation is 4,
 
-	 and the value of the NON_GYN pap_class is 10).
-      */
+	 -- and the value of the NON_GYN pap_class is 10).
       P_code_area:='TOTALS: '||S_pathologist_initials;
       SELECT
 	 NVL(SUM(DECODE(A.preparation,CONVENTIONAL,1,0)),0),
@@ -345,9 +326,8 @@ begin
 	 month_total=num_ttl
       WHERE stat_code=TOTALS;
 
-      /*
-	 Get accumlated values for SINGLE SLIDE CASES
-      */
+      
+	 -- Get accumlated values for SINGLE SLIDE CASES
       P_code_area:='SGL SLIDE: '||S_pathologist_initials;
 
       SELECT
@@ -371,9 +351,8 @@ begin
 	 month_total=num_ttl
       WHERE stat_code=SGL_SLIDE;
 
-      /*
-	 Get accumlated values for DOUBLE SLIDE CASES
-      */
+      
+	 -- Get accumlated values for DOUBLE SLIDE CASES
       P_code_area:='DBL SLIDE: '||S_pathologist_initials;
       SELECT
 	 NVL(SUM(DECODE(A.preparation,CONVENTIONAL,1,0)),0),
@@ -397,9 +376,8 @@ begin
 	 month_total=num_ttl
       WHERE stat_code=DBL_SLIDE;
 
-      /*
-	 Get accumlated values for each different result category (pap_class)
-      */
+      
+	 -- Get accumlated values for each different result category (pap_class)
       open pclass_list;
       loop
 	 fetch pclass_list into p_code;
@@ -430,13 +408,12 @@ begin
       end loop;
       close pclass_list;
       commit ; 
-      /*
-	 Get accumulated values for SATISFACTORY WITH QUALIFIERS
-	 These are tests that are tagged satisfactory for observation
-	 but limited by some factor. The field lab_results.limited
+      
+	 -- Get accumulated values for SATISFACTORY WITH QUALIFIERS
+	 -- These are tests that are tagged satisfactory for observation
+	 -- but limited by some factor. The field lab_results.limited
 
-	 is either 0 or 1; if it is 1, then this case applies.
-      */
+	 -- is either 0 or 1; if it is 1, then this case applies.
       P_code_area:='LIMITED: '||S_pathologist_initials;
       SELECT
 	 NVL(SUM(DECODE(A.preparation,CONVENTIONAL,1,0)),0),
@@ -459,9 +436,8 @@ begin
 	 month_total=num_ttl
       WHERE stat_code=LIMITED;
 
-      /*
-	 Get accumulated values for PATHOLOGIST CASES
-      */
+      
+	 -- Get accumulated values for PATHOLOGIST CASES
 
       P_code_area:='PATH: '||S_pathologist_initials;
       SELECT
@@ -485,9 +461,8 @@ begin
 	 month_total=num_ttl
       WHERE stat_code=PATH_CASE;
 
-      /*
-	 Get accumulated values for QUALITY CONTROL CASES
-      */
+      
+	 -- Get accumulated values for QUALITY CONTROL CASES
       P_code_area:='QC: '||S_pathologist_initials;
       SELECT
 
@@ -511,24 +486,18 @@ begin
 	 month_total=num_ttl
       WHERE stat_code=QC_CASE;
 
-   /************************************************************************************/
 
-   /************************************************************************************/
-   /* Get Pathologist totals for specimen adequacy breakdown			       */
+   -- Get Pathologist totals for specimen adequacy breakdown
 
-
-   /************************************************************************************/
-
-      /* The field stat_code.screening_stats_work corresponds to the Bethesda Code for
-	 results codes that are active and of category S in pcs.bethesda_codes; note that
-	 this is a numeric representation as, while most Bethesda Codes are numeric, some
-	 contain a letter, hence the field bethesda_code.bethesda_codes is a varchar2(4).
-	 This comment is included in case any active S codes were ever added to the table
-	 that contained a letter, and the programmer were going nuts trying to figure out
-	 what the problem was. Also note that in retrieving data for this section, if the
-	 was either QC or Pathologist cases, then the results are ignored because they
-	 do not count.
-      */
+   --    The field stat_code.screening_stats_work corresponds to the Bethesda Code for
+   -- 	 results codes that are active and of category S in pcs.bethesda_codes; note that
+   -- 	 this is a numeric representation as, while most Bethesda Codes are numeric, some
+   -- 	 contain a letter, hence the field bethesda_code.bethesda_codes is a varchar2(4).
+   -- 	 This comment is included in case any active S codes were ever added to the table
+   -- 	 that contained a letter, and the programmer were going nuts trying to figure out
+   -- 	 what the problem was. Also note that in retrieving data for this section, if the
+   -- 	 was either QC or Pathologist cases, then the results are ignored because they
+   -- 	 do not count.
       open adequacy_list;
       loop
 	 fetch adequacy_list into s_code,b_code;
@@ -557,12 +526,11 @@ begin
 	    month_total=num_ttl
 	 WHERE stat_code=s_code;
 	
-   /************************************************************************************/
-   /* All data has been retrieved for current pathologist; output data to file	       */
-   /************************************************************************************/
+   
+   -- All data has been retrieved for current pathologist; output data to file
+   
 
-      /* Prepare variables for printing
-      */
+   --    Prepare variables for printing
       P_code_area:='PRINT HEADER: '||S_pathologist_initials;
       header_02:=MARGIN||LPAD('PATHOLOGIST TOTALS',65)||LPAD('LAB TOTALS',38);
       cbuf1:='---------------------------------------';
@@ -578,7 +546,7 @@ begin
       end loop;
       close adequacy_list;
       commit ; 
-   /************************************************************************************/
+
       open stat_list;
       loop
 	 fetch stat_list into stat_fields;
@@ -601,18 +569,16 @@ begin
 	 else
 	    lab_pcnt:=0;
 	 end if;
-	 /* The outer loop parses through all of the techs who have done work
-	    in the month and year S_month (Reporting Period). With each pass
+	 -- The outer loop parses through all of the techs who have done work
+	 --    in the month and year S_month (Reporting Period). With each pass
 
-	    of this loop prior_mode is set to NEXT_TEXT, thus when that is
-	    the prior mode, we know we are the start of a new section of the
-	    report.
-	 */
+	 --    of this loop prior_mode is set to NEXT_TEXT, thus when that is
+	 --    the prior mode, we know we are the start of a new section of the
+	 --    report.
 	 if (prior_mode=NEXT_PATH) then
-	    /* If we are not on the first page of the report, then advance to the
-	       next page (page 1 does not need to advance page because it is the
-	       beginning of the file.
-	    */
+	    -- If we are not on the first page of the report, then advance to the
+	    --    next page (page 1 does not need to advance page because it is the
+	    --    beginning of the file.
 	    P_code_area:='NEXT_PATH: '||S_pathologist_initials;
 	    if (curr_page>0) then
 	       UTL_FILE.PUT(file_handle,CHR(12));
@@ -630,11 +596,10 @@ begin
 	    UTL_FILE.PUTF(file_handle,'%s\n\n',curr_line);
 	 end if;
 	 if (curr_mode=DAILY_TOTALS) then
-	    /* A variation between curr_mode and prior_mode would signify this is the
+	    -- A variation between curr_mode and prior_mode would signify this is the
 
-	       first occurence of a new section of the report, and hence there may be
-	       particular additional items to output.
-	    */
+	    --    first occurence of a new section of the report, and hence there may be
+	    --    particular additional items to output.
 	    P_code_area:='PRINT DAILY_TOTALS: '||S_pathologist_initials;
 	    if (curr_mode<>prior_mode) then
 	       curr_line:=MARGIN||'DAILY TOTALS:';
@@ -644,11 +609,10 @@ begin
 	    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	 end if;
 	 if (curr_mode=SLIDES_SCREENED) then
-	    /* A variation between curr_mode and prior_mode would signify this is the
+	    -- A variation between curr_mode and prior_mode would signify this is the
 
-	       first occurence of a new section of the report, and hence there may be
-	       particular additional items to output.
-	    */
+	    --    first occurence of a new section of the report, and hence there may be
+	    --    particular additional items to output.
 	    P_code_area:='PRINT SLIDES_SCREENED'||S_pathologist_initials||','||
 	       TO_CHAR(stat_fields.stat_code,'9999');
 	    if (curr_mode<>prior_mode) then
@@ -664,11 +628,10 @@ begin
 	       curr_line:=header_03;
 	       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	    end if;
-	    /* The description for these three particular test categories
-	       must be indented on the report. Constants based on field
-	       stat_code.screening_stats_work which is equal to the corresponding
-	       value pap_classes.pap_class.
-	    */
+	    -- The description for these three particular test categories
+	    --    must be indented on the report. Constants based on field
+	    --    stat_code.screening_stats_work which is equal to the corresponding
+	    --    value pap_classes.pap_class.
 	    if (stat_fields.stat_code in (ORGANISMS,REACTIVE_CELL_CHNG,INFLAMMATION)) then
 	       curr_line:=MARGIN||INDENT||RPAD(stat_fields.stat_code_descr,31);
 	    else
@@ -693,17 +656,15 @@ begin
 	    end if;
 	 end if;
 	 if (curr_mode=SPECIMEN_ADEQUACY) then
-	    /* A variation between curr_mode and prior_mode would signify this is the
-	       first occurence of a new section of the report, and hence there may be
-	       particular additional items to output.
-	    */
+	    -- A variation between curr_mode and prior_mode would signify this is the
+	    --    first occurence of a new section of the report, and hence there may be
+	    --    particular additional items to output.
 	    P_code_area:='PRINT ADEQUACY: '||S_pathologist_initials||','||
 	       TO_CHAR(stat_fields.stat_code,'9999');
 	    if (curr_mode<>prior_mode) then
-	       /* We can assume an advance of page every time since this is
+	       -- We can assume an advance of page every time since this is
 
-		  always the second section of the report for any staff member
-	       */
+	       -- 	  always the second section of the report for any staff member
 	       UTL_FILE.PUT(file_handle,CHR(12));
 	       curr_page:=curr_page+1;
 	       curr_line:=header_01;
@@ -741,17 +702,16 @@ begin
 	       LPAD(TO_CHAR(stat_fields.lab_total,'99999'),7)||
 	       LPAD(TO_CHAR(lab_pcnt,'990.99'),10)||' %';
 	    cbuf1:=stat_fields.stat_code_descr;
-	    /* The adequacy breakdown, or Specimen Adequacy refers to a particular
-	       of the Bethesda Code (there are four, other three are: description,
+	    -- The adequacy breakdown, or Specimen Adequacy refers to a particular
+	    --    of the Bethesda Code (there are four, other three are: description,
 
-	       and remarks). The stat_code_descr in this section corresponds to the exact
-	       wording in bethesda_codes.description for all category S codes. Some of
-	       can be quite lengthy, hence; this section of code is used to format the
-	       descriptions on the report (these is a minor exception, a number of the S
-	       begin with or include some of the exact wording; with these codes this
-	       wording is removed for reporting purposes (see
-	       initialize_screening_stats_table.sql).
-	    */
+	    --    and remarks). The stat_code_descr in this section corresponds to the exact
+	    --    wording in bethesda_codes.description for all category S codes. Some of
+	    --    can be quite lengthy, hence; this section of code is used to format the
+	    --    descriptions on the report (these is a minor exception, a number of the S
+	    --    begin with or include some of the exact wording; with these codes this
+	    --    wording is removed for reporting purposes (see
+	    --    initialize_screening_stats_table.sql).
 	    if (LENGTH(cbuf1)>33) then
 	       cbuf2:=cbuf1;
 	       end_ndx:=0;
@@ -782,10 +742,9 @@ begin
 		  curr_line:=MARGIN||cbuf2;
 		  UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 	       end if;
-	    /* This is the case where the total wording of the description will
-	       fit in the available space on the paper, and will therefore only
-	       take up one line of the report.
-	    */
+	    -- This is the case where the total wording of the description will
+	    --    fit in the available space on the paper, and will therefore only
+	    --    take up one line of the report.
 
 	    else
 	       curr_line:=MARGIN||RPAD(cbuf1,34)||cbuf3;
@@ -798,7 +757,7 @@ begin
    end loop;
    close pathologist_list;
    commit;
-   /************************************************************************************/
+
 
    UTL_FILE.PUT(file_handle,CHR(12));
 
@@ -835,4 +794,4 @@ exception
       RAISE;
 
 end;
-/
+\

@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.sql.*;
 import java.util.Vector;
 import java.io.File;
+import java.io.OutputStream;
 import java.awt.event.KeyEvent;
 
 public class CommissionDialog extends javax.swing.JDialog
@@ -214,18 +215,17 @@ public class CommissionDialog extends javax.swing.JDialog
 	{
 	    if (practiceNumber.getText().equals("0")) fileName="ADPH.asm";
         else fileName=practiceNumber.getText()+".asm";
+	    
 	    formatInParams();
 	    generateReport();
 	    Vector printerCodes = new Vector();
 	    printerCodes.addElement(Utils.CONDENSED);
-        File f = new File(Utils.ROOT_DIR,fileName);
-        if (f.exists()) {
-            long fLen = f.length();
-            if (fLen>0) { 
-                (new ReportViewer(
-                    fileName,this.getTitle(),printerCodes)).setVisible(true);            
-                this.dispose();
-            }	    
+        OutputStream out = Export.getFile(Utils.SERVER_DIR+fileName);
+        
+        if (out != null && out.toString().length()>0) {
+            ReportViewer reportViewer = ReportViewer.create(out.toString(), this.getTitle());
+            reportViewer.setVisible(true);
+            this.dispose();
         }
 		else { 
 		    resetForm();

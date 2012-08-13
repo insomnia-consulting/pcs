@@ -50,21 +50,20 @@ as
 
    cursor db_space is
       select RPAD(SUBSTR(tablespace_name,1,20),22),
-	 LPAD(TO_CHAR(sum(bytes/(1024*1024)),'99990.00'),10)
+   	 LPAD(TO_CHAR(sum(bytes/(1024*1024) ),'99990.00'),10)
       from sys.dba_free_space group by tablespace_name;
-   t_name varchar2(32);
 
+   t_name varchar2(32);
    t_left varchar2(32);
 
 begin
 
    commit;
    dbms_output.put_line('Starting Daily Jobs');
-   /* open log file */
+   --   open log file
    file_handle:=UTL_FILE.FOPEN('REPORTS_DIR','dailyjob.log','a');
-      /* throughout program date_today records date and time and curr_line formats
-      message in log; used to track time it takes the various programs to run
-   */
+      -- throughout program date_today records date and time and curr_line formats
+      -- message in log; used to track time it takes the various programs to run
    select TO_CHAR(SysDate-1,'MM/DD/YYYY HH24:Mi:SS') into date_today from dual;
    select rtrim(to_char(SysDate,'DAY')) into day_of_week from dual;
    UTL_FILE.PUTF(file_handle,'%s\n',day_of_week);
@@ -73,63 +72,59 @@ begin
    
    set transaction use rollback segment pcs_rbs1;
 
-   /* indicates the which state the daily jobs program is in:
-      (0)  daily job program is currently running
-      (1)  last run of daily job program completed successfully
-      (-1) last run of daily job program ended in error
-   */
+   -- indicates the which state the daily jobs program is in:
+   --    (0)  daily job program is currently running
+   --    (1)  last run of daily job program completed successfully
+   --    (-1) last run of daily job program ended in error
    select job_status into job_prior from job_control where job_descr='JOB_STATUS';
-
+   
    if job_prior=(-1) then
-      /* an error will cause main application message to change the next day;
-	 hence the next night reset the message to the default message
-      */
+      -- an error will cause main application message to change the next day;
+      -- 	 hence the next night reset the message to the default message
       update business_info set
 	 current_message='HAVE A NICE DAY!',
 	 message_foreground=-1, message_background=-16777038;
    end if;
 
-   /* j_rec_num is the actual day the the daily job program runs;
-      this value is held in the table pcs.daily_job_record to indicate
-      the jobs ran for that day; this check ensures that the program
-      runs only once for each day
+   -- j_rec_num is the actual day the the daily job program runs;
+   --    this value is held in the table pcs.daily_job_record to indicate
+   --    the jobs ran for that day; this check ensures that the program
+   --    runs only once for each day
 
-   */
    select TO_NUMBER(TO_CHAR(SysDate,'YYYYMMDD')) into j_rec_num from dual;
    select count(*) into rcnt from pcs.daily_job_record
    where j_rec_number=j_rec_num;
    if (rcnt>0) then
+      dbms_output.put_line('Exiting daily_jobs.. it has already been run for today');
       goto exit_point;
    end if;
-
+   
    P_code_area:='HEADER';
 
-   /* if the jobs are set to not run for THIS day (3); or to not run at
-      all for any day (2) then exit
-   */
+   -- if the jobs are set to not run for THIS day (3); or to not run at
+   --    all for any day (2) then exit
    if (job_prior=2 or job_prior=3) then
 
       goto exit_point;
    end if;
-	dbms_output.put_line("Jobs are running for "|| date_today);
-   /* indicates daily jobs are now running; will block users from
-      getting into the system
-   */
+   dbms_output.put_line('Jobs are running for '|| date_today);
+   -- indicates daily jobs are now running; will block users from
+   --    getting into the system
    update pcs.job_control set job_status=0 where job_descr='JOB_STATUS';
    commit;
 
    P_proc_name:='DAILY_JOBS';
    P_code_area:='PREP';
 
-   /*****************************************************************************/
+   
 
-   /* TASKS THAT ARE RAN EVERY DAY						*/
-   /*****************************************************************************/
+   -- TASKS THAT ARE RAN EVERY DAY
+   
    job_indicator:=DAILY;
 
-   /* the day the job is running for (yesterday) */
+   -- the day the job is running for (yesterday)
    select TO_CHAR(SysDate-1,'YYYYMMDD') into S_day from dual;
-   /* current day and time */
+   -- current day and time
    select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
 
    P_code_area:='RECEIVE DATES';
@@ -160,23 +155,23 @@ begin
 
    P_code_area:='SPACE';
    curr_line:='DATABASE FREE SPACE: '||date_today;
-   UTL_FILE.PUTF(file_handle,'\n%s\n',curr_line);
+   UTL_FILE.PUTF(
+   file_handle,'\n%s\n',curr_line);
    open db_space;
    loop
       fetch db_space into t_name,t_left;
-
-      exit when db_space%NOTFOUND;
+          exit when db_space%NOTFOUND;
       curr_line:='   '||t_name||t_left;
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    end loop;
    close db_space;
    select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
-   /*****************************************************************************/
+   
 
 
-   /*****************************************************************************/
-   /* CREATE A DAILY REPORT ON TUE-SAT FOR MON-FRI				*/
-   /*****************************************************************************/
+   
+   -- CREATE A DAILY REPORT ON TUE-SAT FOR MON-FRI
+   
    if ((RTRIM(day_of_week)<>'SUNDAY') AND (RTRIM(day_of_week)<>'MONDAY')) then
 
       P_code_area:='DAILY REPT';
@@ -185,21 +180,21 @@ begin
       pcs.build_daily_report_file(S_day);
       select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
    end if;
-   /*****************************************************************************/
+   
 
-   /*****************************************************************************/
-   /* TASKS THAT ARE RAN ONLY ONCE PER WEEK					*/
-   /*****************************************************************************/
+   
+   -- TASKS THAT ARE RAN ONLY ONCE PER WEEK
+   
    if (RTRIM(day_of_week)='SUNDAY') then
+   	  dbms_output.put_line('Running Weekly jobs');
       job_indicator:=WEEKLY;
-
       P_code_area:='WEEKLY MAINT';
       curr_line:='***WEEKLY MAINTENANCE - ANALYZE SCHEMA********************';
       UTL_FILE.PUTF(file_handle,'\n%s\n',curr_line);
       select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
       curr_line:='BEGIN: '||date_today;
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-      DBMS_UTILITY.ANALYZE_SCHEMA('pcs','COMPUTE');
+      DBMS_UTILITY.ANALYZE_SCHEMA('PCS','COMPUTE');
       select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
       curr_line:='END:	 '||date_today;
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
@@ -212,17 +207,18 @@ begin
       select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
       curr_line:='BEGIN: '||date_today;
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
+      	dbms_output.put_line('Running process_no_response_claims');
       pcs.process_no_response_claims;
       select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
       curr_line:='END:	 '||date_today;
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    end if;
-   /*****************************************************************************/
+   
 
-   /*****************************************************************************/
+   
 
-   /* TASKS THAT ARE RAN FOR MID-MONTH BILLING					*/
-   /*****************************************************************************/
+   -- TASKS THAT ARE RAN FOR MID-MONTH BILLING
+   
    select job_status into mid_month_billing
    from pcs.job_control where job_descr='MID MONTH';
    if (mid_month_billing=1) then
@@ -249,13 +245,14 @@ begin
    end if;
 
 
-   /*****************************************************************************/
-   /* TASKS THAT ARE RAN ONLY ONCE PER MONTH					*/
-   /*****************************************************************************/
+   
+   -- TASKS THAT ARE RAN ONLY ONCE PER MONTH
+   
    this_date:=TO_NUMBER(TO_CHAR(SysDate,'YYYYMMDD'));
    run_EOM:=is_EOM(this_date);
    S_month:=0;
    if (run_EOM=1) then
+   	dbms_output.put_line('Running EOM Reports');
       job_indicator:=EOM;
       select job_status into S_month
       from pcs.job_control
@@ -311,6 +308,7 @@ begin
       P_code_area:='EOM.UNSATISFACTORY';
       curr_line:='UNSATISFACTORY PAP SMEARS: ';
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
+      	
       pcs.build_unsatisfactory_file(S_month);
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
       curr_line:=curr_line||procedure_begin||' to '||procedure_end;
@@ -383,6 +381,7 @@ begin
       P_code_area:='EOM.ADPH.INVOICE_SUMM';
       curr_line:='ADPH INVOICE SUMMARY FILE: ';
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
+      dbms_output.put_line('Running '||curr_line||'.');
       pcs.build_ADPH_invoice_summ_file(S_month,2);
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
       curr_line:=curr_line||procedure_begin||' to '||procedure_end;
@@ -520,9 +519,9 @@ begin
    P_code_area:='RECALCS';
    pcs.recalculate_month;
 
-   /*****************************************************************************/
-   /* PURGE OLD DATA								*/
-   /*****************************************************************************/
+   
+   -- PURGE OLD DATA
+   
    P_code_area:='PURGE';
    job_indicator:=DATA_PURGE;
    select job_status into min_lab_number
@@ -541,15 +540,14 @@ begin
    UTL_FILE.PUTF(file_handle,'\n%s\n',curr_line);
    curr_line:='CURRENT DOS PURGE DATE: ['||purge_date||']';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-   /*  If the purge date is Dec. 31 and the count of data to
+    -- If the purge date is Dec. 31 and the count of data to
 
-       purge is 0, then set the count to 1 to force the
-       data purge.
-       If the purge date is Jan. 1, then assume no DOS for
-       that date since holiday; set the count to 1 to force
-       the purge block so that the minimum lab number gets
-       reset to 1 for the next year.
-   */
+    --    purge is 0, then set the count to 1 to force the
+    --    data purge.
+    --    If the purge date is Jan. 1, then assume no DOS for
+    --    that date since holiday; set the count to 1 to force
+    --    the purge block so that the minimum lab number gets
+    --    reset to 1 for the next year.
    if (purge_MMDD='1231' AND purge_count=0) then
       purge_count:=1;
       curr_line:='DATA PURGE FORCED FOR DECEMBER 31,'||purge_YYYY;
@@ -567,11 +565,10 @@ begin
       curr_line:='OLD DATA LOCATED FOR DOS:  PURGE COUNT = ['||
 	 RTRIM(LTRIM(TO_CHAR(purge_count)))||']';
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-      /*  If the purge date is Dec. 31, then select the highest
-	  lab number for that year so that any stragglers
-	  are deleted for the end of that purge year.
+       -- If the purge date is Dec. 31, then select the highest
+       -- 	  lab number for that year so that any stragglers
+       -- 	  are deleted for the end of that purge year.
 
-      */
       if (purge_MMDD='1231') then
 	 tmp_num1:=TO_NUMBER(purge_YYYY||'999999');
 	 select MAX(lab_number) into max_lab_number
@@ -590,10 +587,9 @@ begin
       curr_line:='DATA PURGE UP TO DATE - NO ACTION TAKEN.';
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    end if;
-   /* Whether there is data to purge or not the procedure is called;
-      if no data is delete, then all the procedure does is updates
-      to next date to check in the control table.
-   */
+   -- Whether there is data to purge or not the procedure is called;
+   --    if no data is delete, then all the procedure does is updates
+   --    to next date to check in the control table.
    pcs.data_purge;
    if (purge_count>0) then
       select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
@@ -601,13 +597,13 @@ begin
 
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    end if;
-   /*****************************************************************************/
+   
 
 
-   /*****************************************************************************/
-   /* TASKS THAT ARE RAN ONLY IF A SPECIAL FLAG IS SET				*/
-   /* Code must be modified on an as needed basis				*/
-   /*****************************************************************************/
+   
+   -- TASKS THAT ARE RAN ONLY IF A SPECIAL FLAG IS SET
+   -- Code must be modified on an as needed basis
+   
    rcnt:=0;
    tmp_num1:=0;
    select job_status into rcnt from pcs.job_control where job_descr='SPECIAL';
@@ -620,7 +616,7 @@ begin
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
       update pcs.job_control set job_status=0 where job_descr='SPECIAL';
       commit;
-      /* INSERT CODE TO RUN HERE *************************************************/
+      -- INSERT CODE TO RUN HERE
       P_code_area:='SPECIAL.INIT_SCREENING_STATS1';
       curr_line:='INITIALIZE FOR CT' || chr(38) || 'PATH SUMMARIES JANUARY 2012: ';
       select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
@@ -702,19 +698,18 @@ begin
 
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 
-      /***************************************************************************/
+ 
       select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
       curr_line:='END SPECIAL: '||date_today;
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    end if;
 
-   /* Insert the current day job ran into record table that stops
-      daily_jobs from running more than once. After current day is
-      inserted into table, delete old values since they do not need
-      to be in table; in essence, this is a very simple table that
-      will only ever hold one or two rows.
+   -- Insert the current day job ran into record table that stops
+   --    daily_jobs from running more than once. After current day is
+   --    inserted into table, delete old values since they do not need
+   --    to be in table; in essence, this is a very simple table that
+   --    will only ever hold one or two rows.
 
-   */
    insert into pcs.daily_job_record (j_rec_number) values (j_rec_num);
    delete from pcs.daily_job_record where j_rec_number<j_rec_num;
 
@@ -853,4 +848,4 @@ begin
 --      RAISE;
 
 end;
-/
+\

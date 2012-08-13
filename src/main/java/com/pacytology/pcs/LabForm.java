@@ -34,6 +34,7 @@ import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -4904,7 +4905,7 @@ public class LabForm extends PcsFrame
         	Utils.createErrMsg("Cannot locate report: "+fileName); 
         }
 		else {
-			Utils.genericPrint(out.toString());
+			Utils.genericPrint(out.toString(), new MessageFormat(""), new MessageFormat(""));
 		}
 	}
 	

@@ -3,6 +3,7 @@ package com.pacytology.pcs;
 import java.awt.*;
 import javax.swing.*;
 import java.io.File;
+import java.io.OutputStream;
 import java.sql.*;
 import java.util.Vector;
 
@@ -122,13 +123,12 @@ public class YearSummaryDialog extends javax.swing.JDialog
 	            String title = "Doctor Summary by Year";
 	            String fName=stmtYear.getText()+practiceNumber.getText();
                 fName=fName+".sby";
-                File f = new File(Utils.ROOT_DIR,fName);
-                if (f.exists()) {
-                    long fLen = f.length();
-                    if (fLen>0) { 
-                        (new ReportViewer(fName,title,printerCodes)).setVisible(true);            
-                    }	    
-                }
+                OutputStream out = Export.getFile(Utils.SERVER_DIR + fName);
+                if (out.toString().length()>0) { 
+                	ReportViewer viewer = ReportViewer.create(out.toString(), "");
+                	viewer.setVisible(true);
+
+                }	    
 		        else (new ErrorDialog("Cannot locate report")).setVisible(true); 
 		        this.dispose();
             }

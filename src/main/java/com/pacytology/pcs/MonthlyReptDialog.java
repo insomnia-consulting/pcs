@@ -18,6 +18,7 @@ package com.pacytology.pcs;
 import java.awt.*;
 import javax.swing.*;
 import java.io.File;
+import java.io.OutputStream;
 import java.sql.*;
 import java.util.Vector;
 
@@ -233,19 +234,17 @@ public class MonthlyReptDialog extends javax.swing.JDialog
                     fName=month+stmtYear.getText()+"."+reptName;
                 else
                     fName=month+stmtYear.getText()+practiceNumber.getText()+"."+reptName;
-                String dir = "reports\\"+reptName+"\\";
-                File f = new File(Utils.ROOT_DIR,fName);
-                if (f.exists()) {
-                    long fLen = f.length();
-                    if (fLen>0) { 
-                        (new ReportViewer(
-                            fName,this.getTitle(),printerCodes)).setVisible(true);            
-                    }	    
+
+                
+                OutputStream out = Export.getFile(Utils.SERVER_DIR + fName);
+            	if (out != null && out.toString().length() > 0) {
+        			ReportViewer viewer = ReportViewer.create(out.toString(), this.getTitle());
+        			viewer.setVisible(true);
                 }
-                else {
-                        (new ReportViewer(
-                            fName,dir,this.getTitle(),printerCodes)).setVisible(true);            
-                }
+        		else {
+                	Utils.createErrMsg("Cannot locate report: "+fName); 
+        		}
+                
             }
             else stmtMonth.requestFocus();
         }

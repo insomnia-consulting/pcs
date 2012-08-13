@@ -51,7 +51,7 @@ public class PcsActionMap {
 	public void resetAction() {
 		PcsActionMap.this.parentFrame.resetActions();
 	}
-	public void queryAction() {
+	public void queryAction()  {
 		PcsActionMap.this.parentFrame.msgLabel.setText(null);
         if ( PcsActionMap.this.parentFrame.fKeys.isOn(FunctionKeyControl.F1) ) {
         	PcsActionMap.this.parentFrame.queryActions();

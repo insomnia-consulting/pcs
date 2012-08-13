@@ -1,5 +1,5 @@
 drop procedure hpv_pending
-/
+\
 
 CREATE OR REPLACE function hpv_pending
 return clob
@@ -88,5 +88,4 @@ exception
 
 
 end;
-/
-
+\

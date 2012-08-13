@@ -10,9 +10,8 @@ as
    P_proc_name varchar2(32);
    P_code_area varchar2(32);
 
-   /* Account variables
+   -- Account variables
 
-   */
    P_name varchar2(512);
    P_address1 varchar2(64);
    P_address2 varchar2(64);
@@ -24,9 +23,8 @@ as
    P_print_doctors char(1);
    P_print_hpv char(1);
 
-   /* Patient variables
+   -- Patient variables
 
-   */
    PT_lab_number number;
    PT_name varchar2(128);
    PT_DOS varchar2(16);
@@ -35,8 +33,7 @@ as
    PT_SSN varchar2(16);
    PT_DOB varchar2(16);
 
-   /* PAP Class and Result variables
-   */
+   -- PAP Class and Result variables
    PC_current number;
    PC_previous number;
 
@@ -49,23 +46,20 @@ as
    LR_no_ecc number;
    LR_code varchar2(4);
 
-   /* HPV variables
-   */
+   -- HPV variables
    HPV_sent char(1);
    HPV_results char(1);
 
    HPV_txt char(1);
 
-   /* PCS variables
-   */
+   -- PCS variables
    LAB_name varchar2(80);
    LAB_addr1 varchar2(80);
    LAB_addr2 varchar2(80);
    LAB_csz varchar2(80);
    LAB_phone varchar2(80);
 
-   /* Report and misc. variables
-   */
+   -- Report and misc. variables
    LINE_LENGTH constant number := 80;
 
    PAGE_LENGTH constant number := 60;
@@ -93,8 +87,7 @@ as
    t_date date;
    u_flag number;
 
-   /* Report style constants
-   */
+   -- Report style constants
 
    NO_PRINT constant number := 100;
    STANDARD constant number := 101;
@@ -105,8 +98,7 @@ as
    ADPH constant number := 301;
    ADPH_WITH_HPV constant number := 302;
 
-   /* File variables
-   */
+   -- File variables
    file_handle UTL_FILE.FILE_TYPE;
    directory_name varchar2(256);
 
@@ -176,8 +168,7 @@ begin
    P_proc_name:='BUILD_DOCTOR_SUMMARY';
    P_code_area:='PREP';
 
-   /* Initialize Lab heading variables
-   */
+   -- Initialize Lab heading variables
    LAB_name:='PENNSYLVANIA CYTOLOGY SERVICES';
 
    LAB_addr1:='SUITE 1700 PARKWAY BUILDING';
@@ -186,8 +177,7 @@ begin
    LAB_phone:='PHONE: 412-373-8300';
 
    P_code_area:='GET ACCT DATA';
-   /* Retrieve account data
-   */
+   -- Retrieve account data
    select name,address1,address2,city,
       state,SUBSTR(zip,1,5),practice_type,
       hpv_on_summary,print_doctors
@@ -198,8 +188,7 @@ begin
    P_csz:=P_city||', '||P_state||'  '||P_zip;
 
    P_code_area:='INIT REPT VARS';
-   /* Initialize report formatting variables
-   */
+   -- Initialize report formatting variables
    curr_page:=0;
    is_continued:=0;
    PAGE_txt:='PAGE ';
@@ -217,13 +206,12 @@ begin
    PERIOD_ENDING_txt:=PERIOD_ENDING_txt||char_buffer;
 
    P_code_area:='SET REPT STYLE';
-   /* Column data varies depending on the needs of the client. For
-      all intents and purposes this is controlled by options set
-      in the account profile. The exceptions are account 082
-      and ADPH accounts in which their special needs are
+   -- Column data varies depending on the needs of the client. For
+   --    all intents and purposes this is controlled by options set
+   --    in the account profile. The exceptions are account 082
+   --    and ADPH accounts in which their special needs are
 
-      hard-coded - unfortunately.
-   */
+   --    hard-coded - unfortunately.
    report_style:=NO_PRINT;
    if (S_practice=82) then
       report_style:=ACCOUNT_082;
@@ -266,9 +254,8 @@ begin
 
 
    P_code_area:='CALC MONTH TTLS';
-   /* Calculate monthly totals and store value
-      in tmp_num field of pap_class table.
-   */
+   -- Calculate monthly totals and store value
+   --    in tmp_num field of pap_class table.
    update pcs.pap_classes set tmp_num=0;
    open pap_class_list;
    loop
@@ -283,10 +270,9 @@ begin
    commit;
 
    P_code_area:='ABSORB PCLASS 0->10';
-   /* Assumption is made that any lab that
-      has an unknown pap_class is a non-gyn;
-      therefore 0 and 10 are combined.
-   */
+   -- Assumption is made that any lab that
+   --    has an unknown pap_class is a non-gyn;
+   --    therefore 0 and 10 are combined.
    select tmp_num into PC_count
    from pcs.pap_classes
    where pap_class=0;
@@ -312,20 +298,19 @@ begin
    commit;
 
    P_code_area:='OPEN FILE';
-   /* Open file for report.
-      Format for report name is <ACT><MM><C><YY>.file_extension;
-      as of this writing the file extension for this report
-      is ?sum.?
+   -- Open file for report.
+   --    Format for report name is <ACT><MM><C><YY>.file_extension;
+   --    as of this writing the file extension for this report
+   --    is ?sum.?
 
-      EXAMPLE: Suppose this report is being ran for
-      Account #567 for August, 2009. Then:
+   --    EXAMPLE: Suppose this report is being ran for
+   --    Account #567 for August, 2009. Then:
 
-	 <ACT> = 567
-	 <MM>  = 08
-	 <C>   = 2
-	 <YY>  = 09
-      so the file name would be:  56708209.sum
-   */
+   -- 	 <ACT> = 567
+   -- 	 <MM>  = 08
+   -- 	 <C>   = 2
+   -- 	 <YY>  = 09
+   --    so the file name would be:  56708209.sum
    directory_name:='REPORTS_DIR';
    file_extension:='.sum';
    file_name:=LTRIM(RTRIM(TO_CHAR(S_practice,'009')))||
@@ -337,10 +322,9 @@ begin
    file_handle:=UTL_FILE.FOPEN(directory_name,file_name,'w');
 
    P_code_area:='WRITE PG1 HEADING';
-   /* This is the first page heading.
-      It will take (14) lines; (13) if the account
-      does not use a two line address.
-   */
+   -- This is the first page heading.
+   --    It will take (14) lines; (13) if the account
+   --    does not use a two line address.
    curr_page:=1;
    line_num:=15;
    char_buffer:=LTRIM(RTRIM(TO_CHAR(curr_page)));
@@ -418,13 +402,12 @@ begin
       end if;
       if (PC_previous<>PC_current or is_continued=1) then
 
-	 /* Print category subheading.
-	    This normally uses (7) lines;
-	    if the is_continued flag is set it means that
-	    data in the current category is no two separate
-	    pages, and a CONT'D message is printed instead
-	    and the category subheading only takes (6) lines.
-	 */
+	 -- Print category subheading.
+	 --    This normally uses (7) lines;
+	 --    if the is_continued flag is set it means that
+	 --    data in the current category is no two separate
+	 --    pages, and a CONT'D message is printed instead
+	 --    and the category subheading only takes (6) lines.
 	 PC_previous:=PC_current;
 	 UTL_FILE.PUTF(file_handle,'%s\n\n',long_line);
 	 if (is_continued=1) then
@@ -721,4 +704,4 @@ exception
       RAISE;
 
 end;
-/
+\

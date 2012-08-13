@@ -20,6 +20,7 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.OutputStream;
 
 public class DailyReptDialog extends javax.swing.JDialog
 {
@@ -128,17 +129,14 @@ public class DailyReptDialog extends javax.swing.JDialog
         }
         else {
                 String fName = stmtYear.getText()+stmtMonth.getText()+stmtDay.getText()+".dwr";
-                String dir = "reports\\dwr\\";
-                File f = new File(Utils.ROOT_DIR,fName);
-                if (f.exists()) {
-                    long fLen = f.length();
-                    if (fLen>0) { 
-                        (new ReportViewer(fName,"Daily Summary Report")).setVisible(true);            
-                    }	    
+                OutputStream out = Export.getFile(Utils.SERVER_DIR + fName);
+                if (out != null && out.toString().length() > 0) {
+        			ReportViewer viewer = ReportViewer.create(out.toString(), "Daily Summary Report");
+        			viewer.setVisible(true);
                 }
-                else {
-                    (new ReportViewer(fName,dir,"Daily Summary Report",null)).setVisible(true);            
-                }
+        		else {
+                	Utils.createErrMsg("Cannot locate report: "+fName); 
+        		}
         }
 	}
 	

@@ -12,22 +12,30 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.OutputStream;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
+import javax.swing.JRootPane;
+
+import com.pacytology.pcs.actions.CollectionsFormActionMap;
+import com.pacytology.pcs.actions.LabFormActionMap;
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
-public class CollectionsForm extends javax.swing.JFrame
+public class CollectionsForm extends PcsFrame
 {
     /* SEND MODES (Oracle IN PARAM for pcs.build_collection_file */
-    final int PENDING = -2;
-    final int DEQUEUE = -1;
-    final int QUEUE = 0;
-    final int PRIOR_BATCH = 1;
-    final int NOTIFY = 2;
-    final int NOTIFIED = 3;
+    public final int PENDING = -2;
+    public final int DEQUEUE = -1;
+    public final int QUEUE = 0;
+    public final int PRIOR_BATCH = 1;
+    public final int NOTIFY = 2;
+    public final int NOTIFIED = 3;
     
-    protected int screenMode;
+    public int screenMode;
     private int rowCount = -1;
     private Vector accountData;
     private int[] accountList;
@@ -221,6 +229,35 @@ public class CollectionsForm extends javax.swing.JFrame
 		internalComment.addKeyListener(aSymKey);
 		batchNumber.addKeyListener(aSymKey);
 		//}}
+		actionMap = new CollectionsFormActionMap(this);
+		setupKeyPressMap();
+	}
+	
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+
+
+		rp.getActionMap().put("VK_DOWN", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				if (rowCount>0) increment();
+			}
+		});
+		rp.getActionMap().put("VK_UP", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				if (rowCount>0) decrement();
+			}
+		});
+		rp.getActionMap().put("F11", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				if (currNdx>=0 && currNdx<rowCount) {
+                    setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+                    (new BillingForm(
+                        dbLogin,accountList[currNdx])).setVisible(true);
+                    setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+                }
+			}
+		});
+		return rp;
 	}
 	
 	public CollectionsForm(int screenMode)
@@ -394,7 +431,7 @@ public class CollectionsForm extends javax.swing.JFrame
 	    }
 	}
 	
-	void closingActions()
+	public void closingActions()
 	{
 	    this.dispose();
 	}
@@ -543,65 +580,12 @@ public class CollectionsForm extends javax.swing.JFrame
 		public void keyPressed(java.awt.event.KeyEvent event)
 		{
 			Object object = event.getSource();
-			if (object == CollectionsForm.this)
-				CollectionsForm_keyPressed(event);
-			else if (object == batchNumber)
+			if (object == batchNumber)
 				batchNumber_keyPressed(event);
 		}
 	}
 
-	void CollectionsForm_keyPressed(java.awt.event.KeyEvent event)
-	{
-		int key = event.getKeyCode();
-		switch (key) {
-		    case KeyEvent.VK_F1:
-		        if (screenMode==QUEUE || screenMode==DEQUEUE) changeQueueStatus();
-		        break;
-		    case KeyEvent.VK_F2:
-		        if (screenMode==NOTIFY) changeQueueStatus();
-		        break;
-		    case KeyEvent.VK_F4:
-		        String rName=getReport();
-		        if (!Utils.isNull(rName))  {
-		            viewReport(rName);
-		            if (screenMode==QUEUE && !rName.equals("PENDING.col")) 
-		                closingActions();
-		        }
-	            break;
-		    case KeyEvent.VK_DOWN:
-		        if (rowCount>0) increment();
-		        break;
-		    case KeyEvent.VK_UP:
-		        if (rowCount>0) decrement();
-		        break;
-		    case KeyEvent.VK_F9:
-		        closingActions();
-		        break;
-		    case KeyEvent.VK_ESCAPE:
-		        resetForm();
-		        openingActions();
-		        break;
-		    case KeyEvent.VK_F3:
-		        if (internalComment.isEnabled()) {
-		            internalComment.setEnabled(false);
-		            msgLabel.requestFocus();
-		            updateComments();
-		        }
-		        else {
-		            internalComment.setEnabled(true);
-		            internalComment.requestFocus();
-		        }
-		        break;
-            case KeyEvent.VK_F11:
-                if (currNdx>=0 && currNdx<rowCount) {
-                    setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-                    (new BillingForm(
-                        dbLogin,accountList[currNdx])).setVisible(true);
-                    setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-                }
-                break;
-		}
-	}
+	
 	
 	public void changeQueueStatus()
 	{
@@ -765,15 +749,19 @@ public class CollectionsForm extends javax.swing.JFrame
 	    return (reportName);
 	}
 	
-	void viewReport(String reportName)
+	public void viewReport(String reportName)
 	{
 	    Vector printerCodes = new Vector();
 	    if (screenMode!=PRIOR_BATCH && screenMode!=QUEUE && !reportName.equals("PENDING.col"))
+	    {
 	        printerCodes.addElement(Utils.CONDENSED);
+	    } 
 	    else
+	    {
 	        printerCodes.addElement(Utils.EMPHASIZED);
-	    (new ReportViewer(
-	        reportName,"Collections Report",printerCodes)).setVisible(true);
+	    }
+	    OutputStream out = Export.getFile(Utils.SERVER_DIR + reportName);
+	    new ReportViewer(out.toString(), "Collections Report").setVisible(true);
 	}
 	
 	boolean verifyNewBatch()
@@ -786,6 +774,45 @@ public class CollectionsForm extends javax.swing.JFrame
 		            confirmQueue.QUESTION_MESSAGE);
         if (rv==confirmQueue.YES_OPTION) createNewBatch=true;
         return (createNewBatch);
+	}
+
+	@Override
+	public void queryActions() {
+		if (screenMode==QUEUE || screenMode==DEQUEUE) changeQueueStatus();
+		
+	}
+
+	@Override
+	public void addActions() {
+	    if (screenMode==NOTIFY) changeQueueStatus();		
+		
+	}
+
+	@Override
+	public void updateActions() {
+		if (internalComment.isEnabled()) {
+            internalComment.setEnabled(false);
+            msgLabel.requestFocus();
+            updateComments();
+        }
+        else {
+            internalComment.setEnabled(true);
+            internalComment.requestFocus();
+        }
+		
+	}
+
+	@Override
+	public void finalActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resetActions() {
+		resetForm();
+        openingActions();
+		
 	}
 	
 }

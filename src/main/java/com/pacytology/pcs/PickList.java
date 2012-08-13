@@ -24,8 +24,12 @@ import java.awt.event.KeyEvent;
 import javax.swing.*;
 
 import com.pacytology.pcs.ui.Square;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.text.MessageFormat;
 
 public class PickList extends javax.swing.JDialog
 {
@@ -130,7 +134,10 @@ public class PickList extends javax.swing.JDialog
 		rp.getActionMap().put("F1", new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
-				if (verifyPrinter()) genericPrint(true);	
+				if (verifyPrinter()) {
+					genericPrint(true);
+					
+				}
 			}
 		});
 		rp.getActionMap().put("F9", new AbstractAction() {
@@ -457,9 +464,9 @@ public class PickList extends javax.swing.JDialog
 	
 	void genericPrint(boolean forcePage)
 	{
-        File f;
-        FileOutputStream fOUT;
-        f = new File("c:\\","lpt1");
+
+        OutputStream fOUT;
+
         int maxLen = getMaxLine();
         if (maxLen>130) { if (!verifyPaper()) return; }
         int page = 1;
@@ -472,7 +479,7 @@ public class PickList extends javax.swing.JDialog
         else endNdx++;
         String margin = "     ";
         try {
-            fOUT = new FileOutputStream(f);
+            fOUT = new ByteArrayOutputStream();
             for (int i=startNdx, line=0; i<endNdx; i++) {
                 String s = null;
                 if (line==0) {
@@ -523,7 +530,9 @@ public class PickList extends javax.swing.JDialog
                     fOUT.write(NEW_PAGE);
                 }
             }
+            
             if (forcePage) fOUT.write(NEW_PAGE);
+            Utils.genericPrint(fOUT.toString(), new MessageFormat(""), new MessageFormat(""));
             fOUT.close();
         }
         catch (Exception e) { /*log.write(e);*/ }
