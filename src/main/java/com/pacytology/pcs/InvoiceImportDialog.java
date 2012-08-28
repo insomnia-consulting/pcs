@@ -79,9 +79,9 @@ public class InvoiceImportDialog extends javax.swing.JDialog {
 		JLabel3.setBounds(20, 76, 78, 14);
 		// }}
 
-		this.log = new LogFile(dbConnection.getLogPath(),
-				"InvoiceImportDialog", dbConnection.getDate(),
-				dbConnection.getUser());
+		this.log = new LogFile(DbConnection.getLogPath(),
+				"InvoiceImportDialog", DbConnection.getDate(),
+				DbConnection.getUser());
 
 		// {{REGISTER_LISTENERS
 		SymKey aSymKey = new SymKey();
@@ -231,7 +231,7 @@ public class InvoiceImportDialog extends javax.swing.JDialog {
 		try {
 			log.write("CALL pcs.build_qb_import_file(");
 			log.write("   " + statement + "," + filename + "," + cycle + ")");
-			cstmt = dbConnection.process().prepareCall(
+			cstmt = DbConnection.process().prepareCall(
 					"{call pcs.build_qb_import_file(?,?,?)}");
 			cstmt.setInt(1, statement);
 			cstmt.setString(2, filename);

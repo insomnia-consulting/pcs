@@ -21,7 +21,7 @@ public class PracticeAccountDbOps
                 "WHERE payment_code<>'B' \n"+
                 "ORDER BY payment_type \n";
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 parent.paymentCodeVect.addElement(rs.getString(1));
@@ -72,7 +72,7 @@ public class PracticeAccountDbOps
                 "   pa.curr_statement_id=ps.statement_id(+) and \n"+
                 "   p.practice="+practice+" \n";
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             int rowsReturned=0;
             while (rs.next()) {
@@ -209,7 +209,7 @@ public class PracticeAccountDbOps
             double payTtl2=0;
             double mAdj=0;
             double pAdj=0;
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 double nextSum=rs.getDouble(1);
@@ -272,7 +272,7 @@ public class PracticeAccountDbOps
                 "   p.payment_id=adj.payment_id(+) \n"+
                 "ORDER BY payment_date DESC \n";
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             int ndx=0;
             while (rs.next()) {
@@ -326,7 +326,7 @@ public class PracticeAccountDbOps
                 "FROM pcs.billing_choices \n"+
                 "WHERE choice_code='DOC' \n";
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(query);
             if ((payment_type.compareTo("PLUS ADJUST")==0)||
                 (payment_type.compareTo("MINUS ADJUST")==0)) {

@@ -139,7 +139,7 @@ public class YearSummaryDialog extends javax.swing.JDialog
 	{
         try  {
             CallableStatement cstmt;
-	        cstmt=dbConnection.process().prepareCall(
+	        cstmt=DbConnection.process().prepareCall(
 	            "{call pcs.build_practice_summary_file(?,?)}");
             cstmt.setInt(1,Integer.parseInt(stmtYear.getText()));
             cstmt.setString(2,practiceNumber.getText());

@@ -466,7 +466,7 @@ public class DiagCodeForm extends PcsFrame
                 "SELECT diagnosis_code,description,active_status \n"+
                 "FROM pcs.diagnosis_codes \n"+
                 "ORDER BY diagnosis_code";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             diagCodeVect = new Vector();
             rs=stmt.executeQuery(query);
@@ -695,7 +695,7 @@ public class DiagCodeForm extends PcsFrame
             String query = 
                 "INSERT INTO pcs.diagnosis_codes VALUES (?,?,'A') \n";
                 
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(query);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(query);
             pstmt.setString(1,diagCode.getText());
             pstmt.setString(2,diagCode.getText());
             int rs = pstmt.executeUpdate();
@@ -746,7 +746,7 @@ public class DiagCodeForm extends PcsFrame
                 "WHERE diagnosis_code='"+code+"'\n";
                 
             System.out.println(query);                
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(query);
             if (rs>0) {
                 DiagnosisCodeRec d = (DiagnosisCodeRec)diagCodeVect.elementAt(rowID-1);
@@ -795,7 +795,7 @@ public class DiagCodeForm extends PcsFrame
                 "WHERE diagnosis_code='"+code+"'\n";
                 
             System.out.println(query);                
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(query);
             if (rs>0) {
                 DiagnosisCodeRec d = (DiagnosisCodeRec)diagCodeVect.elementAt(rowID-1);

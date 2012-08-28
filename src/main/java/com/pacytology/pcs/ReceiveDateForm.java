@@ -512,7 +512,7 @@ public class ReceiveDateForm extends PcsFrame {
 					+ "   TO_NUMBER(TO_CHAR(start_date,'YYYYMMDD')), \n"
 					+ "   TO_CHAR(start_date,'DY'), TO_CHAR(start_date,'MMDD') \n"
 					+ "FROM pcs.receive_dates ORDER BY start_date DESC \n";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(SQL);
 			int ndx = 0;
 			int e_lab = 0;
@@ -604,7 +604,7 @@ public class ReceiveDateForm extends PcsFrame {
 					+ "WHERE start_date<=TO_DATE('"
 					+ qDate
 					+ "','MMDDYYYY')+1 \n" + "ORDER BY start_date DESC \n";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(SQL);
 			int ndx = 0;
 			int e_lab = 0;
@@ -881,7 +881,7 @@ public class ReceiveDateForm extends PcsFrame {
 					+ "SET start_date = TO_DATE(?,'MM/DD/YYYY'), \n"
 					+ "   end_lab_number = ? \n"
 					+ "WHERE start_lab_number = ? \n";
-			PreparedStatement pstmt = dbConnection.process().prepareStatement(
+			PreparedStatement pstmt = DbConnection.process().prepareStatement(
 					SQL);
 			pstmt.setString(1, rDay00.getText());
 			pstmt.setInt(2, endingLab);
@@ -908,7 +908,7 @@ public class ReceiveDateForm extends PcsFrame {
 					+ "TO_CHAR(MAX(start_date)+?,'DY') \n"
 					+ "FROM pcs.receive_dates \n";
 			for (int i = 1; i <= inc; i++) {
-				pstmt = dbConnection.process().prepareStatement(SQL);
+				pstmt = DbConnection.process().prepareStatement(SQL);
 				pstmt.setInt(1, i);
 				pstmt.setInt(2, i);
 				pstmt.setInt(3, i);
@@ -963,7 +963,7 @@ public class ReceiveDateForm extends PcsFrame {
 						+ "(start_date,start_lab_number,end_lab_number) \n"
 						+ "VALUES \n"
 						+ "(TO_DATE(?,'MMDDYYYY'),?,TO_NUMBER(?)) \n";
-				pstmt = dbConnection.process().prepareStatement(SQL);
+				pstmt = DbConnection.process().prepareStatement(SQL);
 				pstmt.setString(1, newYear);
 				pstmt.setInt(2, nextStartingLab);
 				pstmt.setString(3, nextYear + "000000");
@@ -982,7 +982,7 @@ public class ReceiveDateForm extends PcsFrame {
 				 */
 				SQL = "INSERT INTO pcs.receive_dates (start_date,start_lab_number) \n"
 						+ "VALUES (TO_DATE(?,'MMDDYYYY'),TO_NUMBER(?)) \n";
-				pstmt = dbConnection.process().prepareStatement(SQL);
+				pstmt = DbConnection.process().prepareStatement(SQL);
 				pstmt.setString(1, dayAfterNewYears);
 				pstmt.setString(2, nextYear + "000001");
 				pstmt.executeUpdate();
@@ -998,7 +998,7 @@ public class ReceiveDateForm extends PcsFrame {
 						+ "   SELECT MAX(start_date)+"
 						+ inc
 						+ ",? FROM pcs.receive_dates \n";
-				pstmt = dbConnection.process().prepareStatement(SQL);
+				pstmt = DbConnection.process().prepareStatement(SQL);
 				pstmt.setInt(1, nextStartingLab);
 				pstmt.executeUpdate();
 				try {
@@ -1010,7 +1010,7 @@ public class ReceiveDateForm extends PcsFrame {
 				}
 			}
 			CallableStatement cstmt;
-			cstmt = dbConnection.process().prepareCall(
+			cstmt = DbConnection.process().prepareCall(
 					"{call pcs.update_receive_dates()}");
 			cstmt.executeUpdate();
 			try {
@@ -1030,13 +1030,13 @@ public class ReceiveDateForm extends PcsFrame {
 	void deleteReceiveDate(int maxLab) {
 		try {
 			String SQL = "DELETE FROM pcs.receive_dates WHERE start_lab_number = ? \n";
-			PreparedStatement pstmt = dbConnection.process().prepareStatement(
+			PreparedStatement pstmt = DbConnection.process().prepareStatement(
 					SQL);
 			pstmt.setInt(1, maxLab);
 			pstmt.executeUpdate();
 			SQL = "UPDATE pcs.lab_requisitions SET receive_date = NULL \n"
 					+ "WHERE lab_number >= ? \n";
-			pstmt = dbConnection.process().prepareStatement(SQL);
+			pstmt = DbConnection.process().prepareStatement(SQL);
 			pstmt.setInt(1, maxLab);
 			pstmt.executeUpdate();
 			try {
@@ -1053,7 +1053,7 @@ public class ReceiveDateForm extends PcsFrame {
 		setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
 		try {
 			CallableStatement cstmt;
-			cstmt = dbConnection.process().prepareCall(
+			cstmt = DbConnection.process().prepareCall(
 					"{call pcs.edit_receive_date(?,?)}");
 			cstmt.setInt(1, oldLab);
 			cstmt.setInt(2, newLab);

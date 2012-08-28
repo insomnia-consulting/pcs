@@ -219,7 +219,7 @@ public class BuildClaimDialog extends PcsDialog
     void getTPPS() {
         try  {
             String query = "SELECT * from pcs.tpps";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             tppRec = new TppRec[5];
             tppRec[0] = new TppRec();
@@ -322,7 +322,7 @@ public class BuildClaimDialog extends PcsDialog
         String fName = null;
         try  {
             CallableStatement cstmt;
-	        cstmt=dbConnection.process().prepareCall(
+	        cstmt=DbConnection.process().prepareCall(
 	            "{call pcs.build_1500_claim_forms(?,?,?)}");
             cstmt.setString(1,tppRec[ndx].dir_name);
             cstmt.setString(2,tppRec[ndx].file_name);
@@ -331,7 +331,7 @@ public class BuildClaimDialog extends PcsDialog
             String query=
                 "SELECT max(batch_number) FROM pcs.claim_batches \n"+
                 "WHERE tpp='"+tppRec[ndx].tpp+"' \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             int batchClaimID=0;
             while (rs.next()) batchClaimID=rs.getInt(1);   
@@ -357,7 +357,7 @@ public class BuildClaimDialog extends PcsDialog
                 SQL =
                     "SELECT number_of_claims FROM pcs.claim_batches \n"+
                     "WHERE batch_number = ? and tpp = ? \n";
-                PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+                PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
                 pstmt.setInt(1,batch);
                 pstmt.setString(2,tppRec[ndx].tpp);
                 ResultSet rs = pstmt.executeQuery();
@@ -374,7 +374,7 @@ public class BuildClaimDialog extends PcsDialog
                             "FROM pcs.lab_claims C, pcs.lab_billings L \n"+
                             "WHERE C.lab_number = L.lab_number \n"+
                             "AND C.batch_number = ? \n";
-                        pstmt = dbConnection.process().prepareStatement(SQL);
+                        pstmt = DbConnection.process().prepareStatement(SQL);
                         pstmt.setInt(1,batch);
                         nClaims=pstmt.executeUpdate();
                 }
@@ -387,7 +387,7 @@ public class BuildClaimDialog extends PcsDialog
                 SQL =
                     "SELECT count(*) FROM pcs.billing_queue \n"+
                     "WHERE billing_route = ? \n";
-                PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+                PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
                 pstmt.setString(1,tppRec[ndx].tpp);
                 ResultSet rs = pstmt.executeQuery();
                 while (rs.next()) { nClaims = rs.getInt(1); }
@@ -403,7 +403,7 @@ public class BuildClaimDialog extends PcsDialog
             if (batch>0) bRoute="RSN";
             
             CallableStatement cstmt;
-	        cstmt=dbConnection.process().prepareCall(
+	        cstmt=DbConnection.process().prepareCall(
 	            "{call pcs.build_bs_x12_file(?,?,?,?,?)}");
             cstmt.setString(1,tppRec[ndx].dir_name);
             cstmt.setString(2,tppRec[ndx].file_name);
@@ -414,7 +414,7 @@ public class BuildClaimDialog extends PcsDialog
             SQL =
                 "SELECT file_name FROM pcs.tpps \n"+
                 "WHERE tpp = '"+tppRec[ndx].tpp+"' \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) { fName=rs.getString(1); }
             stripReturns(fName,"das");
@@ -438,7 +438,7 @@ public class BuildClaimDialog extends PcsDialog
                 SQL =
                     "SELECT number_of_claims FROM pcs.claim_batches \n"+
                     "WHERE batch_number = ? and tpp = ? \n";
-                PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+                PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
                 pstmt.setInt(1,batch);
                 pstmt.setString(2,tppRec[ndx].tpp);
                 ResultSet rs = pstmt.executeQuery();
@@ -455,7 +455,7 @@ public class BuildClaimDialog extends PcsDialog
                             "FROM pcs.lab_claims C, pcs.lab_billings L \n"+
                             "WHERE C.lab_number = L.lab_number \n"+
                             "AND C.batch_number = ? \n";
-                        pstmt = dbConnection.process().prepareStatement(SQL);
+                        pstmt = DbConnection.process().prepareStatement(SQL);
                         pstmt.setInt(1,batch);
                         nClaims=pstmt.executeUpdate();
                     }
@@ -464,7 +464,7 @@ public class BuildClaimDialog extends PcsDialog
                 SQL =
                     "SELECT count(*) FROM pcs.billing_queue \n"+
                     "WHERE billing_route = ? \n";
-                PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+                PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
                 pstmt.setString(1,tppRec[ndx].tpp);
                 ResultSet rs = pstmt.executeQuery();
                 while (rs.next()) { nClaims = rs.getInt(1); }
@@ -480,7 +480,7 @@ public class BuildClaimDialog extends PcsDialog
             if (batch>0) bRoute="RSN";
             
             CallableStatement cstmt;
-	        cstmt=dbConnection.process().prepareCall(
+	        cstmt=DbConnection.process().prepareCall(
 	            "{call pcs.build_med_x12_file(?,?,?,?,?)}");
             cstmt.setString(1,tppRec[ndx].dir_name);
             cstmt.setString(2,tppRec[ndx].file_name);
@@ -491,7 +491,7 @@ public class BuildClaimDialog extends PcsDialog
             SQL =
                 "SELECT file_name FROM pcs.tpps \n"+
                 "WHERE tpp = '"+tppRec[ndx].tpp+"' \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) { fName=rs.getString(1); }
             stripReturns(fName,"hgs");

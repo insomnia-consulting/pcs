@@ -290,7 +290,7 @@ public class CurrentMessageDialog extends PcsDialog
                 "   current_message = ?, \n"+
                 "   message_foreground = ?, \n"+
                 "   message_background = ? \n";
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(query);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(query);
             pstmt.setString(1,messageText.getText());
             pstmt.setInt(2,F);
             pstmt.setInt(3,B);

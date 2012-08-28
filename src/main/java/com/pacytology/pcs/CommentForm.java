@@ -264,7 +264,7 @@ public class CommentForm extends PcsFrame
                 "SELECT comment_text \n"+
                 "FROM pcs.lab_req_comments \n"+
                 "WHERE lab_number="+labNumber+" \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next())  {
                 String s = rs.getString(1);
@@ -289,7 +289,7 @@ public class CommentForm extends PcsFrame
             try {
             SQL = 
                 "DELETE FROM pcs.lab_req_comments WHERE lab_number = ? \n";
-            pstmt=dbConnection.process().prepareStatement(SQL);
+            pstmt=DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,labNumber);
             pstmt.executeUpdate();
             	rs.close(); pstmt.close(); }
@@ -302,7 +302,7 @@ public class CommentForm extends PcsFrame
             SQL = 
                 "SELECT count(*) FROM pcs.lab_req_comments \n"+
                 "WHERE lab_number = ? \n";
-            pstmt=dbConnection.process().prepareStatement(SQL);
+            pstmt=DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,labNumber);
             rs = pstmt.executeQuery();
             int rCount = 0;
@@ -320,7 +320,7 @@ public class CommentForm extends PcsFrame
                     "UPDATE pcs.lab_req_comments \n"+
                     "SET comment_text = ? WHERE lab_number = ? \n";
             }
-            pstmt=dbConnection.process().prepareStatement(SQL);
+            pstmt=DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,ctxt);
             pstmt.setInt(2,labNumber);
             pstmt.executeUpdate();

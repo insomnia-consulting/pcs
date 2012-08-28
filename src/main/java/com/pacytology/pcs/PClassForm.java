@@ -289,7 +289,7 @@ public class PClassForm extends PcsFrame
                 "ORDER BY pap_class \n";
                 
             System.out.println(query);                
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             Vector vTmp = new Vector();
             while (rs.next()) {
@@ -302,7 +302,7 @@ public class PClassForm extends PcsFrame
                     "FROM pcs.bethesda_codes \n"+
                     "WHERE papclass="+currPapClass+" \n"+
                     "ORDER BY bethesda_code \n";
-                Statement stmt2 = dbConnection.process().createStatement();
+                Statement stmt2 = DbConnection.process().createStatement();
                 ResultSet rs2 = stmt2.executeQuery(subQuery);
                 vTmp.removeAllElements();
                 while (rs2.next()) {

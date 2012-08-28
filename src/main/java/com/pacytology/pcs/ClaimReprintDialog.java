@@ -222,7 +222,7 @@ public class ClaimReprintDialog extends javax.swing.JDialog
                 "WHERE batch_number = "+batchType+" \n";
         }
         try  {
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             String batchNumber = "NULL";
             while (rs.next()) { 
@@ -268,7 +268,7 @@ public class ClaimReprintDialog extends javax.swing.JDialog
                 "WHERE bd.lab_number=lc.lab_number \n"+
                 "AND lc.lab_number="+lab+" \n";
 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             int numLabs=(-1);
             String choiceCode = null;
@@ -299,18 +299,18 @@ public class ClaimReprintDialog extends javax.swing.JDialog
                         "INSERT INTO pcs.billing_queue \n"+
                         "(lab_number,billing_route,datestamp,rebilling) \n"+
                         "VALUES ("+lab+",'DUP',SysDate,"+numLabs+") \n";
-                    stmt=dbConnection.process().createStatement();
+                    stmt=DbConnection.process().createStatement();
                     int rv = stmt.executeUpdate(query);
                     CallableStatement cstmt = null;
                     String fName = null;
                     if (routeCode.equals("PDW")) {
                         fName="pdw_clm";
-	                    cstmt=dbConnection.process().prepareCall(
+	                    cstmt=DbConnection.process().prepareCall(
 	                        "{call pcs.build_ma319c_file(?,?,?)}");
                     }
                     else {
                         fName="ppr_clm";
-	                    cstmt=dbConnection.process().prepareCall(
+	                    cstmt=DbConnection.process().prepareCall(
 	                        "{call pcs.build_1500_claim_forms(?,?,?)}");
                     }
                     cstmt.setString(1,Utils.UTL_FILE_DIR);

@@ -18,7 +18,7 @@ package com.pacytology.pcs;
 import java.sql.*;
 import java.util.Vector;
 
-public class dbConnection
+public class DbConnection
 {
     private static Connection dbProc;
     private static Login dbLogin;
@@ -29,7 +29,7 @@ public class dbConnection
     final static int DOUBLE = -3;
     private static LogFile log;
     
-    public dbConnection(Login dbLogin)
+    public DbConnection(Login dbLogin)
     {
         this.dbLogin=dbLogin;
         this.resetCounter=0;

@@ -183,10 +183,10 @@ public class HPVTestDialog extends javax.swing.JDialog
 	{
 		this();
         this.log = new LogFile(
-            dbConnection.getLogPath(),
+            DbConnection.getLogPath(),
             "HPVTestDialog",
-            dbConnection.getDate(),
-            dbConnection.getUser());		
+            DbConnection.getDate(),
+            DbConnection.getUser());		
 		this.hpv=hpv;
 		this.labNumber=labNumber;
 		this.priorStatus=hpv.test_sent;
@@ -200,10 +200,10 @@ public class HPVTestDialog extends javax.swing.JDialog
 	{
 		this();
         this.log = new LogFile(
-            dbConnection.getLogPath(),
+            DbConnection.getLogPath(),
             "HPVTestDialog",
-            dbConnection.getDate(),
-            dbConnection.getUser());		
+            DbConnection.getDate(),
+            DbConnection.getUser());		
         this.labRec=labRec;
         this.hpv=labRec.hpv;
 		this.labNumber=labRec.lab_number;
@@ -514,7 +514,7 @@ public class HPVTestDialog extends javax.swing.JDialog
                 "from pcs.practice_statement_labs \n"+
                 "where lab_number = ? \n"+
                 "order by billing_cycle,p_seq";	    
-	        pstmt = dbConnection.process().prepareStatement(SQL); 
+	        pstmt = DbConnection.process().prepareStatement(SQL); 
 	        pstmt.setInt(1,labNumber);
 	        ResultSet rs = pstmt.executeQuery();
 	        Vector v = new Vector();
@@ -543,7 +543,7 @@ public class HPVTestDialog extends javax.swing.JDialog
 	            "   comment_text = ?, \n"+
 	            "   datestamp = SysDate \n"+
 	            "WHERE lab_number = ? \n";
-	        pstmt = dbConnection.process().prepareStatement(SQL); 
+	        pstmt = DbConnection.process().prepareStatement(SQL); 
 	        pstmt.setString(1,hpv.test_sent);
 	        pstmt.setString(2,hpv.test_results);
 	        pstmt.setString(3,hpv.results_received);
@@ -556,7 +556,7 @@ public class HPVTestDialog extends javax.swing.JDialog
 	            "   change_date = SysDate, \n"+
 	            "   change_user = UID \n"+
 	            "WHERE lab_number = ? \n";
-	        pstmt = dbConnection.process().prepareStatement(SQL); 
+	        pstmt = DbConnection.process().prepareStatement(SQL); 
 	        pstmt.setInt(1,labNumber);
 	        pstmt.executeUpdate();
 	        pstmt.close();
@@ -567,13 +567,13 @@ public class HPVTestDialog extends javax.swing.JDialog
 	                SQL = 
 	                    "SELECT practice from pcs.lab_requisitions \n"+
 	                    "WHERE lab_number = ? \n";
-	                pstmt = dbConnection.process().prepareStatement(SQL); 
+	                pstmt = DbConnection.process().prepareStatement(SQL); 
 	                pstmt.setInt(1,labNumber);
 	                ResultSet rs = pstmt.executeQuery();
 	                while (rs.next()) { practice=rs.getInt(1); }
 	                rs.close();
 	                pstmt.close();
-	                cstmt=dbConnection.process().prepareCall(
+	                cstmt=DbConnection.process().prepareCall(
 	                    "{call pcs.calculate_cost(?)}");
                     cstmt.setInt(1,labNumber);
                     cstmt.executeUpdate();

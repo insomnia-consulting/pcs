@@ -587,7 +587,7 @@ public class TurnAroundForm extends javax.swing.JFrame
             "and to_char(a.date_completed,'YYYYMM') = ? \n"+
             "group by round(a.date_completed-b.receive_date)";
         try {
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,yearMonth);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
@@ -598,7 +598,7 @@ public class TurnAroundForm extends javax.swing.JFrame
             }
             int barCount = 1;
             double largestPcnt = (double)largest/(double)totalRecords;
-            pstmt = dbConnection.process().prepareStatement(SQL);
+            pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,yearMonth);
             rs = pstmt.executeQuery();
             for (int i=0; i<20; i++) {

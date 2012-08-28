@@ -237,7 +237,7 @@ public class PatStmtCopyDialog extends JDialog
                 "NOT IN (SELECT lab_number from pcs.billing_queue) \n";
                 
             log.write(query);
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) { rv=rs.getInt(1); }
             if (rv==0) {
@@ -319,7 +319,7 @@ public class PatStmtCopyDialog extends JDialog
                 "UPDATE pcs.billing_queue \n"+
                 "SET billing_route = ? \n"+
                 "WHERE billing_route = ? \n"; 
-            pstmt=dbConnection.process().prepareStatement(SQL);
+            pstmt=DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,newVal);
             pstmt.setString(2,oldVal);
             pstmt.executeUpdate();
@@ -338,7 +338,7 @@ public class PatStmtCopyDialog extends JDialog
             SQL=
                 "DELETE FROM pcs.billing_queue \n"+
                 "WHERE lab_number = ? \n"; 
-            pstmt=dbConnection.process().prepareStatement(SQL);
+            pstmt=DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,labNum);
             pstmt.executeUpdate();
             try { pstmt.close(); }
@@ -359,7 +359,7 @@ public class PatStmtCopyDialog extends JDialog
                 "SELECT rebilling \n"+
                 "FROM pcs.lab_billings \n"+
                 "WHERE lab_number = ? \n"; 
-            pstmt=dbConnection.process().prepareStatement(SQL);
+            pstmt=DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,labNum);
             rs=pstmt.executeQuery(SQL);
             while (rs.next()) { rebilling=rs.getInt(1); }
@@ -370,7 +370,7 @@ public class PatStmtCopyDialog extends JDialog
                 "INSERT INTO pcs.billing_queue \n"+
                 "(lab_number,billing_route,datestamp,rebill_code,billing_type,rebilling)"+
                 "VALUES (?,'PAT',SysDate,'ITM','IS00',?) \n";
-            pstmt=dbConnection.process().prepareStatement(SQL);
+            pstmt=DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,labNum);
             pstmt.setInt(2,rebilling);
             pstmt.executeUpdate();

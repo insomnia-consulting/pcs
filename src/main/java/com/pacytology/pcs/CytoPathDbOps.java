@@ -213,7 +213,7 @@ public class CytoPathDbOps implements Runnable
                 "SELECT RTRIM(TO_CHAR(SysDate,'fmDay, fmMonth'))"+
                 "||' '||TO_CHAR(SysDate,'DD, fmYYYY') FROM DUAL");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(dateQuery);
             while (rs.next()) { parent.reportDate=rs.getString(1); }  
 
@@ -335,7 +335,7 @@ public class CytoPathDbOps implements Runnable
                 "   (SELECT MAX(effective_lab) \n"+
                 "    FROM pcs.directors \n"+
                 "    WHERE effective_lab <= ?) \n";
-	        pstmt = dbConnection.process().prepareStatement(SQL); 
+	        pstmt = DbConnection.process().prepareStatement(SQL); 
 	        pstmt.setInt(1,labReport.lab_number);
 	        ResultSet rs = pstmt.executeQuery(SQL);
 	        while (rs.next()) { labReport.director_name = rs.getString(1); }
@@ -401,7 +401,7 @@ public class CytoPathDbOps implements Runnable
             }
 
             // Retrieve the details
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             dCodeRec = new DetailCodeRec();
             while (rs.next()) {
@@ -560,7 +560,7 @@ public class CytoPathDbOps implements Runnable
                 "SELECT RTRIM(TO_CHAR(SysDate,'fmDay, fmMonth'))"+
                 "||' '||TO_CHAR(SysDate,'DD, fmYYYY') FROM DUAL");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(dateQuery);
             while (rs.next()) { parent.reportDate=rs.getString(1); }  
             
@@ -783,7 +783,7 @@ public class CytoPathDbOps implements Runnable
                 "and D.verify_doctor<>'Y' \n"+
                 "order by D.hold_final, L.lab_number \n";
            
-            stmt = dbConnection.process().createStatement();
+            stmt = DbConnection.process().createStatement();
             rs = stmt.executeQuery(SQL);
             // flag for message used to separate labs in which FINALs should be held
             boolean holdFinals=false;
@@ -862,7 +862,7 @@ public class CytoPathDbOps implements Runnable
                 "and H.hpv_code='Y' \n"+
                 "order by L.lab_number \n";
                 
-            stmt = dbConnection.process().createStatement();
+            stmt = DbConnection.process().createStatement();
             rs = stmt.executeQuery(SQL);
             parent.log.write("   open HPVmanual cursor");
             while (rs.next()) {
@@ -916,7 +916,7 @@ public class CytoPathDbOps implements Runnable
                 "and H.needs_permission='Y' \n"+
                 "order by L.lab_number \n";
                 
-            stmt = dbConnection.process().createStatement();
+            stmt = DbConnection.process().createStatement();
             rs = stmt.executeQuery(SQL);
             parent.log.write("   open HPVpermissions cursor");   
             while (rs.next()) {
@@ -1023,7 +1023,7 @@ public class CytoPathDbOps implements Runnable
                 "and D.verify_doctor='Y' \n"+
                 "order by L.lab_number \n";
 
-            stmt = dbConnection.process().createStatement();
+            stmt = DbConnection.process().createStatement();
             rs = stmt.executeQuery(SQL);
             parent.log.write("   open HPVdrVerify cursor");
             while (rs.next()) {
@@ -1080,7 +1080,7 @@ public class CytoPathDbOps implements Runnable
                 "and H.needs_permission is NOT NULL \n"+
                 "order by L.lab_number \n";
                 
-            stmt = dbConnection.process().createStatement();
+            stmt = DbConnection.process().createStatement();
             rs = stmt.executeQuery(SQL);
             parent.log.write("   open HPVonly cursor");
             while (rs.next()) {
@@ -1126,7 +1126,7 @@ public class CytoPathDbOps implements Runnable
                     "   r.lab_number="+labReport.lab_number+" and \n"+
                     "   r.bethesda_code=b.bethesda_code \n");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             int ndx=0;
             rs=stmt.executeQuery(SQL);
@@ -1186,7 +1186,7 @@ public class CytoPathDbOps implements Runnable
                     "   qr.bethesda_code=b.bethesda_code and \n"+
                     "   qr.lab_number="+labReport.lab_number+" \n");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             rs=stmt.executeQuery(SQL);
             while (rs.next()) {
@@ -1256,7 +1256,7 @@ public class CytoPathDbOps implements Runnable
                     "   pcc.bethesda_code=b.bethesda_code and \n"+
                     "   pc.lab_number="+labReport.lab_number+" \n");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) {
                 labReport.path_lname=rs.getString(1);
@@ -1295,7 +1295,7 @@ public class CytoPathDbOps implements Runnable
                     "FROM pcs.cytotechs ct,pcs.quality_control_codes q,pcs.quality_control r \n"+
                     "WHERE r.cytotech=ct.cytotech and q.lab_number=r.lab_number \n"+
                     "   and r.lab_number="+labReport.lab_number+" \n");
-                stmt=dbConnection.process().createStatement();
+                stmt=DbConnection.process().createStatement();
                 rs=stmt.executeQuery(SQL);
                 while (rs.next()) { labReport.qc_cytotech_code=rs.getString(1); }
             }
@@ -1325,7 +1325,7 @@ public class CytoPathDbOps implements Runnable
                 "WHERE lab_number="+labNum+" and \n"+
                 "   first_print="+parent.printMode+" \n");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(SQL);
             /*  The history table will record the lab number, print mode, and 
                 date the report was printed.  The print mode will reveal
@@ -1360,7 +1360,7 @@ public class CytoPathDbOps implements Runnable
 	            "UPDATE pcs.cytopath_print_queue \n"+
 	            "SET first_print = ? \n"+
 	            "WHERE lab_number = ?";
-	        pstmt = dbConnection.process().prepareStatement(SQL); 
+	        pstmt = DbConnection.process().prepareStatement(SQL); 
 	        pstmt.setInt(1,Lab.HOLD_HPV);
 	        pstmt.setInt(2,labNumber);
 	        pstmt.executeUpdate();
@@ -1383,7 +1383,7 @@ public class CytoPathDbOps implements Runnable
                 "FROM pcs.cytopath_print_queue \n"+
                 "GROUP BY first_print");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             int pMode=0;
             while (rs.next()) { 
@@ -1421,7 +1421,7 @@ public class CytoPathDbOps implements Runnable
                 "FROM pcs.bethesda_prior_descr \n"+
                 "WHERE bethesda_code = '"+rCode+"' \n"+
                 "ORDER BY term_date \n");
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) {
                 int ds = rs.getInt(1);
@@ -1458,7 +1458,7 @@ public class CytoPathDbOps implements Runnable
         sent, and HPV results are now Pending).
     */
     public boolean HPVupdate()  {
-        int dCount = dbConnection.getRowCount("PCS.HPV_REQUESTS","TEST_SENT='R'");
+        int dCount = DbConnection.getRowCount("PCS.HPV_REQUESTS","TEST_SENT='R'");
         boolean exitStatus=true;
         parent.log.write("HPVupdate()   count=="+dCount);
         try  {
@@ -1467,7 +1467,7 @@ public class CytoPathDbOps implements Runnable
                 "   test_sent='P', datestamp=SysDate, dequeued=SysDate\n"+
                 "WHERE test_sent='R' \n");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(SQL);
             try { stmt.close(); }
             catch (SQLException e) { parent.log.write("HPVupdate[1] "+e); exitStatus=false; }                
@@ -1493,7 +1493,7 @@ public class CytoPathDbOps implements Runnable
                 "SELECT bethesda_code from pcs.bethesda_codes \n"+
                 "WHERE description like '%AMENDED%' \n");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) { 
                 String amendedCode = rs.getString(1);
@@ -1523,7 +1523,7 @@ public class CytoPathDbOps implements Runnable
             else SQL.append("WHERE cover_sheet='Y' \n");
             SQL.append("ORDER BY practice \n");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL.toString());
             while (rs.next()) { 
                 PracticeRec p = new PracticeRec();
@@ -1560,7 +1560,7 @@ public class CytoPathDbOps implements Runnable
                 "UPDATE pcs.practices SET cover_sheet='N' \n" +
                 "WHERE cover_sheet<>'D' \n");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             stmt.executeUpdate(SQL.toString());
             try { stmt.close(); }
             catch (Exception e) { parent.log.write("resetCoverSheets[1] "+ e); }

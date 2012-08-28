@@ -31,7 +31,7 @@ public class PathDbOps
                 "   lname,fname \n";
                 
             System.out.println(query);                
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             int rowsReturned=0;
             while (rs.next()) {
@@ -79,7 +79,7 @@ public class PathDbOps
                 "    state,zip,phone,pathologist_code,active_status,mi, \n"+
                 "    title,degree) \n"+
                 "VALUES (pcs.tech_seq.nextval,?,?,?,?,?,?,?,?,?,?,?,?) \n";
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(query);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(query);
             pstmt.setString(1,parent.pathLName.getText());
             pstmt.setString(2,parent.pathFName.getText());
             pstmt.setNull(3,java.sql.Types.VARCHAR);

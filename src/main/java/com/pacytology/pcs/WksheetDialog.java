@@ -131,7 +131,7 @@ public class WksheetDialog extends javax.swing.JDialog
     void buildWorksheets() {
         try  {
             CallableStatement cstmt;
-	        cstmt=dbConnection.process().prepareCall(
+	        cstmt=DbConnection.process().prepareCall(
 	            "{call pcs.build_hm_worksheet_copy(?,?)}");
 	        cstmt.setInt(1,startLab);
 	        cstmt.setInt(2,endLab);

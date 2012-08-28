@@ -190,7 +190,7 @@ public class PasswordDialog extends javax.swing.JDialog
         try  {
             PreparedStatement pstmt;
             String SQL = "ALTER USER "+dbLogin.userName+" IDENTIFIED BY "+confirmPwd.getText();
-            pstmt=dbConnection.process().prepareStatement(SQL);
+            pstmt=DbConnection.process().prepareStatement(SQL);
             rv=pstmt.executeUpdate();
         }
         catch( Exception e ) { System.out.println(e+" rv:"+rv); }

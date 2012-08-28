@@ -187,7 +187,7 @@ public class PracticesList extends javax.swing.JFrame
                 "rpad(substr(contact,1,16),18),phone,fax,stop_code,price_code,\n"+
                 "patient_cards,to_char(report_copies),client_notes,print_doctors\n"+
                 "from pcs.practices order by practice";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             currRow=0;
             while (rs.next()) {

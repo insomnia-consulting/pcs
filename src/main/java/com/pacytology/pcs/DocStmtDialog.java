@@ -230,7 +230,7 @@ public class DocStmtDialog extends javax.swing.JDialog
             SQL+="ORDER BY ";
             if (!reportType.equals("STATEMENT")) SQL += "parent_account,practice \n";
             else SQL += "statement_copies,practice \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             parent.setCursor(new Cursor(Cursor.WAIT_CURSOR));

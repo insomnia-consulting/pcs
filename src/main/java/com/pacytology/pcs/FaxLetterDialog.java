@@ -114,7 +114,7 @@ public class FaxLetterDialog extends javax.swing.JDialog
             "WHERE in_queue = 1 \n"+
             "GROUP BY letter_type \n";
         try {
-            stmt = dbConnection.process().createStatement();
+            stmt = DbConnection.process().createStatement();
             rs = stmt.executeQuery(SQL);
             String ltrType = null;
             int rcnt = 0;

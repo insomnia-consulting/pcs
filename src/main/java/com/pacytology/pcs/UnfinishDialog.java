@@ -89,8 +89,8 @@ public class UnfinishDialog extends PcsDialog
 	        mode=RECALC;
 	        this.setTitle("Recalculate Charges");
             this.log = new LogFile(
-                dbConnection.getLogPath(),"UnfinishDialog.Recalc.",
-                dbConnection.getDate(),dbConnection.getUser());
+                DbConnection.getLogPath(),"UnfinishDialog.Recalc.",
+                DbConnection.getDate(),DbConnection.getUser());
 	        log.write("Recalculate Charges");
 	        try {
 	            messageText.setText("Charges for this lab number "+
@@ -103,8 +103,8 @@ public class UnfinishDialog extends PcsDialog
 	        mode=UNFINISH;
 	        this.setTitle("Unfinalize Lab Number");
             this.log = new LogFile(
-                dbConnection.getLogPath(),"UnfinishDialog",
-                dbConnection.getDate(),dbConnection.getUser());
+                DbConnection.getLogPath(),"UnfinishDialog",
+                DbConnection.getDate(),DbConnection.getUser());
 	        log.write("Unfinalize Lab Number");
 	        try {
 	            messageText.setText("The status of this lab number "+
@@ -274,7 +274,7 @@ public class UnfinishDialog extends PcsDialog
             String SQL =
                 "UPDATE pcs.lab_requisitions SET \n"+
                 "   finished=4 WHERE lab_number = ? \n";
-            pstmt = dbConnection.process().prepareStatement(SQL);
+            pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,LN);
             pstmt.executeUpdate();
             log.write("SET pcs.lab_requisitions.finished=4 for "+LN);
@@ -285,7 +285,7 @@ public class UnfinishDialog extends PcsDialog
             SQL =
                 "UPDATE pcs.lab_billings SET date_paid=SysDate \n"+
                 "WHERE lab_number = ? \n";
-            pstmt = dbConnection.process().prepareStatement(SQL);
+            pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,LN);
             pstmt.executeUpdate();
             try { pstmt.close(); }
@@ -295,7 +295,7 @@ public class UnfinishDialog extends PcsDialog
             SQL =
                 "DELETE FROM pcs.billing_queue \n"+
                 "WHERE lab_number = ? \n";
-            pstmt = dbConnection.process().prepareStatement(SQL);
+            pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,LN);
             pstmt.executeUpdate();
             log.write("DELETE "+LN+" from pcs.billing_queue");
@@ -318,7 +318,7 @@ public class UnfinishDialog extends PcsDialog
             String SQL =
                 "UPDATE pcs.lab_requisitions SET \n"+
                 "   finished=? WHERE lab_number = ? \n";
-            pstmt = dbConnection.process().prepareStatement(SQL);
+            pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,finished);
             pstmt.setInt(2,LN);
             pstmt.executeUpdate();
@@ -330,7 +330,7 @@ public class UnfinishDialog extends PcsDialog
             SQL =
                 "UPDATE pcs.lab_billings SET date_paid=NULL \n"+
                 "WHERE lab_number = ? \n";
-            pstmt = dbConnection.process().prepareStatement(SQL);
+            pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,LN);
             pstmt.executeUpdate();
             try { pstmt.close(); }
@@ -345,7 +345,7 @@ public class UnfinishDialog extends PcsDialog
     void calculateCost(int LN) {
         try {
             CallableStatement cstmt;
-            cstmt=dbConnection.process().prepareCall(
+            cstmt=DbConnection.process().prepareCall(
                 "{call pcs.calculate_cost(?)}");
             cstmt.setInt(1,LN);
             cstmt.executeUpdate();
@@ -365,7 +365,7 @@ public class UnfinishDialog extends PcsDialog
             String SQL =
                 "SELECT finished FROM pcs.lab_requisitions \n"+
                 "WHERE lab_number = ? \n";
-            pstmt = dbConnection.process().prepareStatement(SQL);
+            pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,LN);
             rs=pstmt.executeQuery(SQL);
             while (rs.next()) { status = rs.getInt(1); }
@@ -387,7 +387,7 @@ public class UnfinishDialog extends PcsDialog
             String SQL =
                 "SELECT billing_choice FROM pcs.lab_requisitions \n"+
                 "WHERE lab_number = ? \n";
-            pstmt = dbConnection.process().prepareStatement(SQL);
+            pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,LN);
             rs=pstmt.executeQuery(SQL);
             while (rs.next()) { billing_choice = rs.getInt(1); }

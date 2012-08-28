@@ -127,7 +127,7 @@ public class LabChangeDialog extends PcsDialog
 		            }
 		            else {
 		                old=(int)Integer.parseInt(badLabNumber.getText());
-		                dbConnection.updatePreviousLab(old,previous_lab);
+		                DbConnection.updatePreviousLab(old,previous_lab);
 		            }
 		            resetForm();
 		        }
@@ -266,7 +266,7 @@ public class LabChangeDialog extends PcsDialog
 		                resetForm();
 		            }
 		            if (mode==UPDATE_LINK) {
-		                previous_lab=dbConnection.getPreviousLab(
+		                previous_lab=DbConnection.getPreviousLab(
 		                    (int)Integer.parseInt(badLabNumber.getText()));
 		            }
 		            badLabNumber.transferFocus();
@@ -344,7 +344,7 @@ public class LabChangeDialog extends PcsDialog
 	{
 	    boolean labNumberExists = false;
 	    int count = 
-	        dbConnection.getRowCount("pcs.lab_requisitions","lab_number="+labNum);
+	        DbConnection.getRowCount("pcs.lab_requisitions","lab_number="+labNum);
 	    if (count>0) labNumberExists=true;
 	    return (labNumberExists);
 	}
@@ -352,7 +352,7 @@ public class LabChangeDialog extends PcsDialog
 	void makeCorrection(int oldLab, int newLab)
 	{
         try {
-            CallableStatement cstmt=dbConnection.process().prepareCall(
+            CallableStatement cstmt=DbConnection.process().prepareCall(
                 "{call pcs.change_lab_number(?,?)}");
             cstmt.setInt(1,oldLab);
             cstmt.setInt(2,newLab);

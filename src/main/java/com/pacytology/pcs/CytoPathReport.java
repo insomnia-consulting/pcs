@@ -1884,7 +1884,7 @@ public class CytoPathReport extends javax.swing.JFrame
 	    if (prac==(-1)) {
 	        CallableStatement cstmt = null;
 	        try { 
-                cstmt=dbConnection.process().prepareCall(
+                cstmt=DbConnection.process().prepareCall(
 	                "{call pcs.build_report_lbl_file()}");
                 cstmt.executeUpdate();
                 cstmt.close();

@@ -108,7 +108,7 @@ public class PatientClaimDbOps implements Runnable
                 query=query.concat(" and \n   a.dob = TO_DATE('"+ 
                 parent.queryRec.dob + "','MMDDYYYY')");
             query=query+"\nORDER by a.lname,a.fname,a.address1 \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             rowsReturned=0;
             int currCol=0;
@@ -205,7 +205,7 @@ public class PatientClaimDbOps implements Runnable
                 "SELECT MAX(lab_number) \n"+
                 "FROM pcs.lab_requisitions "+
                 "WHERE patient="+pat+" \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) { previousLab=rs.getInt(1); }
             try { rs.close(); stmt.close(); }
@@ -225,7 +225,7 @@ public class PatientClaimDbOps implements Runnable
                     "   finished,previous_lab \n"+
                     "FROM pcs.lab_requisitions "+
                     "WHERE lab_number="+previousLab+" \n";
-                stmt=dbConnection.process().createStatement();
+                stmt=DbConnection.process().createStatement();
                 rs=stmt.executeQuery(SQL);
                 while (rs.next()) {
                     lab = rs.getInt(1);

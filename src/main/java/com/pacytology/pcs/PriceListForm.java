@@ -358,7 +358,7 @@ public class PriceListForm extends PcsFrame
             String query =
                 "SELECT count(*) \n"+
                 "FROM pcs.procedure_codes \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) MAX_PROC_CODES=rs.getInt(1);
             query = 
@@ -755,7 +755,7 @@ public class PriceListForm extends PcsFrame
 	public boolean add() {
         boolean exitStatus=true;
         try  {
-            dbConnection.process().setAutoCommit(false);
+            DbConnection.process().setAutoCommit(false);
             String pCode=(String)priceCode.getText();
             String query = 
                 "INSERT INTO pcs.price_codes \n"+
@@ -764,7 +764,7 @@ public class PriceListForm extends PcsFrame
                 "   ('"+pCode+"', 'I', NULL, SysDate, UID) \n";
                 
             System.out.println(query);                
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(query);
             if (rs>0) {
                 query = 
@@ -774,8 +774,8 @@ public class PriceListForm extends PcsFrame
                     "FROM pcs.procedure_codes \n";
                 rs = stmt.executeUpdate(query);
                 if (rs>0) {
-                    dbConnection.process().commit();
-                    dbConnection.process().setAutoCommit(true);
+                    DbConnection.process().commit();
+                    DbConnection.process().setAutoCommit(true);
                     for (int i=0;i<MAX_PRICE_CODES;i++) {
                         for (int j=0;j<MAX_PROC_CODES;j++)
                             priceCodes[i].pricing[j]=null;
@@ -793,14 +793,14 @@ public class PriceListForm extends PcsFrame
                     }
                 }
                 else { 
-                    dbConnection.process().rollback();
-                    dbConnection.process().setAutoCommit(true);
+                    DbConnection.process().rollback();
+                    DbConnection.process().setAutoCommit(true);
                     exitStatus=false;
                 }
             }
             else {
-                dbConnection.process().rollback();
-                dbConnection.process().setAutoCommit(true);
+                DbConnection.process().rollback();
+                DbConnection.process().setAutoCommit(true);
                 exitStatus=false;
             }
         }
@@ -853,7 +853,7 @@ public class PriceListForm extends PcsFrame
                 "WHERE price_code='"+code+"'\n";
                 
             System.out.println(query);                
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(query);
             if (rs>0) {
                 priceCodes[priceNdx].activeStatus=status;               
@@ -910,7 +910,7 @@ public class PriceListForm extends PcsFrame
         try  {
             int rowsReturned=0;
             String query = "SELECT count(*) from pcs.price_codes \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) rowsReturned=rs.getInt(1);
             if (rowsReturned>0) {
@@ -974,7 +974,7 @@ public class PriceListForm extends PcsFrame
                 "' \n";
                 
             System.out.println(query);                
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(query);
             System.out.println("ROWS UPDATED: "+rs);
             if (rs<1) {
@@ -999,7 +999,7 @@ public class PriceListForm extends PcsFrame
                 "FROM pcs.practices \n"+
                 "WHERE price_code='"+pCode+"' \n"+
                 "ORDER BY name \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 rowsReturned++;

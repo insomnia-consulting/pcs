@@ -62,7 +62,7 @@ public class PCSLabEntry extends PcsFrame {
 	public boolean logOpen = false;
 	int ltrCounter = 0;
 	Vector printerCodes = new Vector();
-	dbConnection d;
+	DbConnection d;
 
 	public PCSLabEntry() {
 		dbLogin = new Login();
@@ -925,7 +925,7 @@ public class PCSLabEntry extends PcsFrame {
 				if (logOpen)
 					log.stop();
 				if (dbLogin.loginEstablished)
-					dbConnection.close(); // close Oracle connection
+					DbConnection.close(); // close Oracle connection
 				this.setVisible(false); // hide the Frame
 				this.dispose(); // free the system resources
 				System.exit(0); // close the application
@@ -1355,7 +1355,7 @@ public class PCSLabEntry extends PcsFrame {
 					this.CollectionsMenu.setEnabled(!dbLogin
 							.hasRestriction("CollectionsMenu"));
 
-					d = new dbConnection(dbLogin);
+					d = new DbConnection(dbLogin);
 				} else
 					Utils.createErrMsg("FATAL ERROR");
 				this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -1518,7 +1518,7 @@ public class PCSLabEntry extends PcsFrame {
 	void buildHCFA1500(String billRoute) {
 		try {
 			CallableStatement cstmt;
-			cstmt = dbConnection.process().prepareCall(
+			cstmt = DbConnection.process().prepareCall(
 					"{call pcs.build_1500_claim_forms(?,?,?)}");
 			cstmt.setString(1, Utils.UTL_FILE_DIR);
 			cstmt.setString(2, "ppr_clm");
@@ -1526,7 +1526,7 @@ public class PCSLabEntry extends PcsFrame {
 			cstmt.executeUpdate();
 			String query = "SELECT max(batch_number) FROM pcs.claim_batches \n"
 					+ "WHERE tpp='" + billRoute + "' \n";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			int batchClaimID = 0;
 			while (rs.next())
@@ -1550,7 +1550,7 @@ public class PCSLabEntry extends PcsFrame {
 	void buildMA319C(String billRoute) {
 		try {
 			CallableStatement cstmt;
-			cstmt = dbConnection.process().prepareCall(
+			cstmt = DbConnection.process().prepareCall(
 					"{call pcs.build_ma319c_file(?,?,?)}");
 			cstmt.setString(1, Utils.UTL_FILE_DIR);
 			cstmt.setString(2, "pdw_clm");
@@ -1558,7 +1558,7 @@ public class PCSLabEntry extends PcsFrame {
 			cstmt.executeUpdate();
 			String query = "SELECT max(batch_number) FROM pcs.claim_batches \n"
 					+ "WHERE tpp='" + billRoute + "' \n";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			int batchClaimID = 0;
 			while (rs.next())
@@ -1588,7 +1588,7 @@ public class PCSLabEntry extends PcsFrame {
 		try {
 			String query = "SELECT job_status FROM pcs.job_control \n"
 					+ "WHERE job_descr='MID MONTH COUNT'";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			int midMonthCount = 0;
 			while (rs.next()) {
@@ -1599,7 +1599,7 @@ public class PCSLabEntry extends PcsFrame {
 					+ "FROM pcs.billing_queue \n"
 					+ "GROUP BY billing_route \n"
 					+ "ORDER BY billing_route \n";
-			stmt = dbConnection.process().createStatement();
+			stmt = DbConnection.process().createStatement();
 			rs = stmt.executeQuery(query);
 			Vector routes = new Vector();
 			Vector counts = new Vector();
@@ -1620,7 +1620,7 @@ public class PCSLabEntry extends PcsFrame {
 					+ "FROM pcs.billing_routes a, pcs.billing_queue b \n"
 					+ "WHERE a.billing_route=b.billing_route \n"
 					+ "ORDER BY a.billing_route \n";
-			stmt = dbConnection.process().createStatement();
+			stmt = DbConnection.process().createStatement();
 			rs = stmt.executeQuery(query);
 			while (rs.next()) {
 				routes.addElement(rs.getString(2));
@@ -1648,7 +1648,7 @@ public class PCSLabEntry extends PcsFrame {
 	private int getCount(String query) {
 		int rv = 0;
 		try {
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
 				rv = rs.getInt(1);
@@ -1696,7 +1696,7 @@ public class PCSLabEntry extends PcsFrame {
 
 	void buildWorksheets() {
 		try {
-			CallableStatement cstmt = dbConnection.process()
+			CallableStatement cstmt = DbConnection.process()
 					.prepareCall("{? = call pcs.build_hm_worksheets(?,?,?)}");
 			cstmt.setInt(2, Lab.CURR_WKS);
 			cstmt.setString(3, "curr_wks");
@@ -1759,7 +1759,7 @@ public class PCSLabEntry extends PcsFrame {
 		try {
 			String fName = null;
 			String SQL = "SELECT file_name FROM pcs.pcard_queue ORDER BY practice \n";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(SQL);
 			int numStmts = 0;
 			while (rs.next()) {
@@ -1879,7 +1879,7 @@ public class PCSLabEntry extends PcsFrame {
 					+ "   TO_CHAR(date_sent,'MM/DD/YYYY HH:Mi') \n"
 					+ "FROM pcs.fax_letters ORDER by letter_type,date_sent";
 
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			Vector v = new Vector();
 			while (rs.next()) {
@@ -1912,13 +1912,13 @@ public class PCSLabEntry extends PcsFrame {
 	void displayLabGaps(int minLab, int maxLab) {
 		try {
 			CallableStatement cstmt;
-			cstmt = dbConnection.process().prepareCall(
+			cstmt = DbConnection.process().prepareCall(
 					"{call pcs.compute_labnumber_gaps(?,?)}");
 			cstmt.setInt(1, minLab);
 			cstmt.setInt(2, maxLab);
 			cstmt.executeUpdate();
 			String SQL = "SELECT message_text FROM pcs.temp_table ORDER BY row_id \n";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(SQL);
 			Vector v = new Vector();
 			while (rs.next()) {
@@ -2061,7 +2061,7 @@ public class PCSLabEntry extends PcsFrame {
 	void buildClaimWorksheets(String billRoute) {
 		try {
 			CallableStatement cstmt;
-			cstmt = dbConnection.process().prepareCall(
+			cstmt = DbConnection.process().prepareCall(
 					"{call pcs.build_claim_wks_file(?,?,?)}");
 			cstmt.setString(1, Utils.UTL_FILE_DIR);
 			cstmt.setString(2, "clm_wks");
@@ -2085,7 +2085,7 @@ public class PCSLabEntry extends PcsFrame {
 	void resetNightJobs() {
 		try {
 			CallableStatement cstmt;
-			cstmt = dbConnection.process().prepareCall(
+			cstmt = DbConnection.process().prepareCall(
 					"{call pcs.reset_night_jobs()}");
 			cstmt.executeUpdate();
 		} catch (Exception e) {
@@ -2098,7 +2098,7 @@ public class PCSLabEntry extends PcsFrame {
 			String SQL = "SELECT RPAD(tablespace_name,31), \n"
 					+ "LPAD(TO_CHAR(SUM(bytes/(1024*1024)),'99,990.99'),11) \n"
 					+ "FROM dba_free_space GROUP BY tablespace_name";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(SQL);
 			Vector v = new Vector();
 			while (rs.next()) {
@@ -2132,7 +2132,7 @@ public class PCSLabEntry extends PcsFrame {
 		try {
 			String SQL = "UPDATE pcsJob_control \n" + "SET job_status=3 \n"
 					+ "WHERE job_descr='JOB_STATUS' \n";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			int rs = stmt.executeUpdate(SQL);
 			try {
 				stmt.close();
@@ -2152,7 +2152,7 @@ public class PCSLabEntry extends PcsFrame {
 		try {
 			String SQL = "UPDATE pcsJob_control \n" + "SET job_status=2 \n"
 					+ "WHERE job_descr='JOB_STATUS' \n";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			int rs = stmt.executeUpdate(SQL);
 			try {
 				stmt.close();
@@ -2171,7 +2171,7 @@ public class PCSLabEntry extends PcsFrame {
 	void resubmitNightJobs() {
 		try {
 			CallableStatement cstmt;
-			cstmt = dbConnection.process().prepareCall(
+			cstmt = DbConnection.process().prepareCall(
 					"{call pcs.submit_night_jobs()}");
 			cstmt.executeUpdate();
 			cstmt.close();
@@ -2238,7 +2238,7 @@ public class PCSLabEntry extends PcsFrame {
 					+ "FROM pcs.billing_queue \n"
 					+ "WHERE billing_route='PAT' \n"
 					+ "GROUP BY SUBSTR(billing_type,3,2) \n";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			Vector v = new Vector();
 			int count = 0;
@@ -2284,7 +2284,7 @@ public class PCSLabEntry extends PcsFrame {
 
 	void HPVPendingItem_actionPerformed(java.awt.event.ActionEvent event) {
 		try {
-			CallableStatement cstmt = dbConnection.process()
+			CallableStatement cstmt = DbConnection.process()
 					.prepareCall("{? = call pcs.hpv_pending }");
 			
 			cstmt.registerOutParameter(1, OracleTypes.CLOB);
@@ -2395,7 +2395,7 @@ public class PCSLabEntry extends PcsFrame {
 		try {
 			String SQL = "SELECT job_status FROM pcsJob_control \n"
 					+ "WHERE job_descr='MID MONTH' \n";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(SQL);
 			while (rs.next()) {
 				status = rs.getInt(1);
@@ -2427,7 +2427,7 @@ public class PCSLabEntry extends PcsFrame {
 					String SQL = "UPDATE pcsJob_control SET \n"
 							+ "   job_status=1 \n"
 							+ "WHERE job_descr='MID MONTH' \n";
-					Statement stmt = dbConnection.process().createStatement();
+					Statement stmt = DbConnection.process().createStatement();
 					stmt.executeUpdate(SQL);
 					stmt.close();
 				} catch (Exception e) {
@@ -2438,7 +2438,7 @@ public class PCSLabEntry extends PcsFrame {
 					String SQL = "UPDATE pcsJob_control SET \n"
 							+ "   job_status=0 \n"
 							+ "WHERE job_descr='MID MONTH' \n";
-					Statement stmt = dbConnection.process().createStatement();
+					Statement stmt = DbConnection.process().createStatement();
 					stmt.executeUpdate(SQL);
 					stmt.close();
 				} catch (Exception e) {

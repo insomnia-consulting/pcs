@@ -214,7 +214,7 @@ public class HPVDbOps implements Runnable
                 "SELECT RTRIM(TO_CHAR(SysDate,'fmDay, fmMonth'))"+
                 "||' '||TO_CHAR(SysDate,'DD, fmYYYY') FROM DUAL");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(dateQuery);
             while (rs.next()) { parent.reportDate=rs.getString(1); }  
 
@@ -329,7 +329,7 @@ public class HPVDbOps implements Runnable
                 "   (SELECT MAX(effective_lab) \n"+
                 "    FROM pcs.directors \n"+
                 "    WHERE effective_lab <= ?) \n";
-	        pstmt = dbConnection.process().prepareStatement(SQL); 
+	        pstmt = DbConnection.process().prepareStatement(SQL); 
 	        pstmt.setInt(1,labReport.lab_number);
 	        ResultSet rs = pstmt.executeQuery(SQL);
 	        while (rs.next()) { labReport.director_name = rs.getString(1); }
@@ -395,7 +395,7 @@ public class HPVDbOps implements Runnable
             }
 
             // Retrieve the details
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             dCodeRec = new DetailCodeRec();
             while (rs.next()) {
@@ -544,7 +544,7 @@ public class HPVDbOps implements Runnable
                 "SELECT RTRIM(TO_CHAR(SysDate,'fmDay, fmMonth'))"+
                 "||' '||TO_CHAR(SysDate,'DD, fmYYYY') FROM DUAL");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(dateQuery);
             while (rs.next()) { parent.reportDate=rs.getString(1); }  
             
@@ -690,7 +690,7 @@ public class HPVDbOps implements Runnable
                 "WHERE lab_number="+labNum+" and \n"+
                 "   first_print="+parent.printMode+" \n");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(SQL);
             /*  The history table will record the lab number, print mode, and 
                 date the report was printed.  The print mode will reveal
@@ -729,7 +729,7 @@ public class HPVDbOps implements Runnable
                 "FROM pcs.hpv_print_queue \n"+
                 "GROUP BY first_print");
                 
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             int pMode=0;
             while (rs.next()) { 

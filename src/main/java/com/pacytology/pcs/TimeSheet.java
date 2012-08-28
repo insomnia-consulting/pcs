@@ -152,7 +152,7 @@ public class TimeSheet extends javax.swing.JFrame
         String query = null;
         try {
             query="select min(inv_id) from pcs.jc_invoice";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs=stmt.executeQuery(query);
             while (rs.next()) { currInvoice=rs.getInt(1); }
             currInvoice*=(-1);
@@ -184,7 +184,7 @@ public class TimeSheet extends javax.swing.JFrame
             "insert into jc_invoice values ("+currInvoice+",to_date('"+beginTime+"','MM/DD/YYYY HH24:MI'),"+
             "to_date('"+endTime+"','MM/DD/YYYY HH24:MI'),'"+description.getText()+"',null,null)";
         try {
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(query);
             query = 
                 "update jc_invoice set hours_worked = "+
@@ -223,7 +223,7 @@ public class TimeSheet extends javax.swing.JFrame
 	{
         try  {
             CallableStatement cstmt;
-	        cstmt=dbConnection.process().prepareCall(
+	        cstmt=DbConnection.process().prepareCall(
 	            "{call make_jc_invoice(?,?)}");
             cstmt.setInt(1,currInvoice);
             cstmt.setInt(2,1);

@@ -294,7 +294,7 @@ public class ProcCodePrices extends javax.swing.JFrame
                 "SELECT count(*) \n"+
                 "FROM pcs.price_codes \n"+
                 "WHERE active_status='A' \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) MAX_PRICE_CODES=rs.getInt(1);
             if (MAX_PRICE_CODES>0) {
@@ -569,7 +569,7 @@ public class ProcCodePrices extends javax.swing.JFrame
                 "SELECT billing_choice \n"+
                 "FROM pcs.billing_choices \n"+
                 "WHERE choice_code='"+bCode+"' \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) bChoice=rs.getInt(1);
             if (bChoice<=0) {

@@ -747,7 +747,7 @@ public class HPVTestResults extends javax.swing.JDialog
                 "FROM pcs.hpv_requests H, pcs.cytopath_print_queue C \n"+
                 "WHERE H.lab_number=C.lab_number(+) \n"+
                 "AND H.lab_number = ? \n";
-	        pstmt = dbConnection.process().prepareStatement(SQL); 
+	        pstmt = DbConnection.process().prepareStatement(SQL); 
 	        pstmt.setInt(1,lab_number);
 	        ResultSet rs = pstmt.executeQuery();
 	        while (rs.next()) {
@@ -784,7 +784,7 @@ public class HPVTestResults extends javax.swing.JDialog
 	        String SQL =
                 "insert into pcs.hpv_print_queue (lab_number,first_print) \n"+
                 "values (?,?) \n";
-	        pstmt = dbConnection.process().prepareStatement(SQL); 
+	        pstmt = DbConnection.process().prepareStatement(SQL); 
 	        pstmt.setInt(1,lab_number);
 	        pstmt.setInt(2,Lab.CURR_FINAL);
 	        pstmt.executeUpdate();
@@ -810,7 +810,7 @@ public class HPVTestResults extends javax.swing.JDialog
                 "UPDATE pcs.cytopath_print_queue \n"+
                 "SET first_print = ? \n"+
                 "WHERE lab_number = ? \n";
-	        pstmt = dbConnection.process().prepareStatement(SQL); 
+	        pstmt = DbConnection.process().prepareStatement(SQL); 
 	        pstmt.setInt(1,Lab.CURR_HPV);
 	        pstmt.setInt(2,lab_number);
 	        pstmt.executeUpdate();
@@ -849,7 +849,7 @@ public class HPVTestResults extends javax.swing.JDialog
                 "   cytotech = ?, \n"+
                 "   hpv_lab = ? \n"+
                 "where lab_number = ? \n";
-	        pstmt = dbConnection.process().prepareStatement(SQL); 
+	        pstmt = DbConnection.process().prepareStatement(SQL); 
 	        pstmt.setString(1,test_sent);
 	        pstmt.setString(2,actual_results);
 	        pstmt.setString(3,results_received);
@@ -874,7 +874,7 @@ public class HPVTestResults extends javax.swing.JDialog
         boolean trxStatus=true;
         try  {
             CallableStatement cstmt;
-	        cstmt=dbConnection.process().prepareCall(
+	        cstmt=DbConnection.process().prepareCall(
 	            "{call pcs.calculate_cost(?)}");
             cstmt.setInt(1,lab_number);
             cstmt.executeUpdate();
@@ -887,7 +887,7 @@ public class HPVTestResults extends javax.swing.JDialog
                 Utils.createErrMsg("HPV[2] updated BUT cost not calculated: "+e.toString());
                 trxStatus=false; 
             }
-	        cstmt=dbConnection.process().prepareCall(
+	        cstmt=DbConnection.process().prepareCall(
 	            "{call pcs.calculate_rebill(?)}");
             cstmt.setInt(1,lab_number);
             cstmt.executeUpdate();

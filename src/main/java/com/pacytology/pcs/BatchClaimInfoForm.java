@@ -607,7 +607,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                 "WHERE S.tpp='"+tppCode.getText()+"' and S.batch_number=B.batch_number \n"+
                 "   and S.batch_number="+batchID.getText()+" \n"+
                 "ORDER BY S.batch_number, S.submission_number \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) { 
                 ClaimSubmissionRec sRec = new ClaimSubmissionRec();
@@ -779,7 +779,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                 "SELECT description \n"+
                 "FROM pcs.x12_ack_codes \n"+
                 "WHERE code_value='"+code+"' \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) { s=rs.getString(1); } 
             try { stmt.close(); rs.close(); }
@@ -797,7 +797,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                 "SELECT description \n"+
                 "FROM pcs.x12_interchange_codes \n"+
                 "WHERE ta1_code='"+code+"' \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) { s=rs.getString(1); } 
             try { stmt.close(); rs.close(); }
@@ -815,7 +815,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                 "SELECT description \n"+
                 "FROM pcs.x12_ts_syntax_errors \n"+
                 "WHERE error_code="+code+" \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) { s=rs.getString(1); } 
             try { stmt.close(); rs.close(); }
@@ -832,7 +832,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                 "INSERT INTO pcs.claim_status_responses \n"+
                 "(lab_number,category,status,control_number) \n"+
                 "VALUES (?,?,?,?) \n";
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,labNumber);
             pstmt.setString(2,cat);
             pstmt.setString(3,st);
@@ -851,7 +851,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                 "INSERT INTO pcs.response_files \n"+
                 "(control_number,file_name,datestamp) \n"+
                 "VALUES (?,?,TO_DATE(?,'MM/DD/YYYY HH24:Mi') ) \n";
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,submitRec.control_number);
             pstmt.setString(2,fileName277.getText());
             pstmt.setString(3,submitDate.getText());
@@ -899,7 +899,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                 "WHERE batch_number = ? \n"+
                 "AND submission_number = ? \n";
 
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,submitRec.submission_date);
             pstmt.setString(2,submitRec.control_number);
             pstmt.setString(3,submitRec.ack_code);
@@ -938,7 +938,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                 "   A.batch_number = ? \n"+
                 "ORDER BY P.name \n";
 
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,batch_number);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
@@ -954,7 +954,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                     "   C.claim_id=B.claim_id and \n"+
                     "   B.carrier_id = ? and \n"+
                     "   C.batch_number = ? \n";
-                PreparedStatement stmt = dbConnection.process().prepareStatement(SSQL);
+                PreparedStatement stmt = DbConnection.process().prepareStatement(SSQL);
                 stmt.setInt(1,carrierID);
                 stmt.setInt(2,batch_number);
                 ResultSet rss = stmt.executeQuery();
@@ -974,7 +974,7 @@ public class BatchClaimInfoForm extends javax.swing.JFrame
                 "FROM pcs.payer_batch_amounts A \n"+
                 "WHERE A.batch_number = ? \n";
 
-            pstmt = dbConnection.process().prepareStatement(SQL);
+            pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,batch_number);
             rs = pstmt.executeQuery();
             while (rs.next()) { 

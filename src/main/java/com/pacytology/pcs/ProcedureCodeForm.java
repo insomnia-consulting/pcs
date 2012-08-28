@@ -429,7 +429,7 @@ public class ProcedureCodeForm extends PcsFrame
             String query =
                 "SELECT count(*) \n"+
                 "FROM pcs.procedure_codes \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) MAX_PROC_CODES=rs.getInt(1);
             query = 
@@ -666,7 +666,7 @@ public class ProcedureCodeForm extends PcsFrame
                 "    '"+(String)procCodeDesc.getText()+"', \n"+
                 "    'A',NULL) \n";
             System.out.println(query);                
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(query);
             if (rs>0) {
                 query = 
@@ -743,7 +743,7 @@ public class ProcedureCodeForm extends PcsFrame
                 "WHERE diagnosis_code='"+code+"'\n";
                 
             System.out.println(query);                
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(query);
             if (rs>0) {
                 //procedureCodes[rowID-1].active_status=status;               
@@ -798,7 +798,7 @@ public class ProcedureCodeForm extends PcsFrame
                 "WHERE procedure_code='"+code+"'\n";
                 
             System.out.println(query);                
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(query);
             if (rs>0) {
                 procedureCodes[rowID-1].description=desc;               

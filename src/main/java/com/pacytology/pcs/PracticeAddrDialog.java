@@ -233,7 +233,7 @@ public class PracticeAddrDialog extends javax.swing.JDialog
 	    try {
 	        String SQL = 
 	            "SELECT name FROM pcs.practices WHERE practice = "+practice.getText()+" \n";
-	        stmt = dbConnection.process().createStatement();
+	        stmt = DbConnection.process().createStatement();
 	        rs = stmt.executeQuery(SQL);
 	        String pName = null;
 	        while (rs.next()) { pName=rs.getString(1); }
@@ -287,7 +287,7 @@ public class PracticeAddrDialog extends javax.swing.JDialog
 	    try {
 	        String SQL = 
 	            "DELETE from pcs.temp_table \n";
-	        stmt = dbConnection.process().createStatement();
+	        stmt = DbConnection.process().createStatement();
 	        stmt.executeUpdate(SQL);
 	        String s = "INSERT INTO pcs.temp_table (row_id) VALUES (";
 	        for (int i=0; i<pList.size(); i++) {
@@ -295,7 +295,7 @@ public class PracticeAddrDialog extends javax.swing.JDialog
 	            SQL = s+p+") \n";
 	            stmt.executeUpdate(SQL);
 	        }
-	        cstmt=dbConnection.process().prepareCall(
+	        cstmt=DbConnection.process().prepareCall(
 	            "{call pcs.build_practice_label_file()}");
 	        cstmt.executeUpdate();
 	        if (verifyPrinter()) { 

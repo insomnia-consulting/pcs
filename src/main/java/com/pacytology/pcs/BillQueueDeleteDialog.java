@@ -230,7 +230,7 @@ public class BillQueueDeleteDialog extends javax.swing.JDialog
                 "SELECT rebilling, billing_type \n"+
                 "FROM pcs.billing_queue \n"+
                 "WHERE lab_number = ? \n";
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,lab_number);
             ResultSet rs = pstmt.executeQuery();
             int rebilling = -1;
@@ -247,7 +247,7 @@ public class BillQueueDeleteDialog extends javax.swing.JDialog
                 SQL =
                     "DELETE from pcs.billing_queue \n"+
                     "WHERE lab_number = ? \n";
-                pstmt=dbConnection.process().prepareStatement(SQL);
+                pstmt=DbConnection.process().prepareStatement(SQL);
                 pstmt.setInt(1,lab_number);
                 pstmt.execute();
                 log.write(
@@ -256,7 +256,7 @@ public class BillQueueDeleteDialog extends javax.swing.JDialog
                     SQL =  
                         "SELECT MAX(claim_id) from pcs.lab_claims \n"+
                         "WHERE lab_number = ? \n";
-                    pstmt=dbConnection.process().prepareStatement(SQL);
+                    pstmt=DbConnection.process().prepareStatement(SQL);
                     pstmt.setInt(1,lab_number);
                     rs=pstmt.executeQuery();
                     while (rs.next()) { claim_id=rs.getInt(1); }
@@ -265,7 +265,7 @@ public class BillQueueDeleteDialog extends javax.swing.JDialog
                             "UPDATE pcs.lab_claims \n"+
                             "SET claim_status = 'S' \n"+
                             "WHERE lab_number = ? \n";
-                        pstmt=dbConnection.process().prepareStatement(SQL);
+                        pstmt=DbConnection.process().prepareStatement(SQL);
                         pstmt.setInt(1,lab_number);
                         pstmt.execute();
                     }
@@ -287,7 +287,7 @@ public class BillQueueDeleteDialog extends javax.swing.JDialog
                 "SELECT in_queue,letter_type \n"+
                 "FROM pcs.fax_letters \n"+
                 "WHERE lab_number = ? \n";
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,lab_number);
             ResultSet rs = pstmt.executeQuery();
             int in_queue = -1;
@@ -303,13 +303,13 @@ public class BillQueueDeleteDialog extends javax.swing.JDialog
                 SQL =
                     "DELETE from pcs.fax_letters \n"+
                     "WHERE lab_number = ? \n";
-                pstmt=dbConnection.process().prepareStatement(SQL);
+                pstmt=DbConnection.process().prepareStatement(SQL);
                 pstmt.setInt(1,lab_number);
                 pstmt.execute();
                 log.write(
                     "LAB "+lab_number+" removed from fax letter queue");
                 CallableStatement cstmt;
-	            cstmt=dbConnection.process().prepareCall(
+	            cstmt=DbConnection.process().prepareCall(
 	                "{call pcs.calculate_cost(?)}");
                 cstmt.setInt(1,lab_number);
                 cstmt.executeUpdate();
@@ -396,13 +396,13 @@ public class BillQueueDeleteDialog extends javax.swing.JDialog
         try  {
             Class.forName(dbLogin.driver);
             labList = new Vector();
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) { String s = rs.getString(1); labList.addElement(s); }
             try { stmt.close(); rs.close(); }
             catch (SQLException e) { log.write(e.toString()); }                
             catch (Exception e) { log.write(e.toString()); }
-            stmt = dbConnection.process().createStatement();
+            stmt = DbConnection.process().createStatement();
             rs = stmt.executeQuery(SUM_SQL);
             while (rs.next()) { grandTotal=rs.getString(1); }
             try { stmt.close(); rs.close(); }

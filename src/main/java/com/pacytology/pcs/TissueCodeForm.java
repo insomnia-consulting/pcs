@@ -378,7 +378,7 @@ public class TissueCodeForm extends PcsFrame
                 
             resultCodeVect = new Vector();                
             System.out.println(query);                
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             int rowsReturned=0;
             while (rs.next()) {
@@ -611,7 +611,7 @@ public class TissueCodeForm extends PcsFrame
                 "VALUES (?,?,'A') \n";
                 
             System.out.println(query);                
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(query);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(query);
             pstmt.setString(1,tissueCode.getText());
             pstmt.setString(2,tissueCodeDesc.getText());
             int rs = pstmt.executeUpdate();
@@ -691,7 +691,7 @@ public class TissueCodeForm extends PcsFrame
                 "   active_status = ? \n"+
                 "WHERE tissue_code = ? \n";
                 
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,desc);
             pstmt.setString(2,status);
             pstmt.setString(3,code);

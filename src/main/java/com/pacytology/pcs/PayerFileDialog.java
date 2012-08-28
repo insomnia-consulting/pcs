@@ -554,7 +554,7 @@ public class PayerFileDialog extends PcsDialog
         boolean exitStatus=true;
         try  {
             CallableStatement cstmt;
-	        cstmt=dbConnection.process().prepareCall(
+	        cstmt=DbConnection.process().prepareCall(
 	            "{call pcs.e_payer_insert(?,?,?,?,?)}");
             cstmt.setString(1,name);
             cstmt.setString(2,card_type);
@@ -580,7 +580,7 @@ public class PayerFileDialog extends PcsDialog
             String SQL = 
                 "SELECT name,payer_id,card_type,comment_text,is_accepted \n"+
                 "FROM pcs.pending_carriers ORDER BY name \n";
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             pendingVect = new Vector();
             while (rs.next()) {
@@ -722,7 +722,7 @@ public class PayerFileDialog extends PcsDialog
                 "   e_billing,id_number,tpp,card_type,payer_id) \n"+
                 "VALUES (pcs.carriers_seq.nextval,?,126,'Y', \n"+
                 "   pcs.pcs_payer_seq.nextval,'ENV',?,?) \n";
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,cRec.name_pnd);
             pstmt.setString(2,cRec.card_type_pnd);
             pstmt.setString(3,cRec.payer_id_pnd);
@@ -731,7 +731,7 @@ public class PayerFileDialog extends PcsDialog
                 SQL = 
                     "INSERT INTO pcs.carrier_comments (carrier_id,comment_text) \n"+
                     "VALUES (pcs.carriers_seq.currval,?) \n";
-                pstmt=dbConnection.process().prepareStatement(SQL);
+                pstmt=DbConnection.process().prepareStatement(SQL);
                 pstmt.setString(1,cRec.comment_pnd);
                 pstmt.executeUpdate();
             }
@@ -757,7 +757,7 @@ public class PayerFileDialog extends PcsDialog
                 "   e_billing = 'Y', \n"+
                 "   tpp = 'ENV' \n"+
                 "WHERE carrier_id = ? \n";
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,cRec.payer_id_pnd);
             pstmt.setString(2,cRec.card_type_pnd);
             pstmt.setInt(3,cRec.carrier_id);
@@ -774,7 +774,7 @@ public class PayerFileDialog extends PcsDialog
                         "   comment_text = ? \n"+
                         "WHERE carrier_id="+cRec.carrier_id+" \n";
                 }
-                pstmt=dbConnection.process().prepareStatement(SQL);
+                pstmt=DbConnection.process().prepareStatement(SQL);
                 pstmt.setString(1,cRec.comment_pnd);
                 pstmt.executeUpdate();
             }
@@ -796,7 +796,7 @@ public class PayerFileDialog extends PcsDialog
             String SQL = 
                 "DELETE FROM pcs.pending_carriers \n"+
                 "WHERE name = ? and payer_id = ? \n";
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,cRec.name_pnd);
             pstmt.setString(2,cRec.payer_id_pnd);
             pstmt.executeUpdate();

@@ -215,7 +215,7 @@ public class EOMdialog extends javax.swing.JDialog
 	        "from pcs.job_control \n"+
 	        "where job_descr in ('ACCOUNT_MID','S_MONTH','EOM_DATE','EOM_MODE','SUMMARY_MODE') \n";
 	    try {
-	        Statement stmt = dbConnection.process().createStatement(); 
+	        Statement stmt = DbConnection.process().createStatement(); 
 	        ResultSet rs = stmt.executeQuery(SQL);
 	        while (rs.next()) {
 	            job_status = rs.getInt(1);

@@ -311,7 +311,7 @@ public class LabDbOps implements Runnable {
 		int rowsReturned = 0;
 		String SQL = "SELECT lab_number,letter_type,in_queue,TO_CHAR(date_sent,'MM/DD/YYYY') \n"
 				+ "FROM pcs.fax_letters WHERE origin=1 ORDER BY lab_number";
-		Statement stmt = dbConnection.process().createStatement();
+		Statement stmt = DbConnection.process().createStatement();
 		ResultSet rs = stmt.executeQuery(SQL);
 		while (rs.next()) {
 			FaxLetters faxLetter = new FaxLetters();
@@ -330,7 +330,7 @@ public class LabDbOps implements Runnable {
 		String SQL = "SELECT diagnosis_code,description \n"
 				+ "FROM pcs.diagnosis_codes \n" + "WHERE active_status='A' \n"
 				+ "ORDER BY diagnosis_code";
-		Statement stmt = dbConnection.process().createStatement();
+		Statement stmt = DbConnection.process().createStatement();
 		ResultSet rs = stmt.executeQuery(SQL);
 		while (rs.next()) {
 			DiagnosisCodeRec dRec = new DiagnosisCodeRec();
@@ -364,7 +364,7 @@ public class LabDbOps implements Runnable {
 				+ "FROM pcs.detail_codes \n"
 				+ "WHERE is_tissue<>'T' AND is_tissue<>'H' \n"
 				+ "ORDER BY detail_code \n";
-		Statement stmt = dbConnection.process().createStatement();
+		Statement stmt = DbConnection.process().createStatement();
 		ResultSet rs = stmt.executeQuery(SQL);
 		while (rs.next()) {
 			DetailCodeRec d = new DetailCodeRec();
@@ -426,7 +426,7 @@ public class LabDbOps implements Runnable {
 				+ "   pat.patient=labs.patient and \n"
 				+ "   labs.practice=prac.practice and \n"
 				+ "   pat.last_lab=labs.lab_number and \n";
-		Statement stmt = dbConnection.process().createStatement();
+		Statement stmt = DbConnection.process().createStatement();
 		ResultSet rs = stmt.executeQuery(preLookup);
 		while (rs.next()) {
 			patient = rs.getInt(1);
@@ -665,7 +665,7 @@ public class LabDbOps implements Runnable {
 				+ "        WHERE lab_number=" + labNum
 				+ " AND billing_level<>'PRT') \n";
 
-		stmt = dbConnection.process().createStatement();
+		stmt = DbConnection.process().createStatement();
 		rs = stmt.executeQuery(SQL);
 		int rowsReturned = 0;
 		while (rs.next()) {
@@ -763,7 +763,7 @@ public class LabDbOps implements Runnable {
 					+ "   ld.detail_id=ldc.detail_id(+) and \n"
 					+ "   ld.lab_number=" + labNum + " \n"
 					+ "ORDER BY ld.detail_code \n";
-			stmt = dbConnection.process().createStatement();
+			stmt = DbConnection.process().createStatement();
 			rs = stmt.executeQuery(SQL);
 			while (rs.next()) {
 				currDetail = rs.getInt(1);
@@ -792,7 +792,7 @@ public class LabDbOps implements Runnable {
 					+ "FROM pcs.lab_req_diagnosis \n" + "WHERE lab_number="
 					+ labNum + " \n" + "AND rebilling="
 					+ parent.labRec.rebilling + " \n" + "ORDER BY d_seq";
-			stmt = dbConnection.process().createStatement();
+			stmt = DbConnection.process().createStatement();
 			rs = stmt.executeQuery(SQL);
 			while (rs.next()) {
 				int d_seq = rs.getInt(1);
@@ -816,7 +816,7 @@ public class LabDbOps implements Runnable {
 					+ "   TO_CHAR(date_sent,'MMDDYYYY'),origin \n"
 					+ "FROM pcs.fax_letters \n" + "WHERE lab_number=" + labNum
 					+ " \n";
-			stmt = dbConnection.process().createStatement();
+			stmt = DbConnection.process().createStatement();
 			rs = stmt.executeQuery(SQL);
 			while (rs.next()) {
 				parent.labRec.billing.letter_type = rs.getString(1);
@@ -843,7 +843,7 @@ public class LabDbOps implements Runnable {
 			case 1:
 				SQL = "SELECT count(*) FROM pcs.billing_queue \n"
 						+ "WHERE lab_number=" + labNum + " \n";
-				stmt = dbConnection.process().createStatement();
+				stmt = DbConnection.process().createStatement();
 				rs = stmt.executeQuery(SQL);
 				while (rs.next()) {
 					inQueue = rs.getInt(1);
@@ -878,7 +878,7 @@ public class LabDbOps implements Runnable {
 						+ "   hpv_code, \n" + "   hpv_lab \n"
 						+ "FROM pcs.hpv_requests \n" + "WHERE lab_number = "
 						+ parent.labRec.lab_number + " \n";
-				stmt = dbConnection.process().createStatement();
+				stmt = DbConnection.process().createStatement();
 				rs = stmt.executeQuery(SQL);
 				parent.labRec.hpv.requested = "N";
 				while (rs.next()) {
@@ -904,7 +904,7 @@ public class LabDbOps implements Runnable {
 			}
 			SQL = "SELECT ADPH_program from pcs.adph_lab_whp \n"
 					+ "WHERE lab_number = " + parent.labRec.lab_number + " \n";
-			stmt = dbConnection.process().createStatement();
+			stmt = DbConnection.process().createStatement();
 			rs = stmt.executeQuery(SQL);
 			while (rs.next()) {
 				parent.labRec.ADPH_program = rs.getString(1);
@@ -916,7 +916,7 @@ public class LabDbOps implements Runnable {
 					+ "WHERE A.lab_number=B.lab_number \n"
 					+ "AND B.lab_number=" + parent.labRec.lab_number + " \n"
 					+ "AND A.practice=" + parent.labRec.practice + " \n";
-			stmt = dbConnection.process().createStatement();
+			stmt = DbConnection.process().createStatement();
 			rs = stmt.executeQuery(SQL);
 			while (rs.next()) {
 				parent.labRec.invoice = rs.getString(1);
@@ -933,7 +933,7 @@ public class LabDbOps implements Runnable {
 		CallableStatement cstmt = null;
 		boolean exitStatus = true;
 		try {
-			cstmt = dbConnection
+			cstmt = DbConnection
 					.process()
 					.prepareCall(
 							"{call pcs.lab_reqs_add(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
@@ -982,7 +982,7 @@ public class LabDbOps implements Runnable {
 				if (tDetRec[i].isSelected) {
 
 					cstmt.close();
-					cstmt = dbConnection.process().prepareCall(
+					cstmt = DbConnection.process().prepareCall(
 							"{call pcs.lab_req_detail_add(?,?,?)}");
 					cstmt.setInt(1, tLabRec.lab_number);
 					cstmt.setInt(2, tDetRec[i].detail_code);
@@ -1001,7 +1001,7 @@ public class LabDbOps implements Runnable {
 				int detail_code = 99;
 				if (tLabRec.hpv.hpvSource.equals("P"))
 					detail_code = 98;
-				cstmt = dbConnection.process().prepareCall(
+				cstmt = DbConnection.process().prepareCall(
 						"{call pcs.lab_req_detail_add(?,?,?)}");
 				cstmt.setInt(1, tLabRec.lab_number);
 				cstmt.setInt(2, detail_code);
@@ -1044,7 +1044,7 @@ public class LabDbOps implements Runnable {
 					+ "   hpv_regardless,imaged,parent_account,program,e_reporting \n"
 					+ "FROM pcs.practices \n" + "WHERE practice=" + pr + " \n";
 
-			stmt = dbConnection.process().createStatement();
+			stmt = DbConnection.process().createStatement();
 			rs = stmt.executeQuery(query);
 			int rowsReturned = 0;
 			String f2 = " ";
@@ -1113,7 +1113,7 @@ public class LabDbOps implements Runnable {
 						parent.labRec.prac.ADPH_program_descr = new Vector();
 						query = "SELECT adph_program,description \n"
 								+ "FROM pcs.ADPH_programs \n";
-						stmt = dbConnection.process().createStatement();
+						stmt = DbConnection.process().createStatement();
 						rs = stmt.executeQuery(query);
 						while (rs.next()) {
 							parent.labRec.prac.ADPH_programs.addElement(rs
@@ -1171,7 +1171,7 @@ public class LabDbOps implements Runnable {
 				+ " and active_status='A' \n"
 				+ "ORDER BY primary DESC,lname \n";
 
-		stmt = dbConnection.process().createStatement();
+		stmt = DbConnection.process().createStatement();
 		rs = stmt.executeQuery(SQL);
 		parent.doctorVect = new Vector();
 		int rowsReturned = 0;
@@ -1249,7 +1249,7 @@ public class LabDbOps implements Runnable {
 		if (!Utils.isNull(othName))
 			SQL += "\n   and c.name LIKE '" + othName + "%'";
 		SQL += " ORDER BY c.name \n";
-		stmt = dbConnection.process().createStatement();
+		stmt = DbConnection.process().createStatement();
 		rs = stmt.executeQuery(SQL);
 		parent.carrierVect = new Vector();
 		String buf1[] = null;
@@ -1317,12 +1317,12 @@ public class LabDbOps implements Runnable {
 
 	public void update() throws SQLException, DataNotFoundException, Exception {
 		// must check for pending letter before AND after update
-		int nLettersBefore = dbConnection.getRowCount("PCS.FAX_LETTERS",
+		int nLettersBefore = DbConnection.getRowCount("PCS.FAX_LETTERS",
 				"LAB_NUMBER=" + tLabRec.lab_number);
 		// check whether in billing queue prior to update
-		boolean inBillQ = dbConnection.inBillingQueue(tLabRec.lab_number);
+		boolean inBillQ = DbConnection.inBillingQueue(tLabRec.lab_number);
 		CallableStatement cstmt = null;
-		cstmt = dbConnection
+		cstmt = DbConnection
 				.process()
 				.prepareCall(
 						"{call pcs.lab_reqs_update(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}");
@@ -1365,7 +1365,7 @@ public class LabDbOps implements Runnable {
 
 		for (int i = 0; i < parent.MAX_DET_CODES; i++) {
 			if (tDetRec[i].isSelected) {
-				cstmt = dbConnection.process().prepareCall(
+				cstmt = DbConnection.process().prepareCall(
 						"{call pcs.lab_req_detail_add(?,?,?)}");
 				cstmt.setInt(1, tLabRec.lab_number);
 				cstmt.setInt(2, tDetRec[i].detail_code);
@@ -1377,7 +1377,7 @@ public class LabDbOps implements Runnable {
 			int detail_code = 99;
 			if (tLabRec.hpv.hpvSource.equals("P"))
 				detail_code = 98;
-			cstmt = dbConnection.process().prepareCall(
+			cstmt = DbConnection.process().prepareCall(
 					"{call pcs.lab_req_detail_add(?,?,?)}");
 			cstmt.setInt(1, tLabRec.lab_number);
 			cstmt.setInt(2, detail_code);
@@ -1392,7 +1392,7 @@ public class LabDbOps implements Runnable {
 		 * billing on a lab marked as finished. DISABLED: 04/26/2005 ENABLED:
 		 * 05/09/2005 to add_cost when there was letter pending
 		 */
-		int nLettersAfter = dbConnection.getRowCount("PCS.FAX_LETTERS",
+		int nLettersAfter = DbConnection.getRowCount("PCS.FAX_LETTERS",
 				"LAB_NUMBER=" + tLabRec.lab_number);
 		boolean hadLetters = false;
 		if (nLettersBefore > 0 && nLettersAfter == 0)
@@ -1405,7 +1405,7 @@ public class LabDbOps implements Runnable {
 	public void add_cost() throws SQLException, DataNotFoundException,
 			Exception {
 		CallableStatement cstmt = null;
-		cstmt = dbConnection.process().prepareCall(
+		cstmt = DbConnection.process().prepareCall(
 				"{call pcs.calculate_cost(?)}");
 		cstmt.setInt(1, tLabRec.lab_number);
 		cstmt.executeUpdate();
@@ -1495,7 +1495,7 @@ public class LabDbOps implements Runnable {
 		ResultSet rs = null;
 		String SQL = "SELECT city,state FROM pcs.zipcodes WHERE zip='" + zip5
 				+ "' \n";
-		stmt = dbConnection.process().createStatement();
+		stmt = DbConnection.process().createStatement();
 		rs = stmt.executeQuery(SQL);
 		int rcnt = 0;
 		while (rs.next()) {
@@ -1522,7 +1522,7 @@ public class LabDbOps implements Runnable {
 		ResultSet rs = null;
 		String SQL = "SELECT lab_number FROM pcs.lab_requisitions WHERE lab_number="
 				+ tLab + " \n";
-		stmt = dbConnection.process().createStatement();
+		stmt = DbConnection.process().createStatement();
 		rs = stmt.executeQuery(SQL);
 		int rcnt = 0;
 		while (rs.next()) {
@@ -1546,7 +1546,7 @@ public class LabDbOps implements Runnable {
 		String SQL = "SELECT lab_number FROM pcs.lab_requisitions WHERE lab_number="
 				+ labNum + " \n";
 		try {
-			stmt = dbConnection.process().createStatement();
+			stmt = DbConnection.process().createStatement();
 			rs = stmt.executeQuery(SQL);
 			int rcnt = 0;
 			while (rs.next()) {
@@ -1573,7 +1573,7 @@ public class LabDbOps implements Runnable {
 				+ "   dob = TO_DATE(?,'MMDDYYYY'), \n" + "   lname = ?, \n"
 				+ "   fname = ?, \n" + "   mi = ?, \n" + "   race = ? \n"
 				+ "WHERE patient = ? \n";
-		PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+		PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
 		pstmt.setString(1, tLabRec.pat.address1);
 		pstmt.setString(2, tLabRec.pat.city);
 		pstmt.setString(3, tLabRec.pat.state);
@@ -1599,7 +1599,7 @@ public class LabDbOps implements Runnable {
 		String query = "INSERT INTO pcs.patients \n"
 				+ "   (patient,lname,fname,ssn,dob,address1,city,state,zip,phone,mi,race,sex,last_lab) \n"
 				+ "VALUES (?,?,?,?,to_date(?,'MMDDYYYY'),?,?,?,?,?,?,?,?,?) \n";
-		PreparedStatement pstmt = dbConnection.process()
+		PreparedStatement pstmt = DbConnection.process()
 				.prepareStatement(query);
 		tLabRec.patient = Utils.getNextPatient();
 		pstmt.setInt(1, tLabRec.patient);
@@ -1622,7 +1622,7 @@ public class LabDbOps implements Runnable {
 
 	private void buildDiagnosisLetter() throws SQLException, Exception {
 		CallableStatement cstmt = null;
-		cstmt = dbConnection.process().prepareCall(
+		cstmt = DbConnection.process().prepareCall(
 				"{call pcs.build_diagnosis_letter(?,?,?)}");
 		cstmt.setInt(1, parent.labRec.lab_number);
 		cstmt.setInt(2, -1);
@@ -1633,7 +1633,7 @@ public class LabDbOps implements Runnable {
 
 	private void buildBlankLetter() throws SQLException, Exception {
 		CallableStatement cstmt = null;
-		cstmt = dbConnection.process().prepareCall(
+		cstmt = DbConnection.process().prepareCall(
 				"{call pcs.build_blank_letter(?,?)}");
 		cstmt.setInt(1, parent.labRec.lab_number);
 		cstmt.setInt(2, 1);
@@ -1643,7 +1643,7 @@ public class LabDbOps implements Runnable {
 
 	private void checkBillingInfo() throws SQLException, Exception {
 		CallableStatement cstmt = null;
-		cstmt = dbConnection.process().prepareCall(
+		cstmt = DbConnection.process().prepareCall(
 				"{call pcs.check_billing_info(?,?,?,?)}");
 		cstmt.setInt(1, parent.labRec.lab_number);
 		cstmt.setInt(2, parent.labRec.rebilling);
@@ -1657,7 +1657,7 @@ public class LabDbOps implements Runnable {
 		boolean exists = false;
 		String SQL = "SELECT patient FROM pcs.patients WHERE patient="
 				+ patient + " \n";
-		Statement stmt = dbConnection.process().createStatement();
+		Statement stmt = DbConnection.process().createStatement();
 		ResultSet rs = stmt.executeQuery(SQL);
 		while (rs.next()) {
 			exists = true;
@@ -1675,7 +1675,7 @@ public class LabDbOps implements Runnable {
 			String SQL = "SELECT MAX(lab_number) \n"
 					+ "FROM pcs.lab_requisitions " + "WHERE patient=" + pat
 					+ " \n";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(SQL);
 			while (rs.next()) {
 				previousLab = rs.getInt(1);
@@ -1697,7 +1697,7 @@ public class LabDbOps implements Runnable {
 						+ "   finished,previous_lab \n"
 						+ "FROM pcs.lab_requisitions " + "WHERE lab_number="
 						+ previousLab + " \n";
-				stmt = dbConnection.process().createStatement();
+				stmt = DbConnection.process().createStatement();
 				rs = stmt.executeQuery(SQL);
 				while (rs.next()) {
 					lab = rs.getInt(1);
@@ -1753,7 +1753,7 @@ public class LabDbOps implements Runnable {
 			String query = "SELECT comment_text \n"
 					+ "FROM pcs.lab_req_comments " + "WHERE lab_number="
 					+ labNum + " \n";
-			Statement stmt = dbConnection.process().createStatement();
+			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
 				hasComments = true;
@@ -1776,7 +1776,7 @@ public class LabDbOps implements Runnable {
 		String SQL = "SELECT detail_code,description,additional_info \n"
 				+ "FROM pcs.detail_codes WHERE is_tissue='Y' OR is_tissue='T' \n"
 				+ "ORDER BY detail_code \n";
-		Statement stmt = dbConnection.process().createStatement();
+		Statement stmt = DbConnection.process().createStatement();
 		ResultSet rs = stmt.executeQuery(SQL);
 		while (rs.next()) {
 			DetailCodeRec d = new DetailCodeRec();
@@ -1813,7 +1813,7 @@ public class LabDbOps implements Runnable {
 		boolean result = false;
 		String SQL = "SELECT count(*) \n" + "FROM pcs.ibc_prefixes \n"
 				+ "WHERE prefix = '" + prefix + "' \n";
-		Statement stmt = dbConnection.process().createStatement();
+		Statement stmt = DbConnection.process().createStatement();
 		ResultSet rs = stmt.executeQuery(SQL);
 		int rcnt = 0;
 		while (rs.next()) {
@@ -1836,7 +1836,7 @@ public class LabDbOps implements Runnable {
 		r.pat_ssn = tLabRec.pat.ssn;
 		r.date_collected = Utils.addDateMask(tLabRec.date_collected);
 		r.receive_date = Utils.addDateMask(tLabRec.receive_date);
-		r.datestamp = Utils.addDateMask(dbConnection.getDate());
+		r.datestamp = Utils.addDateMask(DbConnection.getDate());
 		r.parent_account = tLabRec.parent_account;
 		r.practice = tLabRec.practice;
 		r.program = tLabRec.program;

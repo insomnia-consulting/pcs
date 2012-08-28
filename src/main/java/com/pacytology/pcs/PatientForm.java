@@ -422,7 +422,7 @@ public class PatientForm extends javax.swing.JFrame
         parent.clearForm();
         parent.labPrevLabNum.setText(Integer.toString(paRec[index].last_lab));
         parent.labPractice.setText(Integer.toString(paRec[index].practice));
-        if (dbConnection.getUser().toUpperCase().equals("ACHIODA"))
+        if (DbConnection.getUser().toUpperCase().equals("ACHIODA"))
             parent.labPractice.setText(null);
         parent.labPatientLastName.setText(paRec[index].lname);
         parent.labPatientFirstName.setText(paRec[index].fname);

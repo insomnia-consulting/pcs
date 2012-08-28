@@ -2138,7 +2138,7 @@ public class LabForm extends PcsFrame
 	            /* April 23, 2008: Make practice field blank for Amy
 	               when adding reqs.
 	            */
-	            if (dbConnection.getUser().toUpperCase().equals("ACHIODA"))
+	            if (DbConnection.getUser().toUpperCase().equals("ACHIODA"))
 	                labPractice.setText(null);
 	            if (labRec.prac_status.equals("I")) {
 	                labPracticeName.setText("Account #"+labPractice.getText()+
@@ -3507,7 +3507,7 @@ public class LabForm extends PcsFrame
 	        if (currMode==Lab.ADD) {
 	            if (labPrep.getText().equals("S")) {
                     (new RecvDateDialog(labNumber.getText(),labRec)).setVisible(true);
-	                int lab = dbConnection.getNextTissueNumber();
+	                int lab = DbConnection.getNextTissueNumber();
 	                labRec.lab_number=lab;
 	                labRec.preparation=Lab.SURGICAL;
 	                labNumber.setText(Integer.toString(lab));
@@ -3516,7 +3516,7 @@ public class LabForm extends PcsFrame
 	                return;
 	            }
 	            else if (labPrep.getText().equals("H")) {
-	                int lab = dbConnection.getNextHPVNumber();
+	                int lab = DbConnection.getNextHPVNumber();
 	                labRec.lab_number=lab;
 	                labRec.preparation=Lab.HPV_ONLY;
 	                labNumber.setText(Integer.toString(lab));
@@ -4851,7 +4851,7 @@ public class LabForm extends PcsFrame
             "WHERE in_queue = 1 \n"+
             "GROUP BY letter_type \n";
         try {
-            stmt = dbConnection.process().createStatement();
+            stmt = DbConnection.process().createStatement();
             rs = stmt.executeQuery(SQL);
             while (rs.next()) {
                 String[] ltrInfo = new String[2];
@@ -4914,7 +4914,7 @@ public class LabForm extends PcsFrame
         try  {
             String SQL = null;
             int rs = 0;
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             SQL =   "DELETE FROM pcs.fax_letters \n"+
                     "WHERE in_queue = -1 OR letter_type='BLANK' \n";
             rs=stmt.executeUpdate(SQL);

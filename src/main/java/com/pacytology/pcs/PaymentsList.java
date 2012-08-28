@@ -183,7 +183,7 @@ public class PaymentsList extends javax.swing.JFrame
                 "P.date_posted is null \n"+
                 "order by B.choice_code,P.account_id \n";
             
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             currRow=0;
             while (rs.next()) {

@@ -576,7 +576,7 @@ public class DoctorForm extends javax.swing.JFrame
 		    if (origin==PRACTICE) prac=parent.practiceRec.practice;
             else if (origin==LAB) prac=parent2.labRec.practice;
 		    if (currMode==Lab.ADD) {
-		        cstmt=dbConnection.process().prepareCall(
+		        cstmt=DbConnection.process().prepareCall(
 		            "{call pcs.doctors_add(?,?,?,?,?,?,?,?,?,?,?)}");
                 cstmt.setInt(1,prac);
                 cstmt.setString(2,(drLName.getText()));
@@ -608,7 +608,7 @@ public class DoctorForm extends javax.swing.JFrame
 		            return;
 		        }
                 setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-		        cstmt=dbConnection.process().prepareCall(
+		        cstmt=DbConnection.process().prepareCall(
 		            "{call pcs.doctor_merge(?,?)}");
                 cstmt.setInt(1,dr_delete);
                 cstmt.setInt(2,dr_save);
@@ -630,7 +630,7 @@ public class DoctorForm extends javax.swing.JFrame
 		            doctor=d.doctor;
 		        }
 		        else if (origin==LAB) doctor=dr.doctor;
-		        cstmt=dbConnection.process().prepareCall(
+		        cstmt=DbConnection.process().prepareCall(
 		            "{call pcs.doctors_update(?,?,?,?,?,?,?,?,?,?,?,?)}");
                 cstmt.setInt(1,doctor);
                 cstmt.setString(2,(drLName.getText()));
@@ -864,7 +864,7 @@ public class DoctorForm extends javax.swing.JFrame
                 "WHERE doctor="+doctor+" \n";
 
             System.out.println(query);                
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             dr.doctor=doctor;
             while (rs.next()) {

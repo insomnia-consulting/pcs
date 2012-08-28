@@ -337,7 +337,7 @@ public class SecurityForm extends javax.swing.JFrame
 	        String SQL =
 	            "SELECT count(*) FROM pcs.user_restrictions \n"+
 	            "WHERE user_id = ? AND object_name = ? \n";
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,uid);
             pstmt.setString(2,objectName);
             ResultSet rs = pstmt.executeQuery();
@@ -358,7 +358,7 @@ public class SecurityForm extends javax.swing.JFrame
 	        String SQL =
 	            "SELECT object_name FROM pcs.user_restrictions \n"+
 	            "WHERE user_id = ? ORDER BY object_name \n";
-            PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+            PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,uid);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) { v.addElement(rs.getString(1)); }
@@ -382,7 +382,7 @@ public class SecurityForm extends javax.swing.JFrame
 		        if (c=='R' && !restricted) {
 		            SQL = 
 		                "INSERT INTO pcs.user_restrictions VALUES (?,?)";
-                    PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+                    PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
                     pstmt.setInt(1,uRec.user_id);
                     pstmt.setString(2,objCode.getText());
                     pstmt.execute();
@@ -393,7 +393,7 @@ public class SecurityForm extends javax.swing.JFrame
 		            SQL = 
 		                "DELETE FROM pcs.user_restrictions \n"+
 		                "WHERE user_id = ? and object_name = ? \n";
-                    PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+                    PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
                     pstmt.setInt(1,uRec.user_id);
                     pstmt.setString(2,objCode.getText());
                     pstmt.execute();

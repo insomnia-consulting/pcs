@@ -506,7 +506,7 @@ public class PathHoldsForm extends javax.swing.JFrame
                 "INSERT INTO pcs.cytopath_print_queue \n"+
                 "VALUES (";
 
-            stmt = dbConnection.process().createStatement();
+            stmt = DbConnection.process().createStatement();
             for (int i=0;i<NUM_HOLDS;i++) {
                 if (!Utils.isNull(pathHolds[i].released)) {
                     String buf = updQuery+
@@ -519,7 +519,7 @@ public class PathHoldsForm extends javax.swing.JFrame
                             vPath=verifiedBy.getText();
                         }
                     }
-                    pstmt=dbConnection.process().prepareStatement(buf);
+                    pstmt=DbConnection.process().prepareStatement(buf);
                     pstmt.setString(1,vDate);
                     pstmt.setString(2,vPath);
                     int rs = pstmt.executeUpdate(buf);
@@ -606,7 +606,7 @@ public class PathHoldsForm extends javax.swing.JFrame
                 "   ph.lab_number=q.lab_number(+) and q.lab_number IS NULL \n"+
                 "ORDER BY ph.lab_number \n";
                 
-            stmt = dbConnection.process().createStatement();
+            stmt = DbConnection.process().createStatement();
             rs1 = stmt.executeQuery(query);
             NUM_HOLDS=0;
             while (rs1.next()) { NUM_HOLDS++; }
@@ -861,7 +861,7 @@ public class PathHoldsForm extends javax.swing.JFrame
                     "FROM pcs.pathologists \n"+
                     "WHERE pathologist_code='"+p+"' \n"+
                     "AND active_status='A' \n");
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) { rowsReturned=rs.getInt(1); }
             try { rs.close(); stmt.close(); }

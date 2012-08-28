@@ -288,7 +288,7 @@ public class SpecificRecvDateDialog extends javax.swing.JDialog
 	            "SET receive_date = TO_DATE(?,'MM/DD/YYYY') \n"+
 	            "WHERE lab_number >= ? \n"+
 	            "AND lab_number <= ? \n";
-	        PreparedStatement pstmt = dbConnection.process().prepareStatement(SQL);
+	        PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
 	        pstmt.setString(1,receiveDate.getText());
 	        pstmt.setInt(2,start);
 	        pstmt.setInt(3,end);

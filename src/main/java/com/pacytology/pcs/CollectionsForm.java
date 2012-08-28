@@ -416,7 +416,7 @@ public class CollectionsForm extends PcsFrame
 	                "Accounts taken out of collections; must notify agency.");
 	            break;
 	    }
-	    rowCount = dbConnection.getRowCount(
+	    rowCount = DbConnection.getRowCount(
 	        "pcs.patient_accounts_in_collection",
 	        "sent = "+screenMode);
 	    if (screenMode!=PRIOR_BATCH) {
@@ -460,10 +460,10 @@ public class CollectionsForm extends PcsFrame
         else SQL += "\nORDER BY a.create_date DESC \n";
         Vector resultList = new Vector();
         for (int i=0; i<9; i++) {
-            if (i==0) resultList.addElement(new SQLValue(dbConnection.INTEGER));
-            else resultList.addElement(new SQLValue(dbConnection.STRING));
+            if (i==0) resultList.addElement(new SQLValue(DbConnection.INTEGER));
+            else resultList.addElement(new SQLValue(DbConnection.STRING));
         }
-        Vector resultTable = dbConnection.query(SQL,resultList);
+        Vector resultTable = DbConnection.query(SQL,resultList);
         accountData = new Vector();
         commentIndexes = new Vector();
         commentText = new Vector();
@@ -631,7 +631,7 @@ public class CollectionsForm extends PcsFrame
 	        return;
 	    }
 	    int labNumber = accountList[currNdx];    
-	    int rcnt = dbConnection.getRowCount(
+	    int rcnt = DbConnection.getRowCount(
 	        "pcs.lab_req_comments","lab_number="+labNumber);
 	    String SQL = null;
 	    Vector p = new Vector();
@@ -640,7 +640,7 @@ public class CollectionsForm extends PcsFrame
 	            SQL = 
 	                "INSERT INTO pcs.lab_req_comments (lab_number,comment_text) \n"+
 	                "VALUES (?,?) \n";
-	            p.addElement(new SQLValue(dbConnection.INTEGER,labNumber));
+	            p.addElement(new SQLValue(DbConnection.INTEGER,labNumber));
 	            p.addElement(new SQLValue(s));
 	        }
 	        else { 
@@ -649,16 +649,16 @@ public class CollectionsForm extends PcsFrame
 	                "SET comment_text = ? \n"+
 	                "WHERE lab_number = ? \n";
                 p.addElement(new SQLValue(s));
-	            p.addElement(new SQLValue(dbConnection.INTEGER,labNumber));
+	            p.addElement(new SQLValue(DbConnection.INTEGER,labNumber));
 	        }
 	    }
 	    else if (rcnt>0) {
             SQL = 
                 "DELETE FROM pcs.lab_req_comments \n"+
 	            "WHERE lab_number = ? \n";
-            p.addElement(new SQLValue(dbConnection.INTEGER,labNumber));
+            p.addElement(new SQLValue(DbConnection.INTEGER,labNumber));
 	    }
-	    if (!Utils.isNull(SQL)) dbConnection.change(SQL,p);
+	    if (!Utils.isNull(SQL)) DbConnection.change(SQL,p);
 	}
 	
 	void removeFromList()
@@ -674,17 +674,17 @@ public class CollectionsForm extends PcsFrame
 	    Vector p = new Vector();
 	    switch (screenMode) {
 	        case DEQUEUE:
-	            p.addElement(new SQLValue(dbConnection.INTEGER,QUEUE));
+	            p.addElement(new SQLValue(DbConnection.INTEGER,QUEUE));
 	            break;
 	        case QUEUE:
-	            p.addElement(new SQLValue(dbConnection.INTEGER,DEQUEUE));
+	            p.addElement(new SQLValue(DbConnection.INTEGER,DEQUEUE));
 	            break;
 	        case NOTIFY:
-	            p.addElement(new SQLValue(dbConnection.INTEGER,NOTIFIED));
+	            p.addElement(new SQLValue(DbConnection.INTEGER,NOTIFIED));
 	            break;
 	    }
-	    p.addElement(new SQLValue(dbConnection.INTEGER,labNumber));
-	    dbConnection.change(SQL,p);
+	    p.addElement(new SQLValue(DbConnection.INTEGER,labNumber));
+	    DbConnection.change(SQL,p);
 	}
 
 	void batchNumber_keyTyped(java.awt.event.KeyEvent event)
@@ -721,8 +721,8 @@ public class CollectionsForm extends PcsFrame
 	    if (screenMode==QUEUE) {
 	        if (!verifyNewBatch()) sent_mode=PENDING;
 	    }
-	    p.addElement(new SQLValue(dbConnection.INTEGER,sent_mode));
-	    dbConnection.call("pcs.build_collection_file",p);
+	    p.addElement(new SQLValue(DbConnection.INTEGER,sent_mode));
+	    DbConnection.call("pcs.build_collection_file",p);
 	    switch (sent_mode) {
 	        case PENDING:
 	            reportName="PENDING.col";
@@ -731,7 +731,7 @@ public class CollectionsForm extends PcsFrame
 	            reportName="DEQUEUE.col"; 
 	            break;
 	        case QUEUE:
-	            int batch = dbConnection.getMax(
+	            int batch = DbConnection.getMax(
 	                "pcs.patient_accounts_in_collection",
 	                "batch_number",null);
 	            reportName=Utils.lpad(Integer.toString(batch),6,"0")+".col";

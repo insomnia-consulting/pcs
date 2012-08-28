@@ -109,10 +109,10 @@ public class HPVNoTest extends javax.swing.JDialog
 		this();
 		System.out.println("before log create");
         this.log = new LogFile(
-            dbConnection.getLogPath(),
+            DbConnection.getLogPath(),
             "HPVNoTest",
-            dbConnection.getDate(),
-            dbConnection.getUser());
+            DbConnection.getDate(),
+            DbConnection.getUser());
         System.out.println("after log create");
         setTitle(sTitle);
 	}
@@ -300,12 +300,12 @@ public class HPVNoTest extends javax.swing.JDialog
 	            for (int i=0; i<labNumbers.size(); i++) {
 	                log.write((String)displayVect.elementAt(i));
 	                int lnum = (new Integer((String)labNumbers.elementAt(i))).intValue();
-	                pstmt=dbConnection.process().prepareStatement(SQL);
+	                pstmt=DbConnection.process().prepareStatement(SQL);
 	                pstmt.setInt(1,lnum);
 	                int q = pstmt.executeUpdate();
 	                pstmt.close();
 	                if (q>0) {
-	                    cstmt=dbConnection.process().prepareCall(
+	                    cstmt=DbConnection.process().prepareCall(
 	                        "{call pcs.calculate_cost(?)}");
                         cstmt.setInt(1,lnum);
                         cstmt.executeUpdate();
@@ -329,7 +329,7 @@ public class HPVNoTest extends javax.swing.JDialog
                 "WHERE a.lab_number=b.lab_number \n"+
                 "AND b.patient=c.patient AND a.test_sent IS NULL \n"+
                 "AND a.lab_number=? \n";
-            pstmt=dbConnection.process().prepareStatement(SQL);
+            pstmt=DbConnection.process().prepareStatement(SQL);
 	        pstmt.setInt(1,lnum);
 	        ResultSet rs = pstmt.executeQuery();
 	        while (rs.next()) { pname=rs.getString(1); }

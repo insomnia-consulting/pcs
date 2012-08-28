@@ -235,7 +235,7 @@ public class LabStatusDialog extends javax.swing.JDialog
         msgLabel.setText("Generating Report - Please Wait");
         try  {
             CallableStatement cstmt;
-	        cstmt=dbConnection.process().prepareCall(
+	        cstmt=DbConnection.process().prepareCall(
 	            "{call pcs.analyze_activity(?,?)}");
             cstmt.setInt(1,start);
             cstmt.setInt(2,end);

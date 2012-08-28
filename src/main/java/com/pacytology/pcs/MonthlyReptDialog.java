@@ -340,7 +340,7 @@ public class MonthlyReptDialog extends javax.swing.JDialog
             "FROM pcs.monthly_reports \n"+
             "WHERE file_ext = '"+reptName+"' \n";
         try {
-            Statement stmt = dbConnection.process().createStatement();
+            Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next())  {
                 stp_name = rs.getString(1);
@@ -363,13 +363,13 @@ public class MonthlyReptDialog extends javax.swing.JDialog
             int yearMonth = Integer.parseInt(stmtYear.getText()+stmtMonth.getText());
             try  {
                 if (reptName.equals("wh2")) {
-	                cstmt=dbConnection.process().prepareCall(
+	                cstmt=DbConnection.process().prepareCall(
 	                    "{call "+stp_name+"(?,?)}");
                     cstmt.setInt(1,yearMonth);
                     cstmt.setInt(2,(int)Integer.parseInt(practiceNumber.getText()));
                 }
                 else {
-	                cstmt=dbConnection.process().prepareCall(
+	                cstmt=DbConnection.process().prepareCall(
 	                    "{call "+stp_name+"(?)}");
                     cstmt.setInt(1,yearMonth);
                 }

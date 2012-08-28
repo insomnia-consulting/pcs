@@ -245,7 +245,7 @@ public class CommissionDialog extends javax.swing.JDialog
 	{
         try  {
             CallableStatement cstmt;
-	        cstmt=dbConnection.process().prepareCall(
+	        cstmt=DbConnection.process().prepareCall(
 	            "{call pcs.build_acct_summary_file(?,?,?)}");
             cstmt.setString(1,B_date);
             cstmt.setString(2,E_date);

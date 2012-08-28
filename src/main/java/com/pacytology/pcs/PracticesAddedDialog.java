@@ -314,7 +314,7 @@ public class PracticesAddedDialog extends javax.swing.JDialog
                 "AND date_added<LAST_DAY(TO_DATE(?,'MM/YYYY')+1) \n";
                 
             PreparedStatement pstmt;
-	        pstmt=dbConnection.process().prepareStatement(SQL);
+	        pstmt=DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,beginMM.getText());
             if (!Utils.isNull(endMM.getText()))
                 pstmt.setString(2,endMM.getText());
@@ -345,7 +345,7 @@ public class PracticesAddedDialog extends javax.swing.JDialog
                 "AND a.date_added<LAST_DAY(TO_DATE(?,'MM/YYYY')+1) \n"+
                 "GROUP BY a.practice \n";
            
-	        pstmt=dbConnection.process().prepareStatement(SQL);
+	        pstmt=DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,beginMM.getText());
             if (!Utils.isNull(endMM.getText()))
                 pstmt.setString(2,endMM.getText());
@@ -403,7 +403,7 @@ public class PracticesAddedDialog extends javax.swing.JDialog
                 "and a.payment_id=b.payment_id(+) \n"+ 
                 "and a.payment_type in ('PLUS ADJUST','MINUS ADJUST') \n";
             
-	        pstmt=dbConnection.process().prepareStatement(SQL);
+	        pstmt=DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,beginMM.getText());
             if (!Utils.isNull(endMM.getText()))
                 pstmt.setString(2,endMM.getText());
@@ -439,7 +439,7 @@ public class PracticesAddedDialog extends javax.swing.JDialog
                 "AND date_added<LAST_DAY(TO_DATE(?,'MM/YYYY')+1) \n";
                 
             PreparedStatement pstmt;
-	        pstmt=dbConnection.process().prepareStatement(SQL);
+	        pstmt=DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,beginMM.getText());
             if (!Utils.isNull(endMM.getText()))
                 pstmt.setString(2,endMM.getText());
