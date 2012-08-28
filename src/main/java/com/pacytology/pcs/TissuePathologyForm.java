@@ -30,9 +30,12 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
+import com.pacytology.pcs.actions.TissuePathologyFormActionMap;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
@@ -49,7 +52,7 @@ public class TissuePathologyForm extends PcsFrame
     TissuePathDbOps dbOps;
     boolean dbThreadRunning=false;
     public LogFile log;
-    String[] textBuffer;
+    public String[] textBuffer;
     int textListSize = 0;
     int maxY = 0;
     String reportDate = null;
@@ -398,7 +401,9 @@ public class TissuePathologyForm extends PcsFrame
 		pathCompleted.addKeyListener(aSymKey);
 		resPathologist.addKeyListener(aSymKey);
 		//}}
-		setupKeyPressMap();
+		actionMap = new TissuePathologyFormActionMap(this);
+		JRootPane rp = setupKeyPressMap();
+		
 		
 		for (int i=0; i<this.getContentPane().getComponentCount(); i++) {
 		    Component c = this.getContentPane().getComponent(i);
@@ -442,26 +447,18 @@ public class TissuePathologyForm extends PcsFrame
 				tissuePathologyReport();
 			}
 		});
-		rp.getActionMap().put("F5", new AbstractAction() {
+		
+		rp.getActionMap().put("VK_DOWN", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				if (!resRemarks.isEnabled()) {
-                    resRemarks.setEnabled(true);
-                    if (textItemsList.getSelectedIndex()<0)
-                        textItemsList.setSelectedIndex(0);
-                    String s =
-                        textBuffer[textItemsList.getSelectedIndex()];
-                    if (!Utils.isNull(s)) resRemarks.setText(s);
-                    resRemarks.requestFocus();
-                }
-                else {
-                    resRemarks.setEnabled(false);
-                    textBuffer[textItemsList.getSelectedIndex()]=resRemarks.getText();
-                    //resRemarks.setText(null);
-                    //resRemarks.transferFocus();
-                    resCompleted.requestFocus();
-                }
+				incrementTextList();
 			}
 		});
+		rp.getActionMap().put("VK_UP", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				decrementTextList();
+			}
+		});
+
 		rp.getActionMap().put("F8", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				 if (resCytoTech.hasFocus()) {
@@ -521,7 +518,7 @@ public class TissuePathologyForm extends PcsFrame
 		});
 		rp.getActionMap().put("ESC", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				resetForm();
+				resetActions();
 			}
 		});
 		
@@ -628,7 +625,7 @@ public class TissuePathologyForm extends PcsFrame
 	javax.swing.JTextField resSSN = new javax.swing.JTextField();
 	javax.swing.JTextField resPhone = new javax.swing.JTextField();
 	javax.swing.JPanel verifiedPanel = new javax.swing.JPanel();
-	javax.swing.JTextField resCompleted = new javax.swing.JTextField();
+	public javax.swing.JTextField resCompleted = new javax.swing.JTextField();
 	javax.swing.JTextField resCytoTech = new javax.swing.JTextField();
 	javax.swing.JLabel resCytoTechLbl = new javax.swing.JLabel();
 	javax.swing.JLabel resVerifiedLbl = new javax.swing.JLabel();
@@ -642,11 +639,11 @@ public class TissuePathologyForm extends PcsFrame
 	javax.swing.border.TitledBorder titledBorder3 = new javax.swing.border.TitledBorder("");
 	javax.swing.JPanel remarksPanel = new javax.swing.JPanel();
 	javax.swing.JScrollPane JScrollPane1 = new javax.swing.JScrollPane();
-	javax.swing.JTextArea resRemarks = new javax.swing.JTextArea();
+	public javax.swing.JTextArea resRemarks = new javax.swing.JTextArea();
 	javax.swing.border.TitledBorder titledBorder4 = new javax.swing.border.TitledBorder("");
 	javax.swing.JPanel descriptionListPanel = new javax.swing.JPanel();
 	javax.swing.JScrollPane JScrollPane2 = new javax.swing.JScrollPane();
-	javax.swing.JList textItemsList = new javax.swing.JList();
+	public javax.swing.JList textItemsList = new javax.swing.JList();
 	javax.swing.border.TitledBorder titledBorder5 = new javax.swing.border.TitledBorder("");
 	javax.swing.JPanel JPanel1 = new javax.swing.JPanel();
 	javax.swing.JLabel createdLbl = new javax.swing.JLabel();
@@ -703,9 +700,7 @@ public class TissuePathologyForm extends PcsFrame
 		public void keyPressed(java.awt.event.KeyEvent event)
 		{
 			Object object = event.getSource();
-			if (object == TissuePathologyForm.this)
-				TissuePathologyForm_keyPressed(event);
-			else if (object == resLabNumber)
+			if (object == resLabNumber)
 				resLabNumber_keyPressed(event);
 			else if (object == resRemarks)
 				resRemarks_keyPressed(event);
@@ -717,25 +712,6 @@ public class TissuePathologyForm extends PcsFrame
 				pathCompleted_keyPressed(event);
 			else if (object == resPathologist)
 				resPathologist_keyPressed(event);
-		}
-	}
-
-	void TissuePathologyForm_keyPressed(java.awt.event.KeyEvent event)
-	{
-		int key=event.getKeyCode();
-		switch (key) {
-            case KeyEvent.VK_INSERT:
-                //displayComments();
-                break;
-		    case KeyEvent.VK_DOWN:
-		        incrementTextList();
-                break;
-		    case KeyEvent.VK_UP:
-		        decrementTextList();
-                break;
-            case KeyEvent.VK_CONTROL:
-                ((JTextField)getFocusOwner()).setText(null);
-                break;
 		}
 	}
 	
@@ -814,26 +790,26 @@ public class TissuePathologyForm extends PcsFrame
                     if (resultRec.finished==(-1)) {
                         Utils.createErrMsg("Lab #"+(String)resLabNumber.getText()+
                             " was an EXPIRED specimen - cannot add results.");
-                        resetForm();                            
+                        resetActions();                            
                         addActions();
                     }
                     if (resultRec.preparation!=6) {
                         Utils.createErrMsg("Lab #"+resLabNumber.getText()+
                             " is not a TISSUE PATHOLOGY specimen.");
-                        resetForm();
+                        resetActions();
                         addActions();
                     }
                     else if (resultRec.finished>0) {
                         Utils.createErrMsg("Results for Lab #"+
                             (String)resLabNumber.getText()+
                             " have already been added");
-                        resetForm();
+                        resetActions();
                         addActions();
                     }
                     else if (Utils.isNull(resultRec.receive_date)) {
                         Utils.createErrMsg("No Receive Date for Lab #"+
                             (String)resLabNumber.getText());
-                        resetForm();
+                        resetActions();
                         addActions();
                     }
                     else {
@@ -847,7 +823,7 @@ public class TissuePathologyForm extends PcsFrame
                 }
                 else {
                     Utils.createErrMsg("No Data Located for Lab #"+resLabNumber.getText());
-                    resetForm();
+                    resetActions();
                     addActions();
                     log.write("Query failed on lab #"+resLabNumber.getText());
                 }
@@ -864,8 +840,8 @@ public class TissuePathologyForm extends PcsFrame
 	    resPathologist.setEnabled(eVal);
 	    if (eVal) resCompleted.requestFocus();
 	}
-	
-	void resetForm() 
+	@Override
+	public void resetActions() 
 	{
 	    createdLbl.setText("Created:");
 	    changedLbl.setText("Updated:");
@@ -936,11 +912,11 @@ public class TissuePathologyForm extends PcsFrame
 	                setEnableAllFields(false);
 	            }
 	            else {
-	                resetForm();
+	                resetActions();
 	                msgLabel.setText("NO DATA LOCATED");
 	            }
 	        }
-	        else resetForm();
+	        else resetActions();
 	    }
 	    else if (currMode==Lab.UPDATE) {
 	        fillResultRecord();
@@ -1047,6 +1023,8 @@ public class TissuePathologyForm extends PcsFrame
     Vector formatTissuesSubmitted(String text)
     {
         Vector results = new Vector();
+        if (text == null) return results;
+        
         StringTokenizer st = new StringTokenizer(text,";");
         while (st.hasMoreTokens()) {
             results.addElement(st.nextToken().trim());
@@ -1087,7 +1065,7 @@ public class TissuePathologyForm extends PcsFrame
 	    textItemsList.setListData(v);
 	    textItemsList.revalidate();
 	    textItemsList.repaint();
-	    if (textListSize>0) {
+	    if (labReport.tissueResults.size()>0) {
 	        for (int i=0; i<textListSize; i++) {
 	            TissueRec t = new TissueRec();
 	            t=(TissueRec)labReport.tissueResults.elementAt(i);
@@ -1135,7 +1113,14 @@ public class TissuePathologyForm extends PcsFrame
 
 	void resCompleted_keyPressed(java.awt.event.KeyEvent event)
 	{
-	    if (event.getKeyCode()==event.VK_ENTER) {
+		if (event.getKeyCode()==event.VK_DOWN) {
+		    incrementTextList();
+		} 
+		else if (event.getKeyCode()==event.VK_UP) {
+		    decrementTextList();
+		}
+		else 
+			if (event.getKeyCode()==event.VK_ENTER) {
 		    if (Utils.required(resCompleted,"Date Completed")) {
 		        if (Utils.dateVerify(resCompleted)) {
 		            resCompleted.transferFocus();
@@ -1193,7 +1178,7 @@ public class TissuePathologyForm extends PcsFrame
 	    LabRec labRec = new LabRec();
 	    String lnum = resLabNumber.getText();
         (new RecvDateDialog(lnum,labRec)).setVisible(true);
-        if (Utils.isNull(labRec.receive_date)) resetForm();
+        if (Utils.isNull(labRec.receive_date)) resetActions();
         else {
             resDateReceived.setText(Utils.addDateMask(labRec.receive_date));
             resultRec.receive_date=labRec.receive_date;
@@ -1695,7 +1680,7 @@ public class TissuePathologyForm extends PcsFrame
 	{
 	    int labNum = resultRec.lab_number;
 	    int c = currMode;
-	    resetForm();
+	    resetActions();
 	    currMode=c;
 	    resultRec.lab_number=labNum;
 	    resLabNumber.setText(Integer.toString(labNum));
@@ -1703,11 +1688,6 @@ public class TissuePathologyForm extends PcsFrame
 	    fillForm();
 	    dbOps.queryReport(resultRec.lab_number);
 	}
-    /* END PRINT REPORT METHODS **********************************************/
-	@Override
-	public void resetActions() {
-		// TODO Auto-generated method stub
-		
-	}
+    
 	
 }
