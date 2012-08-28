@@ -14,6 +14,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 <!--    <db.host.ip>10.211.55.18</db.host.ip> -->
 <!--    <db.host.ip>192.168.1.110</db.host.ip> -->
+<!-- 	<sid>pcs</sid> -->
+<!--   	<sid>pcsprod</sid> -->
   </properties>
   <dependencies>
 
@@ -78,7 +80,7 @@
         </dependencies>
         <configuration>
           <driver>oracle.jdbc.driver.OracleDriver</driver>
-          <url>jdbc:oracle:thin:@${db.host.ip}:1521:pcs</url>
+          <url>jdbc:oracle:thin:@${db.host.ip}:1521:${sid}</url>
           <username>pcs</username>
           <password>ahb21</password>
           <autocommit>true</autocommit>

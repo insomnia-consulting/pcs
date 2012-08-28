@@ -1689,7 +1689,7 @@ public class PCSLabEntry extends PcsFrame {
 						JOptionPane.QUESTION_MESSAGE);
 		if (rv == JOptionPane.YES_OPTION) {
 			this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-			//buildWorksheets();
+			buildWorksheets();
 			this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
 	}

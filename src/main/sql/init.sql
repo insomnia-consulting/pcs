@@ -3,5 +3,7 @@
 --1.  create directory REPORTS_DIR /u01/reports
 --2.  grant dba to pcs;
 
+create or replace directory REPORTS_DIR as '/u01/reports'
+\
 drop procedure stupid
 \
