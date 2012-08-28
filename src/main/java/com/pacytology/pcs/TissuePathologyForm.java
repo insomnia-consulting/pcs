@@ -397,6 +397,7 @@ public class TissuePathologyForm extends PcsFrame
 		resLabNumber.addKeyListener(aSymKey);
 		resRemarks.addKeyListener(aSymKey);
 		resCompleted.addKeyListener(aSymKey);
+		
 		resCytoTech.addKeyListener(aSymKey);
 		pathCompleted.addKeyListener(aSymKey);
 		resPathologist.addKeyListener(aSymKey);
@@ -448,16 +449,7 @@ public class TissuePathologyForm extends PcsFrame
 			}
 		});
 		
-		rp.getActionMap().put("VK_DOWN", new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				incrementTextList();
-			}
-		});
-		rp.getActionMap().put("VK_UP", new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				decrementTextList();
-			}
-		});
+		
 
 		rp.getActionMap().put("F8", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
