@@ -14,6 +14,8 @@ import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 
+import com.pacytology.pcs.io.FileTransfer;
+
 public class LabStatusDialog extends javax.swing.JDialog
 {
     String fileName;
@@ -252,7 +254,7 @@ public class LabStatusDialog extends javax.swing.JDialog
 	
 	void printReport()
 	{
-		OutputStream out = Export.getFile(Utils.SERVER_DIR+fileName);
+		OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR+fileName);
 	    Utils.genericPrint(out.toString(), new MessageFormat(""), new MessageFormat(""));
 	}
 

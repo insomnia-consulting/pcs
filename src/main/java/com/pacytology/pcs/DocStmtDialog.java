@@ -21,6 +21,8 @@ import javax.swing.*;
 import java.io.File;
 import java.io.OutputStream;
 import java.sql.*;
+
+import com.pacytology.pcs.io.FileTransfer;
 import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 
@@ -204,7 +206,7 @@ public class DocStmtDialog extends javax.swing.JDialog
                 }
                 else {
                     if (reportType.equals("SUMMARY")) {
-                    	OutputStream out = Export.getFile(Utils.SERVER_DIR + fName);
+                    	OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + fName);
                     	if (out != null && out.toString().length() > 0) {
                 			ReportViewer viewer = ReportViewer.create(out.toString(), title);
                 			viewer.setVisible(true);

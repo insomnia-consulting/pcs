@@ -22,6 +22,8 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.OutputStream;
 
+import com.pacytology.pcs.io.FileTransfer;
+
 public class DailyReptDialog extends javax.swing.JDialog
 {
 
@@ -129,7 +131,7 @@ public class DailyReptDialog extends javax.swing.JDialog
         }
         else {
                 String fName = stmtYear.getText()+stmtMonth.getText()+stmtDay.getText()+".dwr";
-                OutputStream out = Export.getFile(Utils.SERVER_DIR + fName);
+                OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + fName);
                 if (out != null && out.toString().length() > 0) {
         			ReportViewer viewer = ReportViewer.create(out.toString(), "Daily Summary Report");
         			viewer.setVisible(true);

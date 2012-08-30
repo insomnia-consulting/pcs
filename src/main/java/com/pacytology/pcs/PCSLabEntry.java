@@ -48,6 +48,7 @@ import javax.swing.UIManager;
 import oracle.jdbc.OracleTypes;
 
 import com.pacytology.pcs.db.DbUser;
+import com.pacytology.pcs.io.FileTransfer;
 import com.pacytology.pcs.ui.JAboutDialog;
 import com.pacytology.pcs.ui.PcsFrame;
 
@@ -1823,7 +1824,7 @@ public class PCSLabEntry extends PcsFrame {
 	void noResponseClaimItem_actionPerformed(java.awt.event.ActionEvent event) {
 		printerCodes.removeAllElements();
 		printerCodes.addElement(Utils.ELITE);
-		OutputStream out = Export.getFile(Utils.SERVER_DIR + "claim.rpt");
+		OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + "claim.rpt");
     	if (out != null && out.toString().length() > 0) {
 			ReportViewer viewer = ReportViewer.create(out.toString(), "No Response Claims");
 			viewer.setVisible(true);

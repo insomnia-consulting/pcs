@@ -6,6 +6,8 @@ package com.pacytology.pcs;
 import java.awt.*;
 import javax.swing.*;
 
+import com.pacytology.pcs.io.FileTransfer;
+
 import java.sql.*;
 import java.util.Vector;
 import java.io.File;
@@ -220,7 +222,7 @@ public class CommissionDialog extends javax.swing.JDialog
 	    generateReport();
 	    Vector printerCodes = new Vector();
 	    printerCodes.addElement(Utils.CONDENSED);
-        OutputStream out = Export.getFile(Utils.SERVER_DIR+fileName);
+        OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR+fileName);
         
         if (out != null && out.toString().length()>0) {
             ReportViewer reportViewer = ReportViewer.create(out.toString(), this.getTitle());

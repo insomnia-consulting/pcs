@@ -22,6 +22,7 @@ import javax.swing.JRootPane;
 
 import com.pacytology.pcs.actions.CollectionsFormActionMap;
 import com.pacytology.pcs.actions.LabFormActionMap;
+import com.pacytology.pcs.io.FileTransfer;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
@@ -760,7 +761,7 @@ public class CollectionsForm extends PcsFrame
 	    {
 	        printerCodes.addElement(Utils.EMPHASIZED);
 	    }
-	    OutputStream out = Export.getFile(Utils.SERVER_DIR + reportName);
+	    OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + reportName);
 	    new ReportViewer(out.toString(), "Collections Report").setVisible(true);
 	}
 	

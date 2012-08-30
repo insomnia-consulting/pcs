@@ -25,11 +25,8 @@ import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.PrintJob;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,17 +36,15 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.text.JTextComponent;
 
 import com.pacytology.pcs.actions.LabFormActionMap;
-import com.pacytology.pcs.actions.PClassActionMap;
+import com.pacytology.pcs.io.FileTransfer;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
@@ -4899,7 +4894,7 @@ public class LabForm extends PcsFrame
 	
 	private void printLetterFile(String filePath, String fileName, boolean forcePage)
 	{
-        OutputStream out = Export.getFile(Utils.SERVER_DIR + "generic.ltr" );
+        OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + "generic.ltr" );
 
         if (out.toString().length() < 1) {
         	Utils.createErrMsg("Cannot locate report: "+fileName); 
