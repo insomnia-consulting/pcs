@@ -180,6 +180,7 @@ public class InvoiceImportDialog extends javax.swing.JDialog {
 		if (event.getKeyCode() == KeyEvent.VK_ENTER) {
 			if (Utils.required(stmtMonth, "Month"))
 				stmtMonth.transferFocus();
+
 		}
 	}
 
@@ -190,7 +191,8 @@ public class InvoiceImportDialog extends javax.swing.JDialog {
 	void stmtYear_keyPressed(java.awt.event.KeyEvent event) {
 		if (event.getKeyCode() == KeyEvent.VK_ENTER) {
 			if (Utils.required(stmtYear, "Year"))
-				fileName.requestFocus();
+				fileName.setEnabled(true);
+				stmtYear.transferFocus();
 		}
 	}
 

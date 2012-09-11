@@ -1,5 +1,6 @@
 -- Documentation of things might need done; but some aren't done every import and some aren't done in the context of this user
 --2.  grant dba to pcs;
+--3.  grant select on sys.dba_free_space to pcs;
 
 create or replace directory REPORTS_DIR as '/u01/reports'
 \
