@@ -1799,7 +1799,9 @@ public class PCSLabEntry extends PcsFrame {
 	}
 
 	void printMonthlyReport(String ext) {
-		(new MonthlyReptDialog(ext)).setVisible(true);
+		MonthlyReptDialog dialog = new MonthlyReptDialog(ext);
+		dialog.setVisible(true);
+		dialog.toFront();
 	}
 
 	void biopsyLtrItem_actionPerformed(java.awt.event.ActionEvent event) {
