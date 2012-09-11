@@ -1,5 +1,6 @@
 package com.pacytology.pcs.ui;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
@@ -34,6 +35,8 @@ public abstract class PcsFrame extends JFrame {
 		KeyStroke f3 = KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false);
 		KeyStroke f4 = KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false);
 		KeyStroke f5 = KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false);
+		KeyStroke shiftf5 = KeyStroke.getKeyStroke(KeyEvent.VK_F5, ActionEvent.SHIFT_MASK, false);
+		KeyStroke altf5 = KeyStroke.getKeyStroke(KeyEvent.VK_F5, ActionEvent.ALT_MASK, false);
 		KeyStroke f6 = KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false);
 		KeyStroke f7 = KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false);
 		KeyStroke f8 = KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false);
@@ -66,6 +69,8 @@ public abstract class PcsFrame extends JFrame {
 		rp.getActionMap().put("F3", actionMap.updateAction);
 		rp.getActionMap().put("F4", actionMap.f4Action);
 		rp.getActionMap().put("F5", actionMap.f5Action);
+		rp.getActionMap().put("shiftF5", actionMap.shiftf5Action);
+		rp.getActionMap().put("altF5", actionMap.altf5Action);
 		rp.getActionMap().put("F9", actionMap.closeAction);
 		rp.getActionMap().put("F12", actionMap.finalAction);
 		rp.getActionMap().put("ESC", actionMap.resetAction);
@@ -77,6 +82,8 @@ public abstract class PcsFrame extends JFrame {
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f3, "F3");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f4, "F4");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f5, "F5");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(shiftf5, "shiftF5");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(altf5, "shiftF5");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f6, "F6");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f7, "F7");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f8, "F8");

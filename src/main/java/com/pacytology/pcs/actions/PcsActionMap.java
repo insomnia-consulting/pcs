@@ -95,7 +95,23 @@ public class PcsActionMap {
 			PcsActionMap.this.f5Action(e);
 		}
 	};
+	public final Action shiftf5Action = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+			PcsActionMap.this.shiftf5Action(e);
+		}
+	};
+	public final Action altf5Action = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+			PcsActionMap.this.altf5Action(e);
+		}
+	};
 	public void f5Action(ActionEvent e) {
+		
+	}
+	public void shiftf5Action(ActionEvent e) {
+	
+	}
+	public void altf5Action(ActionEvent e) {
 		
 	}
 	
@@ -117,6 +133,7 @@ public class PcsActionMap {
 			PcsActionMap.this.controlAction() ;
 		}
 	};
+
 	
 	public void controlAction() {
 		if (PcsActionMap.this.parentFrame.getFocusOwner() instanceof JTextField) {

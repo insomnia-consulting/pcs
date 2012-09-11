@@ -501,7 +501,10 @@ public class PatientAccountsForm extends PcsFrame
 			}
 		};
 		rp.getActionMap().put("INSERT",  insertAction);
-		rp.getActionMap().put("VK_I",  insertAction);
+		//Let's add 'I' as a way of calling VK_INSERT ON Mac
+		String osName = System.getProperty("os.name").toLowerCase();
+		boolean isMacOs = osName.startsWith("mac os x");
+		if (isMacOs) rp.getActionMap().put("VK_I",  insertAction);
 		rp.getActionMap().put("F6", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				if (inBillingQueue)

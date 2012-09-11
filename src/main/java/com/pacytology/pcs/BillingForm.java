@@ -47,7 +47,7 @@ public class BillingForm extends PcsFrame
     final int RESULTED = 1;
     final int BILLED = 2;
     final int FIRST_PAYMENT = 3;
-    final int FINISHED = 4;
+    public final static int FINISHED = 4;
     public int currMode=Lab.IDLE;
     public Login dbLogin;
     public BillingCodeRec[] labBillingCodes;
@@ -890,30 +890,7 @@ public class BillingForm extends PcsFrame
 		
 		rp.getActionMap().put("F5", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				 statusReset.setEnabled(false);
-		            if ((e.getModifiers() & ActionEvent.ALT_MASK) != 0) {
-		                BillingDetails bd = 
-		                    (BillingDetails)labRec.billing.details.elementAt(currNdx);
-		                if (bd.billing_choice==Lab.DB) 
-		                    (new PatientAccountsForm(
-		                        dbLogin,labRec.lab_number)).setVisible(true);
-		            }
-		            else if (((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0) && labRec.lab_number>0) {
-		                String s = labBillingChoice.getText();
-		                String c = Utils.isNull(claimStatus.getText()," ");
-		                if (c.equals("D")||c.equals("R")||c.equals("PP")||c.equals("N")
-		                ||c.equals("I")||(!Utils.isNull(s) && s.equals("DB")))
-		                    (new DBCommentDialog(dbComments)).setVisible(true);
-		                else
-		                    Utils.createErrMsg(
-		                        "Claim status is (D,R,PP,N,I) or billing choice is (DB)"+
-		                        " for direct bill comments");
-		            }
-		            else {
-		                if (globalFinished>=FINISHED)
-		                    Utils.createErrMsg("(1) No action permitted on finished work");
-		                else invokePatientForm();
-		            }
+				 
 			}
 		});
 		rp.getActionMap().put("F6", new AbstractAction() {
@@ -1084,7 +1061,9 @@ public class BillingForm extends PcsFrame
 			}
 		};
 		rp.getActionMap().put("INSERT", insertAction);
-		rp.getActionMap().put("VK_I", insertAction);
+		String osName = System.getProperty("os.name").toLowerCase();
+		boolean isMacOs = osName.startsWith("mac os x");
+		if (isMacOs)rp.getActionMap().put("VK_I", insertAction);
 		rp.getActionMap().put("VK_CONTROL", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				dFlag=false;
@@ -1316,7 +1295,7 @@ public class BillingForm extends PcsFrame
 	javax.swing.JLabel createdLbl = new javax.swing.JLabel();
 	javax.swing.JLabel changedLbl = new javax.swing.JLabel();
 	javax.swing.JPanel billingPanel = new javax.swing.JPanel();
-	javax.swing.JTextField labBillingChoice = new javax.swing.JTextField();
+	public javax.swing.JTextField labBillingChoice = new javax.swing.JTextField();
 	javax.swing.JTextField labOtherInsurance = new javax.swing.JTextField();
 	javax.swing.JTextField labPayerID = new javax.swing.JTextField();
 	javax.swing.JTextField labPCSID = new javax.swing.JTextField();
