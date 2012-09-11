@@ -811,7 +811,7 @@ public class BillingForm extends PcsFrame
 		//{{REGISTER_LISTENERS
 		SymAction lSymAction = new SymAction();
 		SymKey aSymKey = new SymKey();
-		labPrevLabNum.addKeyListener(aSymKey);
+		
 		this.addKeyListener(aSymKey);
 		labNumber.addKeyListener(aSymKey);
 		labPatientID.addKeyListener(aSymKey);
@@ -1072,11 +1072,8 @@ public class BillingForm extends PcsFrame
 	            else createErrMsg("Database is busy ... please retry");
 			}
 		});
-		rp.getActionMap().put("ESC", new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
+					
+
 		AbstractAction insertAction = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				 if (!Utils.isNull(labRec.prac.comment_text))

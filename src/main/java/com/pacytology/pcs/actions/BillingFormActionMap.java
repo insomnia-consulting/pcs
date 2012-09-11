@@ -4,12 +4,19 @@ import java.awt.event.ActionEvent;
 
 import com.pacytology.pcs.BillingDetails;
 import com.pacytology.pcs.BillingForm;
+import com.pacytology.pcs.FunctionKeyControl;
 import com.pacytology.pcs.Utils;
 
 public class BillingFormActionMap extends PcsActionMap {
 
 	public BillingFormActionMap(Object parentFrame) {
 		super(parentFrame);
+	}
+ 
+	@Override
+	public void queryAction() {
+		BillingFormActionMap.this.parentFrame.msgLabel.setText(null);
+		BillingFormActionMap.this.parentFrame.queryActions();
 	}
 
 	@Override
