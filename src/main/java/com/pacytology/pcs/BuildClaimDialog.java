@@ -429,7 +429,7 @@ public class BuildClaimDialog extends PcsDialog
     }
     
     void buildHGS(int ndx, String fileType, int batch) {
-        this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+    	this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         String fName = null;
         String SQL = null;
         int nClaims = 0;
@@ -471,7 +471,7 @@ public class BuildClaimDialog extends PcsDialog
                 if (nClaims==0) {
                     Utils.createErrMsg(
                         "No claims to process for "+tppRec[ndx].tpp);
-                    
+                    this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     return;
                 }
             }
@@ -500,6 +500,7 @@ public class BuildClaimDialog extends PcsDialog
         }
         catch (Exception e) { log.write(e+" build HGS"); }
         log.write("CLAIM FILE: "+fName+".hgs");
+        this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
     
     void buildPA_DPA() {    }

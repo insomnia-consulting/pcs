@@ -2383,7 +2383,7 @@ public class BillingForm extends PcsFrame
 	{
 	    boolean success=false;
 	    if (currMode==Lab.QUERY || currMode==Lab.UPDATE ) {
-		    this.setCursor(new Cursor(WAIT_CURSOR));
+		    this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             if (labOps.query(labNumber.getText())) {
                 fillForm();
                 setEnableAllFields(false);
@@ -2398,11 +2398,11 @@ public class BillingForm extends PcsFrame
                 resetActions();
                 msgLabel.setText("Query Operation Failed");
             }
-		    this.setCursor(new Cursor(DEFAULT_CURSOR));
+		    this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	    }
 		else if (currMode==Lab.REBILL_ADD)  {
 		    if (!hasSecondary) verifySecondary();
-		    this.setCursor(new Cursor(WAIT_CURSOR));
+		    this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		    fillLabRecord();
 		    if (!labBillingChoice.getText().equals("DOC") &&
 		        !labBillingChoice.getText().equals("DB") &&
@@ -2414,12 +2414,12 @@ public class BillingForm extends PcsFrame
                     createErrMsg("Payer for Code "+
                         (String)labBillingChoice.getText()+ 
                         " does not exist");
-                    this.setCursor(new Cursor(DEFAULT_CURSOR));
+                    this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     return;
                 }
                 boolean rv = billingValidation();
                 if (!rv) { 
-                    this.setCursor(new Cursor(DEFAULT_CURSOR));
+                    this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     return;
                 }
             }

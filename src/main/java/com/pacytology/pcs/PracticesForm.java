@@ -1101,6 +1101,7 @@ public class PracticesForm extends PcsFrame
                 fKeys.keyOn(fKeys.F9);
                 fKeys.keyOn(fKeys.F3);
                 fKeys.keyOn(fKeys.F5);
+
             }
             else { }
         }

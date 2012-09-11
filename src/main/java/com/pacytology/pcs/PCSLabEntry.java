@@ -1515,7 +1515,10 @@ public class PCSLabEntry extends PcsFrame {
 			buildHCFA1500("PPR");
 		}
 	}
-
+ /** 
+  * Use the max(batch_number) to get a filename
+  * @param billRoute
+  */
 	void buildHCFA1500(String billRoute) {
 		try {
 			CallableStatement cstmt;
@@ -1524,7 +1527,7 @@ public class PCSLabEntry extends PcsFrame {
 			cstmt.setString(1, Utils.UTL_FILE_DIR);
 			cstmt.setString(2, "ppr_clm");
 			cstmt.setString(3, billRoute);
-			cstmt.executeUpdate();
+			//cstmt.executeUpdate();
 			String query = "SELECT max(batch_number) FROM pcs.claim_batches \n"
 					+ "WHERE tpp='" + billRoute + "' \n";
 			Statement stmt = DbConnection.process().createStatement();
@@ -1532,13 +1535,15 @@ public class PCSLabEntry extends PcsFrame {
 			int batchClaimID = 0;
 			while (rs.next())
 				batchClaimID = rs.getInt(1);
-			File f = new File(Utils.ROOT_DIR, "ppr_clm");
-			long fLen = f.length();
-			if (fLen > 0) {
-				Utils.genericPrint(Utils.ROOT_DIR, "ppr_clm", false);
+			
+			OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + "ppr_clm");
+
+			if (out != null && out.toString().length() > 0) {
+				Utils.genericPrint(out.toString(), new MessageFormat("ppr_clm"), null);
+				//Utils.genericPrinat(Utils.TMP_DIR, "ppr_clm", false);
 				String fName = "ppr_clm" + batchClaimID;
 				try {
-					f.renameTo(new File(Utils.ROOT_DIR, fName));
+					FileTransfer.sendFile(out.toString().getBytes(), Utils.SERVER_DIR + fName);
 				} catch (SecurityException e) {
 					log.write("ERROR: build HCFA1500\n" + e);
 				}
