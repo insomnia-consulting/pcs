@@ -88,7 +88,7 @@ public class ReportViewer extends javax.swing.JFrame
 		
 		Utils.setColors(this.getContentPane());
 		reportText.setFont(new Font("MonoSpaced", Font.PLAIN, 11));
-
+		this.setAlwaysOnTop(true);
 		//{{INIT_MENUS
 		//}}
 	
@@ -136,6 +136,7 @@ public class ReportViewer extends javax.swing.JFrame
 		ReportViewer viewer = new ReportViewer();
 		viewer.setTitle(title);
 		viewer.reportText.setText(text);
+
 		return viewer;
 	}
 	
