@@ -64,7 +64,8 @@ as
 	 b.address2,b.city,b.state,SUBSTR(b.zip,1,5),b.price_code
       from practice_statement_labs a, practices b
       where a.practice=b.practice and b.practice_type='ADPH'
-      and a.statement_id=S_month and billing_cycle=cycle;
+      and a.statement_id=S_month and billing_cycle=cycle
+      order by a.practice;
 
    cursor transaction_list is
 
