@@ -16,16 +16,23 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+
 import javax.swing.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+
+import com.pacytology.pcs.actions.LabFormActionMap;
+import com.pacytology.pcs.actions.ReportViewerActionMap;
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
 import java.text.MessageFormat;
 import java.util.Vector;
 
-public class ReportViewer extends javax.swing.JFrame
+public class ReportViewer extends PcsFrame
 {
     String fileName;
     String dir = Utils.ROOT_DIR;
@@ -88,16 +95,29 @@ public class ReportViewer extends javax.swing.JFrame
 		
 		Utils.setColors(this.getContentPane());
 		reportText.setFont(new Font("MonoSpaced", Font.PLAIN, 11));
-		this.setAlwaysOnTop(true);
+		
 		//{{INIT_MENUS
 		//}}
 	
-		//{{REGISTER_LISTENERS
-		SymKey aSymKey = new SymKey();
-		this.addKeyListener(aSymKey);
-		//}}
-	}
 
+		actionMap = new ReportViewerActionMap(this);
+		setupKeyPressMap();
+	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+
+		rp.getActionMap().put("F1", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				if (verifyPrinter()) {
+			        ReportViewer.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+			        Utils.genericPrint(ReportViewer.this.reportText.getText(), new MessageFormat(""), new MessageFormat(""));
+			        ReportViewer.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			    }
+			}
+		});
+
+		return rp;
+	}
 	public ReportViewer(String sTitle)
 	{
 		this();
@@ -250,29 +270,9 @@ public class ReportViewer extends javax.swing.JFrame
 	//}}
 
 
-	class SymKey extends java.awt.event.KeyAdapter
-	{
-		public void keyPressed(java.awt.event.KeyEvent event)
-		{
-			Object object = event.getSource();
-			if (object == ReportViewer.this)
-				ReportViewer_keyPressed(event);
-		}
-	}
+	
 
-	void ReportViewer_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_F9) {
-		    this.dispose();
-		}
-		else if (event.getKeyCode()==event.VK_F1) {
-		    if (verifyPrinter()) {
-		        this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-		        Utils.genericPrint(this.reportText.getText(), new MessageFormat(""), new MessageFormat(""));
-		        this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		    }
-		}
-	}
+
 	
 	boolean verifyPrinter()
 	{
@@ -283,6 +283,36 @@ public class ReportViewer extends javax.swing.JFrame
 		    status=true;
 		}
 		return (status);
+	}
+
+	@Override
+	public void queryActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void finalActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

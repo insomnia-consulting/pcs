@@ -246,6 +246,7 @@ public class MonthlyReptDialog extends javax.swing.JDialog
             	if (out != null && out.toString().length() > 0) {
         			ReportViewer viewer = ReportViewer.create(out.toString(), this.getTitle());
         			viewer.setVisible(true);
+        			viewer.toFront();
                 }
         		else {
                 	Utils.createErrMsg("Cannot locate report: "+fName); 
@@ -311,9 +312,11 @@ public class MonthlyReptDialog extends javax.swing.JDialog
 		    if (Utils.required(stmtYear,"Year")) {
 		        if (generateReport.isSelected()) {
 		            generateReport();
+
 		        }
-		        viewReport();
 		        this.dispose();
+		        viewReport();
+
 		    }
 		}
 	}
