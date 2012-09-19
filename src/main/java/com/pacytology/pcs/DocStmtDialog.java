@@ -16,18 +16,21 @@ package com.pacytology.pcs;
     Date/Staff      Description:
 */
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.io.File;
+import java.io.OutputStream;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Vector;
+
+import javax.swing.JLabel;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.sql.*;
-
 import com.pacytology.pcs.io.FileTransfer;
-import com.pacytology.pcs.ui.Square;
-import java.util.Vector;
 
 public class DocStmtDialog extends javax.swing.JDialog
 {
@@ -259,7 +262,7 @@ public class DocStmtDialog extends javax.swing.JDialog
 
                 if (out != null && StringUtils.isNotBlank(out.toString())) {
                 	for (int i=0; i<numCopies; i++)
-                		Utils.genericPrint(out.toString());
+                		Utils.genericPrint(out.toString(), "CUPS_PDF");
                     }	
             }
 
