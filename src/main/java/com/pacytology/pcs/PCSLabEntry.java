@@ -686,10 +686,8 @@ public class PCSLabEntry extends PcsFrame {
 		eomItem.addActionListener(lSymAction);
 		// }}
 
-		setTitle("PCS LabInfoSystem 1.0");
+		setTitle("PCS LabInfoSystem 2.0");
 		Utils.setColors(this.getContentPane());
-		Utils.setColors(JMenuBar1);
-		JMenuBar1.setBackground((Color.red).darker());
 		this.repaint();
 
 	}
