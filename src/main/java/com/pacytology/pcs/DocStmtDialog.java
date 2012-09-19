@@ -262,7 +262,7 @@ public class DocStmtDialog extends javax.swing.JDialog
 
                 if (out != null && StringUtils.isNotBlank(out.toString())) {
                 	for (int i=0; i<numCopies; i++)
-                		Utils.genericPrint(out.toString(), "CUPS_PDF");
+                		Utils.genericPrint(out.toString(), Utils.PRINTER);
                     }	
             }
 
