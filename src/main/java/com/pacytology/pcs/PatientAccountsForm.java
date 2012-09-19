@@ -24,6 +24,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.pacytology.pcs.actions.PracticeAccountsFormActionMap;
 import com.pacytology.pcs.actions.PatientAccountsFormActionMap;
 import com.pacytology.pcs.ui.PcsFrame;
@@ -777,8 +779,8 @@ public class PatientAccountsForm extends PcsFrame
 	public void addActions() 
 	{
 	    if (currMode!=Lab.QUERY) {
-	        resetForm();
-	        resetForm();
+	        resetActions();
+	        resetActions();
 	        currMode=Lab.QUERY_FOR_ADD;
 	        queryActions();
 	    }
@@ -896,15 +898,15 @@ public class PatientAccountsForm extends PcsFrame
 	                acctSummary();
 	                if (dbOps.hasLabComments(currLAB)) displayComments();
 	            }
-	            else { resetForm(); }
+	            else { resetActions(); }
 	        }
 	    }
 	    else if (currMode==Lab.ADD) {
 	        if (pastDue==IN_COLLECTION) displayCreditBureauWarning();
 	        currBAL=(Double.valueOf(currBal.getText())).doubleValue();
 	        if (dbOps.add(currLAB)) {
-	            resetForm();
-	            resetForm();
+	            resetActions();
+	            resetActions();
 	            Utils.setComponent(patientID);
 	            Utils.setComponent(paLab);
 	            addActions();
@@ -940,7 +942,7 @@ public class PatientAccountsForm extends PcsFrame
 	                pastDue=CURRENT;
 	                acctSummary();
 	            }
-	            else { resetForm(); }
+	            else { resetActions(); }
 	        }
 	    }
 	    else if (currMode==Lab.RELEASE || currMode==Lab.HOLD) {
@@ -973,12 +975,13 @@ public class PatientAccountsForm extends PcsFrame
 	                msgLabel.requestFocus();
 	                acctSummary();
 	            }
-	            else { resetForm(); }
+	            else { resetActions(); }
 	        }
 	    }
 	}
-	
-    void resetForm() {
+
+	@Override
+    public void resetActions() {
         resetColors();
         msgLabel.setText(null);
         if (currMode==Lab.ADD) {
@@ -1314,7 +1317,7 @@ public class PatientAccountsForm extends PcsFrame
 		Utils.forceUpper(event);
         char c = event.getKeyChar();
         payCode.setText((new StringBuffer(c)).toString());
-        if (c=='\r' && Utils.isNull(payCode.getText())) {
+        if (StringUtils.isBlank(String.valueOf(c))) {
                 payCode.setText("C");
                 payCodeLbl.setText("CHECK");
         }
@@ -1613,10 +1616,6 @@ public class PatientAccountsForm extends PcsFrame
 	{
 		Utils.deselect(event);
 	}
-	@Override
-	public void resetActions() {
-		// TODO Auto-generated method stub
-		
-	}
+
 	
 }

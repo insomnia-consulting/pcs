@@ -9,6 +9,8 @@ import javax.swing.*;
 import java.util.Vector;
 import javax.swing.table.*;
 import com.pacytology.pcs.ui.Square;
+import com.pacytology.pcs.utils.StringUtils;
+
 import java.sql.*;
 import java.io.*;
 

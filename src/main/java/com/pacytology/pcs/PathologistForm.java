@@ -14,6 +14,7 @@ import javax.swing.*;
 import com.pacytology.pcs.actions.BusinessInfoFormActionMap;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
+import com.pacytology.pcs.utils.StringUtils;
 
 public class PathologistForm extends PcsFrame
 {

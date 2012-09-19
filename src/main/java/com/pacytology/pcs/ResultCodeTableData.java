@@ -3,6 +3,9 @@ package com.pacytology.pcs;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.*;
+
+import com.pacytology.pcs.utils.StringUtils;
+
 import java.util.Vector;
 
 class ResultCodeTableData extends AbstractTableModel

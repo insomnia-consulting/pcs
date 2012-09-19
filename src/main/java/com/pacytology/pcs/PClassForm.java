@@ -16,6 +16,8 @@ import com.pacytology.pcs.actions.PClassActionMap;
 import com.pacytology.pcs.actions.PcsActionMap;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
+import com.pacytology.pcs.utils.StringUtils;
+
 import java.util.Vector;
 
 public class PClassForm extends PcsFrame

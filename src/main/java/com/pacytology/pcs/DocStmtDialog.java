@@ -18,6 +18,9 @@ package com.pacytology.pcs;
 
 import java.awt.*;
 import javax.swing.*;
+
+import org.apache.commons.lang.StringUtils;
+
 import java.io.File;
 import java.io.OutputStream;
 import java.sql.*;
@@ -252,19 +255,22 @@ public class DocStmtDialog extends javax.swing.JDialog
 	                numCopies=1;
 	                v.addElement(Utils.COMPRESSED);
 	            }
-                File f = new File(Utils.ROOT_DIR,fName);
-                if (f.exists()) {
-                    long fLen = f.length();
-                    if (fLen>0) { 
-                        for (int i=0; i<numCopies; i++)
-                            Utils.genericPrint(Utils.ROOT_DIR,fName,true,v); 
-                    }
-                }
+	            OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR+fName); 
+
+                if (out != null && StringUtils.isNotBlank(out.toString())) {
+                	for (int i=0; i<numCopies; i++)
+                		Utils.genericPrint(out.toString());
+                    }	
             }
+
             this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             parent.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
-        catch( Exception e ) {System.out.println(e+" printAllCopies"); }
+        catch( Exception e ) {
+        	e.printStackTrace();
+        	System.out.println(e+" printAllCopies"); 
+        	
+        	}
 		try { this.dispose(); } 
 		catch (Exception e) { }
 	}
@@ -326,9 +332,14 @@ public class DocStmtDialog extends javax.swing.JDialog
 	void stmtYear_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER) {
+			
 		    if (Utils.required(stmtYear,"Year"))
+		    	if (Utils.isNull(practiceNumber.getText())) practice=0;
+			    else practice=Integer.parseInt(practiceNumber.getText());
 		        if (practice==0 || reprintBox.isSelected()) { 
-		            if (verifyPrinter()) printAllCopies();
+		            if (verifyPrinter()) {
+		            	printAllCopies();
+		            }
 		            this.dispose();
 		        }
 		        else {
@@ -346,8 +357,6 @@ public class DocStmtDialog extends javax.swing.JDialog
 	void practiceNumber_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER) {
-		    if (Utils.isNull(practiceNumber.getText())) practice=0;
-		    else practice=Integer.parseInt(practiceNumber.getText());
             practiceNumber.transferFocus();
 		}
 	}

@@ -8,6 +8,8 @@ import java.awt.*;
 import java.sql.*;
 import javax.swing.*;
 
+import com.pacytology.pcs.utils.StringUtils;
+
 public class PasswordDialog extends javax.swing.JDialog
 {
     Login dbLogin;

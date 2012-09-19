@@ -5,6 +5,8 @@ import java.sql.*;
 import java.util.Vector;
 import java.awt.Cursor;
 
+import com.pacytology.pcs.utils.StringUtils;
+
 public class PatientClaimDbOps implements Runnable
 {
     PatientClaimForm parent;

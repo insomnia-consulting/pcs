@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 
 import com.pacytology.pcs.DBCommentDialog;
+import com.pacytology.pcs.FunctionKeyControl;
 import com.pacytology.pcs.Lab;
 import com.pacytology.pcs.PatStmtCopyDialog;
 import com.pacytology.pcs.PatientAccountsForm;
@@ -80,6 +81,12 @@ public class PatientAccountsFormActionMap extends PcsActionMap {
 		PracticeAccountsForm form = (PracticeAccountsForm) parentFrame;
 		((JTextField)form.getFocusOwner()).setText(null);
 		form.dFlag = false ;
+	}
+	@Override
+	public void queryAction()  {
+		PatientAccountsFormActionMap.this.parentFrame.msgLabel.setText(null);
+        PatientAccountsFormActionMap.this.parentFrame.queryActions();
+        
 	}
 
 }

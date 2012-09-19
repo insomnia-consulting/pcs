@@ -4,6 +4,8 @@ import javax.swing.table.*;
 import java.util.Vector;
 import javax.swing.*;
 
+import com.pacytology.pcs.utils.StringUtils;
+
 class PatientTableData extends AbstractTableModel
 {
     

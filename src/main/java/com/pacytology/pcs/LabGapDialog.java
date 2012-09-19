@@ -2,6 +2,9 @@ package com.pacytology.pcs;
 
 import java.awt.*;
 import javax.swing.*;
+
+import com.pacytology.pcs.utils.StringUtils;
+
 import java.io.File;
 
 public class LabGapDialog extends javax.swing.JDialog

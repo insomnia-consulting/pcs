@@ -8,6 +8,8 @@ import javax.swing.*;
 import com.pacytology.pcs.actions.PcsActionMap;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
+import com.pacytology.pcs.utils.StringUtils;
+
 import java.sql.*;
 import java.util.Vector;
 

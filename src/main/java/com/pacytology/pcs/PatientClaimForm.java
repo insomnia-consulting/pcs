@@ -3,6 +3,8 @@ package com.pacytology.pcs;
 import java.awt.*;
 import javax.swing.*;
 import com.pacytology.pcs.ui.Square;
+import com.pacytology.pcs.utils.StringUtils;
+
 import java.util.Vector;
 import java.io.*;
 import javax.swing.table.*;
