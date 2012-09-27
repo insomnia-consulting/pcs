@@ -45,6 +45,8 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
+import org.apache.commons.lang.StringUtils;
+
 import oracle.jdbc.OracleTypes;
 
 import com.pacytology.pcs.db.DbUser;
@@ -2073,15 +2075,10 @@ public class PCSLabEntry extends PcsFrame {
 			cstmt.setString(2, "clm_wks");
 			cstmt.setString(3, billRoute);
 			cstmt.executeUpdate();
-			File f = new File(Utils.ROOT_DIR, "clm_wks");
-			long fLen = f.length();
-			if (fLen > 0) {
-				Utils.genericPrint(Utils.ROOT_DIR, "clm_wks", false);
-				try {
-					f.delete();
-				} catch (SecurityException e) {
-					log.write("ERROR: build ClaimWKS\n" + e);
-				}
+			OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR+ "clm_wks");
+
+			if (StringUtils.isNotBlank(out.toString())) {
+				Utils.genericPrint(out.toString() );
 			}
 		} catch (Exception e) {
 			log.write("ERROR: build ClaimWKS\n" + e);
