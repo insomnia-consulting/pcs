@@ -25,18 +25,17 @@ is
 	select lab_number, TO_CHAR(datestamp,'MM/DD/YYYY')                             
       from pcs.hpv_requests                                                     
    	where (test_sent is NULL or test_sent IN ('R','P')) 
-   	--and rownum < 5
    	order by lab_number;                                                        
 
 begin                                                                           
-return null;                                                                                
-										  P_proc_name:='HPV_PENDING';                                                  
+   P_proc_name:='HPV_PENDING';                                                  
    P_code_area:='PREP';                                                         
    line_cntr:=0;                                                                
    reportOutput := '';
    open hpv_list; 
    
    DBMS_LOB.CREATETEMPORARY(reportOutput,true);
+   dbms_output.put_line('Starting HPV_PENDING Report');
    loop 
    	  
       P_code_area:='FETCH';                                                     
@@ -57,10 +56,9 @@ return null;
          line_cntr:=5;                                                          
       end if;                                                                   
       curr_line:=  '--------------------------------------------------------------------------';
+      dbms_lob.writeAppend(reportOutput, length('\n\n'), '\n\n');                                  
       dbms_lob.writeAppend(reportOutput, length(curr_line), curr_line);
-
-      dbms_lob.writeAppend(reportOutput, length(curr_line), curr_line);    
-
+	  dbms_lob.writeAppend(reportOutput, length('\n\n'), '\n\n');                                  	
       line_cntr:=line_cntr+1;                                                   
       select RPAD(SUBSTR(lname||', '||fname,1,24),26),TO_CHAR(b.practice,'009') 
       into P_name,P_account                                                     

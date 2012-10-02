@@ -4,19 +4,26 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.swing.AbstractAction;
+import javax.swing.JRootPane;
 import javax.swing.JTextField;
 
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
-public class DoctorForm extends javax.swing.JFrame
+public class DoctorForm extends PcsFrame
 {
-    public PracticesForm parent;
+
+	private static final long serialVersionUID = 7390187090976730871L;
+	
+	public PracticesForm parent;
     public LabForm parent2;
 	public Login dLogin;
 	public int practice_id;
@@ -31,7 +38,7 @@ public class DoctorForm extends javax.swing.JFrame
 	final int MERGE=106;
 	*/
 	final int PRACTICE=201;
-	final int LAB=202;
+	final static int LAB=202;
 	public int currMode=Lab.IDLE;
 	public int origin=0;
 	
@@ -283,8 +290,20 @@ public class DoctorForm extends javax.swing.JFrame
 		NPInumber.addFocusListener(aSymFocus);
 		NPInumber.addKeyListener(aSymKey);
 		//}}
+		
+		actionMap = new DoctorFormActionMap(this);
+		setupKeyPressMap();
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
 
+//		rp.getActionMap().put("F12", new AbstractAction() {
+//			public void actionPerformed(ActionEvent e) {
+//				
+//			}
+//		});
+		return rp;
+	}
 	public DoctorForm(String sTitle)
 	{
 		this();
@@ -725,16 +744,7 @@ public class DoctorForm extends javax.swing.JFrame
 	                    this.dispose();
 	                }
 	                break;
-	            case java.awt.event.KeyEvent.VK_F12:
-	                if ((currMode==Lab.ADD)||(currMode==Lab.UPDATE||currMode==Lab.MERGE)) { 
-	                    finalActions();
-	                    if (origin==LAB) {
-	                        this.parent2.setEnabled(true);
-	                        this.parent2.toFront();
-	                        this.dispose();
-	                    }
-	                }
-	                break;
+
                 case java.awt.event.KeyEvent.VK_DOWN:
                     if (origin==PRACTICE) {
                         if (currNdx==(parent.doctorVect.size()-1))
@@ -1107,6 +1117,16 @@ public class DoctorForm extends javax.swing.JFrame
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
 		    NPInumber.transferFocus();
+	}
+	@Override
+	public void queryActions() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

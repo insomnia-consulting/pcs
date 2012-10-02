@@ -27,12 +27,15 @@ import java.sql.Statement;
 import java.util.Vector;
 
 import javax.swing.JLabel;
+import javax.swing.JRootPane;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.pacytology.pcs.actions.CurrentMessageDialogActionMap;
 import com.pacytology.pcs.io.FileTransfer;
+import com.pacytology.pcs.ui.PcsDialog;
 
-public class DocStmtDialog extends javax.swing.JDialog
+public class DocStmtDialog extends PcsDialog
 {
 
     Login dbLogin;
@@ -113,7 +116,20 @@ public class DocStmtDialog extends javax.swing.JDialog
 		SymWindow aSymWindow = new SymWindow();
 		this.addWindowListener(aSymWindow);
 		//}}
+		this.actionMap = new DocStmtDialogActionMap(this);
+		this.setupKeyPressMap();
+		
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+
+
+		rp.getActionMap().put("F12", actionMap.finalAction);
+		rp.getActionMap().put("ENTER", actionMap.finalAction);
+
+		return rp;
+	}
+	
 
 	public DocStmtDialog()	{	}
 
@@ -405,6 +421,36 @@ public class DocStmtDialog extends javax.swing.JDialog
 		    status=true;
 		}
 		return (status);
+	}
+
+	@Override
+	public void queryActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void finalActions() {
+		System.out.println("Test");
+		
+	}
+
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
