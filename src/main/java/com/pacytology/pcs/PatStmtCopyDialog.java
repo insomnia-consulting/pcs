@@ -103,14 +103,14 @@ public class PatStmtCopyDialog extends JDialog
 	}
 	
 	public PatStmtCopyDialog(Frame parent,Login dbLogin) {
-	    this();
+	    this(parent);
 	    this.dbLogin=dbLogin;
 		this.log = new LogFile(
 		    dbLogin.logPath,"PatStmtCopyDialog",dbLogin.dateToday,dbLogin.userName);
 	}
 
 	public PatStmtCopyDialog(Frame parent,Login dbLogin,String labNum) {
-	    this();
+	    this(parent);
 	    this.dbLogin=dbLogin;
 	    this.labNumber.setText(labNum);
 	    try { this.labNum=(int)Integer.parseInt(labNumber.getText()); }
