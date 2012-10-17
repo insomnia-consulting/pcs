@@ -1,0 +1,1 @@
+java -jar -Djdbc.connection="jdbc:oracle:thin:@192.168.1.110:1521:pcsprod" -Dlog.dir="c:\\pcs\\logs\\" -Dhost.pwd="Sa1vation" -Dhost.ip="192.168.1.110" -Dprinter="CUPS_PDF" pcs-1.0-SNAPSHOT.jar 

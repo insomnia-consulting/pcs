@@ -263,16 +263,19 @@ public class Export implements Runnable
 				labDetails(labReport, fOUT);
 				labResults(labReport, fOUT);
 				fOUT.close();
-				fileName = reportName + ".rtf";
-				//send to server
+				
 				FileTransfer.sendFile(filePath.trim() + fileName, Utils.SERVER_DIR + 
-							"LabInfoSystem" + System.getProperty("file.separator") + 
-							"ElectronicReporting" + System.getProperty("file.separator") + fileName);
+						"LabInfoSystem" + System.getProperty("file.separator") + 
+						"ElectronicReporting" + System.getProperty("file.separator") + fileName);
+				fileName = reportName + ".rtf";
 				fOUT = new PrintWriter(
 						new BufferedOutputStream(new FileOutputStream(
 								filePath.trim() + fileName, false)), true);
 				writeIndexFile(labReport, fOUT);
 				fOUT.close();
+				FileTransfer.sendFile(filePath.trim() + fileName, Utils.SERVER_DIR + 
+						"LabInfoSystem" + System.getProperty("file.separator") + 
+						"ElectronicReporting" + System.getProperty("file.separator") + fileName);
 			}
 		} catch (Exception e) {
 			System.out.println(e);

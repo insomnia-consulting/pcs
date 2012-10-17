@@ -240,7 +240,9 @@ public class DbUser extends JDialog
 		    //getContentPane().add(errorLabel);
 		    //errorLabel.setBackground(new java.awt.Color(204,204,204));
 		    //errorLabel.setForeground(java.awt.Color.red);
+ 	        System.out.println("Trying to connect to " + parent.dbLogin.URL);
             System.out.println(e);
+            e.printStackTrace();
             this.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         }
         this.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));

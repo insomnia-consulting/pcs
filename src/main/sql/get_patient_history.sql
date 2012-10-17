@@ -56,6 +56,7 @@ as
    rcnt number;
 
 begin
+    dbms_output.put_line('GPH: Starting get_patient_history');
 
    P_proc_name:='GET_PATIENT_HISTORY';
    P_code_area:='PREP';
@@ -71,6 +72,7 @@ begin
    into P_lname,P_fname,P_dob,P_ssn
    from pcs.patients where patient=P_patient;
 
+   dbms_output.put_line('GPH: Let''s update job_control');
    update pcs.job_control
    set job_status=job_status+1
    where job_descr='MATCH_COUNT';
@@ -78,32 +80,38 @@ begin
 
    -- Level 1
    --    Only these records will get an M_level of 1
-   
-
+  
    P_code_area:='LEVEL_1';
    M_level:=1;
    curr_lab:=P_lab_number;
    done:=1;
+   dbms_output.put_line('GPH: Now begin inserting history_match_queue match level:  '||P_code_area);
+   dbms_output.put_line('GPH: cur_lab =   '||curr_lab);
+   dbms_output.put_line('GPH: min_lab =   '||min_lab);
    while (done>0) loop
+   	dbms_output.put_line('***** GPH: Get Previous lab');
       select previous_lab into M_lab
       from pcs.lab_requisitions
       where lab_number=curr_lab;
+      dbms_output.put_line('GPH: M_lab =   '||M_lab);
       if (M_lab<>curr_lab AND M_lab>=min_lab) then
-	 select count(*) into rcnt
-	 from pcs.history_match_queue where lab_match=M_lab;
-	 if (rcnt=0) then
-	    insert into pcs.history_match_queue
-
-	      (lab_number,lab_match,patient,m_level,sys_user,printed)
-	    values (P_lab_number,M_lab,P_patient,M_level,UID,P_mode);
-	    update pcs.job_control
-	    set job_status=job_status+0.01
-	    where job_descr='MATCH_COUNT';
-	    commit;
+      	 dbms_output.put_line('GPH: Get Matches for '||to_char(M_lab));
+		 select count(*) into rcnt
+		 from pcs.history_match_queue where lab_match=M_lab;
+		dbms_output.put_line('GPH: Found Matches '||rcnt||'  for '||to_char(M_lab));
+	 	if (rcnt=0) then
+	 		dbms_output.put_line('GPH: Staring inserting for '||to_char(rcnt)||' rows');
+		    insert into pcs.history_match_queue
+		      (lab_number,lab_match,patient,m_level,sys_user,printed)
+		    values (P_lab_number,M_lab,P_patient,M_level,UID,P_mode);
+		    update pcs.job_control
+		    set job_status=job_status+0.01
+		    where job_descr='MATCH_COUNT';
+		    commit;
+	 	end if;
 	    curr_lab:=M_lab;
-	 end if;
       else
-	 done:=0;
+	    done:=0;
       end if;
    end loop;
 
@@ -115,6 +123,7 @@ begin
    M_level:=2;
    if (P_dob<>P_NULL_dob AND P_ssn<>P_NULL_ssn) then
       open DOB_SSN_list;
+      dbms_output.put_line('GPH: Now begin inserting history_match_queue match level:  '||P_code_area);
       loop
 	 fetch DOB_SSN_list into M_lab;
 	 exit when DOB_SSN_list%NOTFOUND;
@@ -144,6 +153,7 @@ begin
    
    P_code_area:='LEVEL_3';
    open NAME_list;
+   dbms_output.put_line('GPH: Now begin inserting history_match_queue match level:  '||P_code_area);
    loop
       fetch NAME_list into M_lab,M_practice,M_ssn,M_dob;
       exit when NAME_list%NOTFOUND;
@@ -162,7 +172,6 @@ begin
 
       if (rcnt=0 and M_level>0) then
 	 insert into pcs.history_match_queue
-
 	    (lab_number,lab_match,patient,m_level,sys_user,printed)
 	 values (P_lab_number,M_lab,P_patient,M_level,UID,P_mode);
 	 update pcs.job_control
@@ -174,7 +183,7 @@ begin
    close NAME_list;
 
    commit;
-
+dbms_output.put_line('Ending get_patient_history');
 exception
 
    when OTHERS then

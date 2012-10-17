@@ -39,7 +39,7 @@ create or replace procedure lab_reqs_add
 )
 as
 
-
+	
    P_error_code number;
    P_error_message varchar2(512);
    P_proc_name varchar2(32);
@@ -73,16 +73,16 @@ as
    L_pay_id number;
 
 begin
-
+dbms_output.put_line('Starting Lab reqs add');
       P_proc_name:='LAB_REQS_ADD';
 
       P_code_area:='PREP';
       if (L_prep=0) then
-	 L_finished:=-1;
+	 	L_finished:=-1;
       else
-	 L_finished:=0;
-
+	 	L_finished:=0;
       end if;
+      
       L_medicare_type:=L_medicare_code;
       if (L_date_received is NOT NULL) then
 	 L_receive_date:=TO_DATE(L_date_received,'MMDDYYYY');
@@ -93,6 +93,7 @@ begin
 	 end if;
       end if;
       commit;
+      dbms_output.put_line('LRA.  Starting LAB_REQ_ADD');
       if (L_billing_choice=122) then
 	 id_num:=TO_CHAR(L_practice,'009');
 
@@ -108,12 +109,10 @@ begin
 	 D_sign_date:=TO_DATE(L_sign_date,'MMDDYYYY');
       end if;
       P_code_area:='COMMENT';
-      if (L_comment_text is not null)
-
-      then
-	 insert into pcs.lab_req_comments (lab_number,comment_text)
-	 values (L_lab_number,L_comment_text);
-	 commit;
+      if (L_comment_text is not null)  then
+		 insert into pcs.lab_req_comments (lab_number,comment_text)
+		 values (L_lab_number,L_comment_text);
+		 commit;
       end if;
       P_code_area:='VALIDATE DOCTOR';
 
@@ -239,9 +238,7 @@ begin
       end if;
       --Added for surgical pathology; system keeps track of next lab number 
       if (L_prep=6) then
-	 update pcs.job_control set job_status=job_status+1
-
-	 where job_descr='TISSUE PATHOLOGY';
+	 update pcs.job_control set job_status=job_status+1	 where job_descr='TISSUE PATHOLOGY';
 	 commit;
       end if;
       P_code_area:='CHECK BILLING';
@@ -252,31 +249,31 @@ begin
        -- for HPV only testing a "stub" lab_results record must be
        -- 	 created; no patient history needed for HPV only
       
-      if (L_prep=5) then
-	 insert into pcs.lab_results (lab_number,date_completed,cytotech,pathologist,pap_class,
-	     qc_status,datestamp,sys_user,first_print,path_status, biopsy_code,limited,change_date,change_user)
-	  values
-	     (L_lab_number,SysDate,2981,NULL,18,'N',SysDate,UID,2, 'N',NULL,0,SysDate,UID);
-	  commit;
-	  pcs.set_hpv(L_lab_number);
-	  update pcs.job_control set job_status=job_status+1
-	  where job_descr='HPV ONLY';
-	  commit;
+      if (L_prep=5) 
+      then
+	 	insert into pcs.lab_results (lab_number,date_completed,cytotech,pathologist,pap_class,
+	    	 qc_status,datestamp,sys_user,first_print,path_status, biopsy_code,limited,change_date,change_user)
+	  	values
+	    	 (L_lab_number,SysDate,2981,NULL,18,'N',SysDate,UID,2, 'N',NULL,0,SysDate,UID);
+	  	commit;
+	  	pcs.set_hpv(L_lab_number);
+	  	update pcs.job_control set job_status=job_status+1 where job_descr='HPV ONLY';
       else
+         dbms_output.put_line('LRA: Calling get_patient_history');
 		 pcs.get_patient_history(L_patient,L_lab_number,L_practice,0);
 
       end if;
-
+	dbms_output.put_line('Ending lab_reqs_add');
    commit;
 
-exception
-  when OTHERS then
-     P_error_code:=SQLCODE;
-     P_error_message:=SQLERRM;
-     insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user)
-     values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID);
-
-     commit;
-     RAISE;
+--exception
+--  when OTHERS then
+--     P_error_code:=SQLCODE;
+--     P_error_message:=SQLERRM;
+--     insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user)
+--     values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID);
+--
+--     commit;
+--     RAISE;
 end;
 \

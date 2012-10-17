@@ -432,7 +432,7 @@ public class UnfinishDialog extends PcsDialog
 	}
 	@Override
 	public void resetActions() {
-		// TODO Auto-generated method stub
+		closingActions();
 		
 	}
 	

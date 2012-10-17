@@ -822,7 +822,7 @@ public class LabForm extends PcsFrame
 
 		labMedicareType.addKeyListener(aSymKey);
 		labFormSigned.addKeyListener(aSymKey);
-		HPVrequest.addKeyListener(aSymKey);
+
 		labRelCode.addFocusListener(aSymFocus);
 		patRace.addKeyListener(aSymKey);
 		patRace.addFocusListener(aSymFocus);
@@ -4870,9 +4870,21 @@ public class LabForm extends PcsFrame
                     letterData.addElement(ltrInfo);
                 }
             }    
-            rs.close(); stmt.close();
+            
         }
-        catch (Exception e) {}
+        catch (Exception e) {
+        	System.out.println("This sh*t happened");
+        }
+        finally
+        {
+            try {
+				rs.close(); 
+				stmt.close();
+			} catch (SQLException e) {
+				System.out.println("Fine.. we'll bail here.");
+				e.printStackTrace();
+			}
+        }
         return (letterData);
     }
 	

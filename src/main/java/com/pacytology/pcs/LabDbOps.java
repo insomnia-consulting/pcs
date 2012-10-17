@@ -957,7 +957,7 @@ public class LabDbOps implements Runnable {
 			cstmt.setString(18, tLabRec.subscriber);
 			cstmt.setString(19, tLabRec.sub_lname);
 			cstmt.setString(20, tLabRec.sub_fname);
-			cstmt.setString(21, tLabRec.sign_date);
+			cstmt.setString(21, tLabRec.sign_date); 
 			cstmt.setString(22, tLabRec.medicare_code);
 			cstmt.setString(23, tLabRec.client_note_text);
 			cstmt.setString(24, tLabRec.lab_comments);
