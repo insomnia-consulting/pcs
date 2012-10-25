@@ -1018,6 +1018,7 @@ public class LabDbOps implements Runnable {
 			
 
 		} catch (Exception e) {
+			e.printStackTrace(System.err);
 			parent.log.write("ERROR add\n" + e);
 			exitStatus = false;
 			String msg = "Add Operation failed on Lab #" + tLabRec.lab_number;

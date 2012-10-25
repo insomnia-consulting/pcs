@@ -171,16 +171,19 @@ begin
 	 select MAX(statement_id) into PRIOR_statement
 	 from pcs.practice_statement_labs
 	 where lab_number=INV_lab;
+	 
 	 select MAX(billing_cycle) into PRIOR_cycle
 	 from pcs.practice_statement_labs
 	 where lab_number=INV_lab
 	 and statement_id=PRIOR_statement;
+	 
+	 dbms_output.put_line('Selecting CHOICE_CODE for '||INV_lab||', '||PRIOR_statement||' and '||PRIOR_cycle);
 	 select distinct choice_code into PRIOR_billing
 	 from pcs.practice_statement_labs
 	 where lab_number=INV_lab
 	 and statement_id=PRIOR_statement
-
 	 and billing_cycle=PRIOR_cycle;
+	 
 	 if (PRIOR_billing<>INV_code) then
 	    insert into pcs.practice_statement_labs
 	       (statement_id,lab_number,item_amount,choice_code,practice,
