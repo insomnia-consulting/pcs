@@ -1,3 +1,4 @@
+
 create or replace procedure lab_reqs_add
 (
    L_lab_number in number,
@@ -266,14 +267,17 @@ dbms_output.put_line('Starting Lab reqs add');
 	dbms_output.put_line('Ending lab_reqs_add');
    commit;
 
---exception
---  when OTHERS then
---     P_error_code:=SQLCODE;
---     P_error_message:=SQLERRM;
---     insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user)
---     values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID);
---
---     commit;
---     RAISE;
+exception
+  when OTHERS then
+     P_error_code:=SQLCODE;
+     P_error_message:=SQLERRM;
+     insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user)
+     values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID);
+
+     commit;
+     RAISE;
 end;
+\
+
+grant execute on lab_reqs_add to pcs_user
 \

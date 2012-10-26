@@ -705,3 +705,6 @@ exception
 
 end;
 \
+
+grant execute on build_doctor_summary to pcs_user
+\

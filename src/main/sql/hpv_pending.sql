@@ -1,3 +1,4 @@
+
 drop procedure hpv_pending
 \
 
@@ -86,4 +87,7 @@ exception
 
 
 end;
+\
+
+grant execute on hpv_pending to pcs_user
 \

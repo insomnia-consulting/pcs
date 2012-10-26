@@ -287,3 +287,6 @@ exception
 
 end;
 \
+
+grant execute on build_ADPH_abnormal_file to pcs_user
+\

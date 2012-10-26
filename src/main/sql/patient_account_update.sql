@@ -164,15 +164,17 @@ commit;
 
    commit;
 
---exception
---
---   when OTHERS then
---      P_error_code:=SQLCODE;
---      P_error_message:=SQLERRM;
---      insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)
---      values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,L_number);
---      commit;
---      RAISE;
+exception
+   when OTHERS then
+      P_error_code:=SQLCODE;
+      P_error_message:=SQLERRM;
+      insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)
+      values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,L_number);
+      commit;
+      RAISE;
 
 end;
+\
+
+grant execute on patient_account_update to pcs_user
 \

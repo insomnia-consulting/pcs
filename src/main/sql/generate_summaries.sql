@@ -105,3 +105,6 @@ exception
 
 end;
 \
+
+grant execute on generate_summaries to pcs_user
+\

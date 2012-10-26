@@ -795,3 +795,6 @@ exception
 
 end;
 \
+
+grant execute on build_pathologist_summary_file to pcs_user
+\

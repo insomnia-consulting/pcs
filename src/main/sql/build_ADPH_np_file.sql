@@ -188,3 +188,6 @@ exception
 
 end;
 \
+
+grant execute on build_adph_np_file to pcs_user
+\

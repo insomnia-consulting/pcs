@@ -793,3 +793,6 @@ exception
 
 end;
 \
+
+grant execute on build_cytotech_summary_file to pcs_user
+\

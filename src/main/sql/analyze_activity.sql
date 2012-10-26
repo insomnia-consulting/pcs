@@ -222,3 +222,6 @@ exception
 
 end;
 \
+
+grant execute on analyze_activity to pcs_user
+\

@@ -214,3 +214,6 @@ exception
 
 end;
 \
+
+grant execute on build_ADPH_invoice_summ_file to pcs_user
+\

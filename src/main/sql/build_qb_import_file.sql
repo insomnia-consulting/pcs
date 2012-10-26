@@ -105,3 +105,7 @@ EXCEPTION
       RAISE;
 
 END;
+\
+
+grant execute on build_qb_import_file to pcs_user
+\

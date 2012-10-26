@@ -338,3 +338,6 @@ exception
 
 end;
 \
+
+grant execute on build_biopsy_files to pcs_user
+\

@@ -572,3 +572,6 @@ exception
       RAISE;
 end;
 \
+
+grant execute on build_claim_wks_file to pcs_user
+\

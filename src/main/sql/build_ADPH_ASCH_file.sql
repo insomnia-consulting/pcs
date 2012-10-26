@@ -171,3 +171,6 @@ exception
 
 end;
 \
+
+grant execute on build_ADPH_ASCH_file to pcs_user
+\

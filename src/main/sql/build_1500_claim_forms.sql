@@ -1316,3 +1316,6 @@ exception
       RAISE;
 end;
 \
+
+grant execute on build_1500_claim_forms to pcs_user
+\

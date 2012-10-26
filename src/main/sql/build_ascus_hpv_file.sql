@@ -258,3 +258,6 @@ exception
 
 end;
 \
+
+grant execute on build_ascus_hpv_file to pcs_user
+\

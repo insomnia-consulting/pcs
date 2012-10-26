@@ -177,3 +177,6 @@ exception
 
 end;
 \
+
+grant execute on build_clinic_cases_file to pcs_user
+\

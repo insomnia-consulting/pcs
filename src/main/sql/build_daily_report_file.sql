@@ -565,3 +565,6 @@ exception
 
 end;
 \
+
+grant execute on build_daily_report_file to pcs_user
+\

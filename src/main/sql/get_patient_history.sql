@@ -196,3 +196,6 @@ exception
 
 end;
 \
+
+grant execute on get_patient_history to pcs_user
+\

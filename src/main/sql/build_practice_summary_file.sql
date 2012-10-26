@@ -514,3 +514,6 @@ exception
 
 end;
 \
+
+grant execute on build_practice_summary_file to pcs_user
+\

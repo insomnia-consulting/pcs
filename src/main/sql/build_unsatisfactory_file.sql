@@ -332,3 +332,6 @@ exception
 
 end;
 \
+
+grant execute on build_unsatisfactory_file to pcs_user
+\

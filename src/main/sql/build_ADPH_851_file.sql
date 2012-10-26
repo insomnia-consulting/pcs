@@ -249,3 +249,6 @@ exception
 
 end;
 \
+
+grant execute on build_adph_851_file to pcs_user
+\

@@ -446,3 +446,6 @@ exception
 
 end;
 \
+
+grant execute on check_billing_info to pcs_user
+\

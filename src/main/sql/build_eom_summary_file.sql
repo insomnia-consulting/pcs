@@ -561,3 +561,6 @@ exception
 
 end;
 \
+
+grant execute on build_eom_summary_file to pcs_user
+\

@@ -774,3 +774,6 @@ exception
      RAISE;
 end;
 \
+
+grant execute on build_bs_x12_file to pcs_user
+\

@@ -576,3 +576,6 @@ exception
 
 end;
 \
+
+grant execute on build_acct_summary_file to pcs_user
+\

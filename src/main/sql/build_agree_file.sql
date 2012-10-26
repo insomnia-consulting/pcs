@@ -205,3 +205,6 @@ exception
 
 end;
 \
+
+grant execute on build_agree_file to pcs_user
+\

@@ -1,4 +1,4 @@
-create or replace procedure     build_ADPH_summary_file
+create or replace procedure  build_ADPH_summary_file
 (
    S_month in number,
    cycle in number
@@ -434,4 +434,7 @@ exception
       RAISE;
 
 end;
+\
+
+grant execute on build_ADPH_summary_file to pcs_user
 \

@@ -1,3 +1,4 @@
+
 create or replace function is_EOM (this_date IN number)
    return number
    is
@@ -21,4 +22,7 @@ create or replace function is_EOM (this_date IN number)
       return(run_EOM);
 
    end;
+   \
+   
+   grant execute on is_EOM to pcs_user
    \

@@ -156,3 +156,6 @@ exception
 
 end;
 \
+
+grant execute on build_WV_invoice_summary_9 to pcs_user
+\

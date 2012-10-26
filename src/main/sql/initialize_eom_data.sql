@@ -1,3 +1,4 @@
+
 create or replace procedure     initialize_EOM_data
 (
    S_month in number
@@ -61,4 +62,7 @@ exception
       RAISE;
 
 end;
+\
+
+grant execute on initialize_EOM_data to pcs_user
 \
