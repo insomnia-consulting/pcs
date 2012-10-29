@@ -821,7 +821,7 @@ public class LabForm extends PcsFrame
 		this.addWindowListener(aSymWindow);
 
 		labMedicareType.addKeyListener(aSymKey);
-		labFormSigned.addKeyListener(aSymKey);
+		//labFormSigned.addKeyListener(aSymKey);
 
 		labRelCode.addFocusListener(aSymFocus);
 		patRace.addKeyListener(aSymKey);
