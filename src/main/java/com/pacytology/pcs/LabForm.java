@@ -343,6 +343,7 @@ public class LabForm extends PcsFrame
 		getContentPane().add(billingPanel);
 		billingPanel.setBounds(74,248,420,252);
 		labBillingChoice.setEnabled(false);
+		
 		billingPanel.add(labBillingChoice);
 		labBillingChoice.setFont(new Font("DialogInput", Font.PLAIN, 12));
 		labBillingChoice.setBounds(20,42,34,20);
@@ -360,13 +361,15 @@ public class LabForm extends PcsFrame
 		labPCSID.setBounds(88,80,60,20);
 		labDPAState.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		labDPAState.setEnabled(false);
-		billingPanel.add(labDPAState);
 		labDPAState.setFont(new Font("DialogInput", Font.PLAIN, 12));
 		labDPAState.setBounds(162,80,30,20);
+		billingPanel.add(labDPAState);
+		
 		labBillingID.setEnabled(false);
-		billingPanel.add(labBillingID);
+		
 		labBillingID.setFont(new Font("DialogInput", Font.PLAIN, 12));
 		labBillingID.setBounds(214,80,186,20);
+		billingPanel.add(labBillingID);
 		labGrpNum.setEnabled(false);
 		billingPanel.add(labGrpNum);
 		labGrpNum.setFont(new Font("DialogInput", Font.PLAIN, 12));
@@ -782,12 +785,12 @@ public class LabForm extends PcsFrame
 		//}}
 	
 		//{{REGISTER_LISTENERS
-		SymAction lSymAction = new SymAction();
+		
 
 		//labDetCodeEntry.addKeyListener(aSymKey);
 		
 		//labRecDetInfo.addKeyListener(aSymKey);
-		labPrevLabNum.addKeyListener(aSymKey);
+		//labPrevLabNum.addKeyListener(aSymKey);
 
 		labPatientID.addKeyListener(aSymKey);
 		labGrpNum.addKeyListener(aSymKey);
@@ -800,7 +803,7 @@ public class LabForm extends PcsFrame
 		
 		labOtherInsurance.addKeyListener(aSymKey);
 
-		labDPAState.addActionListener(lSymAction);
+		
 		labPayerID.addKeyListener(aSymKey);
 		labPCSID.addKeyListener(aSymKey);
 		labPaAddress.addKeyListener(aSymKey);
@@ -1356,14 +1359,6 @@ public class LabForm extends PcsFrame
 	//{{DECLARE_MENUS
 	//}}
 
-
-	class SymAction implements java.awt.event.ActionListener
-	{
-		public void actionPerformed(java.awt.event.ActionEvent event)
-		{
-		}
-	}
-    
     public void invokePatientForm() 
     {
         if (queryIsQualified()) (new PatientForm(this)).setVisible(true);			
@@ -1400,7 +1395,7 @@ public class LabForm extends PcsFrame
 		labBillingChoice.setEnabled(eVal);
 		labRelCode.setEnabled(eVal);
 		labGrpNum.setEnabled(eVal);
-		labBillingID.setEnabled(eVal);
+		
 		labOtherInsurance.setEnabled(eVal);
 		//labBillingFormSigned.setEnabled(eVal);
 		labFormSigned.setEnabled(eVal);
@@ -1410,6 +1405,7 @@ public class LabForm extends PcsFrame
 		labMedicareType.setEnabled(eVal);
 		labSubscrFName.setEnabled(eVal);
 		labDPAState.setEnabled(eVal);
+		labBillingID.setEnabled(eVal);
 		labNumSlides.setEnabled(eVal);
 		labPrevLabNum.setEnabled(eVal);
 		labPrep.setEnabled(eVal);
@@ -1868,7 +1864,7 @@ public class LabForm extends PcsFrame
     */
     public void setEnableBillingFields(boolean eVal)  {
         labBillingChoice.setEnabled(eVal);
-        labBillingID.setEnabled(eVal);
+        
         labRelCode.setEnabled(eVal);
         labGrpNum.setEnabled(eVal);
         labOtherInsurance.setEnabled(eVal);
@@ -1876,6 +1872,7 @@ public class LabForm extends PcsFrame
         labPCSID.setEnabled(eVal);
         labFormSigned.setEnabled(eVal);
         labDPAState.setEnabled(eVal);
+        labBillingID.setEnabled(eVal);
         labSubscrLName.setEnabled(eVal);
         labSubscrFName.setEnabled(eVal);
         labMedicareType.setEnabled(eVal);
@@ -1908,7 +1905,7 @@ public class LabForm extends PcsFrame
             labFormSigned.setEnabled(eVal);
             labMedLbl.setText(null);
             labMedicareType.setEnabled(eVal);
-            labBillingID.requestFocus();
+            //labBillingID.requestFocus();
         }
         else if (choiceCode.equals("BS")) {
             labBillingID.setEnabled(eVal);
@@ -1920,9 +1917,10 @@ public class LabForm extends PcsFrame
             labFormSigned.setEnabled(eVal);
             labMedLbl.setText(null);
             labMedicareType.setEnabled(false);
-            labBillingID.requestFocus();
+            //labBillingID.requestFocus();
         }
         if (choiceCode.equals("DPA")) {
+        	labDPAState.setEnabled(eVal);
             labBillingID.setEnabled(eVal);
             labRelCode.setEnabled(false);
             labGrpNum.setEnabled(false);
@@ -1932,7 +1930,7 @@ public class LabForm extends PcsFrame
             labFormSigned.setEnabled(false);
             labMedLbl.setText(null);
             labMedicareType.setEnabled(false);
-            labBillingID.requestFocus();
+            //labBillingID.requestFocus();
         }
     }
     
@@ -2953,7 +2951,7 @@ public class LabForm extends PcsFrame
                 labDiagCode2.setEnabled(false);
                 labDiagCode3.setEnabled(false);
                 labDiagCode4.setEnabled(false);
-                labBillingID.requestFocus();
+                //labBillingID.requestFocus();
                 return;
             }
         }
@@ -3286,7 +3284,9 @@ public class LabForm extends PcsFrame
             labOtherInsurance.setEnabled(false);
             labPayerID.setEnabled(false);
             labPCSID.setEnabled(false);
-		    labBillingID.requestFocus();
+            //HACK!!  labDPAState should get focus in some cases.  This line seems to prevent it
+		    if (bChoice.equals("DPA")) labDPAState.requestFocus();
+		    else labBillingChoice.requestFocusInWindow();
         }
 	}
 	
@@ -4040,7 +4040,12 @@ public class LabForm extends PcsFrame
                 labPCSID.setText(Integer.toString(cRec.id_number));
                 labRec.carrier_id=cRec.carrier_id;
             }
-            labBillingChoice.transferFocus();
+            if (!bChoice.equals("DPA")){
+            	labDPAState.requestFocusInWindow();
+            }
+            else {
+            	labBillingChoice.transferFocus();
+            }
 		}
 	}
 	
@@ -4125,7 +4130,9 @@ public class LabForm extends PcsFrame
 		            (!labDPAState.getText().equals("WV"))&&(!labDPAState.getText().equals("OH"))) {
                     gotoNextSection();
 		        }
-                else labBillingID.transferFocus();		
+                else {
+                	labBillingID.transferFocus();		
+                }
             }
         }
 	}
@@ -4157,7 +4164,10 @@ public class LabForm extends PcsFrame
 		            }
 		        }
 		        if (!found) Utils.createErrMsg("Invalid DPA State");
-		        else labDPAState.transferFocus();
+		        else {
+		        	
+		        	labDPAState.transferFocus();
+		        }
 		    }
 		}
 	}
