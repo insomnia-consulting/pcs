@@ -4,6 +4,7 @@
 connect / as sysdba
 grant dba to pcs ; 
 grant select on sys.dba_free_space to pcs ; 
+create role pcs_user not identified ;
 disconnect
 connect pcs/ahb21@pcs
 
