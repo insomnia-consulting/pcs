@@ -21,6 +21,7 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.PrintJob;
@@ -301,6 +302,7 @@ public class LabForm extends PcsFrame
 		labPracticeName.setRequestFocusEnabled(false);
 		patientPanel.add(labPracticeName);
 		labPracticeName.setFont(new Font("Dialog", Font.BOLD, 11));
+		labPracticeName.setBackground(Color.CYAN);
 		labPracticeName.setBounds(110,54,206,14);
 		JLabel1.setRequestFocusEnabled(false);
 		JLabel1.setText("Patient");
@@ -1797,18 +1799,18 @@ public class LabForm extends PcsFrame
 	void labPrevLabNum_keyPressed(java.awt.event.KeyEvent event)
 	{
         /* 
-            This even signifies that the ADD operation is in progress;
+            This event signifies that the ADD operation is in progress;
             if a last lab is found, OK, otherwise transfer to patient
             lookup screen.
         */            
 		if (event.getKeyCode()==KeyEvent.VK_ENTER)  {
 		    if (patientQuery) {
-		        //labPrevLabNum.transferFocus();
+		        labPrevLabNum.transferFocus();
 		    	labPatientLastName.requestFocusInWindow();
+		    	labPrevLabNum.transferFocus();	
 		        return;
 		    }
 		    findLastLab();
-		    labPrevLabNum.transferFocus();	
 	    }	
 	}
 	
@@ -4922,7 +4924,7 @@ public class LabForm extends PcsFrame
         	Utils.createErrMsg("Cannot locate report: "+fileName); 
         }
 		else {
-			Utils.genericPrint(out.toString(), new MessageFormat(""), new MessageFormat(""));
+			Utils.genericPrint(out.toString(), Utils.PRINTER);
 		}
 	}
 	
