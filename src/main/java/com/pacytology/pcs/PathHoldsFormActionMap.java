@@ -12,7 +12,25 @@ public class PathHoldsFormActionMap extends PcsActionMap {
 	public PathHoldsFormActionMap(Object parentFrame) {
 		super(parentFrame);
 	}
-	
+	@Override
+	public void finalAction() {
+		PathHoldsForm form = (PathHoldsForm)this.parentFrame;
+
+		if (form.NUM_HOLDS>0) {
+            form.setCursor(new java.awt.Cursor(
+                java.awt.Cursor.WAIT_CURSOR));
+            form.updatePathHolds();
+            form.queryPathHolds();
+            form.setCursor(new java.awt.Cursor(
+                java.awt.Cursor.DEFAULT_CURSOR));
+            form.refreshHoldList();
+            if (form.NUM_HOLDS>0) { 
+                form.displayResultCodes(0);
+                form.pHoldList.setSelectedIndex(0);
+                form.resultCode.requestFocus();
+            }
+        }
+	}
 
 	public void addAction(ActionEvent e) {
 		PathHoldsForm form = (PathHoldsForm)this.parentFrame;
@@ -21,7 +39,7 @@ public class PathHoldsFormActionMap extends PcsActionMap {
 		if (!form.firstRelease && !form.hasVerification) {
             form.firstRelease=true;
             if (!form.confirmVerified()) {
-                form.verifiedOn.requestFocus();
+                form.verifiedOn.requestFocus();	
                 canProceed=false;
             }
         }

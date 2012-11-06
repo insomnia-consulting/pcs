@@ -345,20 +345,7 @@ public class PathHoldsForm extends PcsFrame
                 increment();
                 break;
             case java.awt.event.KeyEvent.VK_F12:
-                if (NUM_HOLDS>0) {
-                    this.setCursor(new java.awt.Cursor(
-                        java.awt.Cursor.WAIT_CURSOR));
-                    updatePathHolds();
-                    queryPathHolds();
-                    this.setCursor(new java.awt.Cursor(
-                        java.awt.Cursor.DEFAULT_CURSOR));
-                    refreshHoldList();
-                    if (NUM_HOLDS>0) { 
-	                    displayResultCodes(0);
-                        pHoldList.setSelectedIndex(0);
-                        resultCode.requestFocus();
-                    }
-                }
+                
                 break;
             case KeyEvent.VK_F8:
                 if (resultCode.hasFocus()) {
@@ -489,8 +476,8 @@ public class PathHoldsForm extends PcsFrame
                 "UPDATE pcs.pathologist_holds \n"+
                 "SET released=SysDate, \n"+
                 "    verified_on=TO_DATE(?,'MMDDYYYY'), \n"+
-                "    verified_by=?"+
-                "WHERE lab_number=";
+                "    verified_by=? \n"+
+                "WHERE lab_number=?";
                 
             String addQuery = 
                 "INSERT INTO pcs.cytopath_print_queue \n"+
@@ -499,8 +486,8 @@ public class PathHoldsForm extends PcsFrame
             stmt = DbConnection.process().createStatement();
             for (int i=0;i<NUM_HOLDS;i++) {
                 if (!Utils.isNull(pathHolds[i].released)) {
-                    String buf = updQuery+
-                        pathHolds[i].lab_number+" \n";
+                    String buf = updQuery;
+
                     String vPath = null;
                     String vDate = null;
                     if (hasVerification) {
@@ -512,7 +499,8 @@ public class PathHoldsForm extends PcsFrame
                     pstmt=DbConnection.process().prepareStatement(buf);
                     pstmt.setString(1,vDate);
                     pstmt.setString(2,vPath);
-                    int rs = pstmt.executeUpdate(buf);
+                    pstmt.setInt(3, pathHolds[i].lab_number);
+                    int rs = pstmt.executeUpdate();
                     buf = addQuery+
                         pathHolds[i].lab_number+",2) \n";
                     rs = stmt.executeUpdate(buf);
