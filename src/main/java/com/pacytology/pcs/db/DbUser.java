@@ -17,13 +17,16 @@ package com.pacytology.pcs.db;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.sql.*;
 import javax.swing.*;
 
+import com.pacytology.pcs.DocStmtDialogActionMap;
 import com.pacytology.pcs.PCSLabEntry;
 import com.pacytology.pcs.Utils;
+import com.pacytology.pcs.ui.PcsDialog;
 
-public class DbUser extends JDialog
+public class DbUser extends PcsDialog
 {
     /**
 	 * 
@@ -94,13 +97,39 @@ public class DbUser extends JDialog
 		SymFocus aSymFocus = new SymFocus();
 		userTextField.addFocusListener(aSymFocus);
 		SymKey aSymKey = new SymKey();
-		this.addKeyListener(aSymKey);
+		//this.addKeyListener(aSymKey);
 		userTextField.addKeyListener(aSymKey);
 		userPwdField.addKeyListener(aSymKey);
 		SymWindow aSymWindow = new SymWindow();
 		this.addWindowListener(aSymWindow);
 		//}}
+		this.actionMap = new DocStmtDialogActionMap(this);
+		this.setupKeyPressMap();
+		
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+
+
+		rp.getActionMap().put("F9", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				DbUser.this.dispose();
+			}
+		});
+
+		rp.getActionMap().put("ESC", new AbstractAction() { 
+			public void actionPerformed(ActionEvent e) { 
+				userTextField.setText(null);
+				userPwdField.setText(null);
+				errorLabel.setText(null);
+				errorLabel.setText(null);
+				userTextField.requestFocus();
+			}
+		});
+
+		return rp;
+	}
+
 
     public DbUser(PCSLabEntry p) {
         this();
@@ -279,6 +308,7 @@ public class DbUser extends JDialog
 				DbUser_keyPressed(event);
 			else if (object == userTextField)
 				userTextField_keyPressed(event);
+		
 			else if (object == userPwdField)
 				userPwdField_keyPressed(event);
 		}
@@ -325,5 +355,31 @@ public class DbUser extends JDialog
 	{
 		userTextField.requestFocus();
 	}
-	
+	@Override
+	public void queryActions() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void addActions() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void updateActions() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void finalActions() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
+	}
 }
+
+	
