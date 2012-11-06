@@ -6,14 +6,19 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 import javax.swing.*;
+
 import java.util.Vector;
+
+import com.pacytology.pcs.actions.LabFormActionMap;
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import javax.swing.border.TitledBorder;
 
-public class PathHoldsForm extends javax.swing.JFrame
+public class PathHoldsForm extends PcsFrame
 {
     public PathHoldsRec[] pathHolds;
     public ResultCodeRec[] resultCodes;
@@ -145,8 +150,17 @@ public class PathHoldsForm extends javax.swing.JFrame
 		verifiedOn.addKeyListener(aSymKey);
 		verifiedBy.addKeyListener(aSymKey);
 		//}}
+		actionMap = new PathHoldsFormActionMap(this);
+		setupKeyPressMap();
+		
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
 
+
+		
+		return rp;
+	}
 	public PathHoldsForm(String sTitle)
 	{
 		this();
@@ -303,37 +317,13 @@ public class PathHoldsForm extends javax.swing.JFrame
 	{
 		int key = event.getKeyCode();
 		int ndx = 0;
-		boolean canProceed = true;
+
 		switch (key) {
 		    case KeyEvent.VK_F9:
 		        this.dispose();
 		        break;
             case KeyEvent.VK_F2:
-                if (!firstRelease && !hasVerification) {
-                    firstRelease=true;
-                    if (!confirmVerified()) {
-                        verifiedOn.requestFocus();
-                        canProceed=false;
-                    }
-                }
-                if (canProceed) {
-                if (NUM_HOLDS>0) { 
-                    ndx=pHoldList.getSelectedIndex();
-                    if (ndx>=0) {
-                        if (!pathHolds[ndx].resultsChanged) {
-                            releaseMode=true;
-                            releaseHold();
-                            if (!Utils.isNull(pathHolds[ndx].released)) {
-                                resultCode.setEnabled(false);
-                                msgLabel.requestFocus();
-                            }
-                        }
-                        else Utils.createErrMsg(
-                            "Cannot release because result codes where changed");
-                        increment();
-                    }
-                }
-                }
+                
                 break;
             case KeyEvent.VK_F10:
                 boolean verifyStatus = confirmVerified();
@@ -876,6 +866,36 @@ public class PathHoldsForm extends javax.swing.JFrame
         }
         if (rowsReturned==0) exitStatus=false;
         return(exitStatus);            
+	}
+
+	@Override
+	public void queryActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void finalActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
