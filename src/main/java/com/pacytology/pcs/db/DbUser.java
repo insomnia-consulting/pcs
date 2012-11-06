@@ -107,6 +107,7 @@ public class DbUser extends PcsDialog
 		this.setupKeyPressMap();
 		
 	}
+	@SuppressWarnings("serial")
 	protected JRootPane setupKeyPressMap() {
 		JRootPane rp = super.setupKeyPressMap();
 
@@ -114,6 +115,7 @@ public class DbUser extends PcsDialog
 		rp.getActionMap().put("F9", new AbstractAction() { 
 			public void actionPerformed(ActionEvent e) { 
 				DbUser.this.dispose();
+				parent.setCursor(Cursor.getDefaultCursor());
 			}
 		});
 
@@ -122,8 +124,7 @@ public class DbUser extends PcsDialog
 				userTextField.setText(null);
 				userPwdField.setText(null);
 				errorLabel.setText(null);
-				errorLabel.setText(null);
-				userTextField.requestFocus();
+				userTextField.requestFocusInWindow();
 			}
 		});
 
@@ -319,8 +320,8 @@ public class DbUser extends PcsDialog
 		int key = event.getKeyCode();
 		switch (key) {
 		    case java.awt.event.KeyEvent.VK_F9:
-                parent.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-		        this.dispose();
+//                parent.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+		        //this.dispose();
 		        break;
 		    case java.awt.event.KeyEvent.VK_ESCAPE:
 		        userTextField.setText(null);
