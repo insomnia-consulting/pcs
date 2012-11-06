@@ -1804,13 +1804,21 @@ public class LabForm extends PcsFrame
             lookup screen.
         */            
 		if (event.getKeyCode()==KeyEvent.VK_ENTER)  {
-		    if (patientQuery) {
-		        labPrevLabNum.transferFocus();
+			if (patientQuery) {
+		    	labPrevLabNum.transferFocus();		        
 		    	labPatientLastName.requestFocusInWindow();
-		    	labPrevLabNum.transferFocus();	
+
 		        return;
 		    }
 		    findLastLab();
+		    //Now.. check again to see if we're in a patient query (as a result of the lab not being found).
+		    if (patientQuery) {
+		    	labPrevLabNum.transferFocus();		        
+		    	labPatientLastName.requestFocusInWindow();
+
+		        return;
+		    }
+	    	labPrevLabNum.transferFocus();	
 	    }	
 	}
 	
@@ -2031,7 +2039,8 @@ public class LabForm extends PcsFrame
                                 labBillingChoice.setEnabled(true);
                                 labBillingChoice.requestFocus();
                                 break;
-                            }                            
+                            }
+                            
                         }
                 case 3: if (checkCarrier) labOps.getCarrierInfo();
                         setEnableAllFields(false);
