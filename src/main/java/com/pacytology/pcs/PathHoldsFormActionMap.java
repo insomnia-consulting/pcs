@@ -31,9 +31,9 @@ public class PathHoldsFormActionMap extends PcsActionMap {
             }
         }
 	}
-
+    @Override
 	public void addAction(ActionEvent e) {
-		PathHoldsForm form = (PathHoldsForm)this.parentFrame;
+    	PathHoldsForm form = (PathHoldsForm)this.parentFrame;
 		boolean canProceed = true;
 		int ndx = 0;
 		if (!form.firstRelease && !form.hasVerification) {
@@ -61,6 +61,32 @@ public class PathHoldsFormActionMap extends PcsActionMap {
             }
         }
         }
+	}
+	@Override
+	public void resetAction() {
+		PathHoldsForm form = (PathHoldsForm)this.parentFrame;
+		if (form.NUM_HOLDS>0) {
+            for (int i=0;i<form.NUM_HOLDS;i++) {
+                form.pathHolds[i].released=null;
+            }
+            form.setCursor(new java.awt.Cursor(
+                java.awt.Cursor.WAIT_CURSOR));
+            form.queryPathHolds();
+            form.setCursor(new java.awt.Cursor(
+                java.awt.Cursor.DEFAULT_CURSOR));
+            form.refreshHoldList();
+            form.displayResultCodes(0);
+            form.pHoldList.setSelectedIndex(0);
+            //resultCode.requestFocus();
+            form.hasVerification=false;
+            form.firstRelease=false;
+            form.enableVerified();
+        }
+	}
+	@Override
+	public void controlAction() {
+		PathHoldsForm form = (PathHoldsForm)this.parentFrame;
+		form.resultCode.setText(null);
 	}
 
 }

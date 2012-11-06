@@ -157,7 +157,48 @@ public class PathHoldsForm extends PcsFrame
 	protected JRootPane setupKeyPressMap() {
 		JRootPane rp = super.setupKeyPressMap();
 
-
+		rp.getActionMap().put("F10", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				boolean verifyStatus = confirmVerified();
+                if (verifyStatus) disableVerified();
+                else enableVerified();
+			}
+		});
+		rp.getActionMap().put("VK_DOWN", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				increment();
+			}
+		});
+		rp.getActionMap().put("VK_UP", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				int ndx = pHoldList.getSelectedIndex();
+                if (ndx>0) ndx--;
+                else ndx=0;
+                if (!releaseMode) {
+                    pHoldList.setSelectedIndex(ndx);
+                    pHoldList.ensureIndexIsVisible(ndx);
+                }
+                displayResultCodes(ndx);
+			}
+		});
+		rp.getActionMap().put("F8", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (resultCode.hasFocus()) {
+                    String buf[] = new String [resultCodes.length];
+		            String buf2[] = new String [resultCodes.length];
+		            for (int i=0;i<resultCodes.length;i++) {
+		                buf[i]=
+		                    resultCodes[i].bethesda_code+"   "+
+		                    resultCodes[i].description;
+                            buf2[i]=resultCodes[i].bethesda_code;
+                    }
+                    (new PickList("Result Codes",
+                        200,40,320,360,
+                        resultCodes.length,buf,buf2,
+                        resultCode)).setVisible(true);
+                }
+			}
+		});
 		
 		return rp;
 	}
@@ -289,8 +330,7 @@ public class PathHoldsForm extends PcsFrame
 		public void keyPressed(java.awt.event.KeyEvent event)
 		{
 			Object object = event.getSource();
-			if (object == PathHoldsForm.this)
-				PathHoldsForm_keyPressed(event);
+
 			if (object == resultCode)
 				resultCode_keyPressed(event);
 			else if (object == verifiedOn)
@@ -313,90 +353,7 @@ public class PathHoldsForm extends PcsFrame
         displayResultCodes(ndx);
 	}
 
-	void PathHoldsForm_keyPressed(java.awt.event.KeyEvent event)
-	{
-		int key = event.getKeyCode();
-		int ndx = 0;
-
-		switch (key) {
-		    case KeyEvent.VK_F9:
-		        this.dispose();
-		        break;
-            case KeyEvent.VK_F2:
-                
-                break;
-            case KeyEvent.VK_F10:
-                boolean verifyStatus = confirmVerified();
-                if (verifyStatus) disableVerified();
-                else enableVerified();
-                break;
-            case KeyEvent.VK_DOWN:
-                /*
-                ndx = pHoldList.getSelectedIndex();
-                if (ndx<0) ndx=0;
-                else ndx++;
-                if (ndx>=NUM_HOLDS) ndx=NUM_HOLDS-1;
-                if (!releaseMode) {
-                    pHoldList.setSelectedIndex(ndx);
-                    pHoldList.ensureIndexIsVisible(ndx);
-                }
-                displayResultCodes(ndx);
-                */
-                increment();
-                break;
-            case java.awt.event.KeyEvent.VK_F12:
-                
-                break;
-            case KeyEvent.VK_F8:
-                if (resultCode.hasFocus()) {
-                    String buf[] = new String [resultCodes.length];
-		            String buf2[] = new String [resultCodes.length];
-		            for (int i=0;i<resultCodes.length;i++) {
-		                buf[i]=
-		                    resultCodes[i].bethesda_code+"   "+
-		                    resultCodes[i].description;
-                            buf2[i]=resultCodes[i].bethesda_code;
-                    }
-                    (new PickList("Result Codes",
-                        200,40,320,360,
-                        resultCodes.length,buf,buf2,
-                        resultCode)).setVisible(true);
-                }
-                break;
-            case java.awt.event.KeyEvent.VK_ESCAPE:
-                if (NUM_HOLDS>0) {
-                    for (int i=0;i<NUM_HOLDS;i++) {
-                        pathHolds[i].released=null;
-                    }
-                    this.setCursor(new java.awt.Cursor(
-                        java.awt.Cursor.WAIT_CURSOR));
-                    queryPathHolds();
-                    this.setCursor(new java.awt.Cursor(
-                        java.awt.Cursor.DEFAULT_CURSOR));
-                    refreshHoldList();
-	                displayResultCodes(0);
-                    pHoldList.setSelectedIndex(0);
-                    //resultCode.requestFocus();
-                    hasVerification=false;
-                    firstRelease=false;
-                    enableVerified();
-                }
-                break;
-            case KeyEvent.VK_UP:
-                ndx = pHoldList.getSelectedIndex();
-                if (ndx>0) ndx--;
-                else ndx=0;
-                if (!releaseMode) {
-                    pHoldList.setSelectedIndex(ndx);
-                    pHoldList.ensureIndexIsVisible(ndx);
-                }
-                displayResultCodes(ndx);
-                break;
-            case KeyEvent.VK_CONTROL:
-                resultCode.setText(null);
-                break;
-		}
-	}
+	
 	
 	public void displayResultCodes(int ndx)
 	{
