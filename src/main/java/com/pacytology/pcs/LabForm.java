@@ -4051,7 +4051,7 @@ public class LabForm extends PcsFrame
                 labPCSID.setText(Integer.toString(cRec.id_number));
                 labRec.carrier_id=cRec.carrier_id;
             }
-            if (!bChoice.equals("DPA")){
+            if (bChoice.equals("DPA")){
             	labDPAState.requestFocusInWindow();
             }
             else {
