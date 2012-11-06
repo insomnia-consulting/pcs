@@ -2,9 +2,6 @@ package com.pacytology.pcs;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-
 import com.pacytology.pcs.actions.PcsActionMap;
 
 public class PathHoldsFormActionMap extends PcsActionMap {
