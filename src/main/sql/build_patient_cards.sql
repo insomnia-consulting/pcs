@@ -57,7 +57,8 @@ begin
    practice_id:=LPAD(TO_CHAR(S_practice),3,'0');
    cbuf:=TO_CHAR(S_month);
    S_file_name:=RTRIM(practice_id||substr(cbuf,5,2)||substr(cbuf,1,1)||substr(cbuf,3,2))||'.pcd';
-   dir_name:=RTRIM('vol1:');
+   dir_name:='REPORTS_DIR';
+   
    file_handle:=UTL_FILE.FOPEN(dir_name,S_file_name,'w');
 
    select name,address1,address2,city,state,SUBSTR(zip,1,5)
