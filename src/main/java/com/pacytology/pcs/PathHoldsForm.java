@@ -6,14 +6,19 @@ package com.pacytology.pcs;
 */
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 import javax.swing.*;
+
 import java.util.Vector;
+
+import com.pacytology.pcs.actions.LabFormActionMap;
+import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import javax.swing.border.TitledBorder;
 
-public class PathHoldsForm extends javax.swing.JFrame
+public class PathHoldsForm extends PcsFrame
 {
     public PathHoldsRec[] pathHolds;
     public ResultCodeRec[] resultCodes;
@@ -145,8 +150,58 @@ public class PathHoldsForm extends javax.swing.JFrame
 		verifiedOn.addKeyListener(aSymKey);
 		verifiedBy.addKeyListener(aSymKey);
 		//}}
+		actionMap = new PathHoldsFormActionMap(this);
+		setupKeyPressMap();
+		
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
 
+		rp.getActionMap().put("F10", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				boolean verifyStatus = confirmVerified();
+                if (verifyStatus) disableVerified();
+                else enableVerified();
+			}
+		});
+		rp.getActionMap().put("VK_DOWN", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				increment();
+			}
+		});
+		rp.getActionMap().put("VK_UP", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				int ndx = pHoldList.getSelectedIndex();
+                if (ndx>0) ndx--;
+                else ndx=0;
+                if (!releaseMode) {
+                    pHoldList.setSelectedIndex(ndx);
+                    pHoldList.ensureIndexIsVisible(ndx);
+                }
+                displayResultCodes(ndx);
+			}
+		});
+		rp.getActionMap().put("F8", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (resultCode.hasFocus()) {
+                    String buf[] = new String [resultCodes.length];
+		            String buf2[] = new String [resultCodes.length];
+		            for (int i=0;i<resultCodes.length;i++) {
+		                buf[i]=
+		                    resultCodes[i].bethesda_code+"   "+
+		                    resultCodes[i].description;
+                            buf2[i]=resultCodes[i].bethesda_code;
+                    }
+                    (new PickList("Result Codes",
+                        200,40,320,360,
+                        resultCodes.length,buf,buf2,
+                        resultCode)).setVisible(true);
+                }
+			}
+		});
+		
+		return rp;
+	}
 	public PathHoldsForm(String sTitle)
 	{
 		this();
@@ -275,8 +330,7 @@ public class PathHoldsForm extends javax.swing.JFrame
 		public void keyPressed(java.awt.event.KeyEvent event)
 		{
 			Object object = event.getSource();
-			if (object == PathHoldsForm.this)
-				PathHoldsForm_keyPressed(event);
+
 			if (object == resultCode)
 				resultCode_keyPressed(event);
 			else if (object == verifiedOn)
@@ -299,127 +353,7 @@ public class PathHoldsForm extends javax.swing.JFrame
         displayResultCodes(ndx);
 	}
 
-	void PathHoldsForm_keyPressed(java.awt.event.KeyEvent event)
-	{
-		int key = event.getKeyCode();
-		int ndx = 0;
-		boolean canProceed = true;
-		switch (key) {
-		    case KeyEvent.VK_F9:
-		        this.dispose();
-		        break;
-            case KeyEvent.VK_F2:
-                if (!firstRelease && !hasVerification) {
-                    firstRelease=true;
-                    if (!confirmVerified()) {
-                        verifiedOn.requestFocus();
-                        canProceed=false;
-                    }
-                }
-                if (canProceed) {
-                if (NUM_HOLDS>0) { 
-                    ndx=pHoldList.getSelectedIndex();
-                    if (ndx>=0) {
-                        if (!pathHolds[ndx].resultsChanged) {
-                            releaseMode=true;
-                            releaseHold();
-                            if (!Utils.isNull(pathHolds[ndx].released)) {
-                                resultCode.setEnabled(false);
-                                msgLabel.requestFocus();
-                            }
-                        }
-                        else Utils.createErrMsg(
-                            "Cannot release because result codes where changed");
-                        increment();
-                    }
-                }
-                }
-                break;
-            case KeyEvent.VK_F10:
-                boolean verifyStatus = confirmVerified();
-                if (verifyStatus) disableVerified();
-                else enableVerified();
-                break;
-            case KeyEvent.VK_DOWN:
-                /*
-                ndx = pHoldList.getSelectedIndex();
-                if (ndx<0) ndx=0;
-                else ndx++;
-                if (ndx>=NUM_HOLDS) ndx=NUM_HOLDS-1;
-                if (!releaseMode) {
-                    pHoldList.setSelectedIndex(ndx);
-                    pHoldList.ensureIndexIsVisible(ndx);
-                }
-                displayResultCodes(ndx);
-                */
-                increment();
-                break;
-            case java.awt.event.KeyEvent.VK_F12:
-                if (NUM_HOLDS>0) {
-                    this.setCursor(new java.awt.Cursor(
-                        java.awt.Cursor.WAIT_CURSOR));
-                    updatePathHolds();
-                    queryPathHolds();
-                    this.setCursor(new java.awt.Cursor(
-                        java.awt.Cursor.DEFAULT_CURSOR));
-                    refreshHoldList();
-                    if (NUM_HOLDS>0) { 
-	                    displayResultCodes(0);
-                        pHoldList.setSelectedIndex(0);
-                        resultCode.requestFocus();
-                    }
-                }
-                break;
-            case KeyEvent.VK_F8:
-                if (resultCode.hasFocus()) {
-                    String buf[] = new String [resultCodes.length];
-		            String buf2[] = new String [resultCodes.length];
-		            for (int i=0;i<resultCodes.length;i++) {
-		                buf[i]=
-		                    resultCodes[i].bethesda_code+"   "+
-		                    resultCodes[i].description;
-                            buf2[i]=resultCodes[i].bethesda_code;
-                    }
-                    (new PickList("Result Codes",
-                        200,40,320,360,
-                        resultCodes.length,buf,buf2,
-                        resultCode)).setVisible(true);
-                }
-                break;
-            case java.awt.event.KeyEvent.VK_ESCAPE:
-                if (NUM_HOLDS>0) {
-                    for (int i=0;i<NUM_HOLDS;i++) {
-                        pathHolds[i].released=null;
-                    }
-                    this.setCursor(new java.awt.Cursor(
-                        java.awt.Cursor.WAIT_CURSOR));
-                    queryPathHolds();
-                    this.setCursor(new java.awt.Cursor(
-                        java.awt.Cursor.DEFAULT_CURSOR));
-                    refreshHoldList();
-	                displayResultCodes(0);
-                    pHoldList.setSelectedIndex(0);
-                    //resultCode.requestFocus();
-                    hasVerification=false;
-                    firstRelease=false;
-                    enableVerified();
-                }
-                break;
-            case KeyEvent.VK_UP:
-                ndx = pHoldList.getSelectedIndex();
-                if (ndx>0) ndx--;
-                else ndx=0;
-                if (!releaseMode) {
-                    pHoldList.setSelectedIndex(ndx);
-                    pHoldList.ensureIndexIsVisible(ndx);
-                }
-                displayResultCodes(ndx);
-                break;
-            case KeyEvent.VK_CONTROL:
-                resultCode.setText(null);
-                break;
-		}
-	}
+	
 	
 	public void displayResultCodes(int ndx)
 	{
@@ -499,8 +433,8 @@ public class PathHoldsForm extends javax.swing.JFrame
                 "UPDATE pcs.pathologist_holds \n"+
                 "SET released=SysDate, \n"+
                 "    verified_on=TO_DATE(?,'MMDDYYYY'), \n"+
-                "    verified_by=?"+
-                "WHERE lab_number=";
+                "    verified_by=? \n"+
+                "WHERE lab_number=?";
                 
             String addQuery = 
                 "INSERT INTO pcs.cytopath_print_queue \n"+
@@ -509,8 +443,8 @@ public class PathHoldsForm extends javax.swing.JFrame
             stmt = DbConnection.process().createStatement();
             for (int i=0;i<NUM_HOLDS;i++) {
                 if (!Utils.isNull(pathHolds[i].released)) {
-                    String buf = updQuery+
-                        pathHolds[i].lab_number+" \n";
+                    String buf = updQuery;
+
                     String vPath = null;
                     String vDate = null;
                     if (hasVerification) {
@@ -522,7 +456,8 @@ public class PathHoldsForm extends javax.swing.JFrame
                     pstmt=DbConnection.process().prepareStatement(buf);
                     pstmt.setString(1,vDate);
                     pstmt.setString(2,vPath);
-                    int rs = pstmt.executeUpdate(buf);
+                    pstmt.setInt(3, pathHolds[i].lab_number);
+                    int rs = pstmt.executeUpdate();
                     buf = addQuery+
                         pathHolds[i].lab_number+",2) \n";
                     rs = stmt.executeUpdate(buf);
@@ -876,6 +811,36 @@ public class PathHoldsForm extends javax.swing.JFrame
         }
         if (rowsReturned==0) exitStatus=false;
         return(exitStatus);            
+	}
+
+	@Override
+	public void queryActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void finalActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

@@ -84,7 +84,7 @@ declare
 	maxvalue number;
 begin
 	dbms_output.put_line('Getting necessary max value for sequence');
-	select max(detail_id)+1 into maxvalue from pcs.lab_req_details_additional ; 
+	select max(detail_id)+1 into maxvalue from pcs.lab_req_details ; 
 	dbms_output.put_line('=========== Creating sequence lab_req_detail_seq');
 	execute immediate 'create sequence lab_req_detail_seq start with '||maxvalue||' nomaxvalue' ; 
 end ;
