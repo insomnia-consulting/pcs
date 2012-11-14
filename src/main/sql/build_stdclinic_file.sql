@@ -113,7 +113,7 @@ begin
    */                                                                                                                                                                               
    cbuf:=RTRIM(LTRIM(TO_CHAR(S_month)));                                                                                                                                            
    S_file_name:=cbuf||'.std';                                                                                                                                                       
-   dir_name:=RTRIM('vol1:');                                                                                                                                                        
+   dir_name:=RTRIM('REPORTS_DIR');                                                                                                                                                        
    file_handle:=UTL_FILE.FOPEN(dir_name,S_file_name,'w');                                                                                                                           
    L_race:=' ';                                                                                                                                                                     
    L_ethnicity:=' ';                                                                                                                                                                
@@ -402,5 +402,5 @@ exception
 end;       
 \
 
-grant execute on build_stdclinic_file to pcs_user ; 
+grant execute on build_stdclinic_file to pcs_user 
 \

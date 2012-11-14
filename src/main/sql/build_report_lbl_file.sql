@@ -33,7 +33,7 @@ begin
    P_proc_name:='BUILD_RERPORT_LBL_FILE';                                                                                                                                           
                                                                                                                                                                                     
    P_code_area:='PREP';                                                                                                                                                             
-   label_file:=UTL_FILE.FOPEN('vol1:','reports.lbl','w');                                                                                                                           
+   label_file:=UTL_FILE.FOPEN('REPORTS_DIR','reports.lbl','w');                                                                                                                           
                                                                                                                                                                                     
    open practice_list;                                                                                                                                                              
    loop                                                                                                                                                                             
@@ -98,5 +98,5 @@ exception
 end;     
 \
 
-grant execute on build_report_lbl_file to pcs_user ; 
+grant execute on build_report_lbl_file to pcs_user 
 \

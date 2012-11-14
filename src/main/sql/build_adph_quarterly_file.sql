@@ -126,7 +126,7 @@ begin
    P_code_area:='PREP';                                                                                                                                                             
    check_point:=0;                                                                                                                                                                  
    S_file_name:='ADPH'||year||'.Q'||quarter;                                                                                                                                        
-   dir_name:=RTRIM('vol1:');                                                                                                                                                        
+   dir_name:=RTRIM('REPORTS_DIR');                                                                                                                                                        
    file_handle:=UTL_FILE.FOPEN(dir_name,S_file_name,'w');                                                                                                                           
                                                                                                                                                                                     
    dline:='---------------------------------------------------';                                                                                                                    
@@ -284,5 +284,5 @@ exception
 end;                 
 \
 
-grant execute on build_adph_quarterly_file to pcs_user ; 
+grant execute on build_adph_quarterly_file to pcs_user
 \

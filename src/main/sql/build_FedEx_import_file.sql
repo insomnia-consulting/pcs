@@ -46,7 +46,7 @@ begin
    P_code_area:='PREP';                                                                                                                                                             
    P_file_name:='FedEx.imp';                                                                                                                                                        
 
-   dir_name:=RTRIM('vol1:');                                                                                                                                                        
+   dir_name:=RTRIM('REPORTS_DIR');                                                                                                                                                        
    file_handle:=UTL_FILE.FOPEN(dir_name,P_file_name,'w');                                                                                                                           
                                                                                                                                                                                     
    /* Set values for fields that are either blank or will                                                                                                                           
@@ -124,5 +124,5 @@ exception
 end;        
 \
 
-grant execute on build_FedEx_import_file to pcs_user ; 
+grant execute on build_FedEx_import_file to pcs_user 
 \

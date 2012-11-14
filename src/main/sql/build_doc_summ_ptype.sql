@@ -176,7 +176,7 @@ begin
    cbuf1:=TO_CHAR(f_date,'MonYYYY');                                                                                                                                                
    cbuf3:=SUBSTR(P_program,1,2);                                                                                                                                                    
    S_file_name:=cbuf1||'.'||cbuf3||'2';                                                                                                                                             
-   dir_name:=RTRIM('vol1:');                                                                                                                                                        
+   dir_name:=RTRIM('REPORTS_DIR');                                                                                                                                                        
    file_handle:=UTL_FILE.FOPEN(dir_name,S_file_name,'w');                                                                                                                           
                                                                                                                                                                                     
                                                                                                                                                                                     
@@ -976,5 +976,5 @@ exception
 end;                   
 \
 
-grant execute on build_doc_summ_ptype to pcs_user ; 
+grant execute on build_doc_summ_ptype to pcs_user
 \

@@ -59,7 +59,7 @@ begin
    check_point:=0;                                                                                                                                                                  
    L_file_name:='diag.ltr';                                                                                                                                                         
    check_point:=0.5;                                                                                                                                                                
-   dir_name:='vol1:';                                                                                                                                                               
+   dir_name:='REPORTS_DIR';                                                                                                                                                               
    check_point:=0.6;                                                                                                                                                                
 
    file_handle:=UTL_FILE.FOPEN(dir_name,L_file_name,'a');                                                                                                                           
@@ -234,5 +234,5 @@ exception
 end;     
 \
  
-grant execute on build_diagnosis_letter to pcs_user ; 
+grant execute on build_diagnosis_letter to pcs_user
 \

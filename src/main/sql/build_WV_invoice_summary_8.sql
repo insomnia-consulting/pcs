@@ -99,7 +99,7 @@ begin
    cbuf2:=RTRIM(LTRIM(TO_CHAR(cycle)));                                                                                                                                             
    cbuf3:=SUBSTR(pgm,1,2);                                                                                                                                                          
    S_file_name:=cbuf1||'.'||cbuf3||'8';                                                                                                                                             
-   dir_name:=RTRIM('vol1:');                                                                                                                                                        
+   dir_name:=RTRIM('REPORTS_DIR');                                                                                                                                                        
    file_handle:=UTL_FILE.FOPEN(dir_name,S_file_name,'w');                                                                                                                           
                                                                                                                                                                                     
    line_num:=0;                                                                                                                                                                     
@@ -225,5 +225,5 @@ exception
                                                                                                                                                                                     
 end;               
 \
-grant execute on build_WV_invoice_summary_8 to pcs_user ; 
+grant execute on build_WV_invoice_summary_8 to pcs_user 
 \

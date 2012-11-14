@@ -117,7 +117,7 @@ begin
    practice_id:=LPAD(TO_CHAR(S_practice),3,'0');                                                                                                                                    
    cbuf:=TO_CHAR(S_month);                                                                                                                                                          
    S_file_name:=RTRIM(practice_id||substr(cbuf,5,2)||substr(cbuf,1,1)||substr(cbuf,3,2));                                                                                           
-   dir_name:=RTRIM('vol1:');                                                                                                                                                        
+   dir_name:=RTRIM('REPORTS_DIR');                                                                                                                                                        
    file_handle:=UTL_FILE.FOPEN(dir_name,S_file_name,'w');                                                                                                                           
                                                                                                                                                                                     
    P_code_area:='PREP3';                                                                                                                                                            
@@ -499,5 +499,5 @@ exception
 end;  
 \
 
-grant execute on build_doctor_statement to pcs_user ; 
+grant execute on build_doctor_statement to pcs_user 
 \

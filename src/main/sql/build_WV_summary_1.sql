@@ -112,7 +112,7 @@ begin
    cbuf2:=RTRIM(LTRIM(TO_CHAR(cycle)));                                                                                                                                             
    cbuf3:=SUBSTR(pgm,1,2);                                                                                                                                                          
    S_file_name:=cbuf1||'.'||cbuf3||'1';                                                                                                                                             
-   dir_name:=RTRIM('vol1:');                                                                                                                                                        
+   dir_name:=RTRIM('REPORTS_DIR');                                                                                                                                                        
    file_handle:=UTL_FILE.FOPEN(dir_name,S_file_name,'w');                                                                                                                           
 
                                                                                                                                                                                     
@@ -232,5 +232,5 @@ exception
 end;           
 \
 
-grant execute on build_WV_summary_1 to pcs_user ; 
+grant execute on build_WV_summary_1 to pcs_user 
 \

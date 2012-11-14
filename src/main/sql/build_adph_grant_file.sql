@@ -99,7 +99,7 @@ begin
                                                                                                                                                                                     
    S_file_name:='ADPHgnt.'||F_ext;                                                                                                                                                  
 
-   dir_name:=RTRIM('vol1:');                                                                                                                                                        
+   dir_name:=RTRIM('REPORTS_DIR');                                                                                                                                                        
    file_handle:=UTL_FILE.FOPEN(dir_name,S_file_name,'w');                                                                                                                           
                                                                                                                                                                                     
    P_code_area:='OPEN FILE 1';                                                                                                                                                      
@@ -237,5 +237,5 @@ exception
 end;         
 \
 
-grant execute on build_adph_grant_file to pcs_user;
+grant execute on build_adph_grant_file to pcs_user
 \

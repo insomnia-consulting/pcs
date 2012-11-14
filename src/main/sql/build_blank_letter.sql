@@ -61,7 +61,7 @@ begin
       P_code_area:='PREP';                                                                                                                                                          
       check_point:=0;                                                                                                                                                               
       L_file_name:='generic.ltr';                                                                                                                                                   
-      dir_name:='vol1:';                                                                                                                                                            
+      dir_name:='REPORTS_DIR';                                                                                                                                                            
                                                                                                                                                                                     
       select TO_CHAR(R.practice,'009'),TO_CHAR(R.date_collected,'MM/DD/YYYY'),                                                                                                      
          P.lname,P.fname,PR.name,PR.address1,PR.address2,PR.city,                                                                                                                   
@@ -228,5 +228,5 @@ exception
                                                                                                                                                                                     
 end;  
 \
-grant execute on build_blank_letter to pcs_user ; 
+grant execute on build_blank_letter to pcs_user  
 \

@@ -41,7 +41,7 @@ begin
                                                                                                                                                                                     
    P_proc_name:='BUILD_XMAS_LABEL_FILE';                                                                                                                                            
    P_code_area:='PREP';                                                                                                                                                             
-   dir_name:=RTRIM('vol1:');                                                                                                                                                        
+   dir_name:=RTRIM('REPORTS_DIR');                                                                                                                                                        
    lbl_fname:='XMAS.lbl';                                                                                                                                                           
    label_file:=UTL_FILE.FOPEN(dir_name,lbl_fname,'w');                                                                                                                              
                                                                                                                                                                                     
@@ -106,5 +106,5 @@ exception
       RAISE;                                                                                                                                                                        
 end;       
 \
-grant execute on build_XMAS_label_file to pcs_user ; 
+grant execute on build_XMAS_label_file to pcs_user 
 \

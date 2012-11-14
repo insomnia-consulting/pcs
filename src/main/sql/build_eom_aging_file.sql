@@ -72,7 +72,7 @@ begin
    cbuf1:=TO_CHAR(LAST_DAY(TO_DATE(TO_CHAR(S_month),'YYYYMM')),'MONYYYY');                                                                                                          
 
    P_file_name:=cbuf1||'.age';                                                                                                                                                      
-   dir_name:=RTRIM('vol1:');                                                                                                                                                        
+   dir_name:=RTRIM('REPORTS_DIR');                                                                                                                                                        
    file_handle:=UTL_FILE.FOPEN(dir_name,P_file_name,'w');                                                                                                                           
                                                                                                                                                                                     
    select TO_CHAR(LAST_DAY(TO_DATE(TO_CHAR(S_month),'YYYYMM')),'MONTH YYYY')                                                                                                        
@@ -305,5 +305,5 @@ exception
 end;   
 \
 
-grant execute on build_eom_aging_file to pcs_user ; 
+grant execute on build_eom_aging_file to pcs_user 
 \
