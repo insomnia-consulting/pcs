@@ -41,7 +41,6 @@ begin
 
    open patient_list;
    loop
-      dbms_output.put_line('Looping..');
       <<loop_top>>
       fetch patient_list into patient_fields;
       exit when patient_list%NOTFOUND;

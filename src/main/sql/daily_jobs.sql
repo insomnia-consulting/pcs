@@ -163,6 +163,7 @@ begin
           exit when db_space%NOTFOUND;
       curr_line:='   '||t_name||t_left;
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
+      dbms_output.put_line(curr_line);
    end loop;
    close db_space;
    select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
@@ -176,6 +177,7 @@ begin
 
       P_code_area:='DAILY REPT';
       curr_line:='CREATING DAILY REPORT: '||date_today;
+      dbms_output.put_line(curr_line);
       UTL_FILE.PUTF(file_handle,'\n%s\n',curr_line);
       pcs.build_daily_report_file(S_day);
       select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
@@ -190,6 +192,7 @@ begin
       job_indicator:=WEEKLY;
       P_code_area:='WEEKLY MAINT';
       curr_line:='***WEEKLY MAINTENANCE - ANALYZE SCHEMA********************';
+      dbms_output.put_line(curr_line);
       UTL_FILE.PUTF(file_handle,'\n%s\n',curr_line);
       select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
       curr_line:='BEGIN: '||date_today;
@@ -203,6 +206,7 @@ begin
       P_code_area:='CLAIM REPORT';
 
       curr_line:='***WEEKLY NO RESPONSE CLAIM REPORT************************';
+      dbms_output.put_line(curr_line);
       UTL_FILE.PUTF(file_handle,'\n%s\n',curr_line);
       select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
       curr_line:='BEGIN: '||date_today;
@@ -222,9 +226,11 @@ begin
    select job_status into mid_month_billing
    from pcs.job_control where job_descr='MID MONTH';
    if (mid_month_billing=1) then
+
       job_indicator:=MID_MONTH;
       P_code_area:='MID MONTH';
       curr_line:='* * * R U N N I N G	M I D - M O N T H   B I L L I N G * * *';
+      dbms_output.put_line(curr_line);
       UTL_FILE.PUTF(file_handle,'\n%s\n\n',curr_line);
       select TO_CHAR(SysDate,'YYYYMM') into S_month from dual;
       select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
@@ -252,7 +258,7 @@ begin
    run_EOM:=is_EOM(this_date);
    S_month:=0;
    if (run_EOM=1) then
-   	dbms_output.put_line('Running EOM Reports');
+   	  dbms_output.put_line('Running EOM Reports');
       job_indicator:=EOM;
       select job_status into S_month
       from pcs.job_control
@@ -272,6 +278,7 @@ begin
 
       P_code_area:='EOM';
       curr_line:='* * * * * * * * R U N N I N G   E N D   O F	M O N T H * * * * * * * *';
+      dbms_output.put_line(curr_line);
       UTL_FILE.PUTF(file_handle,'\n%s\n\n',curr_line);
 
       select TO_CHAR(SysDate,'DAY MM/DD/YYYY HH:Mi:SS') into date_today from dual;

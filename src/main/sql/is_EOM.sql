@@ -12,11 +12,10 @@ create or replace function is_EOM (this_date IN number)
 
       select job_status into EOM_date
       from pcs.job_control
-
       where job_descr='EOM_DATE';
 
       if (EOM_date=this_date) then
-	 run_EOM:=1;
+	 	run_EOM:=1;
       end if;
 
       return(run_EOM);
