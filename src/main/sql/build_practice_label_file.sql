@@ -1,5 +1,4 @@
-                                       
-procedure     build_practice_label_file                                                                                                                                             
+create or replace procedure     build_practice_label_file                                                                                                                                             
 as                                                                                                                                                                                  
                                                                                                                                                                                     
    P_error_code number;                                                                                                                                                             
@@ -127,4 +126,8 @@ exception
       values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,TO_NUMBER(P_practice));                                                                              
       commit;                                                                                                                                                                       
       RAISE;                                                                                                                                                                        
-end;                                                                                                                                         
+end;              
+\
+
+grant execute on build_practice_label_file to pcs_user ; 
+\

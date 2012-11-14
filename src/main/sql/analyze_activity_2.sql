@@ -231,3 +231,6 @@ exception
                                                                                                                                                                                     
 end;                                                                                                                                         
 \
+
+grant execute on analyze_activity_2 to pcs_user ; 
+\

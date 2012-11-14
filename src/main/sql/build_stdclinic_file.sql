@@ -1,5 +1,4 @@
-                                        
-procedure     build_stdclinic_file                                                                                                                                                  
+create or replace procedure     build_stdclinic_file                                                                                                                                                  
 (                                                                                                                                                                                   
    S_month in number                                                                                                                                                                
 )                                                                                                                                                                                   
@@ -400,4 +399,8 @@ exception
       commit;                                                                                                                                                                       
       RAISE;                                                                                                                                                                        
                                                                                                                                                                                     
-end;                                                                                                                                         
+end;       
+\
+
+grant execute on build_stdclinic_file to pcs_user ; 
+\

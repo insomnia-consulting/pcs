@@ -1,5 +1,4 @@
-                                      
-procedure     build_FedEx_import_file                                                                                                                                               
+create or replace procedure     build_FedEx_import_file                                                                                                                                               
 as                                                                                                                                                                                  
                                                                                                                                                                                     
    P_error_code number;                                                                                                                                                             
@@ -122,4 +121,8 @@ exception
       commit;                                                                                                                                                                       
       RAISE;                                                                                                                                                                        
                                                                                                                                                                                     
-end;                                                                                                                                         
+end;        
+\
+
+grant execute on build_FedEx_import_file to pcs_user ; 
+\

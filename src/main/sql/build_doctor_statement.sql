@@ -1,5 +1,4 @@
-                                       
-procedure     build_doctor_statement                                                                                                                                                
+create or replace procedure     build_doctor_statement                                                                                                                                                
 (                                                                                                                                                                                   
    S_practice in number,                                                                                                                                                            
    S_month in number                                                                                                                                                                
@@ -497,4 +496,8 @@ exception
       commit;                                                                                                                                                                       
       RAISE;                                                                                                                                                                        
                                                                                                                                                                                     
-end;                                                                                                                                          
+end;  
+\
+
+grant execute on build_doctor_statement to pcs_user ; 
+\

@@ -1,5 +1,4 @@
-                                       
-procedure     build_diagnosis_letter                                                                                                                                                
+create or replace procedure     build_diagnosis_letter                                                                                                                                                
 (                                                                                                                                                                                   
    M_lab_number in number,                                                                                                                                                          
    qmode in number,                                                                                                                                                                 
@@ -232,4 +231,8 @@ exception
       RAISE;                                                                                                                                                                        
 
                                                                                                                                                                                     
-end;                                                                                                                                         
+end;     
+\
+ 
+grant execute on build_diagnosis_letter to pcs_user ; 
+\

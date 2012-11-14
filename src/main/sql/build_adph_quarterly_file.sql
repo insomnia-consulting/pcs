@@ -1,4 +1,4 @@
-procedure     build_adph_quarterly_file                                                                                                                                             
+create or replace procedure     build_adph_quarterly_file                                                                                                                                             
 (                                                                                                                                                                                   
    quarter in number,                                                                                                                                                               
    year in varchar2                                                                                                                                                                 
@@ -281,4 +281,8 @@ exception
       commit;                                                                                                                                                                       
       RAISE;                                                                                                                                                                        
                                                                                                                                                                                     
-end;                                                                                                                                         
+end;                 
+\
+
+grant execute on build_adph_quarterly_file to pcs_user ; 
+\

@@ -1,5 +1,4 @@
-                                       
-procedure     build_xmas_lbl_file                                                                                                                                                   
+create or replace procedure     build_xmas_lbl_file                                                                                                                                                   
 
 as                                                                                                                                                                                  
                                                                                                                                                                                     
@@ -90,4 +89,7 @@ exception
       values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,p_acct);                                                                                             
       commit;                                                                                                                                                                       
       RAISE;                                                                                                                                                                        
-end;                                                                                                                                         
+end;           
+\
+grant execute on build_xmas_lbl_file to pcs_user;
+\

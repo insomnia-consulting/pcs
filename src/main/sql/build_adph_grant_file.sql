@@ -1,5 +1,4 @@
-
-procedure     build_adph_grant_file                                                                                                                                                 
+create or replace procedure     build_adph_grant_file                                                                                                                                                 
 (                                                                                                                                                                                   
 
    B_date in varchar2, E_date in varchar2, F_ext in varchar2                                                                                                                        
@@ -235,4 +234,8 @@ exception
       commit;                                                                                                                                                                       
       RAISE;                                                                                                                                                                        
                                                                                                                                                                                     
-end;                                                                                                                                         
+end;         
+\
+
+grant execute on build_adph_grant_file to pcs_user;
+\

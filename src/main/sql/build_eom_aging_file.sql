@@ -1,5 +1,4 @@
-                                       
-procedure     build_eom_aging_file                                                                                                                                                  
+create or replace procedure     build_eom_aging_file                                                                                                                                                  
 (                                                                                                                                                                                   
 
    S_month number                                                                                                                                                                   
@@ -303,4 +302,8 @@ exception
       commit;                                                                                                                                                                       
       RAISE;                                                                                                                                                                        
                                                                                                                                                                                     
-end;                                                                                                                                          
+end;   
+\
+
+grant execute on build_eom_aging_file to pcs_user ; 
+\

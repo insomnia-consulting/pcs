@@ -1,5 +1,4 @@
-                                       
-procedure     build_blank_letter                                                                                                                                                    
+create or replace procedure     build_blank_letter                                                                                                                                                    
 (                                                                                                                                                                                   
    M_lab_number in number,                                                                                                                                                          
    M_origin in number                                                                                                                                                               
@@ -227,4 +226,7 @@ exception
       commit;                                                                                                                                                                       
       RAISE;                                                                                                                                                                        
                                                                                                                                                                                     
-end;                                                                                                                                         
+end;  
+\
+grant execute on build_blank_letter to pcs_user ; 
+\

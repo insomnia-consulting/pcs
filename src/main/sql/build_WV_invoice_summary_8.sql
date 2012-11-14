@@ -1,5 +1,4 @@
-
-procedure     build_WV_invoice_summary_8                                                                                                                                            
+create or replace procedure     build_WV_invoice_summary_8                                                                                                                                            
 (                                                                                                                                                                                   
    S_month in number,                                                                                                                                                               
    cycle in number,                                                                                                                                                                 
@@ -224,4 +223,7 @@ exception
       RAISE;                                                                                                                                                                        
 
                                                                                                                                                                                     
-end;                                                                                                                                         
+end;               
+\
+grant execute on build_WV_invoice_summary_8 to pcs_user ; 
+\

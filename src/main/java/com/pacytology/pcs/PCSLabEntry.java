@@ -1715,7 +1715,7 @@ public class PCSLabEntry extends PcsFrame {
 			cstmt.close();
 			String printString = results.getSubString(1, (int)results.length());
 
-			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "curr_wks"),printString);
+			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "curr_wks"),printString);		
 			InputStream fileInput = new FileInputStream(Utils.TMP_DIR + "curr_wks");
 			
 

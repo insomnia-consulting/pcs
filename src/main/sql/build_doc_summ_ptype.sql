@@ -1,5 +1,4 @@
-                                       
-procedure     build_doc_summ_ptype                                                                                                                                                  
+create or replace procedure     build_doc_summ_ptype                                                                                                                                                  
 (                                                                                                                                                                                   
    S_month in number,                                                                                                                                                               
    P_type in varchar2,                                                                                                                                                              
@@ -974,4 +973,8 @@ exception
       commit;                                                                                                                                                                       
       RAISE;                                                                                                                                                                        
                                                                                                                                                                                     
-end;                                                                                                                                         
+end;                   
+\
+
+grant execute on build_doc_summ_ptype to pcs_user ; 
+\

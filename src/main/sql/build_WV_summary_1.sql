@@ -1,5 +1,4 @@
-                                       
-procedure     build_WV_summary_1                                                                                                                                                    
+create or replace procedure     build_WV_summary_1                                                                                                                                                    
 (                                                                                                                                                                                   
    S_month in number,                                                                                                                                                               
    cycle in number,                                                                                                                                                                 
@@ -230,4 +229,8 @@ exception
 
       RAISE;                                                                                                                                                                        
                                                                                                                                                                                     
-end;                                                                                                                                          
+end;           
+\
+
+grant execute on build_WV_summary_1 to pcs_user ; 
+\

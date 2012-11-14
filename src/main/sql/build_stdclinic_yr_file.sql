@@ -1,5 +1,4 @@
-                                       
-procedure     build_stdclinic_yr_file                                                                                                                                               
+create or replace procedure     build_stdclinic_yr_file                                                                                                                                               
 
 (                                                                                                                                                                                   
    S_year in number                                                                                                                                                                 
@@ -573,4 +572,8 @@ exception
       commit;                                                                                                                                                                       
       RAISE;                                                                                                                                                                        
                                                                                                                                                                                     
-end;                                                                                                                                                                                
+end;            
+\
+
+grant execute on build_stdclinic_yr_file to pcs_user ; 
+\

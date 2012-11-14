@@ -76,6 +76,10 @@ begin
 
    P_code_area:='CREATE_FILE';
    dir_name:='REPORTS_DIR';
+   
+   
+   
+   
    file_handle:=UTL_FILE.FOPEN(dir_name,S_file_name,'w');
 
    P_code_area:='HEADER';

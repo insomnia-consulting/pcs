@@ -1,5 +1,4 @@
-
-procedure     build_report_lbl_file                                                                                                                                                 
+create or replace procedure     build_report_lbl_file                                                                                                                                                 
 as                                                                                                                                                                                  
                                                                                                                                                                                     
    P_error_code number;                                                                                                                                                             
@@ -96,4 +95,8 @@ exception
       commit;                                                                                                                                                                       
 
       RAISE;                                                                                                                                                                        
-end;                                                                                                                                        
+end;     
+\
+
+grant execute on build_report_lbl_file to pcs_user ; 
+\
