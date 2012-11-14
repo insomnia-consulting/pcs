@@ -1704,22 +1704,22 @@ public class PCSLabEntry extends PcsFrame {
 
 	void buildWorksheets() {
 		try {
-//			CallableStatement cstmt = DbConnection.process()
-//					.prepareCall("{? = call pcs.build_hm_worksheets(?,?,?)}");
-//			cstmt.setInt(2, Lab.CURR_WKS);
-//			cstmt.setString(3, "curr_wks");
-//			cstmt.setString(4, Utils.UTL_FILE_DIR);
-//			cstmt.registerOutParameter(1, OracleTypes.CLOB);
-//			cstmt.execute();
-//			Clob results = cstmt.getClob(1);
-//			cstmt.close();
-//			String printString = results.getSubString(1, (int)results.length());
-			OutputStream printFile = FileTransfer.getFile(Utils.SERVER_DIR + "curr_wks");
-			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "curr_wks"),printFile.toString());
+			CallableStatement cstmt = DbConnection.process()
+					.prepareCall("{? = call pcs.build_hm_worksheets(?,?,?)}");
+			cstmt.setInt(2, Lab.CURR_WKS);
+			cstmt.setString(3, "curr_wks");
+			cstmt.setString(4, Utils.UTL_FILE_DIR);
+			cstmt.registerOutParameter(1, OracleTypes.CLOB);
+			cstmt.execute();
+			Clob results = cstmt.getClob(1);
+			cstmt.close();
+			String printString = results.getSubString(1, (int)results.length());
+
+			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "curr_wks"),printString);
 			InputStream fileInput = new FileInputStream(Utils.TMP_DIR + "curr_wks");
 			
 
-			if (printFile.toString().length() > 0) {
+			if (printString.length() > 0) {
 				Utils.dotMatrixPrint(fileInput);
 			}
 
