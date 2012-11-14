@@ -24,6 +24,7 @@ import java.awt.PrintJob;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.CallableStatement;
 import java.sql.Clob;
@@ -45,6 +46,7 @@ import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import oracle.jdbc.OracleTypes;
@@ -1702,19 +1704,23 @@ public class PCSLabEntry extends PcsFrame {
 
 	void buildWorksheets() {
 		try {
-			CallableStatement cstmt = DbConnection.process()
-					.prepareCall("{? = call pcs.build_hm_worksheets(?,?,?)}");
-			cstmt.setInt(2, Lab.CURR_WKS);
-			cstmt.setString(3, "curr_wks");
-			cstmt.setString(4, Utils.UTL_FILE_DIR);
-			cstmt.registerOutParameter(1, OracleTypes.CLOB);
-			cstmt.execute();
-			Clob results = cstmt.getClob(1);
-			cstmt.close();
-			String printString = results.getSubString(1, (int)results.length());
-			printString = printString.replaceAll("\\\\n", "\n");
-			if (printString.length() > 0) {
-				Utils.genericPrint(printString, new MessageFormat(""), new MessageFormat(""));
+//			CallableStatement cstmt = DbConnection.process()
+//					.prepareCall("{? = call pcs.build_hm_worksheets(?,?,?)}");
+//			cstmt.setInt(2, Lab.CURR_WKS);
+//			cstmt.setString(3, "curr_wks");
+//			cstmt.setString(4, Utils.UTL_FILE_DIR);
+//			cstmt.registerOutParameter(1, OracleTypes.CLOB);
+//			cstmt.execute();
+//			Clob results = cstmt.getClob(1);
+//			cstmt.close();
+//			String printString = results.getSubString(1, (int)results.length());
+			OutputStream printFile = FileTransfer.getFile(Utils.SERVER_DIR + "curr_wks");
+			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "curr_wks"),printFile.toString());
+			InputStream fileInput = new FileInputStream(Utils.TMP_DIR + "curr_wks");
+			
+
+			if (printFile.toString().length() > 0) {
+				Utils.dotMatrixPrint(fileInput);
 			}
 
 		} catch (Exception e) {
