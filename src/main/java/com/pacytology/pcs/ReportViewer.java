@@ -18,6 +18,7 @@ package com.pacytology.pcs;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
+import javax.print.attribute.standard.MediaSize;
 import javax.swing.*;
 
 import java.io.File;
@@ -110,7 +111,7 @@ public class ReportViewer extends PcsFrame
 			public void actionPerformed(ActionEvent e) { 
 				if (verifyPrinter()) {
 			        ReportViewer.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-			        Utils.genericPrint(ReportViewer.this.reportText.getText(), new MessageFormat(""), new MessageFormat(""));
+			        Utils.largePrint(ReportViewer.this.reportText.getText(), new MessageFormat(""), new MessageFormat(""));
 			        ReportViewer.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			    }
 			}

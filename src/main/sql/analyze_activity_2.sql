@@ -56,7 +56,7 @@ begin
 
    P_code_area:='PREP';                                                                                                                                                             
                                                                                                                                                                                     
-   file_handle:=UTL_FILE.FOPEN('REPORTS_DIR:','billing.rpt','w');                                                                                                                          
+   file_handle:=UTL_FILE.FOPEN('REPORTS_DIR','billing.rpt','w');                                                                                                                          
    UTL_FILE.NEW_LINE(file_handle);                                                                                                                                                  
                                                                                                                                                                                     
    heading_1:='   SUMMARY OF CLAIMS WITH STATUS OF "O"';                                                                                                                            
