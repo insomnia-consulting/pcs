@@ -988,5 +988,7 @@ grant execute on GET_RECEIVE_DATE to pcs_user ;
 grant execute on STRIP_CHARS to pcs_user ;   
 
 grant pcs_user to lritchey;
+grant pcs_user to achioda;
+grant pcs_user to pcollins;
 
 
