@@ -86,7 +86,6 @@ declare
 	maxvalue_a number;
 begin
 	dbms_output.put_line('Getting necessary max value for sequence');
-	select max(detail_id)+1 into maxvalue from ; 
 	
 	select max(detail_id)+1 into maxvalue_d from pcs.lab_req_details ; 
 	select max(detail_id)+1 into maxvalue_a from pcs.lab_req_details_additional ; 
