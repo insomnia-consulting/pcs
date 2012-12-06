@@ -1713,6 +1713,8 @@ public class PCSLabEntry extends PcsFrame {
 			cstmt.execute();
 			Clob results = cstmt.getClob(1);
 			cstmt.close();
+			//results.getAsciiStream()
+			InputStream stream = results.getAsciiStream();
 			String printString = results.getSubString(1, (int)results.length());
 
 			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "curr_wks"),printString);		

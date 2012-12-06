@@ -496,7 +496,7 @@ public class LabForm extends PcsFrame
 		payerNameLbl.setRequestFocusEnabled(false);
 		payerNameLbl.setText("Payer Name");
 		billingPanel.add(payerNameLbl);
-		payerNameLbl.setBounds(70,26,70,12);
+		payerNameLbl.setBounds(70,26,80,12);
 		billingPanel.add(labSubscriber);
 		labSubscriber.setBounds(216,120,80,12);
 		billingPanel.add(labMedLbl);
@@ -3297,7 +3297,10 @@ public class LabForm extends PcsFrame
             labPCSID.setEnabled(false);
             //HACK!!  labDPAState should get focus in some cases.  This line seems to prevent it
 		    if (bChoice.equals("DPA")) labDPAState.requestFocus();
-		    else labBillingChoice.requestFocusInWindow();
+		    //Removed this line because it was causing the cursor to re-circulate on non DPA cases
+		    // if anything is to replace this it should be more lines that specifically direct the cursor
+		    // for different billing types
+		    //else labBillingChoice.requestFocusInWindow();
         }
 	}
 	
@@ -4050,6 +4053,9 @@ public class LabForm extends PcsFrame
                 labPayerID.setText(cRec.payer_id);
                 labPCSID.setText(Integer.toString(cRec.id_number));
                 labRec.carrier_id=cRec.carrier_id;
+                
+                labBillingChoice.transferFocus();
+                labOtherInsurance.requestFocusInWindow();
             }
             if (bChoice.equals("DPA")){
             	labDPAState.requestFocusInWindow();
