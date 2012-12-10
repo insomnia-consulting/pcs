@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.ResultSet;
@@ -1705,23 +1706,19 @@ public class PCSLabEntry extends PcsFrame {
 	void buildWorksheets() {
 		try {
 			CallableStatement cstmt = DbConnection.process()
-					.prepareCall("{? = call pcs.build_hm_worksheets(?,?,?)}");
-			cstmt.setInt(2, Lab.CURR_WKS);
-			cstmt.setString(3, "curr_wks");
-			cstmt.setString(4, Utils.UTL_FILE_DIR);
-			cstmt.registerOutParameter(1, OracleTypes.CLOB);
+					.prepareCall("{call pcs.build_hm_worksheets(?,?,?)}");
+			cstmt.setInt(1, Lab.CURR_WKS);
+			cstmt.setString(2, "curr_wks");
+			cstmt.setString(3, Utils.UTL_FILE_DIR);
 			cstmt.execute();
-			Clob results = cstmt.getClob(1);
 			cstmt.close();
-			//results.getAsciiStream()
-			InputStream stream = results.getAsciiStream();
-			String printString = results.getSubString(1, (int)results.length());
 
-			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "curr_wks"),printString);		
+			//Determine the encoding of the outputstream?
+			OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + "curr_wks");
+			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "curr_wks"), out.toString());		
 			InputStream fileInput = new FileInputStream(Utils.TMP_DIR + "curr_wks");
-			
 
-			if (printString.length() > 0) {
+			if (out.toString().length() > 0) {
 				Utils.dotMatrixPrint(fileInput);
 			}
 

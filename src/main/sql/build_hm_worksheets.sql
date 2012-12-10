@@ -1,13 +1,12 @@
-drop procedure build_hm_worksheets
+drop function build_hm_worksheets
 \
 
-create or replace function build_hm_worksheets
+create or replace procedure build_hm_worksheets
 (
    P_mode in number,
    file_name in varchar2,
    server_dir in varchar2
 )
-return clob
 is
 
    P_error_code number;
@@ -79,7 +78,7 @@ begin
    curr_lab:=0;
    check_point:=0;
    open m_list;
-   dbms_lob.createtemporary(reportOutput, true);
+
    loop
       fetch m_list into m_fields;
       exit when m_list%NOTFOUND;
@@ -118,7 +117,7 @@ begin
 
 	 curr_line:='LAB NUMBER: '||cbuf;
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-	 dbms_lob.writeAppend(reportOutput, length(curr_line||'\n'), curr_line||'\n');
+	 
 	 cbuf:=RTRIM(P_lname)||', '||RTRIM(P_fname);
 	 cbuf3:=NULL;
 	 if (P_dob is NOT NULL or P_ssn is NOT NULL) then
@@ -140,18 +139,17 @@ begin
 	 end if;
 	 curr_line:='PATIENT:	  '||cbuf||cbuf3;
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-	 dbms_lob.writeAppend(reportOutput, length(curr_line||'\n'), curr_line||'\n');
 	 cbuf:=TO_CHAR(P_practice,'099');
 	 cbuf:=cbuf||' '||RTRIM(P_name);
 	 curr_line:='ACCOUNT:	 '||cbuf;
 	 UTL_FILE.PUTF(file_handle,'%s\n\n',curr_line);
-	dbms_lob.writeAppend(reportOutput, length(curr_line||'\n\n'), curr_line||'\n\n');
+
 	 curr_line:='PRIOR PA CYTOLOGY RESULTS';
 	 UTL_FILE.PUTF(file_handle,'%s\n\n',curr_line);
-	 dbms_lob.writeAppend(reportOutput, length(curr_line||'\n\n'), curr_line||'\n\n');
+
 	 curr_line:='DATE   LAB NUMBER	TECH	RESULTS';
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-	 dbms_lob.writeAppend(reportOutput, length(curr_line||'\n'), curr_line||'\n');
+	 
 	 line_num:=8;
       end if;
       P_code_area:='MATCH Q3';
@@ -187,7 +185,7 @@ begin
 	       curr_line:=curr_line||'	[PLEASE PRINT REPORT]';
 	    end if;
 	    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-	    dbms_lob.writeAppend(reportOutput, length(curr_line||'\n'), curr_line||'\n');
+
 	    line_num:=line_num+1;
 	 end if;
 
@@ -196,14 +194,14 @@ begin
       curr_lab:=m_fields.lab_number;
    end loop;
    close m_list;
-	return reportOutput;
+
    -- *****************
    update pcs.job_control set job_status=0 where job_descr='MATCH_COUNT';
    UTL_FILE.PUT(file_handle,CHR(12));
-   dbms_lob.writeAppend(reportOutput, length(CHR(12)), CHR(12));
+
    UTL_FILE.FCLOSE(file_handle);
-   dbms_lob.close(reportOutput);
-   return reportOutput;
+
+
    commit;
 	
 exception

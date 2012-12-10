@@ -30,6 +30,7 @@ public class FileTransfer {
 
 		try {
 			ssh = new SshConnection(host, username, password);
+			ssh.setPort(Integer.parseInt(Utils.HOST_PORT));
 			ssh.connect();
 			ScpFile scpFile = new ScpFile(new File(sourceFileName),
 					destFilename);
@@ -60,6 +61,7 @@ public class FileTransfer {
 
 		try {
 			ssh = new SshConnection(host, username, password);
+			ssh.setPort(Integer.parseInt(Utils.HOST_PORT));
 			ssh.connect();
 			 ScpFile scpFile = new ScpInput(byteArray, destFilename);
 
@@ -90,6 +92,7 @@ public class FileTransfer {
 
 		try {
 			ssh = new SshConnection(host, username, password);
+			ssh.setPort(Integer.parseInt(Utils.HOST_PORT));
 			ssh.connect();
 			ScpFile scpFile = new ScpOutput(remotePath);
 			ssh.executeTask(new ScpDownload(scpFile));
