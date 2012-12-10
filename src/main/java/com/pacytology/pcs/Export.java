@@ -265,8 +265,8 @@ public class Export implements Runnable
 				fOUT.close();
 				
 				FileTransfer.sendFile(filePath.trim() + fileName, Utils.SERVER_DIR + 
-						"LabInfoSystem" + System.getProperty("file.separator") + 
-						"ElectronicReporting" + System.getProperty("file.separator") + fileName);
+						"LabInfoSystem" + "/" + 
+						"ElectronicReporting" + "/" + fileName);
 				fileName = reportName + ".rtf";
 				fOUT = new PrintWriter(
 						new BufferedOutputStream(new FileOutputStream(
@@ -274,8 +274,8 @@ public class Export implements Runnable
 				writeIndexFile(labReport, fOUT);
 				fOUT.close();
 				FileTransfer.sendFile(filePath.trim() + fileName, Utils.SERVER_DIR + 
-						"LabInfoSystem" + System.getProperty("file.separator") + 
-						"ElectronicReporting" + System.getProperty("file.separator") + fileName);
+						"LabInfoSystem" + "/" + 
+						"ElectronicReporting" + "/" + fileName);
 			}
 		} catch (Exception e) {
 			System.out.println(e);
@@ -941,9 +941,9 @@ public class Export implements Runnable
 		String filePath = Utils.TMP_DIR;
 		String destPath = Utils.SERVER_DIR
 				+ "LabInfoSystem"+
-				System.getProperty("file.separator")+
+				"/"+
 				"ElectronicReporting"+
-				System.getProperty("file.separator");
+				"/";
 		try {
 			for (int i = 0; i < data.size(); i++) {
 				fileName = null;
