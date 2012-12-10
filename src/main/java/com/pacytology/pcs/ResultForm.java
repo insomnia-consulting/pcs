@@ -2808,6 +2808,9 @@ public class ResultForm extends PcsFrame
             noButton.setForeground(Utils.LABEL_FOREGROUND);
 		    noButton.requestFocus();
 		}
+		else if (event.getKeyCode()==KeyEvent.VK_ENTER) {
+			yesOption(buttonMode);
+		}
 	}
 
 	void cancelButton_keyPressed(java.awt.event.KeyEvent event)
