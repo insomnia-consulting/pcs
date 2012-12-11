@@ -2138,7 +2138,7 @@ public class PCSLabEntry extends PcsFrame {
 
 	void suspendJobs() {
 		try {
-			String SQL = "UPDATE pcsJob_control \n" + "SET job_status=3 \n"
+			String SQL = "UPDATE pcs.Job_control \n" + "SET job_status=3 \n"
 					+ "WHERE job_descr='JOB_STATUS' \n";
 			Statement stmt = DbConnection.process().createStatement();
 			int rs = stmt.executeUpdate(SQL);
@@ -2158,7 +2158,7 @@ public class PCSLabEntry extends PcsFrame {
 
 	void nightJobsOff() {
 		try {
-			String SQL = "UPDATE pcsJob_control \n" + "SET job_status=2 \n"
+			String SQL = "UPDATE pcs.Job_control \n" + "SET job_status=2 \n"
 					+ "WHERE job_descr='JOB_STATUS' \n";
 			Statement stmt = DbConnection.process().createStatement();
 			int rs = stmt.executeUpdate(SQL);
@@ -2401,7 +2401,7 @@ public class PCSLabEntry extends PcsFrame {
 		String statusMsg = null;
 		int status = 0;
 		try {
-			String SQL = "SELECT job_status FROM pcsJob_control \n"
+			String SQL = "SELECT job_status FROM pcs.Job_control \n"
 					+ "WHERE job_descr='MID MONTH' \n";
 			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(SQL);
@@ -2432,7 +2432,7 @@ public class PCSLabEntry extends PcsFrame {
 			// If the confirmation was affirmative
 			if (reply == JOptionPane.YES_OPTION) {
 				try {
-					String SQL = "UPDATE pcsJob_control SET \n"
+					String SQL = "UPDATE pcs.Job_control SET \n"
 							+ "   job_status=1 \n"
 							+ "WHERE job_descr='MID MONTH' \n";
 					Statement stmt = DbConnection.process().createStatement();
@@ -2443,7 +2443,7 @@ public class PCSLabEntry extends PcsFrame {
 				}
 			} else if (reply == JOptionPane.NO_OPTION) {
 				try {
-					String SQL = "UPDATE pcsJob_control SET \n"
+					String SQL = "UPDATE pcs.Job_control SET \n"
 							+ "   job_status=0 \n"
 							+ "WHERE job_descr='MID MONTH' \n";
 					Statement stmt = DbConnection.process().createStatement();
