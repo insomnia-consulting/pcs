@@ -852,9 +852,8 @@ public class HPVReport extends javax.swing.JFrame
 	    y+=15;
 	    pgraphics.drawString("59, 68)",30,y);
 	    
-        if (y>=656) y+=10;
-        else y=500;
-        
+        y+=20;
+	    
         String cytotech = new String("CYTOTECHNOLOGIST:    "+
             labReport.cytotech_code.trim());
         if (!Utils.isNull(labReport.qc_cytotech_code))

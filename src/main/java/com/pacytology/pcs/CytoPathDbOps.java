@@ -115,6 +115,7 @@ public class CytoPathDbOps implements Runnable
         parent.log.write("query("+sLab+".."+eLab+")");
         boolean exitStatus=true;
         String e_report = null;
+        String dateReported=null;
         try  {
             // SQL STATEMENT ID 001
             String SQL = new String(
@@ -291,6 +292,23 @@ public class CytoPathDbOps implements Runnable
                     queryQCResults(labReport);
                 else
                     queryResults(labReport);
+                
+                /* this is a hard coded value to facilitate use of appropriate date reported on cytology
+                 * reports; prior to this implementation the date reported was the date completed of the
+                 * screening tech, or QC tech , or pathologist; whichever codes took precedence. From the time
+                 * of this implementation forward the date reported on the cytopathology reports will be the date
+                 * the results were input into the system. LabReportRec.datestamp holds the numeric value
+                 * of the current date; in the format YYYYMMDD it is numerically true.
+                 */
+                if (labReport.iDatestamp>=2012000627) {
+                	if (!Utils.isNull(labReport.released))
+                		labReport.date_reported=labReport.released;
+                	else if (!Utils.isNull(labReport.submitted))
+                		labReport.date_reported=labReport.submitted;
+                	else
+                		labReport.date_reported=dateReported;
+                }
+                
                 if (!Utils.isNull(labReport.test_sent)) {
                     if (labReport.test_sent.equals("R")||labReport.test_sent.equals("P"))
                         labReport.HPVmessage=true;
@@ -446,6 +464,7 @@ public class CytoPathDbOps implements Runnable
     {
         parent.log.write("queryQueue()");
         boolean exitStatus=true;
+        String dateReported=null;
         Vector tmpVect = new Vector();
         Vector faxVect = new Vector();
         try  {
@@ -656,6 +675,23 @@ public class CytoPathDbOps implements Runnable
                     queryQCResults(labReport);
                 else
                     queryResults(labReport);
+
+                /* this is a hard coded value to facilitate use of appropriate date reported on cytology
+                 * reports; prior to this implementation the date reported was the date completed of the
+                 * screening tech, or QC tech , or pathologist; whichever codes took precedence. From the time
+                 * of this implementation forward the date reported on the cytopathology reports will be the date
+                 * the results were input into the system. LabReportRec.datestamp holds the numeric value
+                 * of the current date; in the format YYYYMMDD it is numerically true.
+                 */
+                if (labReport.iDatestamp>=2012000627) {
+                	if (!Utils.isNull(labReport.released))
+                		labReport.date_reported=labReport.released;
+                	else if (!Utils.isNull(labReport.submitted))
+                		labReport.date_reported=labReport.submitted;
+                	else
+                		labReport.date_reported=dateReported;
+                }
+                
                 ndx++;
                 /*  the report counter decrements and is used for
                     display purposes; once the user clicks the retrieve
