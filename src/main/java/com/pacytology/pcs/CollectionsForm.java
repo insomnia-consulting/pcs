@@ -761,7 +761,7 @@ public class CollectionsForm extends PcsFrame
 	    {
 	        printerCodes.addElement(Utils.EMPHASIZED);
 	    }
-	    OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + reportName);
+	    OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + reportName);
 	    new ReportViewer(out.toString(), "Collections Report").setVisible(true);
 	}
 	

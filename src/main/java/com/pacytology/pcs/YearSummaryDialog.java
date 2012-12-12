@@ -126,7 +126,7 @@ public class YearSummaryDialog extends javax.swing.JDialog
 	            String title = "Doctor Summary by Year";
 	            String fName=stmtYear.getText()+practiceNumber.getText();
                 fName=fName+".sby";
-                OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + fName);
+                OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + fName);
                 if (out.toString().length()>0) { 
                 	ReportViewer viewer = ReportViewer.create(out.toString(), "");
                 	viewer.setVisible(true);

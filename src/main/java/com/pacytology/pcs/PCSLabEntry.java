@@ -1539,7 +1539,7 @@ public class PCSLabEntry extends PcsFrame {
 			while (rs.next())
 				batchClaimID = rs.getInt(1);
 			
-			OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + "ppr_clm");
+			OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + "ppr_clm");
 
 			if (out != null && out.toString().length() > 0) {
 				Utils.genericPrint(out.toString(), new MessageFormat("ppr_clm"), null);
@@ -1714,7 +1714,7 @@ public class PCSLabEntry extends PcsFrame {
 			cstmt.close();
 
 			//Determine the encoding of the outputstream?
-			OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + "curr_wks");
+			OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + "curr_wks");
 			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "curr_wks"), out.toString());		
 			InputStream fileInput = new FileInputStream(Utils.TMP_DIR + "curr_wks");
 
@@ -1836,7 +1836,7 @@ public class PCSLabEntry extends PcsFrame {
 	void noResponseClaimItem_actionPerformed(java.awt.event.ActionEvent event) {
 		printerCodes.removeAllElements();
 		printerCodes.addElement(Utils.ELITE);
-		OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + "claim.rpt");
+		OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + "claim.rpt");
     	if (out != null && out.toString().length() > 0) {
 			ReportViewer viewer = ReportViewer.create(out.toString(), "No Response Claims");
 			viewer.setVisible(true);
@@ -2080,7 +2080,7 @@ public class PCSLabEntry extends PcsFrame {
 			cstmt.setString(2, "clm_wks");
 			cstmt.setString(3, billRoute);
 			cstmt.executeUpdate();
-			OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR+ "clm_wks");
+			OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR+ "clm_wks");
 
 			if (StringUtils.isNotBlank(out.toString())) {
 				Utils.genericPrint(out.toString() );
