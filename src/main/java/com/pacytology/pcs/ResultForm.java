@@ -2790,6 +2790,9 @@ public class ResultForm extends PcsFrame
             cancelButton.setForeground(Utils.LABEL_FOREGROUND);
 		    cancelButton.requestFocus();
 		}
+		else if (event.getKeyCode()==KeyEvent.VK_ENTER) {
+			noOption(buttonMode);
+		}
 	}
 
 	void yesButton_keyPressed(java.awt.event.KeyEvent event)
@@ -2828,6 +2831,9 @@ public class ResultForm extends PcsFrame
             yesButton.setFont(new Font("Dialog", Font.BOLD, 11));
             yesButton.setForeground(Utils.LABEL_FOREGROUND);
 		    yesButton.requestFocus();
+		}
+		else if (event.getKeyCode()==KeyEvent.VK_ENTER) {
+			cancelOption();
 		}
 	}
 	
