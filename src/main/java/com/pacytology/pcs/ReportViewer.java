@@ -115,7 +115,12 @@ public class ReportViewer extends PcsFrame
 			        ReportViewer.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 			        if ("whp".equals(ReportViewer.this.getTitle())
 			        	|| "pth".equals(ReportViewer.this.getTitle())
-			        	|| "cyt".equals(ReportViewer.this.getTitle())) {
+			        	|| "cyt".equals(ReportViewer.this.getTitle())
+			        	|| "uns".equals(ReportViewer.this.getTitle())
+			        	|| "ahp".equals(ReportViewer.this.getTitle())
+			        	|| "sbt".equals(ReportViewer.this.getTitle())
+			        	|| "rfb".equals(ReportViewer.this.getTitle())
+			        	|| "rbl".equals(ReportViewer.this.getTitle())) {
 			        	
 			        	try {
 			        		FileInputStream stream = new FileInputStream(ReportViewer.this.fileName);
