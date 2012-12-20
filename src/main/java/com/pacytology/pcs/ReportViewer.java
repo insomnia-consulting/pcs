@@ -113,7 +113,9 @@ public class ReportViewer extends PcsFrame
 			public void actionPerformed(ActionEvent e) { 
 				if (verifyPrinter()) {
 			        ReportViewer.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-			        if ("whp".equals(ReportViewer.this.getTitle())) {
+			        if ("whp".equals(ReportViewer.this.getTitle())
+			        	|| "pth".equals(ReportViewer.this.getTitle())
+			        	|| "cyt".equals(ReportViewer.this.getTitle())) {
 			        	
 			        	try {
 			        		FileInputStream stream = new FileInputStream(ReportViewer.this.fileName);
