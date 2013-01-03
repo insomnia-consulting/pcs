@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import com.pacytology.pcs.actions.LabFormActionMap;
 import com.pacytology.pcs.actions.ReportViewerActionMap;
@@ -129,6 +130,9 @@ public class ReportViewer extends PcsFrame
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						} catch (PrintException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
