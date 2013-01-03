@@ -48,6 +48,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import oracle.jdbc.OracleTypes;
@@ -1539,14 +1540,16 @@ public class PCSLabEntry extends PcsFrame {
 			while (rs.next())
 				batchClaimID = rs.getInt(1);
 			
-			OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + "ppr_clm");
+			//OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + "ppr_clm");
+			File printFile = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, "ppr_clm");
+			
+			if (printFile != null && printFile.length() > 0) {
+				InputStream inputStream = new FileInputStream(printFile);
+				Utils.dotMatrixPrint(inputStream);
 
-			if (out != null && out.toString().length() > 0) {
-				Utils.genericPrint(out.toString(), new MessageFormat("ppr_clm"), null);
-				//Utils.genericPrinat(Utils.TMP_DIR, "ppr_clm", false);
 				String fName = "ppr_clm" + batchClaimID;
 				try {
-					FileTransfer.sendFile(out.toString().getBytes(), Utils.SERVER_DIR + fName);
+					FileTransfer.sendFile(IOUtils.toByteArray(inputStream), Utils.SERVER_DIR + fName);
 				} catch (SecurityException e) {
 					log.write("ERROR: build HCFA1500\n" + e);
 				}
