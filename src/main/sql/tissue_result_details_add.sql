@@ -1,4 +1,4 @@
-create or replace procedure     tissue_result_details_add
+create or replace procedure tissue_result_details_add
 (
    R_lab_number in number,
    R_result_letter in char,
@@ -36,7 +36,7 @@ exception
       commit;
       RAISE;
 
-end
+end;
 \
 
 grant execute on tissue_result_details_add to pcs_user
