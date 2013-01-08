@@ -779,6 +779,9 @@ public class CytoPathReport extends javax.swing.JFrame
         pgraphics.drawString(buf.toString(),x+gap,y);
         
         /* PATIENT SSN */
+        /* Utils.addShortSSN prints only the last four digits of the
+         * patient's SSN, and left pads with pound signs
+         */
         pgraphics.setFont(new Font("SansSerif",Font.PLAIN,10));
         if (!Utils.isNull(labReport.pat_ssn)) {
             //if (labReport.practice_type.equals("ADPH"))

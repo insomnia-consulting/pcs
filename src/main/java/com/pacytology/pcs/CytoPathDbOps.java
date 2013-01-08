@@ -300,7 +300,7 @@ public class CytoPathDbOps implements Runnable
                  * the results were input into the system. LabReportRec.datestamp holds the numeric value
                  * of the current date; in the format YYYYMMDD it is numerically true.
                  */
-                if (labReport.iDatestamp>=2012000627) {
+                if (labReport.iDatestamp>=20120627) {
                 	if (!Utils.isNull(labReport.released))
                 		labReport.date_reported=labReport.released;
                 	else if (!Utils.isNull(labReport.submitted))
@@ -683,7 +683,7 @@ public class CytoPathDbOps implements Runnable
                  * the results were input into the system. LabReportRec.datestamp holds the numeric value
                  * of the current date; in the format YYYYMMDD it is numerically true.
                  */
-                if (labReport.iDatestamp>=2012000627) {
+                if (labReport.iDatestamp>=20120627) {
                 	if (!Utils.isNull(labReport.released))
                 		labReport.date_reported=labReport.released;
                 	else if (!Utils.isNull(labReport.submitted))
