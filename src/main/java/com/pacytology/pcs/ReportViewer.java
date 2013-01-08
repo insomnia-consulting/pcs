@@ -18,12 +18,15 @@ package com.pacytology.pcs;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
+import javax.print.PrintException;
 import javax.print.attribute.standard.MediaSize;
 import javax.swing.*;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import com.pacytology.pcs.actions.LabFormActionMap;
 import com.pacytology.pcs.actions.ReportViewerActionMap;
@@ -111,7 +114,32 @@ public class ReportViewer extends PcsFrame
 			public void actionPerformed(ActionEvent e) { 
 				if (verifyPrinter()) {
 			        ReportViewer.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-			        Utils.largePrint(ReportViewer.this.reportText.getText(), new MessageFormat(""), new MessageFormat(""));
+			        if ("whp".equals(ReportViewer.this.getTitle())
+			        	|| "pth".equals(ReportViewer.this.getTitle())
+			        	|| "cyt".equals(ReportViewer.this.getTitle())
+			        	|| "uns".equals(ReportViewer.this.getTitle())
+			        	|| "ahp".equals(ReportViewer.this.getTitle())
+			        	|| "sbt".equals(ReportViewer.this.getTitle())
+			        	|| "rfb".equals(ReportViewer.this.getTitle())
+			        	|| "rbl".equals(ReportViewer.this.getTitle())) {
+			        	
+			        	try {
+			        		FileInputStream stream = new FileInputStream(ReportViewer.this.fileName);
+							Utils.dotMatrixPrint(stream);
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (PrintException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+			        }
+			        else {
+			        	Utils.largePrint(ReportViewer.this.reportText.getText(), new MessageFormat(""), new MessageFormat(""));
+			        }
 			        ReportViewer.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			    }
 			}
@@ -130,7 +158,8 @@ public class ReportViewer extends PcsFrame
 	    this();
 	    this.setTitle(sTitle);
 	    this.fileName=fileName;
-        f = new File(Utils.ROOT_DIR,fileName);
+        f = new File(fileName);
+        
         if (f.exists()) {
             long fLen = f.length();
             if (fLen>0) { 

@@ -533,11 +533,13 @@ begin
    job_indicator:=DATA_PURGE;
    select job_status into min_lab_number
    from pcs.job_control where job_descr='PURGE';
+   
    select job_status into purge_date
-
    from pcs.job_control where job_descr='PURGE DATE';
+   
    select to_date(to_char(purge_date),'YYYYMMDD')+1 into next_purge_date from dual;
    purge_date:=TO_NUMBER(TO_CHAR(next_purge_date,'YYYYMMDD'));
+
    update pcs.job_control set job_status=purge_date where job_descr='PURGE DATE';
    purge_count:=pcs.get_purge_count;
    cbuf1:=RTRIM(LTRIM(TO_CHAR(purge_date)));
@@ -780,79 +782,79 @@ begin
 
    UTL_FILE.FCLOSE(file_handle);
 
---exception
---   when UTL_FILE.INVALID_PATH then
---      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
---      commit;
---      UTL_FILE.FCLOSE(file_handle);
---
---      RAISE_APPLICATION_ERROR(-20051,'invalid path');
---   when UTL_FILE.INVALID_MODE then
---      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
---      commit;
---      UTL_FILE.FCLOSE(file_handle);
---      RAISE_APPLICATION_ERROR(-20052,'invalid mode');
---   when UTL_FILE.INVALID_FILEHANDLE then
---      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
---      commit;
---      UTL_FILE.FCLOSE(file_handle);
---      RAISE_APPLICATION_ERROR(-20053,'invalid file handle');
---   when UTL_FILE.INVALID_OPERATION then
---      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
---
---      commit;
---      UTL_FILE.FCLOSE(file_handle);
---      RAISE_APPLICATION_ERROR(-20054,'invalid operation');
---   when UTL_FILE.READ_ERROR then
---      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
---      commit;
---      UTL_FILE.FCLOSE(file_handle);
---      RAISE_APPLICATION_ERROR(-20055,'read error');
---   when UTL_FILE.WRITE_ERROR then
---      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
---      commit;
---      UTL_FILE.FCLOSE(file_handle);
---      RAISE_APPLICATION_ERROR(-20056,'write error');
---
---   when OTHERS then
---      curr_line:='END DAILY JOBS WITH ERROR: '||date_today;
---      UTL_FILE.PUTF(file_handle,'\n%s\n\n',curr_line);
---      curr_line:='------------------------------------'||
---	 '-------------------------------------------';
---      UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
---      UTL_FILE.FCLOSE(file_handle);
---      P_error_code:=SQLCODE;
---      P_error_message:=SQLERRM;
---      insert into pcs.error_log
---	 (error_code,error_message,proc_name,code_area,datestamp,sys_user)
---      values
---	 (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID);
---
---      update job_control set job_status=-1 where job_descr='JOB_STATUS';
---      insert into pcs.daily_job_record (j_rec_number) values (j_rec_num);
---      curr_line:='WARNING! NIGHT JOB FAILURE, '||P_code_area;
---      if (job_indicator=DAILY) then
---	 curr_line:=curr_line||' [daily]';
---      elsif (job_indicator=WEEKLY) then
---	 curr_line:=curr_line||' [weekly]';
---      elsif (job_indicator=EOM) then
---	 curr_line:=curr_line||' [monthly]';
---      elsif (job_indicator=MID_MONTH) then
---	 curr_line:=curr_line||' [mid_month]';
---      elsif (job_indicator=SUMMARIES) then
---	 curr_line:=curr_line||' [summaries]';
---
---      elsif (job_indicator=DATA_PURGE) then
---	 curr_line:=curr_line||' [data_purge]';
---      elsif (job_indicator=SPECIAL) then
---	 curr_line:=curr_line||' [special]';
---      end if;
---      update business_info set
---	 current_message=curr_line,
---	 message_foreground=-65536,
---	 message_background=-16777216;
---      commit;
---      RAISE;
+exception
+   when UTL_FILE.INVALID_PATH then
+      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
+      commit;
+      UTL_FILE.FCLOSE(file_handle);
+
+      RAISE_APPLICATION_ERROR(-20051,'invalid path');
+   when UTL_FILE.INVALID_MODE then
+      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
+      commit;
+      UTL_FILE.FCLOSE(file_handle);
+      RAISE_APPLICATION_ERROR(-20052,'invalid mode');
+   when UTL_FILE.INVALID_FILEHANDLE then
+      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
+      commit;
+      UTL_FILE.FCLOSE(file_handle);
+      RAISE_APPLICATION_ERROR(-20053,'invalid file handle');
+   when UTL_FILE.INVALID_OPERATION then
+      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
+
+      commit;
+      UTL_FILE.FCLOSE(file_handle);
+      RAISE_APPLICATION_ERROR(-20054,'invalid operation');
+   when UTL_FILE.READ_ERROR then
+      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
+      commit;
+      UTL_FILE.FCLOSE(file_handle);
+      RAISE_APPLICATION_ERROR(-20055,'read error');
+   when UTL_FILE.WRITE_ERROR then
+      update pcs.job_control set job_status=-1 where job_descr='JOB_STATUS';
+      commit;
+      UTL_FILE.FCLOSE(file_handle);
+      RAISE_APPLICATION_ERROR(-20056,'write error');
+
+   when OTHERS then
+      curr_line:='END DAILY JOBS WITH ERROR: '||date_today;
+      UTL_FILE.PUTF(file_handle,'\n%s\n\n',curr_line);
+      curr_line:='------------------------------------'||
+	 '-------------------------------------------';
+      UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
+      UTL_FILE.FCLOSE(file_handle);
+      P_error_code:=SQLCODE;
+      P_error_message:=SQLERRM;
+      insert into pcs.error_log
+	 (error_code,error_message,proc_name,code_area,datestamp,sys_user)
+      values
+	 (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID);
+
+      update job_control set job_status=-1 where job_descr='JOB_STATUS';
+      insert into pcs.daily_job_record (j_rec_number) values (j_rec_num);
+      curr_line:='WARNING! NIGHT JOB FAILURE, '||P_code_area;
+      if (job_indicator=DAILY) then
+	 curr_line:=curr_line||' [daily]';
+      elsif (job_indicator=WEEKLY) then
+	 curr_line:=curr_line||' [weekly]';
+      elsif (job_indicator=EOM) then
+	 curr_line:=curr_line||' [monthly]';
+      elsif (job_indicator=MID_MONTH) then
+	 curr_line:=curr_line||' [mid_month]';
+      elsif (job_indicator=SUMMARIES) then
+	 curr_line:=curr_line||' [summaries]';
+
+      elsif (job_indicator=DATA_PURGE) then
+	 curr_line:=curr_line||' [data_purge]';
+      elsif (job_indicator=SPECIAL) then
+	 curr_line:=curr_line||' [special]';
+      end if;
+      update business_info set
+	 current_message=curr_line,
+	 message_foreground=-65536,
+	 message_background=-16777216;
+      commit;
+      RAISE;
 
 end;
 \

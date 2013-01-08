@@ -825,7 +825,7 @@ public class LabForm extends PcsFrame
 		SymWindow aSymWindow = new SymWindow();
 		this.addWindowListener(aSymWindow);
 
-		labMedicareType.addKeyListener(aSymKey);
+		//labMedicareType.addKeyListener(aSymKey);
 		//labFormSigned.addKeyListener(aSymKey);
 
 		labRelCode.addFocusListener(aSymFocus);
@@ -4933,7 +4933,7 @@ public class LabForm extends PcsFrame
 	
 	private void printLetterFile(String filePath, String fileName, boolean forcePage)
 	{
-        OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + "generic.ltr" );
+        OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + "generic.ltr" );
 
         if (out.toString().length() < 1) {
         	Utils.createErrMsg("Cannot locate report: "+fileName); 

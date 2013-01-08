@@ -1,6 +1,7 @@
 package com.pacytology.pcs.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.OutputStream;
 
 import org.rev6.scf.ScpDownload;
@@ -74,14 +75,12 @@ public class FileTransfer {
 			}
 		}
 	}
-	
 	/**
 	 * Using https://github.com/akinsgre/securechannelfacade/ to transfer files
 	 * 
-	 * @param sourceFileName
-	 * @param destFilename
+	 * @param remotePath
 	 */
-	public static OutputStream getFile(String remotePath) {
+	public static OutputStream getOutputStream(String remotePath) {
 
 		String host = Utils.HOST_IP;
 		String username = "oracle";
@@ -106,5 +105,44 @@ public class FileTransfer {
 			}
 		}
 		return out;
+	}
+	/**
+	 * Using https://github.com/akinsgre/securechannelfacade/ to transfer files
+	 * 
+	 * @param remotePath	 
+	 */
+	public static File getFile(String localPath, String remotePath, String fileName) {
+
+		String host = Utils.HOST_IP;
+		String username = "oracle";
+		String password = Utils.HOST_PWD;
+
+		SshConnection ssh = null;
+		OutputStream out = null ; 
+
+		try {
+			ssh = new SshConnection(host, username, password);
+			ssh.setPort(Integer.parseInt(Utils.HOST_PORT));
+			ssh.connect();
+			ScpDownload download = new ScpDownload(
+        			new ScpFile(new File(localPath + fileName),  remotePath + fileName)
+        				);
+			ssh.executeTask(download);
+			File file = new File(localPath + fileName);
+			if (file != null && file.isFile()) return file;
+			else throw new FileNotFoundException();	
+		} catch (FileNotFoundException fnf){
+
+			fnf.printStackTrace();
+		} catch (SshException e) {
+			
+			e.printStackTrace();
+		} finally {
+			if (ssh != null) {
+				ssh.disconnect();
+			}
+		}
+		return null;
+		
 	}
 }

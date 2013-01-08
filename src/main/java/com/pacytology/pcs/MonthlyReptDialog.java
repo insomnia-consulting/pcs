@@ -19,6 +19,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.io.File;
 import java.io.OutputStream;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
@@ -240,11 +241,11 @@ public class MonthlyReptDialog extends javax.swing.JDialog
                     fName=month+stmtYear.getText()+"."+reptName;
                 else
                     fName=month+stmtYear.getText()+practiceNumber.getText()+"."+reptName;
+                File file = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fName);
 
-                
-                OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + fName);
-            	if (out != null && out.toString().length() > 0) {
-        			ReportViewer viewer = ReportViewer.create(out.toString(), this.getTitle());
+            	if (file != null && file.length() > 0) {
+            		
+        			ReportViewer viewer = new ReportViewer(file.getAbsolutePath(), this.reptName);
         			viewer.setVisible(true);
         			viewer.toFront();
                 }

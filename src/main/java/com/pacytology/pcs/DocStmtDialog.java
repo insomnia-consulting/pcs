@@ -228,7 +228,7 @@ public class DocStmtDialog extends PcsDialog
                 }
                 else {
                     if (reportType.equals("SUMMARY")) {
-                    	OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + fName);
+                    	OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + fName);
                     	if (out != null && out.toString().length() > 0) {
                 			ReportViewer viewer = ReportViewer.create(out.toString(), title);
                 			viewer.setVisible(true);
@@ -274,7 +274,7 @@ public class DocStmtDialog extends PcsDialog
 	                numCopies=1;
 	                v.addElement(Utils.COMPRESSED);
 	            }
-	            OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR+fName); 
+	            OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR+fName); 
 
                 if (out != null && StringUtils.isNotBlank(out.toString())) {
                 	for (int i=0; i<numCopies; i++)

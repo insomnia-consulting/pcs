@@ -48,6 +48,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import oracle.jdbc.OracleTypes;
@@ -1539,14 +1540,16 @@ public class PCSLabEntry extends PcsFrame {
 			while (rs.next())
 				batchClaimID = rs.getInt(1);
 			
-			OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + "ppr_clm");
+			//OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + "ppr_clm");
+			File printFile = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, "ppr_clm");
+			
+			if (printFile != null && printFile.length() > 0) {
+				InputStream inputStream = new FileInputStream(printFile);
+				Utils.dotMatrixPrint(inputStream);
 
-			if (out != null && out.toString().length() > 0) {
-				Utils.genericPrint(out.toString(), new MessageFormat("ppr_clm"), null);
-				//Utils.genericPrinat(Utils.TMP_DIR, "ppr_clm", false);
 				String fName = "ppr_clm" + batchClaimID;
 				try {
-					FileTransfer.sendFile(out.toString().getBytes(), Utils.SERVER_DIR + fName);
+					FileTransfer.sendFile(IOUtils.toByteArray(inputStream), Utils.SERVER_DIR + fName);
 				} catch (SecurityException e) {
 					log.write("ERROR: build HCFA1500\n" + e);
 				}
@@ -1714,7 +1717,7 @@ public class PCSLabEntry extends PcsFrame {
 			cstmt.close();
 
 			//Determine the encoding of the outputstream?
-			OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + "curr_wks");
+			OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + "curr_wks");
 			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "curr_wks"), out.toString());		
 			InputStream fileInput = new FileInputStream(Utils.TMP_DIR + "curr_wks");
 
@@ -1836,7 +1839,7 @@ public class PCSLabEntry extends PcsFrame {
 	void noResponseClaimItem_actionPerformed(java.awt.event.ActionEvent event) {
 		printerCodes.removeAllElements();
 		printerCodes.addElement(Utils.ELITE);
-		OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR + "claim.rpt");
+		OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + "claim.rpt");
     	if (out != null && out.toString().length() > 0) {
 			ReportViewer viewer = ReportViewer.create(out.toString(), "No Response Claims");
 			viewer.setVisible(true);
@@ -2080,7 +2083,7 @@ public class PCSLabEntry extends PcsFrame {
 			cstmt.setString(2, "clm_wks");
 			cstmt.setString(3, billRoute);
 			cstmt.executeUpdate();
-			OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR+ "clm_wks");
+			OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR+ "clm_wks");
 
 			if (StringUtils.isNotBlank(out.toString())) {
 				Utils.genericPrint(out.toString() );
@@ -2138,7 +2141,7 @@ public class PCSLabEntry extends PcsFrame {
 
 	void suspendJobs() {
 		try {
-			String SQL = "UPDATE pcsJob_control \n" + "SET job_status=3 \n"
+			String SQL = "UPDATE pcs.Job_control \n" + "SET job_status=3 \n"
 					+ "WHERE job_descr='JOB_STATUS' \n";
 			Statement stmt = DbConnection.process().createStatement();
 			int rs = stmt.executeUpdate(SQL);
@@ -2158,7 +2161,7 @@ public class PCSLabEntry extends PcsFrame {
 
 	void nightJobsOff() {
 		try {
-			String SQL = "UPDATE pcsJob_control \n" + "SET job_status=2 \n"
+			String SQL = "UPDATE pcs.Job_control \n" + "SET job_status=2 \n"
 					+ "WHERE job_descr='JOB_STATUS' \n";
 			Statement stmt = DbConnection.process().createStatement();
 			int rs = stmt.executeUpdate(SQL);
@@ -2401,7 +2404,7 @@ public class PCSLabEntry extends PcsFrame {
 		String statusMsg = null;
 		int status = 0;
 		try {
-			String SQL = "SELECT job_status FROM pcsJob_control \n"
+			String SQL = "SELECT job_status FROM pcs.Job_control \n"
 					+ "WHERE job_descr='MID MONTH' \n";
 			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(SQL);
@@ -2432,7 +2435,7 @@ public class PCSLabEntry extends PcsFrame {
 			// If the confirmation was affirmative
 			if (reply == JOptionPane.YES_OPTION) {
 				try {
-					String SQL = "UPDATE pcsJob_control SET \n"
+					String SQL = "UPDATE pcs.Job_control SET \n"
 							+ "   job_status=1 \n"
 							+ "WHERE job_descr='MID MONTH' \n";
 					Statement stmt = DbConnection.process().createStatement();
@@ -2443,7 +2446,7 @@ public class PCSLabEntry extends PcsFrame {
 				}
 			} else if (reply == JOptionPane.NO_OPTION) {
 				try {
-					String SQL = "UPDATE pcsJob_control SET \n"
+					String SQL = "UPDATE pcs.Job_control SET \n"
 							+ "   job_status=0 \n"
 							+ "WHERE job_descr='MID MONTH' \n";
 					Statement stmt = DbConnection.process().createStatement();

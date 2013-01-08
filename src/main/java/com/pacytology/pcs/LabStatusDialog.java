@@ -254,7 +254,7 @@ public class LabStatusDialog extends javax.swing.JDialog
 	
 	void printReport()
 	{
-		OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR+fileName);
+		OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR+fileName);
 	    Utils.genericPrint(out.toString(), new MessageFormat(""), new MessageFormat(""));
 	}
 

@@ -222,7 +222,7 @@ public class CommissionDialog extends javax.swing.JDialog
 	    generateReport();
 	    Vector printerCodes = new Vector();
 	    printerCodes.addElement(Utils.CONDENSED);
-        OutputStream out = FileTransfer.getFile(Utils.SERVER_DIR+fileName);
+        OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR+fileName);
         
         if (out != null && out.toString().length()>0) {
             ReportViewer reportViewer = ReportViewer.create(out.toString(), this.getTitle());
