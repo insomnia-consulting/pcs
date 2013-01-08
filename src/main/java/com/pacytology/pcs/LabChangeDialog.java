@@ -40,7 +40,7 @@ public class LabChangeDialog extends PcsDialog
 		setTitle("Lab Number Correction");
 		setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
 		getContentPane().setLayout(null);
-		setSize(306,241);
+		setSize(500,241);
 		setVisible(false);
 		badLabNumLbl.setRequestFocusEnabled(false);
 		badLabNumLbl.setText("INCORRECT Lab Number");
@@ -90,10 +90,10 @@ public class LabChangeDialog extends PcsDialog
 		getContentPane().add(warningMessage);
 		warningMessage.setForeground(java.awt.Color.red);
 		warningMessage.setFont(new Font("Dialog", Font.BOLD, 12));
-		warningMessage.setBounds(24,130,264,96);
+		warningMessage.setBounds(24,130,464,96);
 		updateLink.setText("Change Previous Lab Number (Link)");
 		getContentPane().add(updateLink);
-		updateLink.setBounds(20,50,220,20);
+		updateLink.setBounds(20,50,320,20);
 		//}}
 	
 		//{{REGISTER_LISTENERS
@@ -120,11 +120,15 @@ public class LabChangeDialog extends PcsDialog
                     int old = 0;
                     if (mode==HPV) old=HPV;
                     else if (mode==BIOPSY) old=BIOPSY;
-                    if (mode!=UPDATE_LINK) {
+                    if (mode==PAP) {
                         old=(int)Integer.parseInt(badLabNumber.getText());
 		                makeCorrection(
 		                    old,(int)Integer.parseInt(goodLabNumber.getText()));
 		            }
+                    else if (mode==HPV || mode==BIOPSY) {
+		                makeCorrection(
+			                    old,(int)Integer.parseInt(goodLabNumber.getText()));
+                    }
 		            else {
 		                old=(int)Integer.parseInt(badLabNumber.getText());
 		                DbConnection.updatePreviousLab(old,previous_lab);
@@ -295,7 +299,13 @@ public class LabChangeDialog extends PcsDialog
 		        labNumberExists=verifyLabNumber(
 		            (int)Integer.parseInt(goodLabNumber.getText())); 
 		        if (verifyLabNumber(
-		            (int)Integer.parseInt(goodLabNumber.getText()))) {
+		            (int)Integer.parseInt(goodLabNumber.getText()))) { 
+		        	if (mode==HPV) {
+		        		warningMessage.setText("WARNING!! Starting lab number for HPV already exists."); 
+		        	}
+		        	else if (mode==BIOPSY) {
+		        		warningMessage.setText("WARNING!! Starting lab number for BIOPSY already exists."); 
+		        	}
 		            warningMessage.setVisible(true);
 		        }
 		        else {
@@ -305,7 +315,6 @@ public class LabChangeDialog extends PcsDialog
 		                msg="WARNING!!!  Next lab number for SURGICAL BIOPSY will be set to "+goodLabNumber.getText();
 		            if (mode==HPV || mode==BIOPSY) {
 		                warningMessage.setText(msg);
-
 		            }
 		            warningMessage.setVisible(true); 
 		        }
