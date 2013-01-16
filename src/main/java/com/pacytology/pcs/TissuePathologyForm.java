@@ -502,6 +502,18 @@ public class TissuePathologyForm extends PcsFrame
 				resetActions();
 			}
 		});
+		rp.getActionMap().put("VK_DOWN", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("This is incrementTextList action");
+				incrementTextList();
+			}
+		});
+		rp.getActionMap().put("VK_UP", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("This is decrementTextList action");
+				decrementTextList();
+			}
+		});
 		
 		return rp;
 	}
