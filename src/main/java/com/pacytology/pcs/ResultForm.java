@@ -782,9 +782,6 @@ public class ResultForm extends PcsFrame
 		String osName = System.getProperty("os.name").toLowerCase();
 		boolean isMacOs = osName.startsWith("mac os x");
 		if (isMacOs) rp.getActionMap().put("VK_I", showRemarks);
-
-
-	    
 		return rp;
 	}
 	public ResultForm(String sTitle)
@@ -2322,8 +2319,11 @@ public class ResultForm extends PcsFrame
 		{
 		    setMsgLabel(" ");
 		    event.consume();
+		    //Disabled the remarks input since we just entered them.
 		    resRemarks.setEnabled(false);
-            resCompleted.requestFocus();
+		    //Enable the pathologist since that is where control is going.
+		    resPathologist.setEnabled(true);
+		    resPathologist.requestFocus();
         }
 	}
 
