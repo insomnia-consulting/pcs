@@ -1013,6 +1013,7 @@ public class ResultForm extends PcsFrame
         currMode=Lab.QUERY;
         fKeys.off();
         fKeys.keyOn(fKeys.F12);
+        fKeys.keyOn(fKeys.F3);
         setEnableAllFields(false);
         resLabNumber.setEnabled(true);
         resLabNumber.setBackground(Color.white);
@@ -2321,6 +2322,7 @@ public class ResultForm extends PcsFrame
 		    event.consume();
 		    //Disabled the remarks input since we just entered them.
 		    resRemarks.setEnabled(false);
+
 		    //Enable the pathologist since that is where control is going.
 		    resPathologist.setEnabled(true);
 		    resPathologist.requestFocus();

@@ -44,6 +44,32 @@ end ;
 
 grant SELECT on PATIENT_SEQ to pcs_user ;
 
+--Need to add an update statement so that the tables which have a user ID will reflect the change to a new user id as the new users are created.  This might have to be done manually
+BEGIN
+
+   dbms_output.put_line('Dropping Sequence');
+   EXECUTE IMMEDIATE 'DROP sequence qc_seq';
+EXCEPTION
+   WHEN OTHERS THEN
+      IF SQLCODE != -942 THEN
+		dbms_output.put_line('Sequence does not exist.. moving on');
+      END IF;
+END;
+/
+
+declare 
+	maxvalue number;
+begin
+	dbms_output.put_line('Getting necessary max value for sequence');
+	select max(qc_id)+1 into maxvalue from quality_control ; 
+	dbms_output.put_line('========= Creating sequence qc_seq with '||maxvalue);
+	execute immediate 'create sequence qc_seq start with '||maxvalue||' nomaxvalue' ; 
+end ;
+/
+
+grant SELECT on QC_SEQ to pcs_user ;
+
+
 BEGIN
    dbms_output.put_line('Dropping Sequence');
    EXECUTE IMMEDIATE 'DROP sequence req_seq';

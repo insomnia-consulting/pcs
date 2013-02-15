@@ -78,9 +78,9 @@ public class PcsActionMap {
 	};
 
 	public void updateAction(ActionEvent e) {
-		if (PcsActionMap.this.parentFrame.fKeys.isOn(PcsActionMap.this.parentFrame.fKeys.F3)==true) {
+		
         	PcsActionMap.this.parentFrame.updateActions();
-        }
+
 	}
 	public final Action f4Action = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
