@@ -798,7 +798,7 @@ public class LabForm extends PcsFrame
 		labGrpNum.addKeyListener(aSymKey);
 
 		labSubscrLName.addKeyListener(aSymKey);
-		labSubscrFName.addKeyListener(aSymKey);
+		
 		labDPAState.addKeyListener(aSymKey);
 		
 		labAge.addKeyListener(aSymKey);
@@ -2105,7 +2105,7 @@ public class LabForm extends PcsFrame
 
                         }
                         else if (HPVrequest.isEnabled()) {
-                        	HPVrequest.requestFocus();
+                        	HPVrequest.requestFocusInWindow();
                         }
                         else {
                         	labDetCodeEntry.requestFocus();
@@ -3615,7 +3615,7 @@ public class LabForm extends PcsFrame
 	void labPatientFirstName_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER) {
-		    labSubscrFName.setText(labPatientFirstName.getText());
+		    labSubscrFName.setText( labPatientFirstName.getText());
 		    if (patientQuery) labPatientFirstName.transferFocus();
 		    else if (Utils.required(labPatientFirstName,"Patient First Name"))
 		        labPatientFirstName.transferFocus();
@@ -4309,6 +4309,7 @@ public class LabForm extends PcsFrame
 		if (event.getKeyCode()==event.VK_ENTER) {
 		    labRec.sub_lname=labSubscrLName.getText();
 		    labSubscrLName.transferFocus();
+		    
 		}
 	}
 
@@ -4319,7 +4320,9 @@ public class LabForm extends PcsFrame
 		    if (labBillingChoice.getText().equals("BS")) {
 		        gotoNextSection();
 		    }
-		    else labSubscrFName.transferFocus();
+		    else {
+		    	labSubscrFName.transferFocus();
+		    }
 		}
 	}
 	void labLMP_keyPressed(java.awt.event.KeyEvent event)
