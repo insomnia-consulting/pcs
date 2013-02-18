@@ -658,7 +658,7 @@ public class CytoPathReport extends javax.swing.JFrame
 	    /*  Otherwise format and print the heading information
 	        on the report.
 	    */
-        pgraphics.setFont(new Font("SansSerif",Font.BOLD,14));
+        pgraphics.setFont(new Font("SansSerif",Font.BOLD,13));
         saveY=y;
         pgraphics.drawString("PENNSYLVANIA CYTOLOGY SERVICES",x,y);
         pgraphics.setFont(new Font("SansSerif",Font.PLAIN,12));
@@ -668,11 +668,11 @@ public class CytoPathReport extends javax.swing.JFrame
         pgraphics.drawString("Parkway Building, Suite 1700",x,y);
         y+=12;
         pgraphics.drawString("Monroeville, PA  15146",x,y);
-        y+=12;
-        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,10));
+        y+=10;
+        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,9));
         pgraphics.drawString("Phone: 412.373.8300   Fax: 412.373.7027",x,y);
         x=499;y=saveY;
-        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,9));
+        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,8));
         pgraphics.drawString("CLIA: 39D0656968",x,y);
         x=409;y+=10;
         pgraphics.drawString("Pennsylvania State Laboratory Code: 331",x,y);
@@ -766,7 +766,7 @@ public class CytoPathReport extends javax.swing.JFrame
 	    saveY=y;
 	    
 	    /* PATIENT NAME */
-        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,10));
+        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,9));
         pgraphics.drawString("NAME:",x,y);
         if (!Utils.isNull(labReport.pat_lname)) buf.append(labReport.pat_lname.trim());
         else buf.append("MISSING");
@@ -775,14 +775,14 @@ public class CytoPathReport extends javax.swing.JFrame
         else buf.append("MISSING");
         if (!Utils.isNull(labReport.pat_mi)) buf.append(" "+labReport.pat_mi);
         gap=86;
-        pgraphics.setFont(new Font("SansSerif",Font.BOLD,12));
+        pgraphics.setFont(new Font("SansSerif",Font.BOLD,11));
         pgraphics.drawString(buf.toString(),x+gap,y);
         
         /* PATIENT SSN */
         /* Utils.addShortSSN prints only the last four digits of the
          * patient's SSN, and left pads with pound signs
          */
-        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,10));
+        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,9));
         if (!Utils.isNull(labReport.pat_ssn)) {
             //if (labReport.practice_type.equals("ADPH"))
                 buf = new StringBuffer(Utils.addShortSSN(labReport.pat_ssn));
@@ -810,7 +810,7 @@ public class CytoPathReport extends javax.swing.JFrame
         /* ACCOUNT NUMBER */
         maxY=y;
         x=340;y=saveY;
-        pgraphics.setFont(new Font("SansSerif",Font.BOLD,12));
+        pgraphics.setFont(new Font("SansSerif",Font.BOLD,11));
         if (labReport.practice<100) 
             buf = new StringBuffer("ACCOUNT #0"+Integer.toString(labReport.practice));
         else 
@@ -818,7 +818,7 @@ public class CytoPathReport extends javax.swing.JFrame
         pgraphics.drawString(buf.toString(),x,y);	    
  
         /* PRACTICE NAME */
-        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,10));
+        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,9));
         y+=10;
         gap=86;
         pgraphics.drawString(labReport.prac_name,x,y);
@@ -854,7 +854,7 @@ public class CytoPathReport extends javax.swing.JFrame
         buf = new StringBuffer();
         if (slen>24) buf.append(labReport.doctor_text.substring(0,24));
         else buf.append(labReport.doctor_text);
-        pgraphics.setFont(new Font("SansSerif",Font.BOLD,12));
+        pgraphics.setFont(new Font("SansSerif",Font.BOLD,11));
         pgraphics.drawString(buf.toString(),400,y);
         
         /* DRAW LINE */
@@ -865,21 +865,21 @@ public class CytoPathReport extends javax.swing.JFrame
         /* LAB DETAILS */
         y=maxY;
         x=30; y+=18;
-        pgraphics.setFont(new Font("SansSerif",Font.BOLD,12));
+        pgraphics.setFont(new Font("SansSerif",Font.BOLD,10));
         buf = new StringBuffer("LAB #"+labReport.lab_number);
         switch (labReport.preparation) {
             case Lab.CONVENTIONAL: buf.append("    CONVENTIONAL PAP SMEAR"); break;
             case Lab.THIN_LAYER: buf.append("   LIQUID BASED PAP TEST (ThinPrep)"); break;
             case Lab.CYT_NON_PAP: buf.append("   CYTOLOGY NON-PAP"); break;            
             case Lab.IMAGED_SLIDE: 
-                pgraphics.setFont(new Font("SansSerif",Font.BOLD,11));
+                pgraphics.setFont(new Font("SansSerif",Font.BOLD,10));
                 buf.append("   THINPREP PAP TEST WITH IMAGING SYSTEM DUAL REVIEW"); 
                 break;
         }
         pgraphics.drawString(buf.toString(),x,y);	    
         
         /* DATE COLLECTED */
-        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,9));
+        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,8));
         x=464; 
         buf = new StringBuffer("COLLECTED:");
         pgraphics.drawString(buf.toString(),x,y-4);
@@ -901,10 +901,10 @@ public class CytoPathReport extends javax.swing.JFrame
         if (labReport.numSources>0) {
             x=30; y+=18;
             //saveY=y;
-            pgraphics.setFont(new Font("SansSerif",Font.BOLD,11));        
+            pgraphics.setFont(new Font("SansSerif",Font.BOLD,10));        
             pgraphics.drawString("SOURCE:",x,y);
             y+=10;
-            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,9));
+            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,8));
             for (int i=0;i<labReport.detailVect.size();i++) {
                 dCodeRec = (DetailCodeRec)labReport.detailVect.elementAt(i);
                 if (dCodeRec.detail_type.equals("SOURCE")) {
@@ -919,10 +919,10 @@ public class CytoPathReport extends javax.swing.JFrame
             if (labReport.numSources==0) y+=18;
             else y+=8;
             x=30;
-            pgraphics.setFont(new Font("SansSerif",Font.BOLD,11));
+            pgraphics.setFont(new Font("SansSerif",Font.BOLD,10));
             pgraphics.drawString("SAMPLING DEVICE:",x,y);
             y+=10;
-            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,9));
+            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,8));
             for (int i=0;i<labReport.detailVect.size();i++) {
                 dCodeRec = (DetailCodeRec)labReport.detailVect.elementAt(i);
                 if (dCodeRec.detail_type.equals("DEVICE")) {
@@ -938,10 +938,10 @@ public class CytoPathReport extends javax.swing.JFrame
                 y+=18;
             else y+=8;
             x=30; 
-            pgraphics.setFont(new Font("SansSerif",Font.BOLD,11));
+            pgraphics.setFont(new Font("SansSerif",Font.BOLD,10));
             pgraphics.drawString("OTHER INFORMATION:",x,y);
             y+=10;
-            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,9));
+            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,8));
             for (int i=0;i<labReport.detailVect.size();i++) {
                 dCodeRec = (DetailCodeRec)labReport.detailVect.elementAt(i);
                 if (dCodeRec.detail_type.equals("OTHER")) {
@@ -960,10 +960,10 @@ public class CytoPathReport extends javax.swing.JFrame
         maxY=y;
         if (labReport.numConditions>0) {
             x=340; y=detailY;
-            pgraphics.setFont(new Font("SansSerif",Font.BOLD,11));        
+            pgraphics.setFont(new Font("SansSerif",Font.BOLD,10));        
             pgraphics.drawString("CONDITIONS:",x,y);
             y+=12;
-            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,9));
+            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,8));
             for (int i=0;i<labReport.detailVect.size();i++) {
                 dCodeRec = (DetailCodeRec)labReport.detailVect.elementAt(i);
                 if (dCodeRec.detail_type.equals("CONDITION")) {
@@ -983,10 +983,10 @@ public class CytoPathReport extends javax.swing.JFrame
             && labReport.numDevices==0 && labReport.numOthers==0)
                 y+=18;
             else y+=8;
-            pgraphics.setFont(new Font("SansSerif",Font.BOLD,11));        
+            pgraphics.setFont(new Font("SansSerif",Font.BOLD,10));        
             pgraphics.drawString("PATIENT HISTORY:",x,y);
             y+=10;
-            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,9));
+            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,8));
             if (labReport.pat_last_lab>0) {
                 buf = new StringBuffer(
                     "PREVIOUS LAB #"+Integer.toString(labReport.pat_last_lab));
@@ -1032,10 +1032,10 @@ public class CytoPathReport extends javax.swing.JFrame
             && labReport.numOthers==0 && labReport.numHistory==0)
                 y+=18;
             else y+=8;
-            pgraphics.setFont(new Font("SansSerif",Font.BOLD,11));        
+            pgraphics.setFont(new Font("SansSerif",Font.BOLD,10));        
             pgraphics.drawString("CLIENT NOTES:",x,y);
             y+=10;
-            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,9));
+            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,8));
             buf = new StringBuffer(labReport.client_notes.trim());
             if (Utils.length(buf.toString())>100) {
                 buf2 = new StringBuffer(buf.toString());
@@ -1092,7 +1092,7 @@ public class CytoPathReport extends javax.swing.JFrame
 	{
 	    int x,y;
 	    y=maxY+26;
-        pgraphics.setFont(new Font("SansSerif",Font.BOLD,14));
+        pgraphics.setFont(new Font("SansSerif",Font.BOLD,13));
 	    pgraphics.drawString("CYTOPATHOLOGY REPORT",30,y);
 	    if (labReport.HPVmessage) {
 	        pgraphics.drawString("HPV REPORT",484,y);
@@ -1101,7 +1101,7 @@ public class CytoPathReport extends javax.swing.JFrame
 	    if (isAmendedReport(labReport.resultVect))
 	        pgraphics.drawString(" - AMENDED",220,y);
 	    y+=14;
-        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,12));
+        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,11));
 	    pgraphics.drawString("The Bethesda Reporting System",30,y);
 	    y+=30;
 	    boolean remarksPrinted=false;
@@ -1123,12 +1123,12 @@ public class CytoPathReport extends javax.swing.JFrame
 	                case 0:
 	                if (resultCodeRec.category.equals("S")) {
 	                    if (printCategory==true) {
-                            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,12));
+                            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,11));
 	                        pgraphics.drawString("SPECIMEN ADEQUACY:",30,y);
 	                        printCategory=false;
 	                        y-=4;
 	                    }
-                        pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,10));
+                        pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,9));
                         buf = new String(resultCodeRec.description);
                         if (Utils.length(buf)>60) {
                             buf2 = new String(buf);
@@ -1157,12 +1157,12 @@ public class CytoPathReport extends javax.swing.JFrame
 	                if (resultCodeRec.category.equals("G")) {
 	                    if (printCategory==true) {
 	                        y+=24;
-                            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,12));
+                            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,11));
 	                        pgraphics.drawString("GENERAL CATEGORIZATION:",30,y);
 	                        printCategory=false;
 	                        y-=4;
 	                    }
-                        pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,10));
+                        pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,9));
                         buf = new String(resultCodeRec.description);
                         if (Utils.length(buf)>60) {
                             buf2 = new String(buf);
@@ -1191,12 +1191,12 @@ public class CytoPathReport extends javax.swing.JFrame
 	                if (resultCodeRec.category.equals("D")) {
 	                    if (printCategory==true) {
 	                        y+=24;
-                            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,12));
+                            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,11));
 	                        pgraphics.drawString("DESCRIPTION:",30,y);
 	                        printCategory=false;
 	                        y-=4;
 	                    }
-                        pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,10));
+                        pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,9));
                         buf = new String(resultCodeRec.description);
                         if (Utils.length(buf)>60) {
                             buf2 = new String(buf);
@@ -1263,13 +1263,13 @@ public class CytoPathReport extends javax.swing.JFrame
 	                    if (remarksPrinted==false) {
 	                        remarksPrinted=true;
 	                        y+=24;
-                            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,12));
+                            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,11));
 	                        pgraphics.drawString("REMARKS:",30,y);
 	                        printCategory=false;
 	                        y-=4;
 	                    }
 	                    for (int a=0; a<labReport.remarksVect.size(); a++) {
-                        pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,10));
+                        pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,9));
                         buf = new String((String)labReport.remarksVect.elementAt(a));
                         if (Utils.length(buf)>60) {
                             buf2 = new String(buf);
@@ -1303,10 +1303,10 @@ public class CytoPathReport extends javax.swing.JFrame
 	    if (labReport.sumMatNdx>0)
         {
             y+=24;
-            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,12));
+            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,11));
             pgraphics.drawString("MATURATION INDEX:",30,y);
             y-=4;
-            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,10));
+            pgraphics.setFont(new Font("MonoSpaced",Font.PLAIN,9));
             pgraphics.drawString("SUPERFICIAL   "+labReport.superficial,210,y);
             y+=10;
             pgraphics.drawString("INTERMEDIATE  "+labReport.intermediate,210,y);
@@ -1340,7 +1340,7 @@ public class CytoPathReport extends javax.swing.JFrame
             labReport.cytotech_code.trim());
         if (!Utils.isNull(labReport.qc_cytotech_code))
             cytotech = new String(cytotech+"/"+labReport.qc_cytotech_code);
-        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,10));            
+        pgraphics.setFont(new Font("SansSerif",Font.PLAIN,9));            
         pgraphics.drawString(cytotech,30,y);
         
         if (!Utils.isNull(labReport.verified_on)) {
@@ -1353,7 +1353,7 @@ public class CytoPathReport extends javax.swing.JFrame
         else y+=30;
         
         if (!Utils.isNull(labReport.pathologist_code)) {
-            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,12));            
+            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,11));            
             String fullName = new String(labReport.path_fname+" ");
             if (!Utils.isNull(labReport.path_mi)) {
                 fullName = new String(fullName+labReport.path_mi+" ");
@@ -1369,7 +1369,7 @@ public class CytoPathReport extends javax.swing.JFrame
             y+=4;
             pgraphics.drawString("BY: _____________",450,y);
             y+=10;
-            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,10));            
+            pgraphics.setFont(new Font("SansSerif",Font.PLAIN,9));            
             pgraphics.drawString("ELECTRONIC SIGNATURE",30,y);
             y+=10;
             pgraphics.setFont(new Font("SansSerif",Font.PLAIN,8));
