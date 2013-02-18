@@ -331,7 +331,7 @@ public class HPVDbOps implements Runnable
                 "    WHERE effective_lab <= ?) \n";
 	        pstmt = DbConnection.process().prepareStatement(SQL); 
 	        pstmt.setInt(1,labReport.lab_number);
-	        ResultSet rs = pstmt.executeQuery(SQL);
+	        ResultSet rs = pstmt.executeQuery();
 	        while (rs.next()) { labReport.director_name = rs.getString(1); }
             try { rs.close(); pstmt.close(); }
             catch (SQLException e) { parent.log.write(e); }                
