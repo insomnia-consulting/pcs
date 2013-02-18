@@ -1,3 +1,7 @@
+/* 02/17/13: Two carriers that are OI have to have BS rules implemented;
+   made this change by adding constants, new variable L_carrier, change to
+   an SQL statement and an update in the OI block
+ */
 create or replace procedure     calculate_cost
 (
    L_num in number
@@ -19,6 +23,9 @@ as
    OI constant number := 126;		 /* Other insurance carriers */
    PRC constant number := 127;		 /* Professional courtesy, no charge */
    PPD constant number := 161;		 /* bill is prepaid by patient */
+   
+   HIGHMARK_WV constant number := 29476; /* carrier_id for WV Highmark BCBS */
+   CAPITAL_BC constant number := 18496;  /* carrier_id for Capital Blue Cross */
 
    /* Constants for finished status
    */
@@ -50,6 +57,7 @@ as
    L_pap_class number;
    L_practice number;
    L_ptype varchar2(32);
+   L_carrier number;
    rcnt number;
    
    NoDataExists EXCEPTION;
@@ -73,8 +81,8 @@ begin
 	      from pcs.billing_details where lab_number=L_num;
 
 	      
-      select billing_choice,rebill_code,medicare_code
-      into L_billing_choice,L_rebill_code,L_medicare_code
+      select billing_choice,rebill_code,medicare_code,carrier_id
+      into L_billing_choice,L_rebill_code,L_medicare_code,L_carrier
       from pcs.billing_details where lab_number=L_num and rebilling=L_rebilling;
 
       select finished,preparation
@@ -156,9 +164,12 @@ begin
 	       (lab_number,billing_route,billing_type,rebilling,rebill_code,datestamp)
 	    values (L_num,'PAT','DB00',L_rebilling,L_rebill_code,SysDate);
 	 elsif (L_billing_choice=OI) then
-
 	    P_code_area:='OI';
-	    pcs.default_rules(L_num,L_billing_choice);
+	    if (L_carrier IN (HIGHMARK_WV,CAPITAL_BC)) then
+	       pcs.pbs_rules(L_num,L_billing_choice);
+	    else
+	       pcs.default_rules(L_num,L_billing_choice);
+	    end if;
 	    select NVL(MIN(a.tpp),'PPR') into L_tpp from pcs.carriers a, pcs.billing_details b
 	    where a.carrier_id=b.carrier_id and b.lab_number=L_num
 	    and b.rebilling=L_rebilling;
