@@ -1841,6 +1841,7 @@ public class LabForm extends PcsFrame
             setBillingLabels(labBillingChoice.getText());
             setEnableAllFields(false);
             setEnablePatientFields(true);
+            labNumber.requestFocus();
             fKeys.keyOn(fKeys.F5);
 
 
