@@ -1224,14 +1224,14 @@ public class TissuePathologyForm extends PcsFrame
         y+=12;
         pgraphics.setFont(new Font("SansSerif",Font.PLAIN,10));
         pgraphics.drawString("Phone: 412.373.8300   Fax: 412.373.7027",x,y);
-        x=499;y=saveY;
+        x=503;y=saveY;
         pgraphics.setFont(new Font("SansSerif",Font.PLAIN,9));
         pgraphics.drawString("CLIA: 39D0656968",x,y);
-        x=409;y+=10;
+        x=406;y+=10;
         pgraphics.drawString("Pennsylvania State Laboratory Code: 331",x,y);
-        x=400;y+=10;
+        x=388;y+=10;
         pgraphics.drawString("College of American Pathologists: 41911-01",x,y);
-        x=388;y+=28;
+        x=380;y+=28;
         pgraphics.drawString("Laboratory Director: Robert H. Swedarsky, MD",x,y);
         y+=12;
         pgraphics.drawLine(30,y,574,y);
