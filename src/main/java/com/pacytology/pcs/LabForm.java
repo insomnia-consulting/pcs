@@ -799,15 +799,10 @@ public class LabForm extends PcsFrame
 
 		labSubscrLName.addKeyListener(aSymKey);
 		
-		labDPAState.addKeyListener(aSymKey);
-		
 		labAge.addKeyListener(aSymKey);
 		
 		labOtherInsurance.addKeyListener(aSymKey);
-
 		
-		labPayerID.addKeyListener(aSymKey);
-		labPCSID.addKeyListener(aSymKey);
 		labPaAddress.addKeyListener(aSymKey);
 
 		labDOB.addKeyListener(aSymKey);
@@ -819,14 +814,10 @@ public class LabForm extends PcsFrame
 		labPatientFirstName.addKeyListener(aSymKey);
 		labPatientMI.addKeyListener(aSymKey);
 
-
 		labRelCode.addKeyListener(aSymKey);
 
 		SymWindow aSymWindow = new SymWindow();
 		this.addWindowListener(aSymWindow);
-
-		//labMedicareType.addKeyListener(aSymKey);
-		//labFormSigned.addKeyListener(aSymKey);
 
 		labRelCode.addFocusListener(aSymFocus);
 		patRace.addKeyListener(aSymKey);
