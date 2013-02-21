@@ -968,6 +968,7 @@ public class Export implements Runnable
 				labDetails(labReport, fOUT);
 				hpvResults(labReport, fOUT);
 				fOUT.close();
+				FileTransfer.sendFile(filePath + fileName, destPath+reportName +".hpv");
 				fileName = reportName + ".rtf";
 				fOUT = new PrintWriter(
 						new BufferedOutputStream(new FileOutputStream(
