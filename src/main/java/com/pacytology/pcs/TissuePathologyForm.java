@@ -1650,7 +1650,7 @@ public class TissuePathologyForm extends PcsFrame
         pgraphics.drawString(fullName,30,y);
         y+=10;
         pgraphics.setFont(new Font("SansSerif",Font.PLAIN,11));            
-        pgraphics.drawString("Pathologist, Medical Director",30,y);
+        pgraphics.drawString(labReport.path_title,30,y);
         y+=11;
         pgraphics.setFont(new Font("SansSerif",Font.PLAIN,8));
         String msg =
