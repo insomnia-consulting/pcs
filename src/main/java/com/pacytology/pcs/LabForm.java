@@ -21,7 +21,6 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.PrintJob;
@@ -32,7 +31,6 @@ import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.MessageFormat;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -1135,6 +1133,15 @@ public class LabForm extends PcsFrame
 
 			}
 		});
+
+        AbstractAction commentsAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                displayComments();
+            }
+        };
+        rp.getActionMap().put("INSERT", commentsAction);
+        addMacKeyMapping("VK_I", commentsAction);
 		return rp;
 	}
 	private void setListener(Component c) {
@@ -3001,6 +3008,7 @@ public class LabForm extends PcsFrame
 
 	void keyActions(java.awt.event.KeyEvent event) 
 	{
+        System.out.println(event.getKeyCode());
 	    int key = event.getKeyCode();
 	    switch (key) {
             

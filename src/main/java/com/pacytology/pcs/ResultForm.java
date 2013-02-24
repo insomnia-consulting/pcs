@@ -24,8 +24,6 @@ import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
 import javax.swing.table.*;
-import com.pacytology.pcs.ui.Square;
-import javax.swing.border.TitledBorder;
 
 public class ResultForm extends PcsFrame
 {
@@ -779,9 +777,7 @@ public class ResultForm extends PcsFrame
 		};
 		rp.getActionMap().put("INSERT", showRemarks);
 		//Let's add 'I' as a way of calling VK_INSERT ON Mac
-		String osName = System.getProperty("os.name").toLowerCase();
-		boolean isMacOs = osName.startsWith("mac os x");
-		if (isMacOs) rp.getActionMap().put("VK_I", showRemarks);
+		addMacKeyMapping("VK_I", showRemarks);
 		return rp;
 	}
 	public ResultForm(String sTitle)

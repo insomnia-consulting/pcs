@@ -4,11 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JRootPane;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 
 import com.pacytology.pcs.FunctionKeyControl;
 import com.pacytology.pcs.actions.PcsActionMap;
@@ -116,4 +112,21 @@ public abstract class PcsFrame extends JFrame {
 		
 		return rp;
 	}
+
+    /**
+     * Convenience method for adding keymappings for Mac OSX.
+     *
+     * If the OS is not an OSX vairant the method returns without adding anything.
+     * @param keyName
+     * @param action
+     */
+    protected void addMacKeyMapping(String keyName, AbstractAction action) {
+        String osName = System.getProperty("os.name").toLowerCase();
+        boolean isMacOs = osName.startsWith("mac os x");
+		if (!isMacOs) {
+            return;
+        }
+        JRootPane rp = getRootPane();
+		rp.getActionMap().put(keyName, action);
+    }
 }
