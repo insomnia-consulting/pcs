@@ -3008,7 +3008,6 @@ public class LabForm extends PcsFrame
 
 	void keyActions(java.awt.event.KeyEvent event) 
 	{
-        System.out.println(event.getKeyCode());
 	    int key = event.getKeyCode();
 	    switch (key) {
             
