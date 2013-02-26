@@ -1103,22 +1103,15 @@ public class TissuePathologyForm extends PcsFrame
 	    Utils.buildDateMask(event);
 	}
 
-	void resCompleted_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_DOWN) {
-		    incrementTextList();
-		} 
-		else if (event.getKeyCode()==event.VK_UP) {
-		    decrementTextList();
+	void resCompleted_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (Utils.required(resCompleted, "Date Completed")) {
+				if (Utils.dateVerify(resCompleted)) {
+					resCompleted.transferFocus();
+				}
+			}
 		}
-		else 
-			if (event.getKeyCode()==event.VK_ENTER) {
-		    if (Utils.required(resCompleted,"Date Completed")) {
-		        if (Utils.dateVerify(resCompleted)) {
-		            resCompleted.transferFocus();
-		        }
-		    }
-		}
+
 	}
 
 	void resCytoTech_keyTyped(java.awt.event.KeyEvent event)
