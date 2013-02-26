@@ -24,16 +24,22 @@ import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.commons.io.FileSystemUtils;
+import org.apache.commons.io.IOUtils;
+
+import com.pacytology.pcs.io.FileTransfer;
 import com.pacytology.pcs.ui.PcsDialog;
 import com.pacytology.pcs.ui.PcsFrame;
 
@@ -417,8 +423,11 @@ public class BuildClaimDialog extends PcsDialog
             Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) { fName=rs.getString(1); }
-            stripReturns(fName,"das");
-            fnameLbl.setText(fName+".das");
+            String extn = "das";
+            
+            stripReturns(fName, extn);
+
+            fnameLbl.setText(fName+extn);
             fileBuilt=true;
         }
         catch (Exception e) { 
@@ -427,7 +436,47 @@ public class BuildClaimDialog extends PcsDialog
         log.write("CLAIM FILE: "+fName+".x12");
         this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
-    
+
+	private void stripReturns(String fName, String extn)
+			throws FileNotFoundException, IOException {
+		File f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fName);
+		File fn = stripReturns(f,extn);
+		
+		InputStream fileInputStream = new FileInputStream(fn);
+		byte[] fileBytes = IOUtils.toByteArray(fileInputStream);
+		FileTransfer.sendFile(fileBytes, Utils.SERVER_DIR + fName + "." + extn);
+	}
+	private File stripReturns(File f, String extn)
+	{
+
+        long fLen = f.length();
+        File nf = null;
+        if (fLen>0) {
+            try {
+                String newFName=f.getName()+"."+extn;
+                nf = new File(Utils.TMP_DIR,newFName);
+                FileReader fr = new FileReader(f);
+                FileWriter fw = new FileWriter(nf);
+                for (;;) {
+                    int c = fr.read();
+                    if (c==(-1)) break;
+                    if ((char)c!='\n' && (char)c!='\r') { 
+                    	fw.write((int)c);
+                    }
+                    else {
+                    	System.out.println("We found a line ending");
+                    }
+                 
+                }
+                fr.close();
+                fw.close();
+
+            }
+            catch (FileNotFoundException e) { log.write(e); return null; }
+            catch (IOException e) { log.write(e); return null ; }
+        }
+		return nf;
+	}
     void buildHGS(int ndx, String fileType, int batch) {
     	this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         String fName = null;
@@ -494,8 +543,9 @@ public class BuildClaimDialog extends PcsDialog
             Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             while (rs.next()) { fName=rs.getString(1); }
-            stripReturns(fName,"hgs");
-            fnameLbl.setText(fName+".hgs");
+            String extn = "hgs";
+            stripReturns(fName, extn);
+            fnameLbl.setText(fName+extn);
             fileBuilt=true;
         }
         catch (Exception e) { log.write(e+" build HGS"); }
@@ -511,28 +561,7 @@ public class BuildClaimDialog extends PcsDialog
 		catch (Exception e) { log.write(e); }
 	}
 	
-	private void stripReturns(String fName, String extn)
-	{
-        File f = new File(Utils.ROOT_DIR,fName);
-        long fLen = f.length();
-        if (fLen>0) {
-            try {
-                String newFName=fName+"."+extn;
-                File nf = new File(Utils.ROOT_DIR,newFName);
-                FileReader fr = new FileReader(f);
-                FileWriter fw = new FileWriter(nf);
-                for (;;) {
-                    int c = fr.read();
-                    if (c==(-1)) break;
-                    if ((char)c!='\n' && (char)c!='\r') fw.write((int)c);
-                }
-                fr.close();
-                fw.close();
-            }
-            catch (FileNotFoundException e) { log.write(e); }
-            catch (IOException e) { log.write(e); }
-        }
-	}
+	
 	
 	class SymWindow extends java.awt.event.WindowAdapter
 	{
