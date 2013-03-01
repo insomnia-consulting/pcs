@@ -341,9 +341,11 @@ public class BuildClaimDialog extends PcsDialog
             ResultSet rs = stmt.executeQuery(query);
             int batchClaimID=0;
             while (rs.next()) batchClaimID=rs.getInt(1);   
-            File f = new File(Utils.ROOT_DIR,"env_clm");
+            File f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, "env_clm");
             fName = "env"+batchClaimID;
-            try { f.renameTo(new File(Utils.ROOT_DIR,fName)); }
+            try { 
+            	FileTransfer.sendFile(f, Utils.SERVER_DIR + fName);
+            }
             catch (SecurityException e) { log.write(e); }
             fnameLbl.setText(fName);
             fileBuilt=true;

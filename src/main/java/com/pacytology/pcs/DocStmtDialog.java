@@ -219,7 +219,7 @@ public class DocStmtDialog extends PcsDialog
 	                title+=" Statement";
 	                dir="reports\\invoice\\";
 	            }
-                File f = new File(Utils.ROOT_DIR,fName);
+                File f =FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fName);
                 if (f.exists()) {
                     long fLen = f.length();
                     if (fLen>0) { 

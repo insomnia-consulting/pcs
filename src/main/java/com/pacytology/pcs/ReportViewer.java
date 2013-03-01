@@ -30,6 +30,7 @@ import java.io.IOException;
 
 import com.pacytology.pcs.actions.LabFormActionMap;
 import com.pacytology.pcs.actions.ReportViewerActionMap;
+import com.pacytology.pcs.io.FileTransfer;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
@@ -39,7 +40,7 @@ import java.util.Vector;
 public class ReportViewer extends PcsFrame
 {
     String fileName;
-    String dir = Utils.ROOT_DIR;
+    String dir = Utils.SERVER_DIR;
     File f;
     FileInputStream fIN;
     Vector printerCodes = new Vector();
@@ -196,7 +197,7 @@ public class ReportViewer extends PcsFrame
 	    this.setTitle(sTitle);
 	    this.printerCodes=printerCodes;
 	    this.fileName=fileName;
-        f = new File(Utils.ROOT_DIR,fileName);
+        f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fileName);
         if (f.exists()) {
             long fLen = f.length();
             if (fLen>0) { 
@@ -225,7 +226,7 @@ public class ReportViewer extends PcsFrame
 	    this.setTitle(sTitle);
 	    this.printerCodes=printerCodes;
 	    this.fileName=fileName;
-	    this.dir=Utils.ROOT_DIR+dir;
+	    this.dir=Utils.TMP_DIR+dir;
         f = new File(this.dir,fileName);
         if (f.exists()) {
             long fLen = f.length();

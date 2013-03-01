@@ -27,6 +27,8 @@ import java.awt.PrintJob;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,6 +43,8 @@ import javax.swing.JRootPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
+
+import org.apache.commons.io.IOUtils;
 
 import com.pacytology.pcs.actions.LabFormActionMap;
 import com.pacytology.pcs.io.FileTransfer;
@@ -2170,6 +2174,9 @@ public class LabForm extends PcsFrame
             }	 
             if (labRec.pat.last_lab>0) {
 	            labBillingChoice.setText(null);
+	            if (labRec.billing_choice != 122) {
+	            	System.out.println("Another type of billing?");
+	            }
                 labBillingChoice.setText(dbLogin.getBillingChoiceCode(labRec.billing_choice));
                 if (!Utils.isNull(labRec.subscriber)) {
                     labSubscriber.setText(labRec.subscriber);
@@ -3508,7 +3515,16 @@ public class LabForm extends PcsFrame
             carrierCommentsShown=true;
         }
 	}
-
+	public boolean isTissuePathology(String lab)
+	 {
+	      boolean result = false;
+	      if (!Utils.isNull(lab)) {
+	          String baseLab = lab.substring(4);
+	          int baseLabNumber = Integer.parseInt(baseLab);
+	          if (baseLabNumber>800000 && baseLabNumber<900000) result=true;
+	      }
+	      return (result);
+	  }
 	void labNumber_keyPressed(java.awt.event.KeyEvent event)
 	{
 	    if (event.getKeyCode()==event.VK_ENTER) {
@@ -4924,12 +4940,9 @@ public class LabForm extends PcsFrame
 	    String name = new String("Fax Letters");
 	    if (letterFileNames.size()>0) {
 	        for (int i=0; i<letterFileNames.size(); i++) {
-	            String f = (String)letterFileNames.elementAt(i);
-	            printLetterFile(Utils.ROOT_DIR,f,true);
+	            String fileName = (String)letterFileNames.elementAt(i);
+	            Utils.genericPrint(Utils.SERVER_DIR, fileName , true, Utils.PRINTER);
 	        }
-	        pjob=getToolkit().getPrintJob(this,name,p);
-	        if (pjob!=null) {}
-	        pjob.end();
 	    }
 	}
 	
@@ -4967,26 +4980,28 @@ public class LabForm extends PcsFrame
         long fLen = 0;
         for (int i=0; i<3; i++) {
             try {
-                String fName = filePrefix[i]+".old";
-                File f = new File(Utils.ROOT_DIR,fName);
+                
+                String fName = filePrefix[i]+".ltr";
+                File f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fName);
+                
                 if (f.exists()) {
                     fLen=f.length();
                     if (fLen>0) {
-                        try { f.delete(); }
-                        catch (SecurityException e) { log.write("ERROR: deleting "+filePrefix[i]+".old \n"+e); }
-                    }
-                }
-                fName = filePrefix[i]+".ltr";
-                f = new File(Utils.ROOT_DIR,fName);
-                if (f.exists()) {
-                    fLen=f.length();
-                    if (fLen>0) {
-                        try { f.renameTo(new File(Utils.ROOT_DIR,filePrefix[i]+".old")); }
+                        try { 
+                        	InputStream fileInputStream = new FileInputStream(f);
+                    		byte[] fileBytes = IOUtils.toByteArray(fileInputStream);
+                    		FileTransfer.sendFile(fileBytes, Utils.SERVER_DIR + filePrefix[i]+".old");
+                        }
                         catch (SecurityException e) { log.write("5: renaming "+filePrefix[i]+".ltr\n"+e); }
                     }
                 }
+                boolean deleted = FileTransfer.removeFile(Utils.SERVER_DIR, fName);
+                if (!deleted) throw new Exception("Could not delete " + fName);
             }
-            catch (Exception e) { }
+            catch (Exception e) {
+            	e.printStackTrace();
+            	log.write("Failure during fax letter dequeue: " + e.getMessage());
+            }
         }
     }
 	
@@ -5008,16 +5023,7 @@ public class LabForm extends PcsFrame
         return (isSelected);
     }
     
-    public boolean isTissuePathology(String lab)
-    {
-        boolean result = false;
-        if (!Utils.isNull(lab)) {
-            String baseLab = lab.substring(4);
-            int baseLabNumber = Integer.parseInt(baseLab);
-            if (baseLabNumber>800000 && baseLabNumber<900000) result=true;
-        }
-        return (result);
-    }
+     	
 	@Override
 	public void resetActions() {
 		 prepFlag=false;

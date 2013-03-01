@@ -207,8 +207,9 @@ public class FaxLetterForm extends javax.swing.JFrame
 	    String name = new String("Fax Letters");
 	    if (fileNames.size()>0) {
 	        for (int i=0; i<fileNames.size(); i++) {
-	            String f = (String)fileNames.elementAt(i);
-	            printLetterFile(Utils.ROOT_DIR,f,true);
+	            String fileName = (String)fileNames.elementAt(i);
+	            
+	            Utils.genericPrint(Utils.SERVER_DIR, fileName , true);
 	        }
 	        pjob=getToolkit().getPrintJob(this,name,p);
 	        if (pjob!=null) {}
@@ -216,36 +217,6 @@ public class FaxLetterForm extends javax.swing.JFrame
 	    }
 	}
 	
-	private void printLetterFile(
-	String filePath, String fileName, boolean forcePage)
-	{
-        File f;
-        File f2;
-        FileInputStream fIN;
-        FileOutputStream fOUT;
-        f = new File(filePath,fileName);
-        f2 = new File("c:\\","lpt2");
-        if (f.exists()) {
-            long fLen = f.length();
-            if (fLen>0) { 
-                try {
-                    fIN = new FileInputStream(f);
-                    fOUT = new FileOutputStream(f2);
-                    //setPrinterCode(fOUT,INIT);
-                    for (int k=0; k<fLen-2; k++) {
-                    //for (;;) {
-                        int x = fIN.read();
-                        if (x==-1) break;
-                        fOUT.write(x);
-                    }
-                    if (forcePage) fOUT.write(12);
-                    fIN.close();
-                    fOUT.close();
-                }
-                catch (Exception e) { System.out.println(e); }
-            }	    
-        }
-		else Utils.createErrMsg("Cannot locate report: "+fileName); 
-	}
+	
 	
 }

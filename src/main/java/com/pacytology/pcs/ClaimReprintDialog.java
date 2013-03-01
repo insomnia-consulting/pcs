@@ -17,6 +17,9 @@ package com.pacytology.pcs;
 
 import java.awt.*;
 import javax.swing.*;
+
+import com.pacytology.pcs.io.FileTransfer;
+
 import java.sql.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -238,13 +241,13 @@ public class ClaimReprintDialog extends javax.swing.JDialog
                     fileName="ppr_clm"+batchType.trim();
                     log.write("Reprint batch #"+batchType.trim());
                 }
-                File f = new File(Utils.ROOT_DIR,fileName);
+                File f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fileName);
                 long fLen = f.length();
                 if (fLen>0) {
                     int rv = pprClaimOption.showConfirmDialog(this,"Make sure printer is ready. \nReprint batch now?",
 		                "Paper Claim",pprClaimOption.YES_NO_OPTION,pprClaimOption.QUESTION_MESSAGE);
                     if (rv==pprClaimOption.YES_OPTION) {
-                        Utils.genericPrint(Utils.ROOT_DIR,fileName,false);
+                        Utils.genericPrint(Utils.SERVER_DIR,fileName,false);
                     }
                 }
                 else {
@@ -318,13 +321,13 @@ public class ClaimReprintDialog extends javax.swing.JDialog
                     cstmt.setString(3,"DUP");
                     try { cstmt.executeUpdate(); }
                     catch (SQLException e) { log.write(e); }
-                    File f = new File(Utils.ROOT_DIR,fName);
+                    File f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fName);
                     long fLen = f.length();
                     if (fLen>0) {
                         rv = pprClaimOption.showConfirmDialog(this,"Make sure printer is ready. \nPrint claim copy now?",
 		                    "Paper Claim",pprClaimOption.YES_NO_OPTION,pprClaimOption.QUESTION_MESSAGE);
 		                if (rv==pprClaimOption.YES_OPTION) {
-                            Utils.genericPrint(Utils.ROOT_DIR,fName,false);
+                            Utils.genericPrint(Utils.SERVER_DIR,fName,false);
                         }
                         try { f.delete(); }
                         catch (SecurityException e) { log.write(e.toString()); }

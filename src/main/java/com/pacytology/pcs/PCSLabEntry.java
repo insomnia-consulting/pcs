@@ -24,6 +24,7 @@ import java.awt.PrintJob;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -1575,13 +1576,13 @@ public class PCSLabEntry extends PcsFrame {
 			int batchClaimID = 0;
 			while (rs.next())
 				batchClaimID = rs.getInt(1);
-			File f = new File(Utils.ROOT_DIR, "pdw_clm");
+			File f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, "pdw_clm");
 			long fLen = f.length();
 			if (fLen > 0) {
-				Utils.genericPrint(Utils.ROOT_DIR, "pdw_clm", false);
+				Utils.genericPrint(Utils.SERVER_DIR, "pdw_clm", false);
 				String fName = "pdw_clm" + batchClaimID;
 				try {
-					f.renameTo(new File(Utils.ROOT_DIR, fName));
+					FileTransfer.sendFile(f, Utils.SERVER_DIR+ fName);
 				} catch (SecurityException e) {
 					log.write("ERROR: build MA319C\n" + e);
 				}
@@ -1756,10 +1757,10 @@ public class PCSLabEntry extends PcsFrame {
 						pprClaimOption.QUESTION_MESSAGE);
 		if (rv == pprClaimOption.YES_OPTION) {
 			String fName = "ppr_clm.lbl";
-			File f = new File(Utils.ROOT_DIR, fName);
+			File f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fName);
 			long fLen = f.length();
 			if (fLen > 0)
-				Utils.genericPrint(Utils.ROOT_DIR, fName, false);
+				Utils.genericPrint(Utils.SERVER_DIR, fName, false);
 		}
 	}
 
@@ -1778,7 +1779,7 @@ public class PCSLabEntry extends PcsFrame {
 			int numStmts = 0;
 			while (rs.next()) {
 				fName = rs.getString(1);
-				Utils.genericPrint(Utils.ROOT_DIR, fName, false, printerCodes);
+				Utils.genericPrint(Utils.SERVER_DIR, fName, false, printerCodes);
 				numStmts++;
 			}
 			if (numStmts == 0)
@@ -2207,7 +2208,7 @@ public class PCSLabEntry extends PcsFrame {
 		try {
 			String fileName = "dailyjob.log";
 			String title = "Daily Job Log";
-			File f = new File(Utils.ROOT_DIR, fileName);
+			File f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fileName);
 			long fLen = f.length();
 			if (fLen > 0)
 				(new ReportViewer(fileName, title)).setVisible(true);
@@ -2222,13 +2223,14 @@ public class PCSLabEntry extends PcsFrame {
 		try {
 			String fileName = "oranw803\\rdbms80\\trace\\orclalrt.log";
 			String title = "Oracle Trace Log";
-			File f = new File(Utils.ROOT_DIR, fileName);
+			File f = new File(Utils.SERVER_DIR, fileName);
 			long fLen = f.length();
 			if (fLen > 0)
-				(new ReportViewer(fileName, title)).setVisible(true);
+				ReportViewer.create("This is a broken feature", title);
 			else
 				Utils.createErrMsg("File not found");
 		} catch (Exception e) {
+			ReportViewer.create("This is a broken feature", "Broken Feature");
 			log.write("ERROR: traceItem\n" + e);
 		}
 	}
@@ -2353,40 +2355,30 @@ public class PCSLabEntry extends PcsFrame {
 		PrintJob pjob;
 		Properties p = new java.util.Properties();
 		String name = new String("Recent " + ltrType + " Letters");
-		printLetterFile(Utils.ROOT_DIR, fileName, true);
-		pjob = getToolkit().getPrintJob(this, name, p);
-		if (pjob != null) {
-		}
-		pjob.end();
+		printLetterFile(Utils.SERVER_DIR, fileName, true);
+//		pjob = getToolkit().getPrintJob(this, name, p);
+//		if (pjob != null) {
+//			pjob.end();
+//		}
+		
 	}
 
 	private void printLetterFile(String filePath, String fileName,
 			boolean forcePage) {
-		File f;
-		File f2;
-		FileInputStream fIN;
-		FileOutputStream fOUT;
-		f = new File(filePath, fileName);
-		f2 = new File("c:\\", "lpt2");
+		
+		File f = FileTransfer.getFile(Utils.TMP_DIR, filePath, fileName);
+		
 		if (f.exists()) {
 			long fLen = f.length();
 			if (fLen > 0) {
+				String output = "";
 				try {
-					fIN = new FileInputStream(f);
-					fOUT = new FileOutputStream(f2);
-					for (int k = 0; k < fLen - 2; k++) {
-						int x = fIN.read();
-						if (x == -1)
-							break;
-						fOUT.write(x);
-					}
-					if (forcePage)
-						fOUT.write(12);
-					fIN.close();
-					fOUT.close();
-				} catch (Exception e) {
-					System.out.println(e);
+					output = FileUtils.readFileToString(f);
+				} catch (IOException e) {
+					e.printStackTrace();
+					log.write("Error occurred reading file "  + fileName + ":  " + e.getMessage());
 				}
+				Utils.genericPrint(output);
 			}
 		} else
 			Utils.createErrMsg("Cannot locate report: " + fileName);

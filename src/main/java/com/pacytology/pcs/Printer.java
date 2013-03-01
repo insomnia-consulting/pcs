@@ -8,6 +8,7 @@ import java.awt.print.PrinterJob;
 
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
+import javax.print.attribute.AttributeSet;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.HashPrintServiceAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
@@ -42,30 +43,25 @@ public class Printer {
 	static public void print(final Printable printable, final boolean portrait,
 			final Insets insets, String defaultPrinterName, float mediaWidth, float mediaHeight) {
 		PrinterJob pjob = PrinterJob.getPrinterJob();
-
 		pjob.setPrintable(printable);
 		// create an attribute set to store attributes from the print dialog
 		// Example of setting CONDENSED Printing
 		// attributes.put(TextAttribute.WIDTH, TextAttribute.WIDTH_CONDENSED);
 		boolean hasDefaultPrinterName = false;
 		PrintRequestAttributeSet attr = new HashPrintRequestAttributeSet();
-		PrintServiceAttributeSet printServiceAttributeSet = new HashPrintServiceAttributeSet();
+		AttributeSet pras = new HashPrintRequestAttributeSet();
 
 		if (StringUtils.isNotBlank(defaultPrinterName)) {
 			PrinterName name = new PrinterName(defaultPrinterName, null);
-			printServiceAttributeSet.add(name);
+
 			hasDefaultPrinterName = true;
-			PrintService[] printServices;
-			PrintService printService;
-			printServices = PrintServiceLookup.lookupPrintServices(null,
-					printServiceAttributeSet);
+			PrintService printService = Utils.getPrintService(null,
+					pras, defaultPrinterName);
 			PageFormat pageFormat = new PageFormat(); // If you want to adjust
 														// height and width etc.
 														// of your paper.
 			pageFormat = pjob.defaultPage();
 			try {
-
-				printService = printServices[0];
 				pjob.setPrintService(printService); // Try setting the printer
 													// you want
 			} catch (ArrayIndexOutOfBoundsException e) {

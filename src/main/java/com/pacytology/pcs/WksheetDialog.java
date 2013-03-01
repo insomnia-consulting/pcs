@@ -17,6 +17,9 @@ package com.pacytology.pcs;
 
 import java.awt.*;
 import javax.swing.*;
+
+import com.pacytology.pcs.io.FileTransfer;
+
 import java.sql.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -136,10 +139,10 @@ public class WksheetDialog extends javax.swing.JDialog
 	        cstmt.setInt(1,startLab);
 	        cstmt.setInt(2,endLab);
             cstmt.executeUpdate();
-            File f = new File(Utils.ROOT_DIR,"copy_wks");
+            File f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, "copy_wks");
             long fLen = f.length();
             if (fLen>0) { 
-                Utils.genericPrint(Utils.ROOT_DIR,"copy_wks",false); 
+                Utils.genericPrint(Utils.SERVER_DIR,"copy_wks",false); 
                 this.dispose();
             }
         }

@@ -422,7 +422,7 @@ public class PracticesAddedDialog extends javax.swing.JDialog
 	public void createFile()
 	{
         String fileName = "NewPractices.txt";
-        String filePath = Utils.ROOT_DIR + "LabInfoSystem\\";
+        String filePath = Utils.SERVER_DIR + "LabInfoSystem\\";
         try {
             PrintWriter fOUT = new PrintWriter(
                                 new BufferedOutputStream(
