@@ -269,6 +269,7 @@ public class CytoPathDbOps implements Runnable
                 iDatestamp=rs.getInt(46);
                 labReport.iDatestamp=iDatestamp;
                 labReport.datestamp=rs.getString(47);
+                dateReported = labReport.datestamp;
                 labReport.test_sent=rs.getString(48);
                 labReport.verified_on=rs.getString(49);
                 labReport.verified_by=rs.getString(50);
