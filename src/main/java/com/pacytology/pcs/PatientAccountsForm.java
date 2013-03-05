@@ -1313,14 +1313,16 @@ public class PatientAccountsForm extends PcsFrame
 	}
 
 	void payCode_keyTyped(java.awt.event.KeyEvent event)
-	{
+ {
 		Utils.forceUpper(event);
-        char c = event.getKeyChar();
-        payCode.setText((new StringBuffer(c)).toString());
-        if (StringUtils.isBlank(String.valueOf(c))) {
-                payCode.setText("C");
-                payCodeLbl.setText("CHECK");
-        }
+		char c = event.getKeyChar();
+		if (event.getKeyCode() != 0) {
+			payCode.setText((new StringBuffer(c)).toString());
+			if (StringUtils.isBlank(String.valueOf(c))) {
+				payCode.setText("C");
+				payCodeLbl.setText("CHECK");
+			}
+		}
 	}
 
 	class SymWindow extends java.awt.event.WindowAdapter
