@@ -8,9 +8,11 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 import javax.swing.*;
+
+import com.pacytology.pcs.ui.PcsDialog;
 import com.pacytology.pcs.ui.Square;
 
-public class PpdLabDialog extends javax.swing.JDialog
+public class PpdLabDialog extends PcsDialog
 {
     LabForm labParent;
     BillingForm billingParent;
@@ -126,8 +128,18 @@ public class PpdLabDialog extends javax.swing.JDialog
 		SymWindow aSymWindow = new SymWindow();
 		this.addWindowListener(aSymWindow);
 		//}}
+		this.actionMap = new PpdLabDialogActionMap(this);
+		this.setupKeyPressMap();
 	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
 
+
+		rp.getActionMap().put("F12", actionMap.finalAction);
+		rp.getActionMap().put("ENTER", actionMap.finalAction);
+
+		return rp;
+	}
 	/*public prepaidLabDialog()
 	{
 		this((Frame)null);
@@ -311,23 +323,14 @@ public class PpdLabDialog extends javax.swing.JDialog
                 dFlag=false;
                 break;
             case KeyEvent.VK_F9:
-                if (formMode==LAB) { 
-                    labParent.currentSection=1;
-                    labParent.gotoNextSection();
-                }
-                this.dispose();
+               
                 break;
             case KeyEvent.VK_F12:
-                updateLab();
+               
                 this.dispose();
                 break;
             case KeyEvent.VK_F3:
-                if (currMode==Lab.UPDATE) {
-                    checkNumber.setEnabled(true);
-                    paymentAmount.setEnabled(true);
-                    prepayComments.setEnabled(true);
-                    checkNumber.requestFocus();
-                }
+                
                 break;
 		}
 	}
@@ -469,6 +472,36 @@ public class PpdLabDialog extends javax.swing.JDialog
 	    if (event.getKeyCode()==event.VK_ENTER) {
             checkNumber.transferFocus();
 	    }
+	}
+
+	@Override
+	public void queryActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void finalActions() {
+		
+
+	}
+
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
