@@ -890,7 +890,34 @@ public class BillingForm extends PcsFrame
 		
 		rp.getActionMap().put("F5", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				 
+	            statusReset.setEnabled(false);
+	            if ((e.getModifiers() & ActionEvent.ALT_MASK) != 0) {
+
+	                BillingDetails bd = 
+	                    (BillingDetails)labRec.billing.details.elementAt(currNdx);
+	                if (bd.billing_choice==Lab.DB) 
+	                    (new PatientAccountsForm(
+	                        dbLogin,labRec.lab_number)).setVisible(true);
+	            }
+	            else if (( 
+	            			(e.getModifiers() & ActionEvent.SHIFT_MASK) != 0)
+	            			&& labRec.lab_number>0
+	            		) {
+	                String s = labBillingChoice.getText();
+	                String c = Utils.isNull(claimStatus.getText()," ");
+	                if (c.equals("D")||c.equals("R")||c.equals("PP")||c.equals("N")
+	                ||c.equals("I")||(!Utils.isNull(s) && s.equals("DB")))
+	                    (new DBCommentDialog(dbComments)).setVisible(true);
+	                else
+	                    Utils.createErrMsg(
+	                        "Claim status is (D,R,PP,N,I) or billing choice is (DB)"+
+	                        " for direct bill comments");
+	            }
+	            else {
+	                if (globalFinished>=FINISHED)
+	                    Utils.createErrMsg("(1) No action permitted on finished work");
+	                else invokePatientForm();
+	            }
 			}
 		});
 		rp.getActionMap().put("F6", new AbstractAction() {
