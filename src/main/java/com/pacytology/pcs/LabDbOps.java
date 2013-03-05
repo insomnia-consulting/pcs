@@ -774,15 +774,26 @@ public class LabDbOps implements Runnable {
 					parent.labRec.hpv.hpvSource = "V";
 				else {
 					for (int i = 0; i < parent.MAX_DET_CODES; i++) {
-						if (currDetail == parent.detailRec[i].detail_code) {
-							parent.selectedDetCodes[i] = i;
-							parent.detailRec[i].isSelected = true;
-							if (!rs.wasNull())
-								parent.detailRec[i].textEntered = new String(
-										currComments);
-							break;
-						} else if (parent.selectedDetCodes[i] < 0)
-							parent.selectedDetCodes[i] = (-1);
+						
+						try {
+							if (currDetail == parent.detailRec[i].detail_code) {
+								parent.selectedDetCodes[i] = i;
+								parent.detailRec[i].isSelected = true;
+								if (!rs.wasNull())
+									parent.detailRec[i].textEntered = new String(
+											currComments);
+								break;
+							} else if (parent.selectedDetCodes[i] < 0)
+								parent.selectedDetCodes[i] = (-1);
+						} catch (Exception e) {
+							parent.log.write("***************************************************");
+							parent.log.write("Error while viewing detail codes: " + e.getMessage());
+							parent.log.write("currDetail was " + currDetail);
+							parent.log.write("parent was " + parent.toString());
+							parent.log.write("parent.detailRec was " + parent.detailRec.toString());
+							parent.log.write("parent.detailRec[i] was " + parent.detailRec[i].toString());
+							parent.log.write("***************************************************");
+						}
 					}
 				}
 			}
