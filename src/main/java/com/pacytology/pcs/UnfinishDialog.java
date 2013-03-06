@@ -367,7 +367,7 @@ public class UnfinishDialog extends PcsDialog
                 "WHERE lab_number = ? \n";
             pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,LN);
-            rs=pstmt.executeQuery(SQL);
+            rs=pstmt.executeQuery();
             while (rs.next()) { status = rs.getInt(1); }
             try { rs.close(); pstmt.close(); }
             catch (SQLException e) { log.write("getStatus("+LN+")\n"+e); }                
