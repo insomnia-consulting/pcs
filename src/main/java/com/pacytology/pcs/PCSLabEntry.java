@@ -1532,7 +1532,7 @@ public class PCSLabEntry extends PcsFrame {
 			cstmt.setString(1, Utils.UTL_FILE_DIR);
 			cstmt.setString(2, "ppr_clm");
 			cstmt.setString(3, billRoute);
-			//cstmt.executeUpdate();
+			cstmt.executeUpdate();
 			String query = "SELECT max(batch_number) FROM pcs.claim_batches \n"
 					+ "WHERE tpp='" + billRoute + "' \n";
 			Statement stmt = DbConnection.process().createStatement();
