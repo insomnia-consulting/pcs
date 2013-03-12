@@ -327,7 +327,7 @@ public class DbConnection
 	           "WHERE lab_number = ? \n";
             pstmt=dbProc.prepareStatement(SQL);
             pstmt.setInt(1,labNumber);
-	        rs = pstmt.executeQuery(SQL);
+	        rs = pstmt.executeQuery();
 	        while (rs.next()) { 
 	            previous=rs.getInt(1);
 	        }
@@ -349,7 +349,7 @@ public class DbConnection
             pstmt=dbProc.prepareStatement(SQL);
             pstmt.setInt(1,previous);
             pstmt.setInt(2,labNumber);
-	        pstmt.executeUpdate(SQL);
+	        pstmt.executeUpdate();
 	        pstmt.close();
 	    }
 	    catch (Exception e) { System.out.println(e); }
@@ -367,7 +367,7 @@ public class DbConnection
 	           "FROM DUAL\n";
             pstmt=dbProc.prepareStatement(SQL);
             pstmt.setInt(1,labNumber);
-	        rs = pstmt.executeQuery(SQL);
+	        rs = pstmt.executeQuery();
 	        while (rs.next()) { 
 	            balance=rs.getDouble(1);
 	        }
