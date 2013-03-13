@@ -896,7 +896,7 @@ begin
 
 	 ---  see the same date twice (i.e both TO and FROM)
 	 if (carrier_idnum=1048) then
-	    cbuf1:=lab_completed||'	     ';
+	    cbuf1:=lab_completed||'       ';
 	 elsif (carrier_idnum=23744) then
 	    cbuf2:=SUBSTR(lab_completed,1,2)||' ';
 	    cbuf2:=cbuf2||SUBSTR(lab_completed,3,2)||' ';
@@ -909,7 +909,7 @@ begin
 
 
 	 -- Type of Service code eliminated on new claim form
-	 cbuf1:=RPAD(cbuf1,18)||'81   ';
+	 cbuf1:=RPAD(cbuf1,11 )||'       81';
 	 -- PROCEDURE CODE AND MODIFIERS (24D)
 
 	 cbuf1:=RPAD(cbuf1,24)||procedure_fields.procedure_code;
@@ -1018,17 +1018,19 @@ begin
       cbuf2:='	'||SUBSTR(RTRIM(LTRIM(TO_CHAR(claim_lab_number))),3);
       cbuf1:=cbuf1||cbuf2;
       if (C_choice_code='DPA') then
-
-	 cbuf1:=RPAD(cbuf1,37)||' ';
+	 	cbuf1:=RPAD(cbuf1,37)||' ';
       else
-	 cbuf1:=RPAD(cbuf1,33)||'X';
+	 	cbuf1:=RPAD(cbuf1,35)||'X';
       end if;
-      cbuf1:=RPAD(cbuf1,45);
+      
+      cbuf1:=RPAD(cbuf1,47);
+      
       cbuf2:=TO_CHAR(claim_total,'999990.99');
+      
       curr_line:=substr(cbuf2,1,7);
       curr_line:=LTRIM(curr_line);
       curr_line:=RTRIM(curr_line);
-      cbuf2:=LPAD(curr_line,6);
+      cbuf2:=LPAD(curr_line,7);
       cbuf1:=cbuf1||cbuf2||' ';
       cbuf2:=TO_CHAR(claim_total,'999990.99');
       curr_line:=substr(cbuf2,9,2);
@@ -1037,26 +1039,26 @@ begin
 
       -- PA DPA is 1048
       if (carrier_idnum<>1048) then
-	 cbuf2:=TO_CHAR(total_payments,'99990.99');
-	 curr_line:=substr(cbuf2,1,6);
-	 curr_line:=LTRIM(curr_line);
-	 curr_line:=RTRIM(curr_line);
-	 cbuf2:=LPAD(curr_line,6);
-	 cbuf3:=cbuf1||cbuf2||' ';
-	 cbuf2:=TO_CHAR(total_payments,'99990.99');
-	 curr_line:=substr(cbuf2,8,2);
-	 cbuf3:=cbuf3||curr_line;
-
-	 cbuf2:=TO_CHAR(claim_total-total_payments,'99990.99');
-	 curr_line:=substr(cbuf2,1,6);
-	 curr_line:=LTRIM(curr_line);
-	 curr_line:=RTRIM(curr_line);
-	 cbuf2:=LPAD(curr_line,6);
-	 cbuf1:=cbuf3||cbuf2||'  ';
-	 --cbuf2:=TO_CHAR(lab_balance,'99990.99');
-	 cbuf2:=TO_CHAR(claim_total-total_payments,'99990.99');
-	 curr_line:=substr(cbuf2,8,2);
-	 cbuf1:=cbuf1||curr_line;
+		 cbuf2:=TO_CHAR(total_payments,'99990.99');
+		 curr_line:=substr(cbuf2,1,6);
+		 curr_line:=LTRIM(curr_line);
+		 curr_line:=RTRIM(curr_line);
+		 cbuf2:=LPAD(curr_line,6);
+		 cbuf3:=cbuf1||cbuf2||' ';
+		 cbuf2:=TO_CHAR(total_payments,'99990.99');
+		 curr_line:=substr(cbuf2,8,2);
+		 cbuf3:=cbuf3||curr_line;
+	
+		 cbuf2:=TO_CHAR(claim_total-total_payments,'99990.99');
+		 curr_line:=substr(cbuf2,1,6);
+		 curr_line:=LTRIM(curr_line);
+		 curr_line:=RTRIM(curr_line);
+		 cbuf2:=LPAD(curr_line,6);
+		 cbuf1:=cbuf3||cbuf2||'  ';
+		 --cbuf2:=TO_CHAR(lab_balance,'99990.99');
+		 cbuf2:=TO_CHAR(claim_total-total_payments,'99990.99');
+		 curr_line:=substr(cbuf2,8,2);
+		 cbuf1:=cbuf1||curr_line;
       end if;
       curr_line:=margin||cbuf1;
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
