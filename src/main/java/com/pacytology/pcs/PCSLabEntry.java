@@ -23,6 +23,7 @@ import java.awt.Insets;
 import java.awt.PrintJob;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +38,7 @@ import java.text.MessageFormat;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.print.PrintException;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -1759,8 +1761,23 @@ public class PCSLabEntry extends PcsFrame {
 			String fName = "ppr_clm.lbl";
 			File f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fName);
 			long fLen = f.length();
-			if (fLen > 0)
-				Utils.genericPrint(Utils.SERVER_DIR, fName, false);
+			if (fLen > 0){
+				try {
+					InputStream inputStream = new FileInputStream(f);
+					Utils.dotMatrixPrint(inputStream);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+					log.write("While printing 'Other Insurance Labels':" + e.getMessage());
+				} catch (PrintException e) {
+					e.printStackTrace();
+					log.write("While printing 'Other Insurance Labels':" + e.getMessage());
+				} catch (IOException e) {
+					e.printStackTrace();
+					log.write("While printing 'Other Insurance Labels':" + e.getMessage());
+				}
+				
+				//Utils.genericPrint(Utils.SERVER_DIR, fName, false);
+			}
 		}
 	}
 
