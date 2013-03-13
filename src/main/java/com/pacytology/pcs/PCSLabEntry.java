@@ -1543,7 +1543,6 @@ public class PCSLabEntry extends PcsFrame {
 			while (rs.next())
 				batchClaimID = rs.getInt(1);
 			
-			//OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + "ppr_clm");
 			File printFile = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, "ppr_clm");
 			
 			if (printFile != null && printFile.length() > 0) {

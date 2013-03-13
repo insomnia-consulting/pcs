@@ -896,7 +896,7 @@ begin
 
 	 ---  see the same date twice (i.e both TO and FROM)
 	 if (carrier_idnum=1048) then
-	    cbuf1:=lab_completed||'	     ';
+	    cbuf1:=lab_completed||'       ';
 	 elsif (carrier_idnum=23744) then
 	    cbuf2:=SUBSTR(lab_completed,1,2)||' ';
 	    cbuf2:=cbuf2||SUBSTR(lab_completed,3,2)||' ';
@@ -909,7 +909,7 @@ begin
 
 
 	 -- Type of Service code eliminated on new claim form
-	 cbuf1:=RPAD(cbuf1,18)||'81   ';
+	 cbuf1:=RPAD(cbuf1,11 )||'       81';
 	 -- PROCEDURE CODE AND MODIFIERS (24D)
 
 	 cbuf1:=RPAD(cbuf1,24)||procedure_fields.procedure_code;
