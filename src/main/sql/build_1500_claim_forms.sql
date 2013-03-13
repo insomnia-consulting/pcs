@@ -1014,16 +1014,16 @@ begin
       -- end if;
 
       cbuf1:=RPAD(lab_tax_id,18)||'X';
-      cbuf1:=RPAD(cbuf1,22);
-      cbuf2:='	  '||SUBSTR(RTRIM(LTRIM(TO_CHAR(claim_lab_number))),3);
+      --cbuf1:=RPAD(cbuf1,22);
+      cbuf2:='	'||SUBSTR(RTRIM(LTRIM(TO_CHAR(claim_lab_number))),3);
       cbuf1:=cbuf1||cbuf2;
       if (C_choice_code='DPA') then
 
 	 cbuf1:=RPAD(cbuf1,37)||' ';
       else
-	 cbuf1:=RPAD(cbuf1,37)||'X';
+	 cbuf1:=RPAD(cbuf1,33)||'X';
       end if;
-      cbuf1:=RPAD(cbuf1,50);
+      cbuf1:=RPAD(cbuf1,45);
       cbuf2:=TO_CHAR(claim_total,'999990.99');
       curr_line:=substr(cbuf2,1,7);
       curr_line:=LTRIM(curr_line);
