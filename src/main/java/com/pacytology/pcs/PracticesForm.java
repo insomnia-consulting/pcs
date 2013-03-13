@@ -555,7 +555,7 @@ public class PracticesForm extends PcsFrame
 		parentAccount.addFocusListener(aSymFocus);
 		pProgram.addKeyListener(aSymKey);
 		//}}
-		
+		actionMap = new PraticesFormActionMap(this);
 		setupKeyPressMap();
 		
 	}
@@ -1240,13 +1240,6 @@ public class PracticesForm extends PcsFrame
                 case KeyEvent.VK_ESCAPE:
                     resetForm();
                     break;
-
-
-                case KeyEvent.VK_F12:
-                    if (fKeys.isOn(fKeys.F12))
-                        finalActions();
-                    break;
-
 
                 case KeyEvent.VK_DOWN:
                     increment();
