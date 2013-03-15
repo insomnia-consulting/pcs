@@ -116,6 +116,8 @@ public class ReportViewer extends PcsFrame
 				if (verifyPrinter()) {
 			        ReportViewer.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 			        if ("whp".equals(ReportViewer.this.getTitle())
+			        	|| "is1".equals(ReportViewer.this.getTitle())
+			        	|| "is2".equals(ReportViewer.this.getTitle())
 			        	|| "pth".equals(ReportViewer.this.getTitle())
 			        	|| "cyt".equals(ReportViewer.this.getTitle())
 			        	|| "uns".equals(ReportViewer.this.getTitle())
