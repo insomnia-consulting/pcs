@@ -787,6 +787,7 @@ public class LabDbOps implements Runnable {
 							} else if (parent.selectedDetCodes[i] < 0)
 								parent.selectedDetCodes[i] = (-1);
 						} catch (Exception e) {
+							e.printStackTrace();
 							parent.log.write("***************************************************");
 							parent.log.write("Error while viewing detail codes: " + e.getMessage());
 							parent.log.write("currDetail was " + currDetail);
