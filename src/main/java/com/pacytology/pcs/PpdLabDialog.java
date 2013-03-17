@@ -134,7 +134,7 @@ public class PpdLabDialog extends PcsDialog
 	protected JRootPane setupKeyPressMap() {
 		JRootPane rp = super.setupKeyPressMap();
 
-
+        rp.getActionMap().put("F3", actionMap.updateAction);
 		rp.getActionMap().put("F12", actionMap.finalAction);
 		rp.getActionMap().put("ENTER", actionMap.finalAction);
 
