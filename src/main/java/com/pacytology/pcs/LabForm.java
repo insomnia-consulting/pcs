@@ -2532,7 +2532,9 @@ public class LabForm extends PcsFrame
     {
         for (int i=0;i<MAX_DET_CODES;i++)  {
             selectedDetCodes[i]=(-1);
-            detailRec[i].reset();
+            if (detailRec[i] != null) {
+            	detailRec[i].reset();
+            }
         }            
     }                
     

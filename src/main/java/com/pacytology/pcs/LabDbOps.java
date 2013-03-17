@@ -382,6 +382,7 @@ public class LabDbOps implements Runnable {
 		parent.MAX_DET_CODES = v.size();
 		parent.detailRec = new DetailCodeRec[v.size()];
 		parent.selectedDetCodes = new int[v.size()];
+		parent.resetSelectedDetails() ; 
 		parent.detCodeDisp = new String[v.size()];
 		String[] s = new String[v.size()];
 		for (int i = 0; i < v.size(); i++) {
