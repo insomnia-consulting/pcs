@@ -3563,8 +3563,16 @@ public class LabForm extends PcsFrame
 	                else {
 	                    this.setTitle("Requisitions");
 	                    slideLbl.setText("Slides");
+	                    
 	                    labOps.getDetailCodes();
-	                    while (dbThreadRunning) { continue ; }
+	                    try {
+	                    	synchronized(labOps.dbThread) {
+	                    		labOps.dbThread.wait();
+	                    	}
+						} catch (InterruptedException e) {
+							log.write("An error occurred trying to wait on DbThread to finish");
+							e.printStackTrace();
+						}
 	                }
 	                finalActions();
 	            }
