@@ -2347,6 +2347,7 @@ public class LabForm extends PcsFrame
                 labPrep.setText("I");
                 prepLbl.setText("IMAGED SLIDE");
             }
+            
             labDetailList.setSelectedIndices(selectedDetCodes);
             // Set text for screen message
             //String descr;
@@ -2715,7 +2716,10 @@ public class LabForm extends PcsFrame
         }		
         else if (currMode==Lab.QUERY)  {
             this.setCursor(new Cursor(WAIT_CURSOR));
+            
             labOps.getRequisition();
+            
+            while (dbThreadRunning) {continue ; }
             if (labRec.lab_number>0) {
                 fKeys.off();
                 fKeys.keyOn(fKeys.F3);
@@ -3559,7 +3563,16 @@ public class LabForm extends PcsFrame
 	                else {
 	                    this.setTitle("Requisitions");
 	                    slideLbl.setText("Slides");
+	                    
 	                    labOps.getDetailCodes();
+	                    try {
+	                    	synchronized(labOps.dbThread) {
+	                    		labOps.dbThread.wait();
+	                    	}
+						} catch (InterruptedException e) {
+							log.write("An error occurred trying to wait on DbThread to finish");
+							e.printStackTrace();
+						}
 	                }
 	                finalActions();
 	            }
