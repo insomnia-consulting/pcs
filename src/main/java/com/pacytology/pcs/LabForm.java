@@ -2935,6 +2935,13 @@ public class LabForm extends PcsFrame
 		}
 	}
 
+	/**
+	 * Checks for conditions that won't allow an update
+	 *   * Already in Billing Queue, unless it's a PPD
+	 * Checks for conditions that WARN for an update
+	 *   * Already Finished
+	 * if those conditions don't exist, performs the update
+	 */
 	public void updatePracticeInfo()  
 	{
 	    if (Utils.length(labPractice.getText())==0)
@@ -2944,7 +2951,7 @@ public class LabForm extends PcsFrame
         labPractice.setText(Utils.lpad(
             Integer.toString(labRec.practice),3,"0"));
         if (oldPractice!=labRec.practice) { 
-            if (labRec.finished>Lab.BILLING_QUEUE) { 
+            if (labRec.finished>Lab.BILLING_QUEUE && labRec.billing_choice != Lab.PPD ) { 
                 Utils.createErrMsg(
                     "ACCOUNT on Lab #"+labRec.lab_number+
                     " may not be updated in this screen ["+
