@@ -3140,7 +3140,16 @@ public class BillingForm extends PcsFrame
 	            }
 	            else {
 	                labRec.prac.practice=pr;
-	                labOps.getPracticeInfo();
+	                try {
+	                	labOps.getPracticeInfo();
+						synchronized(labOps.dbThread){
+							labOps.dbThread.wait();
+						}
+					} catch (InterruptedException e) {
+						log.write("An error occurred trying to wait on DbThread to finish");
+						e.printStackTrace();
+					}
+	                
 	                labPractice.transferFocus();
 	            }
 	        }
