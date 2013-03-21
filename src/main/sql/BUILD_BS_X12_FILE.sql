@@ -244,7 +244,7 @@ DBMS_OUTPUT.ENABLE;
    P_code_area:='HEADERS';
    --   Interchange Control Header (ISA)
 
-   interchange_control_header:='ISA*00* 	 *00*	       *ZZ*'||
+   interchange_control_header:='ISA*00**00**ZZ*'||
       RPAD(security_id,15)||'*33*'||
       RPAD(receiver_id,15)||'*'||interchange_date||'*'||
       interchange_time||'*^*'||'00501'||'*'||LPAD(interchange_number,9,'0')||
