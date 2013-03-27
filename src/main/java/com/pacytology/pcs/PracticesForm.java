@@ -185,7 +185,7 @@ public class PracticesForm extends PcsFrame
 		blockDBs.setEnabled(false);
 		getContentPane().add(blockDBs);
 		blockDBs.setForeground(new java.awt.Color(102,102,153));
-		blockDBs.setBounds(520,151,130,14);
+		blockDBs.setBounds(520,151,150,14);
 		STDclinic.setText("STD Clinic");
 		STDclinic.setActionCommand(" Client Notes");
 		STDclinic.setEnabled(false);
@@ -209,7 +209,7 @@ public class PracticesForm extends PcsFrame
 		holdFinal.setEnabled(false);
 		getContentPane().add(holdFinal);
 		holdFinal.setForeground(new java.awt.Color(102,102,153));
-		holdFinal.setBounds(520,211,180,14);
+		holdFinal.setBounds(520,211,200,14);
 		verifyDoctor.setText("Verify Doctor for HPV");
 		verifyDoctor.setActionCommand(" Client Notes");
 		verifyDoctor.setEnabled(false);
@@ -1400,10 +1400,6 @@ public class PracticesForm extends PcsFrame
         fKeys.keyOn(fKeys.F12);
 	    this.setEnableAllFields(true);
 	    pAcctNum.setEnabled(false);
-	    /*
-	    pName.requestFocus();
-	    pName.select(0,0);
-	    */
 	    parentAccount.requestFocus();
         msgLabel.setText(null);
     }
@@ -1439,7 +1435,7 @@ public class PracticesForm extends PcsFrame
 	{
 		if (event.getKeyCode()==event.VK_ENTER) {
 		    if (Utils.requiredField(pReportCopies,"Report Copies")) 
-		        pReportCopies.transferFocus();
+		        pStatements.requestFocus();
 		}
 	}
 	
@@ -1467,43 +1463,47 @@ public class PracticesForm extends PcsFrame
 		            pAcctNum.transferFocus();
 		        else finalActions();
 		    }
-		    else if (Utils.requiredField(pAcctNum,"Account Number"))
-		        pAcctNum.transferFocus();
+		    else if (Utils.requiredField(pAcctNum,"Account Number")) {
+		    	parentAccount.requestFocus();
+		    }
 		}
 	}
 
 	void pName_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER) {
-		    if (Utils.requiredField(pName,"Practice Name"))
-		        pName.transferFocus();
+		    if (Utils.requiredField(pName,"Practice Name")) {
+		    	pAddress1.requestFocus();
+		    }
 		}
 	}
 
 	void pAddress1_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if (event.getKeyCode()==event.VK_ENTER)
-		    pAddress1.transferFocus();
+		if (event.getKeyCode()==event.VK_ENTER) {
+			pAddress2.requestFocus();
+		}
 	}
 
 	void pAddress2_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if (event.getKeyCode()==event.VK_ENTER)
-		    pAddress2.transferFocus();
+		if (event.getKeyCode()==event.VK_ENTER) {
+			pZip.requestFocus();
+		}
 	}
 
 	void pZip_keyTyped(java.awt.event.KeyEvent event)
 	{
-		Utils.buildZipMask(event);
+		Utils.forceDigits(event,5);
 	}
 
 	void pZip_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER) {
-		    pContactLast.requestFocus();
-            if (!Utils.isNull(pZip.getText()) &&
-                 Utils.isNull(pCity.getText()) &&
-                 Utils.isNull(pState.getText())) dbOps.getZipInfo();
+			if (Utils.required(pZip,"Zip Code")) {
+				dbOps.getZipInfo();
+				pContactLast.requestFocus();
+			}
 		}
 	}
 
@@ -1521,9 +1521,12 @@ public class PracticesForm extends PcsFrame
 
 	void pContactLast_keyPressed(java.awt.event.KeyEvent event)
 	{
+		/* method dbOps mailerAdd is probably obsolete; something that may have
+		 * been implement as a one time only use
+		 */
 		if (event.getKeyCode()==event.VK_ENTER) {
 		    if (currMode==MAILER) { dbOps.mailerAdd(); mailerActions(); }
-		    else pContactLast.transferFocus();
+		    else pPhone.requestFocus();
 		}
 	}
 
@@ -1535,7 +1538,7 @@ public class PracticesForm extends PcsFrame
 	void pPhone_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    pPhone.transferFocus();
+		    pFax.requestFocus();
 	}
 
 	void pFax_keyTyped(java.awt.event.KeyEvent event)
@@ -1546,31 +1549,31 @@ public class PracticesForm extends PcsFrame
 	void pFax_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER) {
-		    pFax.transferFocus();
+		    pType.requestFocus();
 		}
 	}
 
 	void pPatCards_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    pPatCards.transferFocus();
+		    pClientNotes.requestFocus();
 	}
 
 	void pClientNotes_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    pClientNotes.transferFocus();
+		    printDoctors.requestFocus();
 	}
 
 	void printDoctors_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    printDoctors.transferFocus();
+		    blockDBs.requestFocus();
 	}
 
 	void stopCode_keyTyped(java.awt.event.KeyEvent event)
 	{
-		event.consume();
+		Utils.forceUpper(event,1);
 	}
 
 	void stopCode_keyPressed(java.awt.event.KeyEvent event)
@@ -1578,13 +1581,11 @@ public class PracticesForm extends PcsFrame
 	    int key = event.getKeyCode();
 		if (key==event.VK_ENTER) {
 		    msgLabel.setText(null);
-		    if (Utils.requiredField(stopCode,"Stop Code")) 
-		        if (currMode!=Lab.UPDATE) {
-		            setEnableAllFields(false);
-		            setEnableDetails(true);
-		            pAcctNum.requestFocus();
-		        }
-		        else stopCode.transferFocus();
+		    if (Utils.requiredField(stopCode,"Stop Code")) {
+		    	setEnableAllFields(false);
+		    	setEnableDetails(true);
+		    	pAcctNum.requestFocus();
+		    }
 		}
 		else if (key!=event.VK_ESCAPE && key!=event.VK_F9) {
 		    char c = event.getKeyChar();
@@ -1615,15 +1616,7 @@ public class PracticesForm extends PcsFrame
 	{
 		if (event.getKeyCode()==event.VK_ENTER) {
 		    if (Utils.requiredField(priceCode,"Price Code")) {
-		        /*
-		        if (currMode!=Lab.UPDATE) {
-		            setEnableAllFields(false);
-		            setEnableDetails(true);
-		            pAcctNum.requestFocus();
-		        }
-		        else priceCode.transferFocus();
-		        */
-		        priceCode.transferFocus();
+		    	stopCode.requestFocus();
 		    }
 		}
 	}
@@ -1644,11 +1637,7 @@ public class PracticesForm extends PcsFrame
 		            }
 		        }
 		        if (!found) Utils.createErrMsg("DR# does not exist");
-		        else {
-		            setEnableAllFields(false);
-		            setEnableDetails(true);
-		            pAcctNum.requestFocus();
-		        }
+		        else stopCode.requestFocus();
 		    }
 		}
 	}
@@ -1780,36 +1769,39 @@ public class PracticesForm extends PcsFrame
 
 	void priceCode_focusGained(java.awt.event.FocusEvent event)
 	{
-		Utils.deselect(event);
+		//Utils.deselect(event);
 	}
 
 	void defaultDr_focusGained(java.awt.event.FocusEvent event)
 	{
-		Utils.deselect(event);
+		//Utils.deselect(event);
 	}
 
 	void blockDBs_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    blockDBs.transferFocus();
+		    stdClinic.requestFocus();
 	}
 
 	void STDclinic_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    STDclinic.transferFocus();
+		    HPVtesting.requestFocus();
 	}
 
 	void HPVtesting_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    if (HPVtesting.isSelected()) HPVPermission.setEnabled(true);
-		    HPVtesting.transferFocus();
+		    if (HPVtesting.isSelected()) {
+		    	HPVPermission.setEnabled(true);
+			    HPVpermission.requestFocus();
+		    }
+		    else holdFinal.requestFocus();
 	}
 
 	void pStatements_keyTyped(java.awt.event.KeyEvent event)
 	{
-		event.consume();
+		event.forceUpper(event,1);
 	}
 
     /* This screen field "recycled"; no longer used for obsolete
@@ -1819,9 +1811,8 @@ public class PracticesForm extends PcsFrame
 	{
 	    int key = event.getKeyCode();
 		if (key==event.VK_ENTER) {
-		    msgLabel.setText(null);
 		    if (Utils.requiredField(pStatements,"Electronic Reporting")) 
-		        pStatements.transferFocus();
+		    	priceCode.requestFocus();
 		}
 		else if (key!=event.VK_ESCAPE && key!=event.VK_F9) {
 		    char c = event.getKeyChar();
@@ -1851,7 +1842,7 @@ public class PracticesForm extends PcsFrame
 	void HPVPermission_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    HPVPermission.transferFocus();
+		    holdFinal.requestFocus();
 	}
 
 	// 02/03/2010: If no type is entered it defaults to PCS
@@ -1859,7 +1850,7 @@ public class PracticesForm extends PcsFrame
 	{
 		if (event.getKeyCode()==event.VK_ENTER) {
 		    if (Utils.isNull(pType.getText())) pType.setText("PCS");
-		    pType.transferFocus();
+		    pProgram.requestFocus();
 		}
 	}
 
@@ -1881,6 +1872,7 @@ public class PracticesForm extends PcsFrame
 	void attnMessage_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER) {
+			msgLabel.setText("Use MOUSE to select configuration options or DEFAULT DOCTOR.");
 		    setEnableAllFields(false);
 		    setEnableOptions(true);
 		    pReportCopies.requestFocus();
@@ -1895,56 +1887,58 @@ public class PracticesForm extends PcsFrame
 	void holdFinal_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    holdFinal.transferFocus();
+		    verifyDoctor.requestFocus();
 	}
 
 	void verifyDoctor_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    verifyDoctor.transferFocus();
+		    disableCoverSheet.requestFocus();
 	}
 
 	void disableCoverSheet_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    disableCoverSheet.transferFocus();
+		    oneMonthBill.requestFocus();
 	}
 
 	void oneMonthBill_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    oneMonthBill.transferFocus();
+		    imagedSlides.requestFocus();
 	}
 
 	void HPVregardless_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    HPVregardless.transferFocus();
+		    priceCode.requestFocus();
 	}
 
 	void imagedSlides_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    imagedSlides.transferFocus();
+		    sendFax.requestFocus();
 	}
 
 	void sendFax_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    sendFax.transferFocus();
+		    HPVonSummary.requestFocus();
 	}
 
 	void HPVonSummary_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    HPVonSummary.transferFocus();
+		    HPVregardless.requestFocus();
 	}
 	
 
 	void parentAccount_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if (event.getKeyCode()==event.VK_ENTER) 
-		    parentAccount.transferFocus();
+		if (event.getKeyCode()==event.VK_ENTER) {
+		    //parentAccount.transferFocus();
+			pName.requestFocus();
+		}
 	}
 
 	void parentAccount_keyTyped(java.awt.event.KeyEvent event)
@@ -1962,9 +1956,9 @@ public class PracticesForm extends PcsFrame
 		if (event.getKeyCode()==event.VK_ENTER) {
 		    if (!Utils.isNull(parentAccount.getText())) {
 		        if (Utils.requiredField(pProgram,"Program"))
-		            pProgram.transferFocus();
+		            attnMessage.requestFocus();
 		    }
-		    else pProgram.transferFocus();
+		    else attnMessage.requestFocus();
 		}
 	}
 
