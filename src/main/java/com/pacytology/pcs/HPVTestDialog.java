@@ -170,16 +170,23 @@ public class HPVTestDialog extends PcsDialog
 		additionalInfo.addKeyListener(aSymKey);
 		this.addKeyListener(aSymKey);
 		//}}
-		JRootPane rp = getRootPane();
-		KeyStroke f9 = KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false);
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f9, "F9");
-		rp.getActionMap().put("F9", new AbstractAction() { 
-			public void actionPerformed(ActionEvent e) { 
-				closingActions();
-			}
-		});
-	}
+		
+		setupKeyPressMap();
 
+	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+
+		AbstractAction finalAction = new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				finalActions();
+			}
+		};
+
+		rp.getActionMap().put("F12", finalAction);
+		return rp;
+	}
 	public HPVTestDialog(HPVRec hpv, int labNumber)
 	{
 		this();
@@ -433,9 +440,9 @@ public class HPVTestDialog extends PcsDialog
 	void HPVTestDialog_keyPressed(java.awt.event.KeyEvent event)
 	{
 		int key = event.getKeyCode();
-		if (key==event.VK_F9) closingActions();
-		else if (key==event.VK_F12) finalActions(); 
-		else if (key==event.VK_CONTROL) ((JTextField)getFocusOwner()).setText(null);
+		//if (key==event.VK_F9) closingActions();
+		//else if (key==event.VK_F12) finalActions(); 
+		if (key==event.VK_CONTROL) ((JTextField)getFocusOwner()).setText(null);
 	}
 	
 	public void finalActions()
