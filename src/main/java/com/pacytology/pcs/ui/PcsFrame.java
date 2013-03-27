@@ -27,6 +27,7 @@ public abstract class PcsFrame extends JFrame {
 	protected JRootPane setupKeyPressMap() {
 		JRootPane rp = getRootPane();
 		KeyStroke f1 = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false);
+		KeyStroke shiftf1 = KeyStroke.getKeyStroke(KeyEvent.VK_F1, ActionEvent.SHIFT_MASK, false);
 		KeyStroke f2 = KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false);
 		KeyStroke f3 = KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false);
 		KeyStroke f4 = KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false);
@@ -61,6 +62,7 @@ public abstract class PcsFrame extends JFrame {
 		}
 		
 		rp.getActionMap().put("F1", actionMap.queryAction);
+		rp.getActionMap().put("shiftF1", actionMap.shiftf1Action);
 		rp.getActionMap().put("F2", actionMap.addAction);
 		rp.getActionMap().put("F3", actionMap.updateAction);
 		rp.getActionMap().put("F4", actionMap.f4Action);
@@ -74,6 +76,7 @@ public abstract class PcsFrame extends JFrame {
 		
 		
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f1, "F1");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(shiftf1, "shiftF1");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f2, "F2");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f3, "F3");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f4, "F4");

@@ -16,11 +16,17 @@ package com.pacytology.pcs;
     Date/Staff:   Description:
 */
 
-import java.awt.*;
-import javax.swing.*;
-import java.io.*;
-import java.sql.*;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Vector;
+
 import com.pacytology.pcs.ui.Square;
 
 public class PracticesAddedDialog extends javax.swing.JDialog
@@ -315,12 +321,14 @@ public class PracticesAddedDialog extends javax.swing.JDialog
                 
             PreparedStatement pstmt;
 	        pstmt=DbConnection.process().prepareStatement(SQL);
+	        
             pstmt.setString(1,beginMM.getText());
             if (!Utils.isNull(endMM.getText()))
                 pstmt.setString(2,endMM.getText());
             else 
                 pstmt.setString(2,beginMM.getText());
-            ResultSet rs = pstmt.executeQuery(SQL);
+            
+            ResultSet rs = pstmt.executeQuery();
             while (rs.next()) { data.addElement(rs.getString(1)); }
             pstmt.close(); rs.close();
 
@@ -357,7 +365,7 @@ public class PracticesAddedDialog extends javax.swing.JDialog
             else 
                 pstmt.setString(4,beginMM.getText());
                 
-            rs = pstmt.executeQuery(SQL);
+            rs = pstmt.executeQuery();
             while (rs.next()) { 
                 data.addElement(rs.getString(1)+"        "+rs.getString(2)); 
             }
@@ -409,7 +417,7 @@ public class PracticesAddedDialog extends javax.swing.JDialog
                 pstmt.setString(2,endMM.getText());
             else 
                 pstmt.setString(2,beginMM.getText());
-            rs = pstmt.executeQuery(SQL);
+            rs = pstmt.executeQuery();
             while (rs.next()) { data.addElement(rs.getString(1)); }
             pstmt.close(); rs.close();
                 
@@ -445,7 +453,7 @@ public class PracticesAddedDialog extends javax.swing.JDialog
                 pstmt.setString(2,endMM.getText());
             else 
                 pstmt.setString(2,beginMM.getText());
-            ResultSet rs = pstmt.executeQuery(SQL);
+            ResultSet rs = pstmt.executeQuery();
             while (rs.next()) { 
                 String s = rs.getString(1);
                 fOUT.write(s+"\n");
