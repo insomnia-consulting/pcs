@@ -25,7 +25,7 @@ public class HPVTestDialog1 extends javax.swing.JDialog
 		// what Visual Cafe can generate, or Visual Cafe may be unable to back
 		// parse your Java file into its visual environment.
 		//{{INIT_CONTROLS
-		setTitle("HPV Test Information");
+		setTitle("HPV Test Information - 1");
 		setResizable(false);
 		setModal(true);
 		setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);

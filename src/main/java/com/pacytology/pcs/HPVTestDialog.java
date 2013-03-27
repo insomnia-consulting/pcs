@@ -21,11 +21,12 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 
+import com.pacytology.pcs.ui.PcsDialog;
 import com.pacytology.pcs.ui.Square;
 import java.sql.*;
 import java.util.Vector;
 
-public class HPVTestDialog extends javax.swing.JDialog
+public class HPVTestDialog extends PcsDialog
 {
     LabRec labRec;
     HPVRec hpv;
@@ -42,7 +43,7 @@ public class HPVTestDialog extends javax.swing.JDialog
 		// what Visual Cafe can generate, or Visual Cafe may be unable to back
 		// parse your Java file into its visual environment.
 		//{{INIT_CONTROLS
-		setTitle("HPV Test Information");
+		setTitle("HPV Test Information - *");
 		setResizable(false);
 		setModal(true);
 		setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
@@ -437,7 +438,7 @@ public class HPVTestDialog extends javax.swing.JDialog
 		else if (key==event.VK_CONTROL) ((JTextField)getFocusOwner()).setText(null);
 	}
 	
-	void finalActions()
+	public void finalActions()
 	{
 	    if (nullStatus&&!Utils.hasResults(labNumber)) {
 	        Utils.createErrMsg("PCS Results have not been entered yet.");
@@ -602,5 +603,29 @@ public class HPVTestDialog extends javax.swing.JDialog
 	}
 	
 	void closingActions() { log.stop(); this.dispose(); }
+
+	@Override
+	public void queryActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

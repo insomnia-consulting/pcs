@@ -1,19 +1,19 @@
 package com.pacytology.pcs;
 
 /*
-    PENNSYLVANIA CYTOLOGY SERVICES
-    LABORATORY INFORMATION SYSTEM V1.0
-    Copyright (C) 2001 by John Cardella
-    All Rights Reserved
-    
-    File:       LabForm.java
-    Created By: John Cardella, Software Engineer
-    
-    Function:   Data entry form for lab requisitions.
-    
-    MODIFICATIONS ----------------------------------
-    Date/Staff      Description:
-*/
+ PENNSYLVANIA CYTOLOGY SERVICES
+ LABORATORY INFORMATION SYSTEM V1.0
+ Copyright (C) 2001 by John Cardella
+ All Rights Reserved
+
+ File:       LabForm.java
+ Created By: John Cardella, Software Engineer
+
+ Function:   Data entry form for lab requisitions.
+
+ MODIFICATIONS ----------------------------------
+ Date/Staff      Description:
+ */
 
 import java.awt.Color;
 import java.awt.Component;
@@ -51,65 +51,58 @@ import com.pacytology.pcs.io.FileTransfer;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
+public class LabForm extends PcsFrame {
+	int MAX_DET_CODES = 0;
+	int MAX_DIAG_CODES = 1000;
+	final int MAX_DRS = 50;
+	public int currMode = Lab.IDLE;
+	/*
+	 * Area the lab is currently within the system Note: Preparation EXPIRED
+	 * doubles as an area as well.
+	 */
+	/*
+	 * final int RESULTS_PENDING = 201; final int FAX_QUEUE = 202; final int
+	 * BILLING_QUEUE = 203; final int SUBMITTED = 204; final int PENDING = 205;
+	 * final int FINISHED = 206; final int HPV_PENDING = 207; final int UNKNOWN
+	 * = 208; final int UNUSED = 209;
+	 */
+	public int currArea = Lab.IDLE;
 
-public class LabForm extends PcsFrame
-{
-    int MAX_DET_CODES = 0;
-    int MAX_DIAG_CODES = 1000;
-    final int MAX_DRS = 50;
-    public int currMode = Lab.IDLE;
-    /*
-        Area the lab is currently within the system
-        Note:  Preparation EXPIRED doubles as an area
-        as well.
-    */
-    /*
-    final int RESULTS_PENDING = 201;
-    final int FAX_QUEUE = 202;
-    final int BILLING_QUEUE = 203;
-    final int SUBMITTED = 204;
-    final int PENDING = 205;
-    final int FINISHED = 206;
-    final int HPV_PENDING = 207;
-    final int UNKNOWN = 208;
-    final int UNUSED = 209;
-    */
-    public int currArea = Lab.IDLE;
-    
-    /* Variables for used for SURGICAL preparation
-    */
-    private char tsChar = 'A';          // Tissues submitted letters
-    private String tsString = null;     // Description of tissues submitted
-    final int MALE = 70;                // Detail code for male
-    final int FEMALE = 71;              // Detail code for female
-    
-    final int HORMONAL_EVALUATION = 12; // Detail code for hormonal eval. req.
-    
-    public Login dbLogin;
-    public DiagnosisCodeRec[] labDiagnosisCodes;
-    public TppRec[] tpps;
-    public LabRec labRec = new LabRec();
-    public DetailCodeRec[] detailRec;
-    public String[] detCodeDisp;
-    public int currDetCode;
-    public int[] selectedDetCodes;
+	/*
+	 * Variables for used for SURGICAL preparation
+	 */
+	private char tsChar = 'A'; // Tissues submitted letters
+	private String tsString = null; // Description of tissues submitted
+	final int MALE = 70; // Detail code for male
+	final int FEMALE = 71; // Detail code for female
+
+	final int HORMONAL_EVALUATION = 12; // Detail code for hormonal eval. req.
+
+	public Login dbLogin;
+	public DiagnosisCodeRec[] labDiagnosisCodes;
+	public TppRec[] tpps;
+	public LabRec labRec = new LabRec();
+	public DetailCodeRec[] detailRec;
+	public String[] detCodeDisp;
+	public int currDetCode;
+	public int[] selectedDetCodes;
 	public boolean foundPrevLab;
-	public int currentSection=0;
-    String[] diagnosisCodeList;
+	public int currentSection = 0;
+	String[] diagnosisCodeList;
 
-    public boolean hasComments=false;
-    protected boolean dbThreadRunning=false;
-    public LabDbOps labOps;
-    public Vector carrierVect = new Vector();
-    public Vector doctorVect = new Vector();
-    public boolean checkCarrier = true;
-    public boolean carrierCommentsShown = true;
-    public boolean patientQuery = false;
-    public LogFile log;
-    public int originalBillingChoice=0;
-    boolean billingChanged=false;
-    boolean carrierChanged=false;
-    public Vector faxLetterQueue = new Vector();
+	public boolean hasComments = false;
+	protected boolean dbThreadRunning = false;
+	public LabDbOps labOps;
+	public Vector carrierVect = new Vector();
+	public Vector doctorVect = new Vector();
+	public boolean checkCarrier = true;
+	public boolean carrierCommentsShown = true;
+	public boolean patientQuery = false;
+	public LogFile log;
+	public int originalBillingChoice = 0;
+	boolean billingChanged = false;
+	boolean carrierChanged = false;
+	public Vector faxLetterQueue = new Vector();
 	public JTextArea labComments = new javax.swing.JTextArea();
 	public JTextField ADPHpgm = new javax.swing.JTextField();
 	String defaultPrep = "C";
@@ -118,693 +111,702 @@ public class LabForm extends PcsFrame
 	SymKey aSymKey = new SymKey();
 	SymFocus aSymFocus = new SymFocus();
 
-	public LabForm()
-	{
+	public LabForm() {
 		// This code is automatically generated by Visual Cafe when you add
 		// components to the visual environment. It instantiates and initializes
 		// the components. To modify the code, only use code syntax that matches
 		// what Visual Cafe can generate, or Visual Cafe may be unable to back
 		// parse your Java file into its visual environment.
-		//{{INIT_CONTROLS
+		// {{INIT_CONTROLS
 		setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
 		getContentPane().setLayout(null);
-		setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.TEXT_CURSOR));
+		setCursor(java.awt.Cursor
+				.getPredefinedCursor(java.awt.Cursor.TEXT_CURSOR));
 		getContentPane().setFont(new Font("Dialog", Font.PLAIN, 12));
-		setSize(808,562);
+		setSize(808, 562);
 		setVisible(false);
 		patientPanel.setBorder(titledBorder1);
 		patientPanel.setLayout(null);
 		getContentPane().add(patientPanel);
-		patientPanel.setBounds(74,4,420,238);
+		patientPanel.setBounds(74, 4, 420, 238);
 		labPrevLabNum.setEnabled(false);
 		patientPanel.add(labPrevLabNum);
 		labPrevLabNum.setBackground(java.awt.Color.white);
 		labPrevLabNum.setForeground(java.awt.Color.black);
 		labPrevLabNum.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labPrevLabNum.setBounds(76,28,80,20);
+		labPrevLabNum.setBounds(76, 28, 80, 20);
 		labNumber.setEnabled(false);
 		patientPanel.add(labNumber);
 		labNumber.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labNumber.setBounds(200,28,80,20);
+		labNumber.setBounds(200, 28, 80, 20);
 		labPatientNumber.setEnabled(false);
 		patientPanel.add(labPatientNumber);
 		labPatientNumber.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labPatientNumber.setBounds(348,28,54,20);
+		labPatientNumber.setBounds(348, 28, 54, 20);
 		labPractice.setEnabled(false);
 		patientPanel.add(labPractice);
 		labPractice.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labPractice.setBounds(76,52,30,20);
+		labPractice.setBounds(76, 52, 30, 20);
 		labPatientLastName.setEnabled(false);
 		patientPanel.add(labPatientLastName);
 		labPatientLastName.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labPatientLastName.setBounds(50,74,160,20);
+		labPatientLastName.setBounds(50, 74, 160, 20);
 		labPatientFirstName.setEnabled(false);
 		patientPanel.add(labPatientFirstName);
 		labPatientFirstName.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labPatientFirstName.setBounds(246,74,110,20);
+		labPatientFirstName.setBounds(246, 74, 110, 20);
 		labPatientMI.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		labPatientMI.setEnabled(false);
 		patientPanel.add(labPatientMI);
 		labPatientMI.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labPatientMI.setBounds(378,74,24,20);
+		labPatientMI.setBounds(378, 74, 24, 20);
 		labPaAddress.setEnabled(false);
 		patientPanel.add(labPaAddress);
 		labPaAddress.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labPaAddress.setBounds(76,96,326,20);
+		labPaAddress.setBounds(76, 96, 326, 20);
 		labZip.setEnabled(false);
 		patientPanel.add(labZip);
 		labZip.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labZip.setBounds(76,118,80,20);
+		labZip.setBounds(76, 118, 80, 20);
 		labCity.setEnabled(false);
 		patientPanel.add(labCity);
 		labCity.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labCity.setBounds(192,118,142,20);
+		labCity.setBounds(192, 118, 142, 20);
 		labState.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		labState.setEnabled(false);
 		patientPanel.add(labState);
 		labState.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labState.setBounds(378,118,24,20);
+		labState.setBounds(378, 118, 24, 20);
 		labPhone.setEnabled(false);
 		patientPanel.add(labPhone);
 		labPhone.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labPhone.setBounds(60,140,108,20);
+		labPhone.setBounds(60, 140, 108, 20);
 		labDOB.setEnabled(false);
 		patientPanel.add(labDOB);
 		labDOB.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labDOB.setBounds(203,140,76,20);
+		labDOB.setBounds(203, 140, 76, 20);
 		labSSN.setEnabled(false);
 		patientPanel.add(labSSN);
 		labSSN.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labSSN.setBounds(316,140,86,20);
+		labSSN.setBounds(316, 140, 86, 20);
 		labClientNotes.setEnabled(false);
 		patientPanel.add(labClientNotes);
 		labClientNotes.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labClientNotes.setBounds(100,162,302,20);
+		labClientNotes.setBounds(100, 162, 302, 20);
 		labDateCollected.setEnabled(false);
 		patientPanel.add(labDateCollected);
 		labDateCollected.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labDateCollected.setBounds(78,184,76,20);
+		labDateCollected.setBounds(78, 184, 76, 20);
 		labPatientID.setEnabled(false);
 		patientPanel.add(labPatientID);
 		labPatientID.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labPatientID.setBounds(220,184,90,20);
+		labPatientID.setBounds(220, 184, 90, 20);
 		patRace.setEnabled(false);
 		patientPanel.add(patRace);
 		patRace.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		patRace.setBounds(362,184,40,20);
+		patRace.setBounds(362, 184, 40, 20);
 		labRush.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		labRush.setText(" Rush");
 		labRush.setActionCommand(" Rush");
 		labRush.setOpaque(true);
 		labRush.setEnabled(false);
 		patientPanel.add(labRush);
-		labRush.setBackground(new java.awt.Color(204,204,204));
-		labRush.setForeground(new java.awt.Color(102,102,153));
-		labRush.setBounds(10,208,70,18);
+		labRush.setBackground(new java.awt.Color(204, 204, 204));
+		labRush.setForeground(new java.awt.Color(102, 102, 153));
+		labRush.setBounds(10, 208, 70, 18);
 		doctorText.setEnabled(false);
 		patientPanel.add(doctorText);
 		doctorText.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		doctorText.setBounds(142,208,260,20);
+		doctorText.setBounds(142, 208, 260, 20);
 		labNumLbl.setRequestFocusEnabled(false);
 		labNumLbl.setText("Lab #");
 		patientPanel.add(labNumLbl);
-		labNumLbl.setBounds(164,30,40,14);
+		labNumLbl.setBounds(164, 30, 40, 14);
 		labPatientIDlbl.setRequestFocusEnabled(false);
 		labPatientIDlbl.setText("Pat. ID#");
 		patientPanel.add(labPatientIDlbl);
-		labPatientIDlbl.setBounds(170,186,50,14);
+		labPatientIDlbl.setBounds(170, 186, 50, 14);
 		labSSNLbl.setRequestFocusEnabled(false);
 		labSSNLbl.setText("SSN");
 		patientPanel.add(labSSNLbl);
-		labSSNLbl.setBounds(287,142,36,12);
+		labSSNLbl.setBounds(287, 142, 36, 12);
 		labPracticeLbl.setRequestFocusEnabled(false);
 		labPracticeLbl.setText("Practice");
 		patientPanel.add(labPracticeLbl);
-		labPracticeLbl.setForeground(new java.awt.Color(102,102,153));
-		labPracticeLbl.setBounds(20,54,56,12);
+		labPracticeLbl.setForeground(new java.awt.Color(102, 102, 153));
+		labPracticeLbl.setBounds(20, 54, 56, 12);
 		labCollDateLbl.setRequestFocusEnabled(false);
 		labCollDateLbl.setText("Collected");
 		patientPanel.add(labCollDateLbl);
-		labCollDateLbl.setBounds(20,186,70,12);
+		labCollDateLbl.setBounds(20, 186, 70, 12);
 		JLabel21.setRequestFocusEnabled(false);
 		JLabel21.setText("Phone");
 		JLabel21.setLabelFor(labClientNotes);
 		patientPanel.add(JLabel21);
-		JLabel21.setForeground(new java.awt.Color(102,102,153));
-		JLabel21.setBounds(20,142,50,12);
+		JLabel21.setForeground(new java.awt.Color(102, 102, 153));
+		JLabel21.setBounds(20, 142, 50, 12);
 		JLabel11.setRequestFocusEnabled(false);
 		JLabel11.setText("Doctor");
 		patientPanel.add(JLabel11);
-		JLabel11.setForeground(new java.awt.Color(102,102,153));
-		JLabel11.setBounds(100,210,40,12);
+		JLabel11.setForeground(new java.awt.Color(102, 102, 153));
+		JLabel11.setBounds(100, 210, 40, 12);
 		labAddrLbl.setRequestFocusEnabled(false);
 		labAddrLbl.setText("Address");
 		patientPanel.add(labAddrLbl);
-		labAddrLbl.setForeground(new java.awt.Color(102,102,153));
-		labAddrLbl.setBounds(20,100,70,12);
+		labAddrLbl.setForeground(new java.awt.Color(102, 102, 153));
+		labAddrLbl.setBounds(20, 100, 70, 12);
 		JLabel15.setRequestFocusEnabled(false);
 		JLabel15.setText("DOB");
 		patientPanel.add(JLabel15);
-		JLabel15.setBounds(174,142,32,12);
+		JLabel15.setBounds(174, 142, 32, 12);
 		JLabel16.setRequestFocusEnabled(false);
 		JLabel16.setText("Zip Code");
 		patientPanel.add(JLabel16);
-		JLabel16.setForeground(new java.awt.Color(102,102,153));
-		JLabel16.setBounds(20,120,50,12);
+		JLabel16.setForeground(new java.awt.Color(102, 102, 153));
+		JLabel16.setBounds(20, 120, 50, 12);
 		JLabel17.setRequestFocusEnabled(false);
 		JLabel17.setText("City");
 		patientPanel.add(JLabel17);
-		JLabel17.setForeground(new java.awt.Color(102,102,153));
-		JLabel17.setBounds(164,120,36,12);
+		JLabel17.setForeground(new java.awt.Color(102, 102, 153));
+		JLabel17.setBounds(164, 120, 36, 12);
 		JLabel18.setRequestFocusEnabled(false);
 		JLabel18.setText("State");
 		patientPanel.add(JLabel18);
-		JLabel18.setForeground(new java.awt.Color(102,102,153));
-		JLabel18.setBounds(346,120,40,12);
+		JLabel18.setForeground(new java.awt.Color(102, 102, 153));
+		JLabel18.setBounds(346, 120, 40, 12);
 		JLabel6.setRequestFocusEnabled(false);
 		JLabel6.setText("Prev Lab");
 		patientPanel.add(JLabel6);
-		JLabel6.setBounds(20,30,50,14);
+		JLabel6.setBounds(20, 30, 50, 14);
 		JLabel20.setRequestFocusEnabled(false);
 		JLabel20.setText("Client Notes");
 		patientPanel.add(JLabel20);
-		JLabel20.setBounds(20,164,70,12);
+		JLabel20.setBounds(20, 164, 70, 12);
 		JLabel22.setRequestFocusEnabled(false);
 		JLabel22.setText("Last");
 		patientPanel.add(JLabel22);
-		JLabel22.setBounds(20,76,40,12);
+		JLabel22.setBounds(20, 76, 40, 12);
 		JLabel23.setRequestFocusEnabled(false);
 		JLabel23.setText("First");
 		patientPanel.add(JLabel23);
-		JLabel23.setBounds(216,76,40,12);
+		JLabel23.setBounds(216, 76, 40, 12);
 		JLabel24.setRequestFocusEnabled(false);
 		JLabel24.setText("MI");
 		patientPanel.add(JLabel24);
-		JLabel24.setBounds(360,76,24,12);
+		JLabel24.setBounds(360, 76, 24, 12);
 		labPracticeName.setRequestFocusEnabled(false);
 		patientPanel.add(labPracticeName);
 		labPracticeName.setFont(new Font("Dialog", Font.BOLD, 11));
 		labPracticeName.setBackground(Color.CYAN);
-		labPracticeName.setBounds(110,54,206,14);
+		labPracticeName.setBounds(110, 54, 206, 14);
 		JLabel1.setRequestFocusEnabled(false);
 		JLabel1.setText("Patient");
 		patientPanel.add(JLabel1);
-		JLabel1.setBounds(298,30,48,12);
+		JLabel1.setBounds(298, 30, 48, 12);
 		JLabel3.setRequestFocusEnabled(false);
 		JLabel3.setText("Race");
 		patientPanel.add(JLabel3);
-		JLabel3.setBounds(328,186,30,14);
+		JLabel3.setBounds(328, 186, 30, 14);
 		pgmLabel.setRequestFocusEnabled(false);
 		pgmLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
 		patientPanel.add(pgmLabel);
 		pgmLabel.setForeground(java.awt.Color.black);
 		pgmLabel.setFont(new Font("Dialog", Font.BOLD, 11));
-		pgmLabel.setBounds(320,10,80,12);
+		pgmLabel.setBounds(320, 10, 80, 12);
 		labParent.setEnabled(false);
 		patientPanel.add(labParent);
 		labParent.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labParent.setBounds(372,52,30,20);
+		labParent.setBounds(372, 52, 30, 20);
 		JLabel5.setRequestFocusEnabled(false);
 		JLabel5.setText("Parent");
 		patientPanel.add(JLabel5);
-		JLabel5.setForeground(new java.awt.Color(102,102,153));
-		JLabel5.setBounds(330,54,38,12);
+		JLabel5.setForeground(new java.awt.Color(102, 102, 153));
+		JLabel5.setBounds(330, 54, 38, 12);
 		pracType.setRequestFocusEnabled(false);
 		pracType.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
 		patientPanel.add(pracType);
 		pracType.setForeground(java.awt.Color.black);
 		pracType.setFont(new Font("Dialog", Font.BOLD, 11));
-		pracType.setBounds(226,8,80,14);
+		pracType.setBounds(226, 8, 80, 14);
 		recvLbl.setRequestFocusEnabled(false);
 		recvLbl.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 		recvLbl.setText("Recv:");
 		patientPanel.add(recvLbl);
 		recvLbl.setForeground(java.awt.Color.black);
 		recvLbl.setFont(new Font("Dialog", Font.BOLD, 11));
-		recvLbl.setBounds(20,13,100,14);
+		recvLbl.setBounds(20, 13, 100, 14);
 		billingPanel.setBorder(titledBorder2);
 		billingPanel.setLayout(null);
 		getContentPane().add(billingPanel);
-		billingPanel.setBounds(74,248,420,252);
+		billingPanel.setBounds(74, 248, 420, 252);
 		labBillingChoice.setEnabled(false);
-		
+
 		billingPanel.add(labBillingChoice);
 		labBillingChoice.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labBillingChoice.setBounds(20,42,34,20);
+		labBillingChoice.setBounds(20, 42, 34, 20);
 		labOtherInsurance.setEnabled(false);
 		billingPanel.add(labOtherInsurance);
 		labOtherInsurance.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labOtherInsurance.setBounds(70,42,330,20);
+		labOtherInsurance.setBounds(70, 42, 330, 20);
 		labPayerID.setEnabled(false);
 		billingPanel.add(labPayerID);
 		labPayerID.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labPayerID.setBounds(20,80,54,20);
+		labPayerID.setBounds(20, 80, 54, 20);
 		labPCSID.setEnabled(false);
 		billingPanel.add(labPCSID);
 		labPCSID.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labPCSID.setBounds(88,80,60,20);
+		labPCSID.setBounds(88, 80, 60, 20);
 		labDPAState.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		labDPAState.setEnabled(false);
 		labDPAState.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labDPAState.setBounds(162,80,30,20);
+		labDPAState.setBounds(162, 80, 30, 20);
 		billingPanel.add(labDPAState);
-		
+
 		labBillingID.setEnabled(false);
-		
+
 		labBillingID.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labBillingID.setBounds(214,80,186,20);
+		labBillingID.setBounds(214, 80, 186, 20);
 		billingPanel.add(labBillingID);
 		labGrpNum.setEnabled(false);
 		billingPanel.add(labGrpNum);
 		labGrpNum.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labGrpNum.setBounds(20,118,154,20);
+		labGrpNum.setBounds(20, 118, 154, 20);
 		labRelCode.setText("S");
 		labRelCode.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		labRelCode.setEnabled(false);
 		billingPanel.add(labRelCode);
 		labRelCode.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labRelCode.setBounds(190,118,20,20);
-		labMedicareType.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+		labRelCode.setBounds(190, 118, 20, 20);
+		labMedicareType
+				.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		labMedicareType.setEnabled(false);
 		billingPanel.add(labMedicareType);
 		labMedicareType.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labMedicareType.setBounds(308,118,20,20);
+		labMedicareType.setBounds(308, 118, 20, 20);
 		labDiagCode.setEnabled(false);
 		billingPanel.add(labDiagCode);
 		labDiagCode.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labDiagCode.setBounds(42,142,48,20);
+		labDiagCode.setBounds(42, 142, 48, 20);
 		labDiagCode2.setEnabled(false);
 		billingPanel.add(labDiagCode2);
 		labDiagCode2.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labDiagCode2.setBounds(42,162,48,20);
+		labDiagCode2.setBounds(42, 162, 48, 20);
 		labDiagCode3.setEnabled(false);
 		billingPanel.add(labDiagCode3);
 		labDiagCode3.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labDiagCode3.setBounds(42,182,48,20);
+		labDiagCode3.setBounds(42, 182, 48, 20);
 		labDiagCode4.setEnabled(false);
 		billingPanel.add(labDiagCode4);
 		labDiagCode4.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labDiagCode4.setBounds(42,202,48,20);
+		labDiagCode4.setBounds(42, 202, 48, 20);
 		labSubscrLName.setEnabled(false);
 		billingPanel.add(labSubscrLName);
 		labSubscrLName.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labSubscrLName.setBounds(86,226,110,20);
+		labSubscrLName.setBounds(86, 226, 110, 20);
 		labSubscrFName.setEnabled(false);
 		billingPanel.add(labSubscrFName);
 		labSubscrFName.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labSubscrFName.setBounds(234,226,102,20);
+		labSubscrFName.setBounds(234, 226, 102, 20);
 		labFormSigned.setText("N");
 		labFormSigned.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		labFormSigned.setEnabled(false);
 		billingPanel.add(labFormSigned);
 		labFormSigned.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labFormSigned.setBounds(390,226,20,20);
+		labFormSigned.setBounds(390, 226, 20, 20);
 		labBillingChoiceLbl.setRequestFocusEnabled(false);
 		labBillingChoiceLbl.setText("Code");
 		billingPanel.add(labBillingChoiceLbl);
-		labBillingChoiceLbl.setBounds(20,26,34,10);
+		labBillingChoiceLbl.setBounds(20, 26, 34, 10);
 		labGrpNumLbl.setRequestFocusEnabled(false);
 		labGrpNumLbl.setText("Group Number/Employer");
 		billingPanel.add(labGrpNumLbl);
-		labGrpNumLbl.setBounds(20,104,150,12);
+		labGrpNumLbl.setBounds(20, 104, 150, 12);
 		labBillingIDLbl.setRequestFocusEnabled(false);
 		labBillingIDLbl.setText("Billing ID");
 		billingPanel.add(labBillingIDLbl);
-		labBillingIDLbl.setBounds(214,66,186,12);
+		labBillingIDLbl.setBounds(214, 66, 186, 12);
 		subscrLastLbl.setRequestFocusEnabled(false);
 		subscrLastLbl.setText("Subscr Last");
 		billingPanel.add(subscrLastLbl);
-		subscrLastLbl.setBounds(12,228,72,12);
+		subscrLastLbl.setBounds(12, 228, 72, 12);
 		subscrFirstLbl.setRequestFocusEnabled(false);
 		subscrFirstLbl.setText("First");
 		billingPanel.add(subscrFirstLbl);
-		subscrFirstLbl.setBounds(204,228,32,12);
+		subscrFirstLbl.setBounds(204, 228, 32, 12);
 		labMedTypeLbl.setRequestFocusEnabled(false);
 		labMedTypeLbl.setText("Medicare Type");
 		billingPanel.add(labMedTypeLbl);
-		labMedTypeLbl.setBounds(308,104,90,12);
+		labMedTypeLbl.setBounds(308, 104, 90, 12);
 		billingPanel.add(labMedLbl);
-		labMedLbl.setBounds(332,120,80,12);
+		labMedLbl.setBounds(332, 120, 80, 12);
 		diag1lbl.setRequestFocusEnabled(false);
 		billingPanel.add(diag1lbl);
 		diag1lbl.setForeground(java.awt.Color.black);
 		diag1lbl.setFont(new Font("SansSerif", Font.BOLD, 10));
-		diag1lbl.setBounds(96,144,310,12);
+		diag1lbl.setBounds(96, 144, 310, 12);
 		diag2lbl.setRequestFocusEnabled(false);
 		billingPanel.add(diag2lbl);
 		diag2lbl.setForeground(java.awt.Color.black);
 		diag2lbl.setFont(new Font("SansSerif", Font.BOLD, 10));
-		diag2lbl.setBounds(96,164,310,12);
+		diag2lbl.setBounds(96, 164, 310, 12);
 		diag3lbl.setRequestFocusEnabled(false);
 		billingPanel.add(diag3lbl);
 		diag3lbl.setForeground(java.awt.Color.black);
 		diag3lbl.setFont(new Font("SansSerif", Font.BOLD, 10));
-		diag3lbl.setBounds(96,184,310,12);
+		diag3lbl.setBounds(96, 184, 310, 12);
 		diag4lbl.setRequestFocusEnabled(false);
 		billingPanel.add(diag4lbl);
 		diag4lbl.setForeground(java.awt.Color.black);
 		diag4lbl.setFont(new Font("SansSerif", Font.BOLD, 10));
-		diag4lbl.setBounds(96,204,310,12);
+		diag4lbl.setBounds(96, 204, 310, 12);
 		signedLbl.setText("Signed");
 		billingPanel.add(signedLbl);
-		signedLbl.setBounds(344,228,40,12);
+		signedLbl.setBounds(344, 228, 40, 12);
 		labDPAStateLbl.setRequestFocusEnabled(false);
 		labDPAStateLbl.setText("State");
 		billingPanel.add(labDPAStateLbl);
-		labDPAStateLbl.setBounds(162,66,34,12);
+		labDPAStateLbl.setBounds(162, 66, 34, 12);
 		ICD9Lbl.setRequestFocusEnabled(false);
 		ICD9Lbl.setText("ICD9");
 		billingPanel.add(ICD9Lbl);
-		ICD9Lbl.setForeground(new java.awt.Color(102,102,153));
-		ICD9Lbl.setBounds(12,144,30,12);
+		ICD9Lbl.setForeground(new java.awt.Color(102, 102, 153));
+		ICD9Lbl.setBounds(12, 144, 30, 12);
 		CarrierNameLbl.setRequestFocusEnabled(false);
 		CarrierNameLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
 		billingPanel.add(CarrierNameLbl);
-		CarrierNameLbl.setForeground(new java.awt.Color(102,102,153));
+		CarrierNameLbl.setForeground(new java.awt.Color(102, 102, 153));
 		CarrierNameLbl.setFont(new Font("Dialog", Font.BOLD, 11));
-		CarrierNameLbl.setBounds(178,14,218,12);
+		CarrierNameLbl.setBounds(178, 14, 218, 12);
 		payerLbl.setRequestFocusEnabled(false);
 		payerLbl.setText("Payer ID");
 		billingPanel.add(payerLbl);
-		payerLbl.setBounds(20,66,50,12);
+		payerLbl.setBounds(20, 66, 50, 12);
 		altLbl.setRequestFocusEnabled(false);
 		altLbl.setText("Alt ID");
 		billingPanel.add(altLbl);
-		altLbl.setBounds(88,66,36,12);
+		altLbl.setBounds(88, 66, 36, 12);
 		subscrLbl.setRequestFocusEnabled(false);
 		subscrLbl.setText("Subscriber");
 		billingPanel.add(subscrLbl);
-		subscrLbl.setBounds(190,104,90,12);
+		subscrLbl.setBounds(190, 104, 90, 12);
 		payerNameLbl.setRequestFocusEnabled(false);
 		payerNameLbl.setText("Payer Name");
 		billingPanel.add(payerNameLbl);
-		payerNameLbl.setBounds(70,26,80,12);
+		payerNameLbl.setBounds(70, 26, 80, 12);
 		billingPanel.add(labSubscriber);
-		labSubscriber.setBounds(216,120,80,12);
+		labSubscriber.setBounds(216, 120, 80, 12);
 		billingPanel.add(labMedLbl);
 		detailPanel.setBorder(titledBorder5);
 		detailPanel.setLayout(null);
 		getContentPane().add(detailPanel);
-		detailPanel.setBounds(498,4,300,548);
+		detailPanel.setBounds(498, 4, 300, 548);
 		labPrep.setText("C");
 		labPrep.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		labPrep.setEnabled(false);
 		detailPanel.add(labPrep);
 		labPrep.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labPrep.setBounds(18,32,22,18);
+		labPrep.setBounds(18, 32, 22, 18);
 		labPrep.setBackground(Color.WHITE);
 		HPVrequest.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		HPVrequest.setEnabled(false);
 		detailPanel.add(HPVrequest);
 		HPVrequest.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		HPVrequest.setBounds(202,30,20,20);
-		labDetCodeEntry.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+		HPVrequest.setBounds(202, 30, 20, 20);
+		labDetCodeEntry
+				.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		labDetCodeEntry.setEnabled(false);
 		detailPanel.add(labDetCodeEntry);
 		labDetCodeEntry.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labDetCodeEntry.setBounds(262,30,24,20);
+		labDetCodeEntry.setBounds(262, 30, 24, 20);
 		labAge.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		labAge.setEnabled(false);
 		detailPanel.add(labAge);
 		labAge.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labAge.setBounds(40,52,30,20);
+		labAge.setBounds(40, 52, 30, 20);
 		labNumSlides.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		labNumSlides.setEnabled(false);
 		detailPanel.add(labNumSlides);
 		labNumSlides.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labNumSlides.setBounds(152,52,20,20);
+		labNumSlides.setBounds(152, 52, 20, 20);
 		labLMP.setEnabled(false);
 		detailPanel.add(labLMP);
 		labLMP.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labLMP.setBounds(206,52,80,20);
+		labLMP.setBounds(206, 52, 80, 20);
 		labRecDetInfo.setEnabled(false);
 		detailPanel.add(labRecDetInfo);
 		labRecDetInfo.setFont(new Font("DialogInput", Font.PLAIN, 12));
-		labRecDetInfo.setBounds(20,86,260,20);
+		labRecDetInfo.setBounds(20, 86, 260, 20);
 		labRecDetInfo.setVisible(false);
 		labDetailPane.setOpaque(true);
 		labDetailPane.setEnabled(false);
 		detailPanel.add(labDetailPane);
-		labDetailPane.setBounds(20,106,260,436);
+		labDetailPane.setBounds(20, 106, 260, 436);
 		labDetailList.setRequestFocusEnabled(false);
 		labDetailList.setEnabled(false);
 		labDetailPane.getViewport().add(labDetailList);
 		labDetailList.setBackground(java.awt.Color.white);
 		labDetailList.setFont(new Font("Dialog", Font.PLAIN, 9));
-		labDetailList.setBounds(0,0,257,433);
+		labDetailList.setBounds(0, 0, 257, 433);
 		JLabel9.setRequestFocusEnabled(false);
 		JLabel9.setText("LMP");
 		detailPanel.add(JLabel9);
-		JLabel9.setBounds(178,54,28,12);
+		JLabel9.setBounds(178, 54, 28, 12);
 		JLabel10.setRequestFocusEnabled(false);
 		JLabel10.setText("Age");
 		detailPanel.add(JLabel10);
-		JLabel10.setBounds(16,54,36,14);
+		JLabel10.setBounds(16, 54, 36, 14);
 		JLabel4.setRequestFocusEnabled(false);
 		JLabel4.setText("Code");
 		detailPanel.add(JLabel4);
-		JLabel4.setBounds(230,33,36,12);
+		JLabel4.setBounds(230, 33, 36, 12);
 		prepLbl.setRequestFocusEnabled(false);
 		prepLbl.setText("CONVENTIONAL");
 		detailPanel.add(prepLbl);
-		prepLbl.setForeground(new java.awt.Color(102,102,153));
+		prepLbl.setForeground(new java.awt.Color(102, 102, 153));
 		prepLbl.setFont(new Font("Dialog", Font.BOLD, 11));
-		prepLbl.setBounds(44,34,86,12);
+		prepLbl.setBounds(44, 34, 86, 12);
 		labRecDetInfoLbl.setRequestFocusEnabled(false);
 		labRecDetInfoLbl.setText("labRecdetInfoLbl");
 		detailPanel.add(labRecDetInfoLbl);
 		labRecDetInfoLbl.setForeground(java.awt.Color.black);
 		labRecDetInfoLbl.setFont(new Font("Dialog", Font.BOLD, 10));
-		labRecDetInfoLbl.setBounds(20,72,260,12);
+		labRecDetInfoLbl.setBounds(20, 72, 260, 12);
 		labRecDetInfoLbl.setVisible(false);
 		JLabel19.setText("Preparation");
 		detailPanel.add(JLabel19);
-		JLabel19.setBounds(20,16,78,12);
+		JLabel19.setBounds(20, 16, 78, 12);
 		slideLbl.setRequestFocusEnabled(false);
 		slideLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
 		slideLbl.setText("Slides");
 		detailPanel.add(slideLbl);
-		slideLbl.setBounds(79,54,70,12);
+		slideLbl.setBounds(79, 54, 70, 12);
 		JLabel2.setRequestFocusEnabled(false);
 		JLabel2.setText("HPV Test");
 		detailPanel.add(JLabel2);
-		JLabel2.setBounds(144,33,54,12);
+		JLabel2.setBounds(144, 33, 54, 12);
 		functionKeyPanel.setRequestFocusEnabled(false);
 		functionKeyPanel.setBorder(titledBorder4);
 		functionKeyPanel.setLayout(null);
 		getContentPane().add(functionKeyPanel);
-		functionKeyPanel.setBounds(10,12,60,540);
+		functionKeyPanel.setBounds(10, 12, 60, 540);
 		functionKeyPanel.add(F1sq);
-		
-		F1sq.setBounds(20,17,20,20);
+
+		F1sq.setBounds(20, 17, 20, 20);
 		F1lbl.setRequestFocusEnabled(false);
 		F1lbl.setText("F1");
 		functionKeyPanel.add(F1lbl);
 		F1lbl.setForeground(java.awt.Color.black);
 		F1lbl.setFont(new Font("SansSerif", Font.PLAIN, 8));
-		F1lbl.setBounds(24,20,20,12);
+		F1lbl.setBounds(24, 20, 20, 12);
 		F1action.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 		F1action.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		F1action.setText("Query");
-		
+
 		functionKeyPanel.add(F1action);
-		
+
 		F1action.setForeground(java.awt.Color.BLACK);
-		F1action.setBounds(5,37,50,16);
+		F1action.setBounds(5, 37, 50, 16);
 		functionKeyPanel.add(F2sq);
-		F2sq.setBounds(20,70,20,20);
+		F2sq.setBounds(20, 70, 20, 20);
 		F2lbl.setRequestFocusEnabled(false);
 		F2lbl.setText("F2");
 		functionKeyPanel.add(F2lbl);
 		F2lbl.setForeground(java.awt.Color.black);
 		F2lbl.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		F2lbl.setBounds(24,73,20,12);
+		F2lbl.setBounds(24, 73, 20, 12);
 		F2action.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 		F2action.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		F2action.setText("Add");
 		functionKeyPanel.add(F2action);
 		F2action.setForeground(java.awt.Color.black);
-		F2action.setBounds(5,90,50,16);
+		F2action.setBounds(5, 90, 50, 16);
 		functionKeyPanel.add(F3sq);
-		F3sq.setBounds(20,123,20,20);
+		F3sq.setBounds(20, 123, 20, 20);
 		F3lbl.setRequestFocusEnabled(false);
 		F3lbl.setText("F3");
 		functionKeyPanel.add(F3lbl);
 		F3lbl.setForeground(java.awt.Color.black);
 		F3lbl.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		F3lbl.setBounds(24,126,20,12);
+		F3lbl.setBounds(24, 126, 20, 12);
 		F3action.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 		F3action.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		F3action.setText("Update");
 		functionKeyPanel.add(F3action);
 		F3action.setForeground(java.awt.Color.black);
-		F3action.setBounds(5,143,50,16);
+		F3action.setBounds(5, 143, 50, 16);
 		functionKeyPanel.add(F4sq);
-		F4sq.setBounds(20,176,20,20);
+		F4sq.setBounds(20, 176, 20, 20);
 		F4lbl.setRequestFocusEnabled(false);
 		F4lbl.setText("F4");
 		functionKeyPanel.add(F4lbl);
 		F4lbl.setForeground(java.awt.Color.black);
 		F4lbl.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		F4lbl.setBounds(24,179,20,12);
+		F4lbl.setBounds(24, 179, 20, 12);
 		F4action.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 		F4action.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		F4action.setText("LQueue");
 		functionKeyPanel.add(F4action);
 		F4action.setForeground(java.awt.Color.black);
-		F4action.setBounds(5,196,50,16);
+		F4action.setBounds(5, 196, 50, 16);
 		functionKeyPanel.add(F5sq);
-		F5sq.setBounds(20,229,20,20);
+		F5sq.setBounds(20, 229, 20, 20);
 		F5lbl.setRequestFocusEnabled(false);
 		F5lbl.setText("F5");
 		functionKeyPanel.add(F5lbl);
 		F5lbl.setForeground(java.awt.Color.black);
 		F5lbl.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		F5lbl.setBounds(24,232,20,12);
+		F5lbl.setBounds(24, 232, 20, 12);
 		F5action.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 		F5action.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		F5action.setText("Patients");
 		functionKeyPanel.add(F5action);
 		F5action.setForeground(java.awt.Color.black);
-		F5action.setBounds(5,249,50,16);
+		F5action.setBounds(5, 249, 50, 16);
 		functionKeyPanel.add(F6sq);
-		F6sq.setBounds(20,282,20,20);
+		F6sq.setBounds(20, 282, 20, 20);
 		F6lbl.setRequestFocusEnabled(false);
 		F6lbl.setText("F6");
 		functionKeyPanel.add(F6lbl);
 		F6lbl.setForeground(java.awt.Color.black);
 		F6lbl.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		F6lbl.setBounds(24,285,20,12);
+		F6lbl.setBounds(24, 285, 20, 12);
 		F6action.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 		F6action.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		F6action.setText("Payers");
 		functionKeyPanel.add(F6action);
 		F6action.setForeground(java.awt.Color.black);
-		F6action.setBounds(5,302,50,16);
+		F6action.setBounds(5, 302, 50, 16);
 		functionKeyPanel.add(F9sq);
-		F9sq.setBounds(20,388,20,20);
+		F9sq.setBounds(20, 388, 20, 20);
 		F9lbl.setRequestFocusEnabled(false);
 		F9lbl.setText("F9");
 		functionKeyPanel.add(F9lbl);
 		F9lbl.setForeground(java.awt.Color.black);
 		F9lbl.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		F9lbl.setBounds(24,391,20,12);
+		F9lbl.setBounds(24, 391, 20, 12);
 		F9action.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 		F9action.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		F9action.setText("Exit");
 		functionKeyPanel.add(F9action);
 		F9action.setForeground(java.awt.Color.black);
-		F9action.setBounds(5,408,50,16);
+		F9action.setBounds(5, 408, 50, 16);
 		functionKeyPanel.add(F10sq);
-		F10sq.setBounds(20,440,20,20);
+		F10sq.setBounds(20, 440, 20, 20);
 		F10lbl.setRequestFocusEnabled(false);
 		F10lbl.setText("F10");
 		functionKeyPanel.add(F10lbl);
 		F10lbl.setForeground(java.awt.Color.black);
 		F10lbl.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		F10lbl.setBounds(5,443,30,12);
+		F10lbl.setBounds(5, 443, 30, 12);
 		F10action.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 		F10action.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		F10action.setText("Section");
 		functionKeyPanel.add(F10action);
 		F10action.setForeground(java.awt.Color.black);
-		F10action.setBounds(5,465, 30,16);
+		F10action.setBounds(5, 465, 30, 16);
 		functionKeyPanel.add(F12sq);
-		F12sq.setBounds(20,493,20,20);
+		F12sq.setBounds(20, 493, 20, 20);
 		F12lbl.setRequestFocusEnabled(false);
 		F12lbl.setText("F12");
 		functionKeyPanel.add(F12lbl);
 		F12lbl.setForeground(java.awt.Color.black);
 		F12lbl.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		F12lbl.setBounds(21,496,20,12);
+		F12lbl.setBounds(21, 496, 20, 12);
 		F12action.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 		F12action.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		F12action.setText("Submit");
 		functionKeyPanel.add(F12action);
 		F12action.setForeground(java.awt.Color.BLACK);
-		F12action.setBounds(5,513,50,16);
+		F12action.setBounds(5, 513, 50, 16);
 		functionKeyPanel.add(F7sq);
-		F7sq.setBounds(20,335,20,20);
+		F7sq.setBounds(20, 335, 20, 20);
 		F7lbl.setRequestFocusEnabled(false);
 		F7lbl.setText("F7");
 		functionKeyPanel.add(F7lbl);
 		F7lbl.setForeground(java.awt.Color.black);
 		F7lbl.setFont(new Font("SansSerif", Font.PLAIN, 10));
-		F7lbl.setBounds(24,338,20,12);
+		F7lbl.setBounds(24, 338, 20, 12);
 		F7action.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 		F7action.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		F7action.setText("Letters");
 		functionKeyPanel.add(F7action);
 		F7action.setForeground(java.awt.Color.black);
-		F7action.setBounds(5,355,50,16);
+		F7action.setBounds(5, 355, 50, 16);
 		msgPanel.setBorder(titledBorder3);
 		msgPanel.setLayout(null);
 		getContentPane().add(msgPanel);
-		msgPanel.setBounds(74,514,420,38);
+		msgPanel.setBounds(74, 514, 420, 38);
 		msgPanel.add(msgLabel);
 		msgLabel.setForeground(java.awt.Color.red);
 		msgLabel.setFont(new Font("Dialog", Font.BOLD, 12));
-		msgLabel.setBounds(10,6,392,14);
+		msgLabel.setBounds(10, 6, 392, 14);
 		msgPanel.add(HPVmsgLabel);
 		HPVmsgLabel.setForeground(java.awt.Color.red);
 		HPVmsgLabel.setFont(new Font("Dialog", Font.BOLD, 12));
-		HPVmsgLabel.setBounds(10,20,392,14);
-		titledBorder1.setTitleFont(new java.awt.Font("Dialog",java.awt.Font.PLAIN,11));
+		HPVmsgLabel.setBounds(10, 20, 392, 14);
+		titledBorder1.setTitleFont(new java.awt.Font("Dialog",
+				java.awt.Font.PLAIN, 11));
 		titledBorder1.setTitle("PATIENT SECTION");
-		//$$ titledBorder1.move(0,591);
-		titledBorder2.setTitleFont(new java.awt.Font("Dialog",java.awt.Font.PLAIN,11));
+		// $$ titledBorder1.move(0,591);
+		titledBorder2.setTitleFont(new java.awt.Font("Dialog",
+				java.awt.Font.PLAIN, 11));
 		titledBorder2.setTitle("BILLING SECTION");
-		//$$ titledBorder2.move(24,591);
-		titledBorder3.setTitleFont(new java.awt.Font("Dialog",java.awt.Font.PLAIN,11));
-		//$$ titledBorder3.move(48,591);
-		titledBorder4.setTitleFont(new java.awt.Font("Dialog",java.awt.Font.PLAIN,11));
-		//$$ titledBorder4.move(72,591);
-		titledBorder5.setTitleFont(new java.awt.Font("Dialog",java.awt.Font.PLAIN,11));
+		// $$ titledBorder2.move(24,591);
+		titledBorder3.setTitleFont(new java.awt.Font("Dialog",
+				java.awt.Font.PLAIN, 11));
+		// $$ titledBorder3.move(48,591);
+		titledBorder4.setTitleFont(new java.awt.Font("Dialog",
+				java.awt.Font.PLAIN, 11));
+		// $$ titledBorder4.move(72,591);
+		titledBorder5.setTitleFont(new java.awt.Font("Dialog",
+				java.awt.Font.PLAIN, 11));
 		titledBorder5.setTitle("DETAIL SECTION");
-		//$$ titledBorder5.move(96,591);
+		// $$ titledBorder5.move(96,591);
 		createdLbl.setText("Created:");
 		getContentPane().add(createdLbl);
 		createdLbl.setForeground(java.awt.Color.darkGray);
 		createdLbl.setFont(new Font("Dialog", Font.BOLD, 10));
-		createdLbl.setBounds(82,500,200,10);
+		createdLbl.setBounds(82, 500, 200, 10);
 		changedLbl.setText("Updated:");
 		getContentPane().add(changedLbl);
 		changedLbl.setForeground(java.awt.Color.darkGray);
 		changedLbl.setFont(new Font("Dialog", Font.BOLD, 10));
-		changedLbl.setBounds(292,500,200,10);
-		//}}
+		changedLbl.setBounds(292, 500, 200, 10);
+		// }}
 
-        setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-		
+		setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+
 		titledBorder1.setTitleColor(Color.white);
 		titledBorder2.setTitleColor(Color.white);
 		titledBorder5.setTitleColor(Color.white);
-		titledBorder1.setTitleFont(new java.awt.Font("Dialog",java.awt.Font.BOLD,12));
-		titledBorder2.setTitleFont(new java.awt.Font("Dialog",java.awt.Font.BOLD,12));
-		titledBorder5.setTitleFont(new java.awt.Font("Dialog",java.awt.Font.BOLD,12));
+		titledBorder1.setTitleFont(new java.awt.Font("Dialog",
+				java.awt.Font.BOLD, 12));
+		titledBorder2.setTitleFont(new java.awt.Font("Dialog",
+				java.awt.Font.BOLD, 12));
+		titledBorder5.setTitleFont(new java.awt.Font("Dialog",
+				java.awt.Font.BOLD, 12));
 
-        labRec.preparation=Lab.CONVENTIONAL;
-        
-		//{{INIT_MENUS
-		//}}
-	
-		//{{REGISTER_LISTENERS
-		
+		labRec.preparation = Lab.CONVENTIONAL;
 
-		//labDetCodeEntry.addKeyListener(aSymKey);
-		
-		//labRecDetInfo.addKeyListener(aSymKey);
-		//labPrevLabNum.addKeyListener(aSymKey);
+		// {{INIT_MENUS
+		// }}
+
+		// {{REGISTER_LISTENERS
+
+		// labDetCodeEntry.addKeyListener(aSymKey);
+
+		// labRecDetInfo.addKeyListener(aSymKey);
+		// labPrevLabNum.addKeyListener(aSymKey);
 
 		labPatientID.addKeyListener(aSymKey);
 		labGrpNum.addKeyListener(aSymKey);
 
 		labSubscrLName.addKeyListener(aSymKey);
-		
+
 		labAge.addKeyListener(aSymKey);
-		
+
 		labOtherInsurance.addKeyListener(aSymKey);
-		
+
 		labPaAddress.addKeyListener(aSymKey);
 
 		labDOB.addKeyListener(aSymKey);
@@ -824,378 +826,390 @@ public class LabForm extends PcsFrame
 		labRelCode.addFocusListener(aSymFocus);
 		patRace.addKeyListener(aSymKey);
 		patRace.addFocusListener(aSymFocus);
-        fKeys.off();
-        fKeys.keyOn(FunctionKeyControl.F1);
-        fKeys.keyOn(FunctionKeyControl.F2);
-        fKeys.keyOn(FunctionKeyControl.F9);
-        fKeys.keyOn(FunctionKeyControl.F5);
-        
+		fKeys.off();
+		fKeys.keyOn(FunctionKeyControl.F1);
+		fKeys.keyOn(FunctionKeyControl.F2);
+		fKeys.keyOn(FunctionKeyControl.F9);
+		fKeys.keyOn(FunctionKeyControl.F5);
 
-		//}}
-		
+		// }}
+
 		/*
-        if (dbConnection.getRowCount("PCS.FAX_LETTERS","IN_QUEUE=1",null)>0) 
-        {
-            this.toBack();
-            (new FaxLetterForm()).setVisible(true);
-            this.repaint();
-        }
-        */
+		 * if (dbConnection.getRowCount("PCS.FAX_LETTERS","IN_QUEUE=1",null)>0)
+		 * { this.toBack(); (new FaxLetterForm()).setVisible(true);
+		 * this.repaint(); }
+		 */
 
-        // Add focus listener to all text fields
-		for (Component c: this.getContentPane().getComponents()) {
+		// Add focus listener to all text fields
+		for (Component c : this.getContentPane().getComponents()) {
 			setListener(c);
 			c.requestFocusInWindow();
 		}
 		labDetCodeEntry.requestFocusInWindow();
-		
+
 		actionMap = new LabFormActionMap(this);
 		setupKeyPressMap();
-		
+
 	}
+
 	protected JRootPane setupKeyPressMap() {
 		JRootPane rp = super.setupKeyPressMap();
 
+		rp.getActionMap().put("F3", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (fKeys.isOn(fKeys.F3)) {
+					if (labRec.billing.origin == 2) {
+						String msg = null;
+						if (labRec.billing.in_queue == 1)
+							msg = "Lab has a "
+									+ labRec.billing.letter_type
+									+ " letter not printed and created in Billing. "
+									+ "Lab must be updated there.";
+						else if (labRec.billing.in_queue == 0)
+							msg = "Lab has a " + labRec.billing.letter_type
+									+ " letter pending created in Billing. "
+									+ "Lab must be updated there.";
+						Utils.createErrMsg(msg);
+					} else {
 
-		rp.getActionMap().put("F3", new AbstractAction() { 
-			public void actionPerformed(ActionEvent e) { 
-                if (fKeys.isOn(fKeys.F3)) {
-                    if (labRec.billing.origin==2) {
-                        String msg = null;
-                        if (labRec.billing.in_queue==1)
-                            msg="Lab has a "+labRec.billing.letter_type+
-                                " letter not printed and created in Billing. "+
-                                "Lab must be updated there.";
-                        else if (labRec.billing.in_queue==0)
-                            msg="Lab has a "+labRec.billing.letter_type+
-                                " letter pending created in Billing. "+
-                                "Lab must be updated there.";
-                        Utils.createErrMsg(msg);
-                    }
-                    else {
-                    	
-                    	if ((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0) updateHPV();
-                        else updateActions();
-                    }
-                }
-                else Utils.createErrMsg("Update Option Not Available");
+						if ((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0)
+							updateHPV();
+						else
+							updateActions();
+					}
+				} else
+					Utils.createErrMsg("Update Option Not Available");
 
-                }
-		});
-
-		rp.getActionMap().put("F4", new AbstractAction() { 
-			public void actionPerformed(ActionEvent e) { 
-		                if (currMode==Lab.IDLE) { 
-	                    if (faxLetterQueue.size()>0) { 
-	                        currMode=Lab.QUEUE;
-	                        labNumber.setEnabled(true);
-	                        labNumber.requestFocus();
-	                        displayFaxQueue();
-	                    }
-	                    else Utils.createErrMsg("No Fax Letters in Queue");                        
-	                }
-	                else Utils.createErrMsg("Queue Option Not Available");
 			}
 		});
-		rp.getActionMap().put("F5", new AbstractAction() { 
-			public void actionPerformed(ActionEvent e) { 
+
+		rp.getActionMap().put("F4", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode == Lab.IDLE) {
+					if (faxLetterQueue.size() > 0) {
+						currMode = Lab.QUEUE;
+						labNumber.setEnabled(true);
+						labNumber.requestFocus();
+						displayFaxQueue();
+					} else
+						Utils.createErrMsg("No Fax Letters in Queue");
+				} else
+					Utils.createErrMsg("Queue Option Not Available");
+			}
+		});
+		rp.getActionMap().put("F5", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
 				if ((e.getModifiers() & ActionEvent.ALT_MASK) != 0) {
-                    if (currentSection==1) invokeDoctorForm();
-                    else Utils.createErrMsg("Doctor Form Not Available");
-                }
-                else if (fKeys.isOn(fKeys.F5)) {
-                    if (currentSection==1 && currMode==Lab.ADD) {
-                    	invokePatientForm();
+					if (currentSection == 1)
+						invokeDoctorForm();
+					else
+						Utils.createErrMsg("Doctor Form Not Available");
+				} else if (fKeys.isOn(fKeys.F5)) {
+					if (currentSection == 1 && currMode == Lab.ADD) {
+						invokePatientForm();
 
-                    }
-                    else Utils.createErrMsg("Patient Form Not Available");
-                }
+					} else
+						Utils.createErrMsg("Patient Form Not Available");
+				}
 			}
 		});
-		rp.getActionMap().put("F6", new AbstractAction() { 
-			public void actionPerformed(ActionEvent e) { 
+		rp.getActionMap().put("F6", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
 				if (fKeys.isOn(fKeys.F6)) {
-                    if ((labOtherInsurance.hasFocus())||
-                        (labPayerID.hasFocus())||
-                        (labPCSID.hasFocus()) )
-                    {
-                        (new CarrierForm(LabForm.this)).setVisible(true);			
-                    }
-                }
-                else Utils.createErrMsg("Payer Form Not Available");
+					if ((labOtherInsurance.hasFocus())
+							|| (labPayerID.hasFocus()) || (labPCSID.hasFocus())) {
+						(new CarrierForm(LabForm.this)).setVisible(true);
+					}
+				} else
+					Utils.createErrMsg("Payer Form Not Available");
 			}
 		});
-		rp.getActionMap().put("F7", new AbstractAction() { 
-			public void actionPerformed(ActionEvent e) { 
-				if (currMode==Lab.IDLE && !Utils.isNull(labNumber.getText())) { 
-                    String bChoice = labBillingChoice.getText();
-                    /*
-                        create a fax letter with blanks no matter
-                        what the billing is and put in info request
-                        letter queue
-                    */
-                    if ((e.getModifiers() & ActionEvent.ALT_MASK) != 0) labOps.blankLetter();
-                    /*
-                        check for missing information; if exists missing
-                        information put in info request letter queue;
-                        must be applicable billing choice
-                    */
-                    else if ((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0) {
-                        if (bChoice.equals("MED") || bChoice.equals("BS") ||
-                        bChoice.equals("DB") || bChoice.equals("OI"))
-                        {
-                            labOps.checkBilling();
-                        }
-                        else Utils.createErrMsg("Missing Info does not apply to code "+bChoice);
-                    }
-                    /*
-                        create medicare missing diagnosis code letter as
-                        long as billing choice is medicare; does so regardless
-                        of selected medicare type
-                    */    
-                    else {
-                        if (bChoice.equals("MED")) labOps.diagnosisLetter();
-                        else Utils.createErrMsg("Missing Diagnosis Codes letter for Medicare only");
-                    }
-                }
-                else Utils.createErrMsg("Create Letter Option Not Available");        
+		rp.getActionMap().put("F7", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode == Lab.IDLE && !Utils.isNull(labNumber.getText())) {
+					String bChoice = labBillingChoice.getText();
+					/*
+					 * create a fax letter with blanks no matter what the
+					 * billing is and put in info request letter queue
+					 */
+					if ((e.getModifiers() & ActionEvent.ALT_MASK) != 0)
+						labOps.blankLetter();
+					/*
+					 * check for missing information; if exists missing
+					 * information put in info request letter queue; must be
+					 * applicable billing choice
+					 */
+					else if ((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0) {
+						if (bChoice.equals("MED") || bChoice.equals("BS")
+								|| bChoice.equals("DB") || bChoice.equals("OI")) {
+							labOps.checkBilling();
+						} else
+							Utils.createErrMsg("Missing Info does not apply to code "
+									+ bChoice);
+					}
+					/*
+					 * create medicare missing diagnosis code letter as long as
+					 * billing choice is medicare; does so regardless of
+					 * selected medicare type
+					 */
+					else {
+						if (bChoice.equals("MED"))
+							labOps.diagnosisLetter();
+						else
+							Utils.createErrMsg("Missing Diagnosis Codes letter for Medicare only");
+					}
+				} else
+					Utils.createErrMsg("Create Letter Option Not Available");
 			}
 		});
 
-		rp.getActionMap().put("F8", new AbstractAction() { 
-			public void actionPerformed(ActionEvent e) { 
+		rp.getActionMap().put("F8", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
 				if (fKeys.isOn(fKeys.F8)) {
-                    if (labDiagCode.hasFocus())  {
-                        String[] buf = new String[MAX_DIAG_CODES];
-                        for (int i=0;i<MAX_DIAG_CODES;i++)
-                            buf[i]=labDiagnosisCodes[i].formattedString;
-                        (new PickList("Diagnosis Codes",200,10,376,
-                              MAX_DIAG_CODES,buf,diagnosisCodeList,
-                              labDiagCode)).setVisible(true);
-                    }                                              
-                    else if (labDiagCode2.hasFocus())  {
-                        String[] buf = new String[MAX_DIAG_CODES];
-                        for (int i=0;i<MAX_DIAG_CODES;i++)
-                            buf[i]=labDiagnosisCodes[i].formattedString;
-                        (new PickList("Diagnosis Codes",200,10,376,
-                              MAX_DIAG_CODES,buf,diagnosisCodeList,
-                              labDiagCode2)).setVisible(true);
-                    }                                              
-                    else if (labDiagCode3.hasFocus())  {
-                        String[] buf = new String[MAX_DIAG_CODES];
-                        for (int i=0;i<MAX_DIAG_CODES;i++)
-                            buf[i]=labDiagnosisCodes[i].formattedString;
-                        (new PickList("Diagnosis Codes",200,10,376,
-                              MAX_DIAG_CODES,buf,diagnosisCodeList,
-                              labDiagCode3)).setVisible(true);
-                    }                                              
-                    else if (labDiagCode4.hasFocus())  {
-                        String[] buf = new String[MAX_DIAG_CODES];
-                        for (int i=0;i<MAX_DIAG_CODES;i++)
-                            buf[i]=labDiagnosisCodes[i].formattedString;
-                        (new PickList("Diagnosis Codes",200,10,376,
-                              MAX_DIAG_CODES,buf,diagnosisCodeList,
-                              labDiagCode4)).setVisible(true);
-                    }                             
-                    else if (labBillingChoice.hasFocus())  {
-                        String[] text = new String[dbLogin.billingCodeVect.size()];
-                        String[] codes = new String[dbLogin.billingCodeVect.size()];
-                        for (int i=0; i<dbLogin.billingCodeVect.size(); i++) {
-                            BillingCodeRec b = 
-                                (BillingCodeRec)dbLogin.billingCodeVect.elementAt(i);
-                            text[i]=Utils.rpad(b.choice_code,4)+b.description;
-                            codes[i]=b.choice_code;
-                        }
-                        (new PickList("Billing Codes",200,200,240,190,
-                               dbLogin.billingCodeVect.size(),text,codes,
-                               labBillingChoice)).setVisible(true);
-                    }
-                    else if (doctorText.hasFocus()) {
-                        displayDoctorList();
-                    }
-                    else if (labNumber.hasFocus()) {
-                        if (!Utils.isNull(labPatientNumber.getText())) {
-                            LabForm.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-                            Vector resultList = new Vector();
-                            int patNum = Integer.parseInt(
-                                labPatientNumber.getText());
-                            labOps.queryPatientLabs(patNum,resultList);
-                            int listSize=resultList.size()+1;
-                            String[] labList = new String[listSize];
-                            labList[0]="LAB:        PR:  COLLECTED:  ENTERED:    STATE:";
-                            for (int i=1;i<listSize;i++) {
-                                labList[i]=(String)resultList.elementAt(i-1);
-                            }
-                            String plTitle="Labs for: "+labRec.pat.lname+", "+labRec.pat.fname;
-                            LabForm.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                            (new PickList(plTitle,300,80,364,200,
-                                listSize,labList)).setVisible(true);
-                        }
-                    }
-                }
-                else Utils.createErrMsg("F8 Key not valid in this section");   
+					if (labDiagCode.hasFocus()) {
+						String[] buf = new String[MAX_DIAG_CODES];
+						for (int i = 0; i < MAX_DIAG_CODES; i++)
+							buf[i] = labDiagnosisCodes[i].formattedString;
+						(new PickList("Diagnosis Codes", 200, 10, 376,
+								MAX_DIAG_CODES, buf, diagnosisCodeList,
+								labDiagCode)).setVisible(true);
+					} else if (labDiagCode2.hasFocus()) {
+						String[] buf = new String[MAX_DIAG_CODES];
+						for (int i = 0; i < MAX_DIAG_CODES; i++)
+							buf[i] = labDiagnosisCodes[i].formattedString;
+						(new PickList("Diagnosis Codes", 200, 10, 376,
+								MAX_DIAG_CODES, buf, diagnosisCodeList,
+								labDiagCode2)).setVisible(true);
+					} else if (labDiagCode3.hasFocus()) {
+						String[] buf = new String[MAX_DIAG_CODES];
+						for (int i = 0; i < MAX_DIAG_CODES; i++)
+							buf[i] = labDiagnosisCodes[i].formattedString;
+						(new PickList("Diagnosis Codes", 200, 10, 376,
+								MAX_DIAG_CODES, buf, diagnosisCodeList,
+								labDiagCode3)).setVisible(true);
+					} else if (labDiagCode4.hasFocus()) {
+						String[] buf = new String[MAX_DIAG_CODES];
+						for (int i = 0; i < MAX_DIAG_CODES; i++)
+							buf[i] = labDiagnosisCodes[i].formattedString;
+						(new PickList("Diagnosis Codes", 200, 10, 376,
+								MAX_DIAG_CODES, buf, diagnosisCodeList,
+								labDiagCode4)).setVisible(true);
+					} else if (labBillingChoice.hasFocus()) {
+						String[] text = new String[dbLogin.billingCodeVect
+								.size()];
+						String[] codes = new String[dbLogin.billingCodeVect
+								.size()];
+						for (int i = 0; i < dbLogin.billingCodeVect.size(); i++) {
+							BillingCodeRec b = (BillingCodeRec) dbLogin.billingCodeVect
+									.elementAt(i);
+							text[i] = Utils.rpad(b.choice_code, 4)
+									+ b.description;
+							codes[i] = b.choice_code;
+						}
+						(new PickList("Billing Codes", 200, 200, 240, 190,
+								dbLogin.billingCodeVect.size(), text, codes,
+								labBillingChoice)).setVisible(true);
+					} else if (doctorText.hasFocus()) {
+						displayDoctorList();
+					} else if (labNumber.hasFocus()) {
+						if (!Utils.isNull(labPatientNumber.getText())) {
+							LabForm.this.setCursor(new Cursor(
+									Cursor.WAIT_CURSOR));
+							Vector resultList = new Vector();
+							int patNum = Integer.parseInt(labPatientNumber
+									.getText());
+							labOps.queryPatientLabs(patNum, resultList);
+							int listSize = resultList.size() + 1;
+							String[] labList = new String[listSize];
+							labList[0] = "LAB:        PR:  COLLECTED:  ENTERED:    STATE:";
+							for (int i = 1; i < listSize; i++) {
+								labList[i] = (String) resultList
+										.elementAt(i - 1);
+							}
+							String plTitle = "Labs for: " + labRec.pat.lname
+									+ ", " + labRec.pat.fname;
+							LabForm.this.setCursor(new Cursor(
+									Cursor.DEFAULT_CURSOR));
+							(new PickList(plTitle, 300, 80, 364, 200, listSize,
+									labList)).setVisible(true);
+						}
+					}
+				} else
+					Utils.createErrMsg("F8 Key not valid in this section");
 			}
 		});
-		rp.getActionMap().put("F9", new AbstractAction() { 
-			public void actionPerformed(ActionEvent e) { 
+		rp.getActionMap().put("F9", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
 				closingActions();
 			}
 		});
-		rp.getActionMap().put("F10", new AbstractAction() { 
-			public void actionPerformed(ActionEvent e) { 
-				if (currMode==Lab.ADD || currMode==Lab.UPDATE) fKeys.keyOn(fKeys.F10);
-                if (fKeys.isOn(fKeys.F10)) {
-                    if (labBillingChoice.hasFocus()) {
-                        if (Utils.isNull(labOtherInsurance.getText())) {
-                            Utils.createErrMsg("F10 Key not valid");
-                            return;
-                        }
-                    }
-                    gotoNextSection();
-                }
-                else Utils.createErrMsg("F10 Key not valid");      
+		rp.getActionMap().put("F10", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (currMode == Lab.ADD || currMode == Lab.UPDATE)
+					fKeys.keyOn(fKeys.F10);
+				if (fKeys.isOn(fKeys.F10)) {
+					if (labBillingChoice.hasFocus()) {
+						if (Utils.isNull(labOtherInsurance.getText())) {
+							Utils.createErrMsg("F10 Key not valid");
+							return;
+						}
+					}
+					gotoNextSection();
+				} else
+					Utils.createErrMsg("F10 Key not valid");
 			}
 		});
-		rp.getActionMap().put("F11", new AbstractAction() { 
-			public void actionPerformed(ActionEvent e) { 
-				if (((e.getModifiers() & ActionEvent.ALT_MASK) != 0) 
+		rp.getActionMap().put("F11", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if (((e.getModifiers() & ActionEvent.ALT_MASK) != 0)
 						&& !Utils.isNull(labPatientNumber.getText())) {
-                    Vector vBuf = new Vector();
-                    for (int i=0; i<detailRec.length; i++) {
-                        if (detailRec[i].isSelected 
-                        && detailRec[i].additional_info.equals("Y")) {
-                            String buf = detailRec[i].description.trim()+": "+
-                                detailRec[i].textEntered.trim();
-                            if (buf.length()>60) {
-                                String buf2 = buf;
-                                int endNdx = 0;
-                                while (buf2.length()>60) {
-                                    for (int j=0;j<60;j++) {
-                                        if (buf2.charAt(j)==' ')
-                                            endNdx=j;
-                                    }
-                                    buf=buf2.substring(0,endNdx);
-                                    buf2=buf2.substring(endNdx).trim();
-                                    vBuf.addElement(buf);
-                                }
-                                if (!Utils.isNull(buf2)) {
-                                    vBuf.addElement(buf2);
-                                }
-                            }
-                            else vBuf.addElement(buf);
-                            vBuf.addElement("   ");
-                        }
-                    }
-                    if (vBuf.size()>0) {
-                        String[] sBuf = new String[vBuf.size()];
-                        for (int i=0;i<vBuf.size();i++)
-                            sBuf[i]=(String)vBuf.elementAt(i);
-                        (new PickList("Additional Detail Information",50,128,450,400,
-                            vBuf.size(),sBuf)).setVisible(true);
-                    }
-                }
-                else {
-	                for (int i=0;i<doctorVect.size();i++)  {
-	                    DoctorRec doctorRec = (DoctorRec)doctorVect.elementAt(i);
-	                    if (doctorRec.doctor==labRec.doctor && doctorRec.doctor>0)  {
-                            String buf[] = new String[9];
-                            if (Utils.isNull(doctorRec.lname)) doctorRec.lname="  ";
-                            if (Utils.isNull(doctorRec.fname)) doctorRec.fname="  ";
-                            if (Utils.isNull(doctorRec.upin)) doctorRec.upin="  ";
-                            if (Utils.isNull(doctorRec.license)) doctorRec.license="  ";
-                            if (Utils.isNull(doctorRec.bs_provider)) doctorRec.bs_provider="  ";
-                            if (Utils.isNull(doctorRec.alt_state)) doctorRec.alt_state="  ";
-                            if (Utils.isNull(doctorRec.alt_license)) doctorRec.alt_license="  ";
-                            buf[0]="DOCTOR INFORMATION: #"+doctorRec.doctor;
-                            buf[1]="-------------------------------------------------";
-                            buf[2]="LAST:         "+doctorRec.lname;
-                            buf[3]="FIRST:        "+Utils.isNull(doctorRec.fname," ");
-                            buf[4]="UPIN:         "+Utils.isNull(doctorRec.upin," ");
-                            buf[5]="LICENSE:      "+Utils.isNull(doctorRec.license," ");
-                            buf[6]="BLUE SHIELD:  "+Utils.isNull(doctorRec.bs_provider," ");
-                            buf[7]="ALT STATE:    "+Utils.isNull(doctorRec.alt_state," ");
-                            buf[8]="ALT LICENSE:  "+Utils.isNull(doctorRec.alt_license," ");
-                            (new PickList("Doctor Information",
-                                100,270,380,230,9,buf)).setVisible(true);
-                            break;
-                        }
-                    }
-                }            
+					Vector vBuf = new Vector();
+					for (int i = 0; i < detailRec.length; i++) {
+						if (detailRec[i].isSelected
+								&& detailRec[i].additional_info.equals("Y")) {
+							String buf = detailRec[i].description.trim() + ": "
+									+ detailRec[i].textEntered.trim();
+							if (buf.length() > 60) {
+								String buf2 = buf;
+								int endNdx = 0;
+								while (buf2.length() > 60) {
+									for (int j = 0; j < 60; j++) {
+										if (buf2.charAt(j) == ' ')
+											endNdx = j;
+									}
+									buf = buf2.substring(0, endNdx);
+									buf2 = buf2.substring(endNdx).trim();
+									vBuf.addElement(buf);
+								}
+								if (!Utils.isNull(buf2)) {
+									vBuf.addElement(buf2);
+								}
+							} else
+								vBuf.addElement(buf);
+							vBuf.addElement("   ");
+						}
+					}
+					if (vBuf.size() > 0) {
+						String[] sBuf = new String[vBuf.size()];
+						for (int i = 0; i < vBuf.size(); i++)
+							sBuf[i] = (String) vBuf.elementAt(i);
+						(new PickList("Additional Detail Information", 50, 128,
+								450, 400, vBuf.size(), sBuf)).setVisible(true);
+					}
+				} else {
+					for (int i = 0; i < doctorVect.size(); i++) {
+						DoctorRec doctorRec = (DoctorRec) doctorVect
+								.elementAt(i);
+						if (doctorRec.doctor == labRec.doctor
+								&& doctorRec.doctor > 0) {
+							String buf[] = new String[9];
+							if (Utils.isNull(doctorRec.lname))
+								doctorRec.lname = "  ";
+							if (Utils.isNull(doctorRec.fname))
+								doctorRec.fname = "  ";
+							if (Utils.isNull(doctorRec.upin))
+								doctorRec.upin = "  ";
+							if (Utils.isNull(doctorRec.license))
+								doctorRec.license = "  ";
+							if (Utils.isNull(doctorRec.bs_provider))
+								doctorRec.bs_provider = "  ";
+							if (Utils.isNull(doctorRec.alt_state))
+								doctorRec.alt_state = "  ";
+							if (Utils.isNull(doctorRec.alt_license))
+								doctorRec.alt_license = "  ";
+							buf[0] = "DOCTOR INFORMATION: #" + doctorRec.doctor;
+							buf[1] = "-------------------------------------------------";
+							buf[2] = "LAST:         " + doctorRec.lname;
+							buf[3] = "FIRST:        "
+									+ Utils.isNull(doctorRec.fname, " ");
+							buf[4] = "UPIN:         "
+									+ Utils.isNull(doctorRec.upin, " ");
+							buf[5] = "LICENSE:      "
+									+ Utils.isNull(doctorRec.license, " ");
+							buf[6] = "BLUE SHIELD:  "
+									+ Utils.isNull(doctorRec.bs_provider, " ");
+							buf[7] = "ALT STATE:    "
+									+ Utils.isNull(doctorRec.alt_state, " ");
+							buf[8] = "ALT LICENSE:  "
+									+ Utils.isNull(doctorRec.alt_license, " ");
+							(new PickList("Doctor Information", 100, 270, 380,
+									230, 9, buf)).setVisible(true);
+							break;
+						}
+					}
+				}
 			}
 		});
-		rp.getActionMap().put("F12", new AbstractAction() { 
-			public void actionPerformed(ActionEvent e) { 
+		rp.getActionMap().put("F12", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
 				if (!patientQuery) {
-                    if (!dbThreadRunning) { 
-                        finalActions();
-                    }
-                    else {
-                        log.write("Database is busy");
-                        Utils.createErrMsg("Database is busy ... please retry");
-                    }
-                }
+					if (!dbThreadRunning) {
+						finalActions();
+					} else {
+						log.write("Database is busy");
+						Utils.createErrMsg("Database is busy ... please retry");
+					}
+				}
 
 			}
 		});
 
-        AbstractAction commentsAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                displayComments();
-            }
-        };
-        rp.getActionMap().put("INSERT", commentsAction);
-        addMacKeyMapping("VK_I", commentsAction);
+		AbstractAction commentsAction = new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent actionEvent) {
+				displayComments();
+			}
+		};
+		rp.getActionMap().put("INSERT", commentsAction);
+		addMacKeyMapping("VK_I", commentsAction);
 		return rp;
 	}
+
 	private void setListener(Component c) {
-		if (c instanceof Container) for (Component d : ((Container)c).getComponents()) {
-			setListener(d);
-		}
+		if (c instanceof Container)
+			for (Component d : ((Container) c).getComponents()) {
+				setListener(d);
+			}
 		try {
-			JTextComponent jc = (JTextComponent)c;
+			JTextComponent jc = (JTextComponent) c;
 
 			jc.addFocusListener(aSymFocus);
-			
+
 		} catch (Exception e) {
-			
+
 		}
 		c.addKeyListener(aSymKey);
 
 	}
-	
-	public LabForm(String sTitle)
-	{
+
+	public LabForm(String sTitle) {
 		this();
 		setTitle(sTitle);
 	}
-	
-    public LabForm(Login dbLogin)
-    {
-        this();
-        this.setTitle("Requisitions");
-        this.dbLogin=dbLogin;
-        this.log = new LogFile(
-            dbLogin.logPath,"LabForm",dbLogin.dateToday,dbLogin.userName);
-        this.labOps = new LabDbOps(this);
-        this.labOps.labFormInit();
-        this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        checkForFaxLetters();
-    }        
 
-	public void setVisible(boolean b)
-	{
-		if (b)setLocation(0,0);
+	public LabForm(Login dbLogin) {
+		this();
+		this.setTitle("Requisitions");
+		this.dbLogin = dbLogin;
+		this.log = new LogFile(dbLogin.logPath, "LabForm", dbLogin.dateToday,
+				dbLogin.userName);
+		this.labOps = new LabDbOps(this);
+		this.labOps.labFormInit();
+		this.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+		checkForFaxLetters();
+	}
+
+	public void setVisible(boolean b) {
+		if (b)
+			setLocation(0, 0);
 		super.setVisible(b);
 	}
 
-	static public void main(String args[])
-	{
+	static public void main(String args[]) {
 		(new LabForm()).setVisible(true);
 	}
 
-	public void addNotify()
-	{
+	public void addNotify() {
 		// Record the size of the window prior to calling parents addNotify.
 		Dimension size = getSize();
 
@@ -1211,13 +1225,14 @@ public class LabForm extends PcsFrame
 		int menuBarHeight = 0;
 		if (menuBar != null)
 			menuBarHeight = menuBar.getPreferredSize().height;
-		setSize(insets.left + insets.right + size.width, insets.top + insets.bottom + size.height + menuBarHeight);
+		setSize(insets.left + insets.right + size.width, insets.top
+				+ insets.bottom + size.height + menuBarHeight);
 	}
 
 	// Used by addNotify
 	boolean frameSizeAdjusted = false;
 
-	//{{DECLARE_CONTROLS
+	// {{DECLARE_CONTROLS
 	javax.swing.JPanel patientPanel = new javax.swing.JPanel();
 	javax.swing.JTextField labPrevLabNum = new javax.swing.JTextField();
 	javax.swing.JTextField labNumber = new javax.swing.JTextField();
@@ -1352,56 +1367,61 @@ public class LabForm extends PcsFrame
 	JLabel F7action = new JLabel();
 	javax.swing.JPanel msgPanel = new javax.swing.JPanel();
 	JLabel HPVmsgLabel = new JLabel();
-	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder("");
-	javax.swing.border.TitledBorder titledBorder2 = new javax.swing.border.TitledBorder("");
-	javax.swing.border.TitledBorder titledBorder3 = new javax.swing.border.TitledBorder("");
-	javax.swing.border.TitledBorder titledBorder4 = new javax.swing.border.TitledBorder("");
-	javax.swing.border.TitledBorder titledBorder5 = new javax.swing.border.TitledBorder("");
+	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder(
+			"");
+	javax.swing.border.TitledBorder titledBorder2 = new javax.swing.border.TitledBorder(
+			"");
+	javax.swing.border.TitledBorder titledBorder3 = new javax.swing.border.TitledBorder(
+			"");
+	javax.swing.border.TitledBorder titledBorder4 = new javax.swing.border.TitledBorder(
+			"");
+	javax.swing.border.TitledBorder titledBorder5 = new javax.swing.border.TitledBorder(
+			"");
 	JLabel createdLbl = new JLabel();
 	JLabel changedLbl = new JLabel();
-	//}}
-	//{{DECLARE_MENUS
-	//}}
 
-    public void invokePatientForm() 
-    {
-        if (queryIsQualified()) (new PatientForm(this)).setVisible(true);			
-        else Utils.createErrMsg("Insufficient data to query patient");
-    }                
-    
-    public boolean queryIsQualified()
-    {
-        return (
-            !Utils.isNull(labPatientLastName.getText()) ||
-            !Utils.isNull(labPatientFirstName.getText()) ||
-            !Utils.isNull(labPaAddress.getText()) ||
-            !Utils.isNull(labPhone.getText()) ||
-            !Utils.isNull(labSSN.getText()) ||
-            !Utils.isNull(labDOB.getText()) ||
-            !Utils.isNull(labPrevLabNum.getText())
-        );
-    }
-    
-    public void invokeDoctorForm() { (new DoctorForm(this)).setVisible(true); }
+	// }}
+	// {{DECLARE_MENUS
+	// }}
 
-    public void setEnableAllFields(boolean eVal)  
-    {
-        labSSN.setEnabled(eVal);
-        labPaAddress.setEnabled(eVal);
-        labDOB.setEnabled(eVal);
-        labZip.setEnabled(eVal);
-        labCity.setEnabled(eVal);
-        labState.setEnabled(eVal);
-        labNumber.setEnabled(eVal);
+	public void invokePatientForm() {
+		if (queryIsQualified())
+			(new PatientForm(this)).setVisible(true);
+		else
+			Utils.createErrMsg("Insufficient data to query patient");
+	}
+
+	public boolean queryIsQualified() {
+		return (!Utils.isNull(labPatientLastName.getText())
+				|| !Utils.isNull(labPatientFirstName.getText())
+				|| !Utils.isNull(labPaAddress.getText())
+				|| !Utils.isNull(labPhone.getText())
+				|| !Utils.isNull(labSSN.getText())
+				|| !Utils.isNull(labDOB.getText()) || !Utils
+					.isNull(labPrevLabNum.getText()));
+	}
+
+	public void invokeDoctorForm() {
+		(new DoctorForm(this)).setVisible(true);
+	}
+
+	public void setEnableAllFields(boolean eVal) {
+		labSSN.setEnabled(eVal);
+		labPaAddress.setEnabled(eVal);
+		labDOB.setEnabled(eVal);
+		labZip.setEnabled(eVal);
+		labCity.setEnabled(eVal);
+		labState.setEnabled(eVal);
+		labNumber.setEnabled(eVal);
 		labPatientID.setEnabled(eVal);
 		labPatientLastName.setEnabled(eVal);
 		patRace.setEnabled(eVal);
 		labBillingChoice.setEnabled(eVal);
 		labRelCode.setEnabled(eVal);
 		labGrpNum.setEnabled(eVal);
-		
+
 		labOtherInsurance.setEnabled(eVal);
-		//labBillingFormSigned.setEnabled(eVal);
+		// labBillingFormSigned.setEnabled(eVal);
 		labFormSigned.setEnabled(eVal);
 		labPractice.setEnabled(eVal);
 		labDateCollected.setEnabled(eVal);
@@ -1431,33 +1451,30 @@ public class LabForm extends PcsFrame
 		labPatientFirstName.setEnabled(eVal);
 		labPatientMI.setEnabled(eVal);
 		labPhone.setEnabled(eVal);
-    }        
+	}
 
-    public void openDetCodeEntry()  
-    {
-        labDetCodeEntry.requestFocus();
-        labDetCodeEntry.setText(null);
-        labRecDetInfo.setText(null);
-        labRecDetInfo.setVisible(false);
-        labRecDetInfoLbl.setText(null);
-        labRecDetInfoLbl.setVisible(false);
-        currDetCode=(-1);
-        labDetailList.setSelectedIndices(selectedDetCodes);
-    }        
+	public void openDetCodeEntry() {
+		labDetCodeEntry.requestFocus();
+		labDetCodeEntry.setText(null);
+		labRecDetInfo.setText(null);
+		labRecDetInfo.setVisible(false);
+		labRecDetInfoLbl.setText(null);
+		labRecDetInfoLbl.setVisible(false);
+		currDetCode = (-1);
+		labDetailList.setSelectedIndices(selectedDetCodes);
+	}
 
-
-	class SymKey extends java.awt.event.KeyAdapter
-	{
-		public void keyTyped(java.awt.event.KeyEvent event)
-		{
+	class SymKey extends java.awt.event.KeyAdapter {
+		public void keyTyped(java.awt.event.KeyEvent event) {
 			Object object = event.getSource();
-			if (object instanceof JLabel){
-				Component component = (Component)object;
+			if (object instanceof JLabel) {
+				Component component = (Component) object;
 				component.transferFocus();
 			}
-			KeyboardFocusManager mgr = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-	        Component focusOwner = mgr.getFocusOwner();
-	        object = focusOwner;
+			KeyboardFocusManager mgr = KeyboardFocusManager
+					.getCurrentKeyboardFocusManager();
+			Component focusOwner = mgr.getFocusOwner();
+			object = focusOwner;
 			if (object == labRecDetInfo)
 				labRecDetInfo_keyTyped(event);
 			else if (object == labPrevLabNum)
@@ -1544,8 +1561,7 @@ public class LabForm extends PcsFrame
 				patRace_keyTyped(event);
 		}
 
-		public void keyPressed(java.awt.event.KeyEvent event)
-		{
+		public void keyPressed(java.awt.event.KeyEvent event) {
 			Object object = event.getSource();
 			if (object == labDetCodeEntry)
 				labDetCodeEntry_keyPressed(event);
@@ -1637,1273 +1653,1262 @@ public class LabForm extends PcsFrame
 				patRace_keyPressed(event);
 		}
 
-		
 	}
 
-	void labDetCodeEntry_keyPressed(java.awt.event.KeyEvent event)
-	{	    
+	void labDetCodeEntry_keyPressed(java.awt.event.KeyEvent event) {
 
 		int key = event.getKeyCode();
-	    if (key==event.VK_F10) { 
-	        currentSection=4;
-	        keyActions(event);
-	    }
-	    else if (key==event.VK_F12 && currMode==Lab.UPDATE) {
-	        keyActions(event);
-	    }
-		else if (key==event.VK_ENTER)  {
-		    int detailCode = 0;
-		    if (Utils.isNull(labDetCodeEntry.getText())) {
-		        labDetCodeEntry.transferFocus();
-		        return;
-		    }
-		    else {
-		        detailCode = Integer.parseInt(labDetCodeEntry.getText());
-		        boolean bothSelected = false;
-		        if ((detailCode==MALE && isDetailSelected(FEMALE)) ||
-		           (detailCode==FEMALE && isDetailSelected(MALE))) bothSelected=true;
-		        if (bothSelected) {
-		            Utils.createErrMsg("Cannot select both MALE and FEMALE");
-		            openDetCodeEntry();
-		        }
-		    }
-		    boolean addCode = true;
-		    if (detailCode==HORMONAL_EVALUATION) {
-		        addCode=confirmDetailCode("HORMONAL EVALUATION");
-		    }
-		    if (addCode) addLabDetail();    
-		    else {
-		        labDetCodeEntry.setText(null);
-		        labDetCodeEntry.requestFocus();
-		        return;
-		    }
-            if (currDetCode==(-1))  {
-                String msg = "Invalid Detail Code - "+labDetCodeEntry.getText();
-                Utils.createErrMsg(msg);
-		        openDetCodeEntry();
-            }
-            else if (detailRec[currDetCode].additional_info.charAt(0)=='Y')  {
-                labRecDetInfo.setEnabled(true);
-                labRecDetInfo.setVisible(true);
-                labRecDetInfoLbl.setText(detailRec[currDetCode].description);
-                labRecDetInfoLbl.setVisible(true);
-                if (labRec.preparation==Lab.SURGICAL && detailRec[currDetCode].detail_code==63) {
-                   labRecDetInfo.setText(tsChar+". ");
-                }
-                else labRecDetInfo.setText(detailRec[currDetCode].textEntered);
-                labRecDetInfo.requestFocus();
-            }   
-            else  {
-                openDetCodeEntry();
-            } 
-        }		    
-        else if (event.getKeyCode()==event.VK_DELETE)  {
-            removeLabDetail();    
-            if (currDetCode==(-1))  {
-                String msg = "Invalid Detail Code - "+labDetCodeEntry.getText();
-                Utils.createErrMsg(msg);
-		        openDetCodeEntry();
-            }
-            else if (detailRec[currDetCode].additional_info.charAt(0)=='Y')  {
-                labRecDetInfo.setText(null);
-		        detailRec[currDetCode].textEntered=labRecDetInfo.getText();
-                openDetCodeEntry();
-            }   
-            else  {
-                openDetCodeEntry();
-            }   
-        }            
+		if (key == event.VK_F10) {
+			currentSection = 4;
+			keyActions(event);
+		} else if (key == event.VK_F12 && currMode == Lab.UPDATE) {
+			keyActions(event);
+		} else if (key == event.VK_ENTER) {
+			int detailCode = 0;
+			if (Utils.isNull(labDetCodeEntry.getText())) {
+				labDetCodeEntry.transferFocus();
+				return;
+			} else {
+				detailCode = Integer.parseInt(labDetCodeEntry.getText());
+				boolean bothSelected = false;
+				if ((detailCode == MALE && isDetailSelected(FEMALE))
+						|| (detailCode == FEMALE && isDetailSelected(MALE)))
+					bothSelected = true;
+				if (bothSelected) {
+					Utils.createErrMsg("Cannot select both MALE and FEMALE");
+					openDetCodeEntry();
+				}
+			}
+			boolean addCode = true;
+			if (detailCode == HORMONAL_EVALUATION) {
+				addCode = confirmDetailCode("HORMONAL EVALUATION");
+			}
+			if (addCode)
+				addLabDetail();
+			else {
+				labDetCodeEntry.setText(null);
+				labDetCodeEntry.requestFocus();
+				return;
+			}
+			if (currDetCode == (-1)) {
+				String msg = "Invalid Detail Code - "
+						+ labDetCodeEntry.getText();
+				Utils.createErrMsg(msg);
+				openDetCodeEntry();
+			} else if (detailRec[currDetCode].additional_info.charAt(0) == 'Y') {
+				labRecDetInfo.setEnabled(true);
+				labRecDetInfo.setVisible(true);
+				labRecDetInfoLbl.setText(detailRec[currDetCode].description);
+				labRecDetInfoLbl.setVisible(true);
+				if (labRec.preparation == Lab.SURGICAL
+						&& detailRec[currDetCode].detail_code == 63) {
+					labRecDetInfo.setText(tsChar + ". ");
+				} else
+					labRecDetInfo.setText(detailRec[currDetCode].textEntered);
+				labRecDetInfo.requestFocus();
+			} else {
+				openDetCodeEntry();
+			}
+		} else if (event.getKeyCode() == event.VK_DELETE) {
+			removeLabDetail();
+			if (currDetCode == (-1)) {
+				String msg = "Invalid Detail Code - "
+						+ labDetCodeEntry.getText();
+				Utils.createErrMsg(msg);
+				openDetCodeEntry();
+			} else if (detailRec[currDetCode].additional_info.charAt(0) == 'Y') {
+				labRecDetInfo.setText(null);
+				detailRec[currDetCode].textEntered = labRecDetInfo.getText();
+				openDetCodeEntry();
+			} else {
+				openDetCodeEntry();
+			}
+		}
 	}
 
-	void addLabDetail()  
-	{
-	    int detailCode = (int)Integer.parseInt(labDetCodeEntry.getText());
-	    for (int i=0;i<MAX_DET_CODES;i++)  {
-	        if (detailRec[i].detail_code==detailCode)  {
-	            currDetCode=i;
-	            detailRec[i].isSelected=true;
-	            selectedDetCodes[i]=i;
-	            break;
-            }	            
-        }	        
-    }	    
-	
-    void removeLabDetail()  {
-	    int detailCode = (int)Integer.parseInt(labDetCodeEntry.getText());
-	    for (int i=0;i<MAX_DET_CODES;i++)  {
-	        if (detailRec[i].detail_code==detailCode)  {
-	            currDetCode=i;
-	            detailRec[i].isSelected=false;
-	            selectedDetCodes[i]=(-1);
-	            if (detailRec[i].detail_code==63) {
-	                tsChar='A';
-	                tsString=null;
-	            }
-	            break;
-            }	            
-        }	        
-    }        
-
-	void labRecDetInfo_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    int key = event.getKeyCode();
-	    if (key==event.VK_F10) { 
-	        openDetCodeEntry();
-	        currentSection=4;
-	        keyActions(event);
-	    }
-		else if (key==event.VK_ENTER)  {
-		    if (Utils.required(labRecDetInfo,"Detail Information")) {
-	            if (detailRec[currDetCode].detail_code==63) {
-	                if (tsChar=='A') tsString=labRecDetInfo.getText();
-	                else tsString+="; "+labRecDetInfo.getText();
-                    tsChar++;
-                    detailRec[currDetCode].textEntered=tsString;
-                }
-                else
-		            detailRec[currDetCode].textEntered=labRecDetInfo.getText();
-		        openDetCodeEntry();    
-		    }
-        }	
-        else if (key==event.VK_F12)
-            event.consume();
+	void addLabDetail() {
+		int detailCode = (int) Integer.parseInt(labDetCodeEntry.getText());
+		for (int i = 0; i < MAX_DET_CODES; i++) {
+			if (detailRec[i].detail_code == detailCode) {
+				currDetCode = i;
+				detailRec[i].isSelected = true;
+				selectedDetCodes[i] = i;
+				break;
+			}
+		}
 	}
 
-	void labRecDetInfo_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,1000);
+	void removeLabDetail() {
+		int detailCode = (int) Integer.parseInt(labDetCodeEntry.getText());
+		for (int i = 0; i < MAX_DET_CODES; i++) {
+			if (detailRec[i].detail_code == detailCode) {
+				currDetCode = i;
+				detailRec[i].isSelected = false;
+				selectedDetCodes[i] = (-1);
+				if (detailRec[i].detail_code == 63) {
+					tsChar = 'A';
+					tsString = null;
+				}
+				break;
+			}
+		}
 	}
-	
-	public void addActions()  
-	{
-	    labRec = new LabRec();
-	    clearForm();
-	    fKeys.off();
-	    fKeys.keyOn(fKeys.F8);
-	    fKeys.keyOn(fKeys.F10);
-        currMode=Lab.ADD;
-        foundPrevLab=false;
+
+	void labRecDetInfo_keyPressed(java.awt.event.KeyEvent event) {
+		int key = event.getKeyCode();
+		if (key == event.VK_F10) {
+			openDetCodeEntry();
+			currentSection = 4;
+			keyActions(event);
+		} else if (key == event.VK_ENTER) {
+			if (Utils.required(labRecDetInfo, "Detail Information")) {
+				if (detailRec[currDetCode].detail_code == 63) {
+					if (tsChar == 'A')
+						tsString = labRecDetInfo.getText();
+					else
+						tsString += "; " + labRecDetInfo.getText();
+					tsChar++;
+					detailRec[currDetCode].textEntered = tsString;
+				} else
+					detailRec[currDetCode].textEntered = labRecDetInfo
+							.getText();
+				openDetCodeEntry();
+			}
+		} else if (key == event.VK_F12)
+			event.consume();
+	}
+
+	void labRecDetInfo_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 1000);
+	}
+
+	public void addActions() {
+		labRec = new LabRec();
+		clearForm();
+		fKeys.off();
+		fKeys.keyOn(fKeys.F8);
+		fKeys.keyOn(fKeys.F10);
+		currMode = Lab.ADD;
+		foundPrevLab = false;
 		setEnableAllFields(false);
 		labPrevLabNum.setEnabled(true);
 		labPrevLabNum.requestFocusInWindow();
 		labPrevLabNum.setBackground(Color.red);
 		labPrevLabNum.setForeground(Color.white);
 		msgLabel.setText("Type Last Lab Number and Press ENTER");
-		currentSection=1;
+		currentSection = 1;
 		/* transfers control to labPrevLabNumber field */
-    }	    
-
-	void labPrevLabNum_keyTyped(java.awt.event.KeyEvent event)
-	{
-        Utils.forceDigits(event,10);
 	}
 
-	void labPrevLabNum_keyPressed(java.awt.event.KeyEvent event)
-	{
-        /* 
-            This event signifies that the ADD operation is in progress;
-            if a last lab is found, OK, otherwise transfer to patient
-            lookup screen.
-        */            
-		if (event.getKeyCode()==KeyEvent.VK_ENTER)  {
+	void labPrevLabNum_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceDigits(event, 10);
+	}
+
+	void labPrevLabNum_keyPressed(java.awt.event.KeyEvent event) {
+		/*
+		 * This event signifies that the ADD operation is in progress; if a last
+		 * lab is found, OK, otherwise transfer to patient lookup screen.
+		 */
+		if (event.getKeyCode() == KeyEvent.VK_ENTER) {
 			if (patientQuery) {
-		    	labPrevLabNum.transferFocus();		        
-		    	labPatientLastName.requestFocusInWindow();
+				labPrevLabNum.transferFocus();
+				labPatientLastName.requestFocusInWindow();
 
-		        return;
-		    }
-		    findLastLab();
-		    //Now.. check again to see if we're in a patient query (as a result of the lab not being found).
-		    if (patientQuery) {
-		    	labPrevLabNum.transferFocus();		        
-		    	labPatientLastName.requestFocusInWindow();
+				return;
+			}
+			findLastLab();
+			// Now.. check again to see if we're in a patient query (as a result
+			// of the lab not being found).
+			if (patientQuery) {
+				labPrevLabNum.transferFocus();
+				labPatientLastName.requestFocusInWindow();
 
-		        return;
-		    }
-	    	labPrevLabNum.transferFocus();	
-	    }	
-	}
-	
-	public void findLastLab()
-	{
-        msgLabel.setText(null);
-        HPVmsgLabel.setText(null);
-        if (!Utils.isNull(labPrevLabNum.getText()))
-		    labOps.getLastLab();
-        Utils.setComponent((Component)labPrevLabNum);
-        currentSection=1;
-		if (!foundPrevLab)  {
-		    labPrevLabNum.setText(null);
-		    queryPatientActions();
-		    fKeys.keyOn(fKeys.F5);
-        }		   
-        else  { 
-            labOps.getDoctorInfo();
-            fillForm(Lab.ADD);
-            setBillingLabels(labBillingChoice.getText());
-            setEnableAllFields(false);
-            setEnablePatientFields(true);
-            labNumber.requestFocusInWindow();
-            fKeys.keyOn(fKeys.F5);
-
-
-        }
-	}
-	
-	public void setEnablePatientFields(boolean eVal)  
-	{
-	    labNumber.setEnabled(eVal);
-	    labPractice.setEnabled(eVal);
-        labClientNotes.setEnabled(eVal);
-	    labDateCollected.setEnabled(eVal);
-	    labPatientID.setEnabled(eVal);
-	    doctorText.setEnabled(eVal);
-	    labRush.setEnabled(eVal);
-	    labPatientLastName.setEnabled(eVal);
-	    patRace.setEnabled(eVal);
-	    labPatientFirstName.setEnabled(eVal);
-	    labPatientMI.setEnabled(eVal);
-	    labPaAddress.setEnabled(eVal);
-	    labZip.setEnabled(eVal);
-	    labCity.setEnabled(eVal);
-	    labState.setEnabled(eVal);
-	    labPhone.setEnabled(eVal);
-	    labDOB.setEnabled(eVal);
-	    labSSN.setEnabled(eVal);
-    }	    
-
-    /*
-        General form; sets all billing section fields on or off
-    */
-    public void setEnableBillingFields(boolean eVal)  {
-        labBillingChoice.setEnabled(eVal);
-        
-        labRelCode.setEnabled(eVal);
-        labGrpNum.setEnabled(eVal);
-        labOtherInsurance.setEnabled(eVal);
-        labPayerID.setEnabled(eVal);
-        labPCSID.setEnabled(eVal);
-        labFormSigned.setEnabled(eVal);
-        labDPAState.setEnabled(eVal);
-        labBillingID.setEnabled(eVal);
-        labSubscrLName.setEnabled(eVal);
-        labSubscrFName.setEnabled(eVal);
-        labMedicareType.setEnabled(eVal);
-    }
-
-    /*
-        Specific form; sets all billing section fields on or off
-        for a given billing choice
-    */
-    public void setEnableBillingFields(String choiceCode, boolean eVal)  
-    {
-        if (choiceCode.equals("OI")) {
-            labBillingID.setEnabled(eVal);
-            labRelCode.setEnabled(eVal);
-            labGrpNum.setEnabled(eVal);
-            labOtherInsurance.setEnabled(eVal);
-            labPayerID.setEnabled(eVal);
-            labPCSID.setEnabled(eVal);
-            labFormSigned.setEnabled(eVal);
-            labMedLbl.setText(null);
-            labMedicareType.setEnabled(false);
-        }
-        else if (choiceCode.equals("MED")) {
-            labBillingID.setEnabled(eVal);
-            labRelCode.setEnabled(false);
-            labGrpNum.setEnabled(false);
-            labOtherInsurance.setEnabled(false);
-            labPayerID.setEnabled(false);
-            labPCSID.setEnabled(false);
-            labFormSigned.setEnabled(eVal);
-            labMedLbl.setText(null);
-            labMedicareType.setEnabled(eVal);
-            //labBillingID.requestFocus();
-        }
-        else if (choiceCode.equals("BS")) {
-            labBillingID.setEnabled(eVal);
-            labRelCode.setEnabled(eVal);
-            labGrpNum.setEnabled(eVal);
-            labOtherInsurance.setEnabled(false);
-            labPayerID.setEnabled(false);
-            labPCSID.setEnabled(false);
-            labFormSigned.setEnabled(eVal);
-            labMedLbl.setText(null);
-            labMedicareType.setEnabled(false);
-            //labBillingID.requestFocus();
-        }
-        if (choiceCode.equals("DPA")) {
-        	labDPAState.setEnabled(eVal);
-            labBillingID.setEnabled(eVal);
-            labRelCode.setEnabled(false);
-            labGrpNum.setEnabled(false);
-            labOtherInsurance.setEnabled(false);
-            labPayerID.setEnabled(false);
-            labPCSID.setEnabled(false);
-            labFormSigned.setEnabled(false);
-            labMedLbl.setText(null);
-            labMedicareType.setEnabled(false);
-            //labBillingID.requestFocus();
-        }
-    }
-    
-	void LabForm_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    if (currMode==Lab.FATAL) {
-	        Utils.createErrMsg("A fatal application error has occured - "+
-	            "please contact technical support");
-	        closingActions();
-	    }
-	    else keyActions(event);
+				return;
+			}
+			labPrevLabNum.transferFocus();
+		}
 	}
 
-    public void resetLabForm()  
-    {
-        resetColors();
-        this.repaint();
-        currArea=Lab.IDLE;
-        createdLbl.setText("Created:");
-        changedLbl.setText("Updated:");
-        labComments.setText(null);
-        labMedicareType.setText(null);
-        labMedLbl.setText(null);
-        originalBillingChoice=0;
-        billingChanged=false;
-        carrierChanged=false;
-        patientQuery=false;
-        carrierCommentsShown=true;
-        currMode=Lab.IDLE;
-        clearForm();
-        resetFKeys();
-        setEnableAllFields(false);
-        msgLabel.requestFocus();
-        hasComments=false;
-        checkCarrier=true;
-        labPrep.setText(defaultPrep);
-        prepLbl.setText(defaultPrepLbl);
-        if (defaultPrep.equals("S"))
-            slideLbl.setText("Vials");
-        else if (defaultPrep.equals("H"))
-            slideLbl.setText("HPV Source");
-        else slideLbl.setText("Slides");
-        tsChar='A';
-        tsString=null;
-        HPVrequest.setText(null);
-        labRec = new LabRec();
-        carrierVect = new Vector();
-        doctorVect = new Vector();
-    }        
+	public void findLastLab() {
+		msgLabel.setText(null);
+		HPVmsgLabel.setText(null);
+		if (!Utils.isNull(labPrevLabNum.getText()))
+			labOps.getLastLab();
+		Utils.setComponent((Component) labPrevLabNum);
+		currentSection = 1;
+		if (!foundPrevLab) {
+			labPrevLabNum.setText(null);
+			queryPatientActions();
+			fKeys.keyOn(fKeys.F5);
+		} else {
+			labOps.getDoctorInfo();
+			fillForm(Lab.ADD);
+			setBillingLabels(labBillingChoice.getText());
+			setEnableAllFields(false);
+			setEnablePatientFields(true);
+			labNumber.requestFocusInWindow();
+			fKeys.keyOn(fKeys.F5);
 
-    public void gotoNextSection()  
-    {
-    	System.out.println("gotoNextSection()");
-        fKeys.keyOff(fKeys.F5);
-        fKeys.keyOff(fKeys.F6);
-        fKeys.keyOff(fKeys.F7);
-        fKeys.keyOff(fKeys.F8);
-        if (currentSection>0)  { 
-            currentSection++;
-            if (currentSection>=4) currentSection=1;
-            switch (currentSection)  {
-                case 1: msgLabel.setText(null);
-                        HPVmsgLabel.setText(null);
-                        setEnableAllFields(false);
-                        setEnablePatientFields(true);
-                        if (labRec.pat.patient>0) fKeys.keyOn(fKeys.F5);
-                        fKeys.keyOn(fKeys.F8);
-                        if (currMode==Lab.UPDATE) {
-                            labNumber.setEnabled(false);
-                            labPractice.requestFocus();
-                        }
-                        else labNumber.requestFocus();
-                        break;
-                case 2: if (currMode==Lab.UPDATE && labRec.finished>=Lab.SUBMITTED) {
-                            Utils.createErrMsg("Cannot update billing details for this lab number");
-                            currentSection=3;
-                        }
-                        else {
-                            msgLabel.setText(null);
-                            HPVmsgLabel.setText(null);
-                            patientQuery=false;
-                            fKeys.keyOn(fKeys.F6);
-                            fKeys.keyOn(fKeys.F7);
-                            fKeys.keyOn(fKeys.F8);
-                            setEnableAllFields(false);
-                            if (labRec.stop_code.equals("D")&&labRec.prac_status.equals("A"))  {
-                                labBillingChoice.setText("DOC");
-                                labBillingID.setText(labPractice.getText());
-                                labOtherInsurance.setText(labPracticeName.getText());
-                                //GAK It appears that the intention was to change the secton and allow this to 
-                                //  fall through to the next case "block"
-                                currentSection=3;
-                                
-                            }      
-                            else  {
-                                labBillingChoice.setEnabled(true);
-                                labBillingChoice.requestFocus();
-                                break;
-                            }
-                            
-                        }
-                case 3: if (checkCarrier) labOps.getCarrierInfo();
-                        setEnableAllFields(false);
-                        if (Utils.isNull(labAge.getText())) labAge.setEnabled(true);
-                        else labAge.setEnabled(false);
-                        if (currMode!=Lab.UPDATE) {
-                            labPrep.setEnabled(!labPrep.getText().equals("T"));
-                            if (labPrep.getText().equals("T")
-                            || labPrep.getText().equals("I"))
-                                labPrep.setEnabled(false);
-                            else labPrep.setEnabled(true);
-                            HPVrequest.setEnabled(
-                                labPrep.getText().equals("T") ||
-                                labPrep.getText().equals("I"));
-                            if (currMode!=Lab.UPDATE && labRec.preparation!=Lab.HPV_ONLY) {
-                                if (!Utils.equals(labRec.prac.practice_type,"ADPH"))
-                                    HPVrequest.setText(null);
-                            }
-                            if (labPrep.getText().equals("T")
-                            || labPrep.getText().equals("I")) {
-                                labNumSlides.setEnabled(false);
-                                labNumSlides.setText("1");
-                            }
-                            else {
-                                labNumSlides.setEnabled(true);
-                                if (labPrep.getText().equals("S")) {
-                                    slideLbl.setText("Vials");
-                                    labPrep.setEnabled(false);
-                                }
-                                else if (labPrep.getText().equals("H")) {
-                                    slideLbl.setText("HPV Source");
-                                    labNumSlides.setEnabled(true);
-                                    labNumSlides.setText(null);
-                                }
-                            }
-                            if (labPrep.getText().equals("T")) 
-                                labRec.preparation=Lab.THIN_LAYER;
-                            if (labPrep.getText().equals("I"))
-                                labRec.preparation=Lab.IMAGED_SLIDE;
-                            if (currMode==Lab.UPDATE) labPrep.setEnabled(true);
-                            labLMP.setEnabled(true);
-                            labDetCodeEntry.setEnabled(true);
-                        }
-                        else {
-                            labPrep.setEnabled(true);
-                            HPVrequest.setEnabled(true);
-                            labNumSlides.setEnabled(true);
-                            labLMP.setEnabled(true);
-                            labDetCodeEntry.setEnabled(true);
-                            if (labPrep.getText().equals("H")) 
-                                slideLbl.setText("HPV Source");
-                        }
-                        if (labRec.prac.hpv_regardless.equals("Y")) {
-                            labPrep.setEnabled(false);
-                            HPVrequest.setEnabled(false);
-                            HPVrequest.setText("R");
-                        }
-                        if (labPrep.isEnabled()) {
-
-                        	labPrep.setEnabled(true);
-                        	labPrep.requestFocusInWindow();
-
-                        }
-                        else if (HPVrequest.isEnabled()) {
-                        	HPVrequest.requestFocusInWindow();
-                        }
-                        else {
-                        	labDetCodeEntry.requestFocus();
-                        }
-                        break;
-            }                
-        }            
-    }
-
-	public void fillForm(int mode)  
-	{
-        if (mode==Lab.ADD)  {
-            if (labRec.pat.patient>0)
-                labPatientNumber.setText(Integer.toString(labRec.pat.patient));
-	        labPatientLastName.setText(labRec.pat.lname);
-	        labPatientFirstName.setText(labRec.pat.fname);
-	        labPatientMI.setText(labRec.pat.mi);
-	        labPaAddress.setText(labRec.pat.address1);
-	        labZip.setText(Utils.addZipMask(labRec.pat.zip));
-	        labCity.setText(labRec.pat.city);
-	        labState.setText(labRec.pat.state);
-	        labSSN.setText(Utils.addSSNMask(labRec.pat.ssn));
-	        labDOB.setText(Utils.addDateMask(labRec.pat.dob));
-	        labPhone.setText(Utils.addPhoneMask(labRec.pat.phone));
-	        patRace.setText(labRec.pat.race);
-	        if (labRec.practice>0) {
-	            labPractice.setText(Utils.lpad(
-	                Integer.toString(labRec.practice),3,"0"));
-                pracType.setText(labRec.prac.practice_type);
-	            if (labRec.parent_account>0)
-	                labParent.setText(Utils.lpad(
-	                    Integer.toString(labRec.parent_account),3,"0"));
-	            else labParent.setText(null);
-	            /* April 23, 2008: Make practice field blank for Amy
-	               when adding reqs.
-	            */
-	            if (DbConnection.getUser().toUpperCase().equals("ACHIODA"))
-	                labPractice.setText(null);
-	            if (labRec.prac_status.equals("I")) {
-	                labPracticeName.setText("Account #"+labPractice.getText()+
-	                    " is INACTIVE - Enter new account");
-	                labPractice.setText(null);
-	                labParent.setText(null);
-	            }
-	            /*
-	                Determine the doctor assigned to this lab internally
-	                and set the doctor text field to this name
-	            */
-	            for (int i=0;i<doctorVect.size();i++)  {
-	                DoctorRec dRec = (DoctorRec)doctorVect.elementAt(i);
-	                if (dRec.doctor==labRec.doctor)  {
-	                    doctorText.setText(Utils.doctorName(dRec));
-	                    labRec.doctor=dRec.doctor;
-	                    break;
-                    }	                
-                }
-                /*
-                    If some other text has been input to supercede the internal
-                    doctor name, reset the doctor text field to this name
-                */
-                if (!Utils.isNull(labRec.doctor_text))
-                    doctorText.setText(labRec.doctor_text);
-            }	 
-            if (labRec.pat.last_lab>0) {
-	            labBillingChoice.setText(null);
-	            if (labRec.billing_choice != 122) {
-	            	System.out.println("Another type of billing?");
-	            }
-                labBillingChoice.setText(dbLogin.getBillingChoiceCode(labRec.billing_choice));
-                if (!Utils.isNull(labRec.subscriber)) {
-                    labSubscriber.setText(labRec.subscriber);
-                    if (labRec.subscriber.equals("SELF"))
-                        labRelCode.setText("S");
-                    else if (labRec.subscriber.equals("SPOUSE"))
-                        labRelCode.setText("H");
-                    else if (labRec.subscriber.equals("DEPENDENT"))
-                        labRelCode.setText("C");
-                    else if (labRec.subscriber.equals("OTHER"))
-                        labRelCode.setText("O");
-                        
-                }
-                labGrpNum.setText(labRec.group_number);
-                labBillingID.setText(labRec.id_number);
-                labOtherInsurance.setText(labRec.name);
-                if (labBillingChoice.getText().equals("OI")) {
-                    labPayerID.setText(labRec.payer_id);
-                    if (labRec.pcs_payer_id>0)
-                        labPCSID.setText(Integer.toString(labRec.pcs_payer_id));
-                }           
-                else if (labBillingChoice.getText().equals("DPA")) {
-                    labDPAState.setText(labRec.state);
-                }       
-                labSubscrLName.setText(labRec.sub_lname);
-                labSubscrFName.setText(labRec.sub_fname);
-            }
-        }	        
-	    else if (mode==Lab.QUERY)  {
-	        createdLbl.setText("Created: "+labRec.create_date+", "+
-	            labRec.create_user);
-	        changedLbl.setText("Updated: "+labRec.change_date+", "+
-	            labRec.change_user);
-	        if (labRec.pat.patient>0)
-	            labPatientNumber.setText(Integer.toString(labRec.pat.patient));
-	        String buf = new String();
-	        try { 
-	            labPrevLabNum.setText(Integer.toString(labRec.previous_lab)); 
-	            if (labPrevLabNum.getText().equals("0"))
-	                labPrevLabNum.setText(null);
-            }
-	        catch (Exception e) { labPrevLabNum.setText(null); }
-	        try { labNumber.setText(Integer.toString(labRec.lab_number)); }
-	        catch (Exception e) { log.write(e.toString()); }
-	        String p = new String();
-	        try { p=Integer.toString(labRec.practice); }
-	        catch (Exception e) { log.write(e.toString()); }
-	        labPractice.setText(Utils.lpad(p,3,"0"));
-	        pracType.setText(labRec.prac.practice_type);
-	        if (labRec.parent_account>0)
-	            labParent.setText(Utils.lpad(
-	                Integer.toString(labRec.parent_account),3,"0"));
-	        else labParent.setText(null);
-	        labPatientLastName.setText(labRec.pat.lname);
-	        labPatientFirstName.setText(labRec.pat.fname);
-	        labPatientMI.setText(labRec.pat.mi);
-	        labSSN.setText(Utils.addSSNMask(labRec.pat.ssn));
-	        labPaAddress.setText(labRec.pat.address1);
-	        labZip.setText(Utils.addZipMask(labRec.pat.zip));
-	        labCity.setText(labRec.pat.city);
-	        labState.setText(labRec.pat.state);
-	        labPhone.setText(Utils.addPhoneMask(labRec.pat.phone));
-	        labDOB.setText(Utils.addDateMask(labRec.pat.dob));
-	        patRace.setText(labRec.pat.race);
-            labDateCollected.setText(Utils.addDateMask(labRec.date_collected));
-	        labPatientID.setText(labRec.patient_id);
-            labClientNotes.setText(labRec.client_note_text);
-            if (labRec.preparation==Lab.HPV_ONLY)
-                labNumSlides.setText(labRec.hpv.hpvSource);
-            else
-                labNumSlides.setText(Integer.toString(labRec.slide_qty));
-            if (labRec.hpv.requested.equals("Y"))
-                HPVrequest.setText(labRec.hpv.hpv_code);
-            else HPVrequest.setText("N");
-	        for (int i=0;i<doctorVect.size();i++)  {
-	            DoctorRec dRec = (DoctorRec)doctorVect.elementAt(i);
-	            if (dRec.doctor==labRec.doctor)  {
-	                doctorText.setText(Utils.doctorName(dRec));
-	                labRec.doctor=dRec.doctor;
-	                break;
-                }	                
-            }
-            if (!Utils.isNull(labRec.doctor_text))
-                doctorText.setText(labRec.doctor_text);
-            char c = labRec.rush.charAt(0);
-            if (c=='Y') labRush.setSelected(true);
-	        labBillingChoice.setText(null);
-            labBillingChoice.setText(
-                dbLogin.getBillingChoiceCode(labRec.billing_choice));
-            labBillingID.setText(labRec.id_number);
-            if (!Utils.isNull(labRec.subscriber)) {
-                labSubscriber.setText(labRec.subscriber);
-                if (labRec.subscriber.equals("SELF"))
-                    labRelCode.setText("S");
-                else if (labRec.subscriber.equals("SPOUSE"))
-                    labRelCode.setText("H");
-                else if (labRec.subscriber.equals("DEPENDENT"))
-                    labRelCode.setText("C");
-                else if (labRec.subscriber.equals("OTHER"))
-                    labRelCode.setText("O");
-            }
-            labGrpNum.setText(labRec.group_number);
-            labDiagCode.setText(labRec.diagnosis_code);
-            labDiagCode2.setText(labRec.diagnosis_code2);
-            labDiagCode3.setText(labRec.diagnosis_code3);
-            labDiagCode4.setText(labRec.diagnosis_code4);
-            diag1lbl.setText(getDiagDescr(labDiagCode.getText()));
-            diag2lbl.setText(getDiagDescr(labDiagCode2.getText()));
-            diag3lbl.setText(getDiagDescr(labDiagCode3.getText()));
-            diag4lbl.setText(getDiagDescr(labDiagCode4.getText()));
-            labOtherInsurance.setText(labRec.name);
-            if (labBillingChoice.getText().equals("OI")) {
-                labPayerID.setText(labRec.payer_id);
-                if (labRec.pcs_payer_id>0)
-                    labPCSID.setText(Integer.toString(labRec.pcs_payer_id));
-            }                
-            else if (labBillingChoice.getText().equals("DPA")) {
-                labDPAState.setText(labRec.state);
-            }                
-            else if (labBillingChoice.getText().equals("MED")) {
-                if (Utils.isNull(labRec.medicare_code))
-                    labRec.medicare_code="F";
-                else if (labRec.medicare_code.equals("A"))
-                    labRec.medicare_code="D";
-                labMedicareType.setText(labRec.medicare_code);
-                setMedLbl();
-            }
-            if (!Utils.isNull(labRec.sign_date)) {  
-                labFormSigned.setText("Y");
-            }
-            else labFormSigned.setText("N");
-            labSubscrLName.setText(labRec.sub_lname);
-            labSubscrFName.setText(labRec.sub_fname);
-            labLMP.setText(labRec.lmp);
-            try { labAge.setText(Integer.toString(labRec.age)); }
-            catch (Exception e) { labAge.setText(null); }
-            if (labRec.preparation==Lab.CONVENTIONAL) {
-                labPrep.setText("C");
-                prepLbl.setText("CONVENTIONAL");
-            }
-            else if (labRec.preparation==Lab.THIN_LAYER) {
-                labPrep.setText("T");
-                prepLbl.setText("THIN LAYER");
-                if (labRec.prac.hpv_regardless.equals("Y")) {
-                    HPVrequest.setText("R");
-                }
-            }
-            else if (labRec.preparation==Lab.CYT_NON_PAP) {
-                labPrep.setText("N");
-                prepLbl.setText("CYT NON-PAP");
-            }
-            else if (labRec.preparation==Lab.EXPIRED) {
-                labPrep.setText("E");
-                prepLbl.setText("EXPIRED");
-            }
-            else if (labRec.preparation==Lab.SURGICAL) {
-                labPrep.setText("S");
-                prepLbl.setText("SURGICAL");
-            }
-            else if (labRec.preparation==Lab.HPV_ONLY) {
-                labPrep.setText("H");
-                HPVrequest.setText("R");
-                prepLbl.setText("HPV ONLY");
-                slideLbl.setText("HPV Source");
-                labNumSlides.setText(labRec.hpv.hpvSource);
-            }
-            else if (labRec.preparation==Lab.IMAGED_SLIDE) {
-                labPrep.setText("I");
-                prepLbl.setText("IMAGED SLIDE");
-            }
-            
-            labDetailList.setSelectedIndices(selectedDetCodes);
-            // Set text for screen message
-            //String descr;
-            switch (currArea) {
-            case Lab.RESULTS_PENDING:
-                msgLabel.setText("RESULTS PENDING");
-                break;
-            case Lab.FAX_QUEUE:
-                String ltrType = null;
-                String msg = null;
-                if (labRec.billing.letter_type.equals("GENERIC"))
-                    ltrType="INFO";
-                else ltrType=labRec.billing.letter_type;
-                if (labRec.billing.in_queue==1)
-                    msg=ltrType+" LETTER MUST BE PRINTED";
-                else msg="WAITING FOR RESPONSE FROM "+ltrType+" LETTER";
-                if (labRec.billing.origin==1) msg+=" (REQ)";
-                else msg+=" (BILLING)";
-                msgLabel.setText(msg);
-                break;
-            case Lab.BILLING_QUEUE:
-                if (!Utils.isNull(labRec.invoice))
-                    msgLabel.setText("INVOICE #"+labRec.invoice);
-                else
-                    msgLabel.setText("BILLING QUEUE");
-                break;
-            case Lab.SUBMITTED:
-                msgLabel.setText("SUBMITTED");
-                break;
-            case Lab.PENDING:
-                msgLabel.setText("PENDING");
-                break;
-            case Lab.FINISHED:
-                msgLabel.setText("FINISHED");
-                break;
-            case Lab.HPV_PENDING:
-                if (labRec.preparation==Lab.HPV_ONLY)
-                    msgLabel.setText("HPV ONLY RESULTS PENDING");
-                else if (labRec.finished==Lab.RESULTS_PENDING)
-                    msgLabel.setText("RESULTS PENDING INCLUDING HPV TEST");
-                else
-                    msgLabel.setText("RESULTS ENTERED; BILLING PENDING HPV TEST RESULTS");
-                break;
-            case Lab.EXPIRED_SPECIMEN:
-                msgLabel.setText("SPECIMEN EXPIRED");
-                break;
-            case Lab.UNUSED:
-                msgLabel.setText("UNUSED LAB NUMBER");
-                break;
-            case Lab.UNKNOWN:
-                msgLabel.setText("WARNING!  THERE MAY BE DATA ERRORS WITH THIS LAB");
-                break;
-            default:
-                msgLabel.setText("FINISHED");
-                break;
-            }
-            if (!Utils.isNull(labRec.hpv.HPVmsg)) 
-                HPVmsgLabel.setText(labRec.hpv.HPVmsg);
-            if (!Utils.isNull(labRec.receive_date))
-                recvLbl.setText("Recv: "+Utils.addDateMask(labRec.receive_date));
-        }	    
-        if (labAge.equals("0")) labAge.setText(null);
-        setBillingLabels(labBillingChoice.getText());
-        if (labRec.billing_choice==Lab.DOC) {
-            labOtherInsurance.setText(labRec.practice_name);
-        }
-        else if (labRec.billing_choice==Lab.DB) {
-            labOtherInsurance.setText(labRec.pat.lname+", "+labRec.pat.fname);
-        }
-        
-        if (!Utils.isNull(labRec.ADPH_program))
-            pgmLabel.setText(labRec.ADPH_program);
-        else pgmLabel.setText(labRec.program);
-    }        
-    
-    public void fillLabRecord()  
-    {
-        labRec.lab_number=(int)Integer.parseInt(labNumber.getText());
-        if (!Utils.isNull(labPrevLabNum.getText()))
-            labRec.previous_lab=(int)Integer.parseInt(this.labPrevLabNum.getText());
-         else
-            labRec.previous_lab=0;
-        labRec.patient=labRec.pat.patient;
-        labRec.pat.lname=labPatientLastName.getText();
-        labRec.pat.fname=labPatientFirstName.getText();
-        labRec.pat.mi=labPatientMI.getText();
-        labRec.pat.address1=labPaAddress.getText();
-        labRec.pat.city=labCity.getText();
-        labRec.pat.state=labState.getText();
-        labRec.pat.zip=Utils.stripZipMask(labZip.getText());
-        labRec.pat.ssn=Utils.stripSSNMask(labSSN.getText());
-        labRec.pat.dob=Utils.stripDateMask(labDOB.getText());
-        labRec.pat.race=patRace.getText();
-        labRec.pat.phone=Utils.stripPhoneMask(labPhone.getText());
-        labRec.practice=(int)Integer.parseInt(labPractice.getText());
-        labRec.client_note_text=labClientNotes.getText().trim();
-        labRec.patient_id=labPatientID.getText();
-        labRec.doctor_text=doctorText.getText();
-        try { labRec.lab_comments=labComments.getText(); }
-        catch (Exception e) { }
-        labRec.diagnosis_code=labDiagCode.getText();
-        labRec.diagnosis_code2=labDiagCode2.getText();
-        labRec.diagnosis_code3=labDiagCode3.getText();
-        labRec.diagnosis_code4=labDiagCode4.getText();
-        if (Utils.isNull(labNumSlides.getText())) labRec.slide_qty=0;
-        else {
-            if (labRec.preparation==Lab.HPV_ONLY) {
-                labRec.slide_qty=0;
-                labRec.hpv.hpvSource=labNumSlides.getText();
-            }
-            else {
-                labRec.slide_qty=(Integer.parseInt(labNumSlides.getText()));
-            }
-        }
-        labRec.date_collected=Utils.stripDateMask(labDateCollected.getText());
-        if (HPVrequest.getText().equals("N")) {
-            labRec.hpv.requested="N";
-            labRec.hpv.hpv_code="N";
-        }
-        else {
-            labRec.hpv.requested="Y";
-            labRec.hpv.hpv_code=HPVrequest.getText();
-        }
-        labRec.lmp=labLMP.getText();
-        try {
-            String tmp=labAge.getText();
-            int age=(int)Integer.parseInt(tmp);
-            if (age>0) labRec.age=age;
-        }
-        catch (Exception e) { }
-        if (labRush.isSelected()) labRec.rush="Y";
-        else labRec.rush="N";
-        labRec.billing_choice=dbLogin.getBillingChoice(labBillingChoice.getText().trim());
-        labRec.description=(String)labBillingChoice.getText();
-        if (labBillingChoice.getText().equals("DOC"))
-            labRec.id_number=labPractice.getText();
-        else labRec.id_number=labBillingID.getText();
-        labRec.group_number=labGrpNum.getText();
-        if (labRelCode.getText().equals("S")||labRelCode.getText().equals("O")) {
-            labRec.subscriber="SELF";
-            labRec.sub_lname=labPatientLastName.getText();
-            labRec.sub_fname=labPatientFirstName.getText();
-        }
-        else if (labRelCode.getText().equals("H")) {
-            labRec.subscriber="SPOUSE";
-            labRec.sub_lname=labSubscrLName.getText();
-            labRec.sub_fname=labSubscrFName.getText();
-        }
-        else if (labRelCode.getText().equals("C")) {
-            labRec.subscriber="DEPENDENT";
-            labRec.sub_lname=labSubscrLName.getText();
-            labRec.sub_fname=labSubscrFName.getText();
-        }
-        else {
-            labRec.subscriber="SELF";
-            labRec.sub_lname=labPatientLastName.getText();
-            labRec.sub_fname=labPatientFirstName.getText();
-        }
-        if (labBillingChoice.getText().equals("MED")) {
-            labRec.medicare_code=labMedicareType.getText();
-            if (labRec.medicare_code.equals("D"))
-                labRec.medicare_code="A";
-        }
-        else labRec.medicare_code=null;
-        labRec.name=labOtherInsurance.getText();
-        labRec.payer_id=labPayerID.getText();
-        if (!Utils.isNull(labPCSID.getText()))
-            labRec.pcs_payer_id=Integer.parseInt((String)labPCSID.getText());
-        labRec.state=labDPAState.getText();
-        if (!Utils.isNull(labRec.prac.practice_type)) {
-            if (labRec.prac.practice_type.equals("ADPH")) {
-                if (Utils.isNull(ADPHpgm.getText())) ADPHpgm.setText("NP");
-                labRec.ADPH_program=Utils.removeSpaces(ADPHpgm.getText());
-                pgmLabel.setText(labRec.ADPH_program);
-            }
-            else if (labRec.prac.practice_type.equals("WV")) {
-                pgmLabel.setText(labRec.program);
-            }
-        }
-    }        
-    
-    public void resetSelectedDetails()  
-    {
-        for (int i=0;i<MAX_DET_CODES;i++)  {
-            selectedDetCodes[i]=(-1);
-            if (detailRec[i] != null) {
-            	detailRec[i].reset();
-            }
-        }            
-    }                
-    
-    public void clearForm()  {
-        msgLabel.setText(null);
-        HPVmsgLabel.setText(null);
-        pgmLabel.setText(null);
-        doctorText.setText(null);
-        labPracticeName.setText(null);
-        pracType.setText(null);
-        labPatientNumber.setText(null);
-        labPatientMI.setText(null);
-        labNumber.setText(null);
-        labPatientID.setText(null);
-        labPatientLastName.setText(null);
-        labPaAddress.setText(null);
-        labDOB.setText(null);
-        labCity.setText(null);
-        labZip.setText(null);
-        labState.setText(null);
-        labSSN.setText(null);
-        patRace.setText(null);
-        labClientNotes.setText(null);
-        labBillingChoice.setText(null);
-        labSubscriber.setText("SELF");
-        labRelCode.setText("S");
-        labPatientFirstName.setText(null);
-        labPhone.setText(null);
-        labGrpNum.setText(null);
-        labBillingID.setText(null);
-        labBillingIDLbl.setText("Billing ID");
-        labOtherInsurance.setText(null);
-        labPayerID.setText(null);
-        labPCSID.setText(null);
-        labFormSigned.setText("N");
-        labRush.setSelected(false);
-        labPractice.setText(null);
-        labParent.setText(null);
-        labDateCollected.setText(null);
-        labSubscrLName.setText(null);
-        labSubscrFName.setText(null);
-        labDPAState.setText(null);
-        labPrevLabNum.setText(null);
-        labNumSlides.setText(null);
-        labPrep.setText(defaultPrep);
-        if (labPrep.getText().equals("H")) HPVrequest.setText("R");
-        else HPVrequest.setText(null);
-        labLMP.setText(null);
-        labAge.setText(null);
-        clearDiagCodeDisplay();
-        labDetCodeEntry.setText(null);
-        labRecDetInfo.setText(null);
-        labRecDetInfo.setVisible(false);
-        labRecDetInfoLbl.setText(null);
-        labRecDetInfoLbl.setVisible(false);
-        resetSelectedDetails();
-        labDetailList.setSelectedIndices(selectedDetCodes);
-        currDetCode=(-1);
-        foundPrevLab=false;
-        setEnableAllFields(false);
-        CarrierNameLbl.setText(null);
-        recvLbl.setText("Recv:");
-    }         
-    
-    public void resetColors()  
-    {
-        Utils.setColors(this.getContentPane());
-        labPracticeName.setForeground(Color.white);
-        CarrierNameLbl.setForeground(Color.white);
-        labSubscriber.setForeground(Color.white);
-        diag1lbl.setForeground(Color.white);
-        diag2lbl.setForeground(Color.white);
-        diag3lbl.setForeground(Color.white);
-        diag4lbl.setForeground(Color.white);
-        labMedLbl.setForeground(Color.white);
-        prepLbl.setFont(new Font("Dialog", Font.BOLD, 11));
-        prepLbl.setForeground(Color.white);
-        createdLbl.setForeground(Color.white);
-        changedLbl.setForeground(Color.white);
-        msgLabel.setForeground(Color.green.brighter());
-        HPVmsgLabel.setForeground(Color.green.brighter());
-        labPracticeName.setFont(new Font("Dialog", Font.BOLD, 11));
-        CarrierNameLbl.setFont(new Font("Dialog", Font.BOLD, 11));
-        diag1lbl.setFont(new Font("SansSerif", Font.BOLD, 10));
-        diag2lbl.setFont(new Font("SansSerif", Font.BOLD, 10));
-        diag3lbl.setFont(new Font("SansSerif", Font.BOLD, 10));
-        diag4lbl.setFont(new Font("SansSerif", Font.BOLD, 10));
-        createdLbl.setFont(new Font("Dialog", Font.BOLD, 10));
-        changedLbl.setFont(new Font("Dialog", Font.BOLD, 10));
-        labRecDetInfoLbl.setFont(new Font("Dialog", Font.BOLD, 11));
-        labRush.setBackground(Utils.FORM_BACKGROUND);
-        labRush.setForeground(Utils.LABEL_FOREGROUND);
-        pgmLabel.setFont(new Font("Dialog", Font.BOLD, 11));
-        pgmLabel.setForeground(Color.white);
-        pracType.setFont(new Font("Dialog", Font.BOLD, 11));
-        pracType.setForeground(Color.white);
-    }        
-    
-    public boolean isSexSelected()
-    {
-        boolean isSelected=false;
-        for (int i=0; i<detailRec.length; i++) {
-            if (detailRec[i].detail_code==MALE || detailRec[i].detail_code==FEMALE)
-                if (detailRec[i].isSelected) {
-                    isSelected=true;
-                    break;
-                }
-        }
-        return (isSelected);
-    }
-	
-	public void finalActions()  
-	{
-	    if (currMode==Lab.ADD||currMode==Lab.UPDATE||currMode==Lab.QUEUE) {
-	        if (labRec.preparation==Lab.SURGICAL||labRec.preparation==Lab.HPV_ONLY) {
-	            if (Utils.isNull(labRec.receive_date)) {
-	                Utils.createErrMsg("Requisition is missing required RECEIVE DATE!!");
-                    (new RecvDateDialog(labNumber.getText(),labRec)).setVisible(true);
-                    return;
-	            }
-	        }
-	    }
-	    boolean success=false;
-        String logInfo = "("+labNumber.getText()+") ("+
-            labPatientNumber.getText()+") ("+
-	        labPatientLastName.getText()+", "+
-	        labPatientFirstName.getText()+")";
-		if (currMode==Lab.ADD)  {
-		    if (labRec.preparation==Lab.SURGICAL && !isSexSelected()) {
-		        Utils.createErrMsg("Must select MALE or FEMALE");
-		        return;
-		    }
-		    this.setCursor(new Cursor(WAIT_CURSOR));
-		    fillLabRecord();
-		    if (!labBillingChoice.getText().equals("DOC") &&
-		        !labBillingChoice.getText().equals("DB") &&
-		        !labBillingChoice.getText().equals("PRC") &&
-		        !labBillingChoice.getText().equals("PPN") &&
-		        !labBillingChoice.getText().equals("PPD"))
-            {
-		        if (labRec.carrier_id==(-1)) {
-                    Utils.createErrMsg("Payer for Code "+
-                        (String)labBillingChoice.getText()+ 
-                        " does not exist");
-                    this.setCursor(new Cursor(DEFAULT_CURSOR));
-                    return;
-                }
-                boolean rv = billingValidation();
-                if (!rv) { 
-                    this.setCursor(new Cursor(DEFAULT_CURSOR));
-                    return;
-                }
-            }
-            else if (labBillingChoice.getText().equals("PPD")) {
-                labRec.carrier_id=(-1);
-                if (labRec.payment_amount<=0) {
-                    this.setCursor(new Cursor(DEFAULT_CURSOR));
-                    Utils.createErrMsg("Payment Not Entered for Prepaid Lab");
-                    currentSection=1;
-                    gotoNextSection();
-                    labOtherInsurance.requestFocus();
-                    return;
-                }
-            }
-            else labRec.carrier_id=(-1);
-	        if (!dbThreadRunning) { 
-	            log.write("ADD "+log.datestamp()+" "+logInfo);
-	            labOps.DB_action();
-	        }
-            else { 
-                this.setCursor(new Cursor(DEFAULT_CURSOR));
-                Utils.createErrMsg("Database is busy ... please retry");
-                return;
-            }
-            this.setCursor(new Cursor(DEFAULT_CURSOR));
-            resetLabForm();
-		    addActions();
-        }		
-        else if (currMode==Lab.QUERY)  {
-            this.setCursor(new Cursor(WAIT_CURSOR));
-            
-            labOps.getRequisition();
-            
-            while (dbThreadRunning) {continue ; }
-            if (labRec.lab_number>0) {
-                fKeys.off();
-                fKeys.keyOn(fKeys.F3);
-                fKeys.keyOn(fKeys.F5);
-                fKeys.keyOn(fKeys.F9);
-                resetColors();
-                fillForm(Lab.QUERY);
-                if (labOps.hasLabComments(labRec.lab_number)) displayComments();
-                if (labRec.preparation==Lab.THIN_LAYER 
-                || labRec.preparation==Lab.HPV_ONLY 
-                || labRec.preparation==Lab.IMAGED_SLIDE) {
-                    if (currArea==Lab.HPV_PENDING) {
-                        if (Utils.isNull(labRec.hpv.test_sent)
-                        || labRec.hpv.test_sent.equals("R")
-                        || labRec.hpv.test_sent.equals("P")
-                        || (labRec.hpv.test_sent.equals("Y")
-                            && Utils.isNull(labRec.hpv.test_results))) {
-                                if (!Utils.isNull(labRec.hpv.datestamp))
-                                    updateHPV();
-                        }
-                    }
-                }
-                setEnableAllFields(false);
-                msgLabel.requestFocus();
-                currMode=Lab.IDLE;
-            }
-            else resetLabForm();
-            this.setCursor(new Cursor(DEFAULT_CURSOR));
-        }    
-        else if (currMode==Lab.QUEUE)  {
-            this.setCursor(new Cursor(WAIT_CURSOR));
-            labOps.getRequisition();
-            if (labRec.lab_number>0) {
-                fKeys.off();
-                fKeys.keyOn(fKeys.F9);
-                resetColors();
-                fillForm(Lab.QUERY);
-                if (labOps.hasLabComments(labRec.lab_number)) displayComments();
-                setEnableAllFields(false);
-                msgLabel.requestFocus();
-                updateActions();
-            }
-            else resetLabForm();
-            this.setCursor(new Cursor(DEFAULT_CURSOR));
-        }    
-        else if (currMode==Lab.UPDATE) {
-            this.setCursor(new Cursor(WAIT_CURSOR));
-            fillLabRecord();
-	        if (!dbThreadRunning) {
-	            log.write("UPDATE "+log.datestamp()+" "+logInfo);
-	            labOps.DB_action();
-	        }
-            else { 
-                this.setCursor(new Cursor(DEFAULT_CURSOR));
-                Utils.createErrMsg("Database is busy ... please retry");
-                return;
-            }
-            fKeys.off();
-            fKeys.keyOn(fKeys.F1);
-            fKeys.keyOn(fKeys.F2);
-            fKeys.keyOn(fKeys.F3);
-            fKeys.keyOn(fKeys.F8);
-            fKeys.keyOn(fKeys.F9);
-            setEnableAllFields(false);
-            msgLabel.requestFocus();
-            faxLetterQueue = new Vector();
-            labOps.getFaxLetters();
-            currMode=Lab.IDLE;
-            this.setCursor(new Cursor(DEFAULT_CURSOR));
-        }
-    }	    
-    
-    void queueActions()
-    {
-        fKeys.keyOn(fKeys.F12);
-        fKeys.keyOn(fKeys.F10);
-        currMode=Lab.UPDATE;
-        currentSection=1;
-        gotoNextSection();
-    }
-
-	void labNumber_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceDigits(event,10);
+		}
 	}
 
-	void labPatientID_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,16);
+	public void setEnablePatientFields(boolean eVal) {
+		labNumber.setEnabled(eVal);
+		labPractice.setEnabled(eVal);
+		labClientNotes.setEnabled(eVal);
+		labDateCollected.setEnabled(eVal);
+		labPatientID.setEnabled(eVal);
+		doctorText.setEnabled(eVal);
+		labRush.setEnabled(eVal);
+		labPatientLastName.setEnabled(eVal);
+		patRace.setEnabled(eVal);
+		labPatientFirstName.setEnabled(eVal);
+		labPatientMI.setEnabled(eVal);
+		labPaAddress.setEnabled(eVal);
+		labZip.setEnabled(eVal);
+		labCity.setEnabled(eVal);
+		labState.setEnabled(eVal);
+		labPhone.setEnabled(eVal);
+		labDOB.setEnabled(eVal);
+		labSSN.setEnabled(eVal);
 	}
 
-	void labGrpNum_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,32);
+	/*
+	 * General form; sets all billing section fields on or off
+	 */
+	public void setEnableBillingFields(boolean eVal) {
+		labBillingChoice.setEnabled(eVal);
+
+		labRelCode.setEnabled(eVal);
+		labGrpNum.setEnabled(eVal);
+		labOtherInsurance.setEnabled(eVal);
+		labPayerID.setEnabled(eVal);
+		labPCSID.setEnabled(eVal);
+		labFormSigned.setEnabled(eVal);
+		labDPAState.setEnabled(eVal);
+		labBillingID.setEnabled(eVal);
+		labSubscrLName.setEnabled(eVal);
+		labSubscrFName.setEnabled(eVal);
+		labMedicareType.setEnabled(eVal);
 	}
 
-	void labBillingID_keyTyped(java.awt.event.KeyEvent event)
-	{
-	    if (labBillingChoice.getText().equals("DPA")) {
-	        if (labDPAState.getText().equals("PA"))
-	            Utils.forceUpper(event,10);
-	        else if (labDPAState.getText().equals("OH"))
-	            Utils.forceUpper(event,12);
-	        else if (labDPAState.getText().equals("WV"))
-	            Utils.forceUpper(event,12);
-	    }
-		else Utils.forceUpper(event,32);
+	/*
+	 * Specific form; sets all billing section fields on or off for a given
+	 * billing choice
+	 */
+	public void setEnableBillingFields(String choiceCode, boolean eVal) {
+		if (choiceCode.equals("OI")) {
+			labBillingID.setEnabled(eVal);
+			labRelCode.setEnabled(eVal);
+			labGrpNum.setEnabled(eVal);
+			labOtherInsurance.setEnabled(eVal);
+			labPayerID.setEnabled(eVal);
+			labPCSID.setEnabled(eVal);
+			labFormSigned.setEnabled(eVal);
+			labMedLbl.setText(null);
+			labMedicareType.setEnabled(false);
+		} else if (choiceCode.equals("MED")) {
+			labBillingID.setEnabled(eVal);
+			labRelCode.setEnabled(false);
+			labGrpNum.setEnabled(false);
+			labOtherInsurance.setEnabled(false);
+			labPayerID.setEnabled(false);
+			labPCSID.setEnabled(false);
+			labFormSigned.setEnabled(eVal);
+			labMedLbl.setText(null);
+			labMedicareType.setEnabled(eVal);
+			// labBillingID.requestFocus();
+		} else if (choiceCode.equals("BS")) {
+			labBillingID.setEnabled(eVal);
+			labRelCode.setEnabled(eVal);
+			labGrpNum.setEnabled(eVal);
+			labOtherInsurance.setEnabled(false);
+			labPayerID.setEnabled(false);
+			labPCSID.setEnabled(false);
+			labFormSigned.setEnabled(eVal);
+			labMedLbl.setText(null);
+			labMedicareType.setEnabled(false);
+			// labBillingID.requestFocus();
+		}
+		if (choiceCode.equals("DPA")) {
+			labDPAState.setEnabled(eVal);
+			labBillingID.setEnabled(eVal);
+			labRelCode.setEnabled(false);
+			labGrpNum.setEnabled(false);
+			labOtherInsurance.setEnabled(false);
+			labPayerID.setEnabled(false);
+			labPCSID.setEnabled(false);
+			labFormSigned.setEnabled(false);
+			labMedLbl.setText(null);
+			labMedicareType.setEnabled(false);
+			// labBillingID.requestFocus();
+		}
 	}
 
-	void labPractice_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceDigits(event,3);
+	void LabForm_keyPressed(java.awt.event.KeyEvent event) {
+		if (currMode == Lab.FATAL) {
+			Utils.createErrMsg("A fatal application error has occured - "
+					+ "please contact technical support");
+			closingActions();
+		} else
+			keyActions(event);
 	}
 
-	void labSubscrLName_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,32);
+	public void resetLabForm() {
+		resetColors();
+		this.repaint();
+		currArea = Lab.IDLE;
+		createdLbl.setText("Created:");
+		changedLbl.setText("Updated:");
+		labComments.setText(null);
+		labMedicareType.setText(null);
+		labMedLbl.setText(null);
+		originalBillingChoice = 0;
+		billingChanged = false;
+		carrierChanged = false;
+		patientQuery = false;
+		carrierCommentsShown = true;
+		currMode = Lab.IDLE;
+		clearForm();
+		resetFKeys();
+		setEnableAllFields(false);
+		msgLabel.requestFocus();
+		hasComments = false;
+		checkCarrier = true;
+		labPrep.setText(defaultPrep);
+		prepLbl.setText(defaultPrepLbl);
+		if (defaultPrep.equals("S"))
+			slideLbl.setText("Vials");
+		else if (defaultPrep.equals("H"))
+			slideLbl.setText("HPV Source");
+		else
+			slideLbl.setText("Slides");
+		tsChar = 'A';
+		tsString = null;
+		HPVrequest.setText(null);
+		labRec = new LabRec();
+		carrierVect = new Vector();
+		doctorVect = new Vector();
 	}
 
-	void labSubscrFName_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,32);
+	public void gotoNextSection() {
+		System.out.println("gotoNextSection()");
+		fKeys.keyOff(fKeys.F5);
+		fKeys.keyOff(fKeys.F6);
+		fKeys.keyOff(fKeys.F7);
+		fKeys.keyOff(fKeys.F8);
+		if (currentSection > 0) {
+			currentSection++;
+			if (currentSection >= 4)
+				currentSection = 1;
+			switch (currentSection) {
+			case 1:
+				msgLabel.setText(null);
+				HPVmsgLabel.setText(null);
+				setEnableAllFields(false);
+				setEnablePatientFields(true);
+				if (labRec.pat.patient > 0)
+					fKeys.keyOn(fKeys.F5);
+				fKeys.keyOn(fKeys.F8);
+				if (currMode == Lab.UPDATE) {
+					labNumber.setEnabled(false);
+					labPractice.requestFocus();
+				} else
+					labNumber.requestFocus();
+				break;
+			case 2:
+				if (currMode == Lab.UPDATE && labRec.finished >= Lab.SUBMITTED) {
+					Utils.createErrMsg("Cannot update billing details for this lab number");
+					currentSection = 3;
+				} else {
+					msgLabel.setText(null);
+					HPVmsgLabel.setText(null);
+					patientQuery = false;
+					fKeys.keyOn(fKeys.F6);
+					fKeys.keyOn(fKeys.F7);
+					fKeys.keyOn(fKeys.F8);
+					setEnableAllFields(false);
+					if (labRec.stop_code.equals("D")
+							&& labRec.prac_status.equals("A")) {
+						labBillingChoice.setText("DOC");
+						labBillingID.setText(labPractice.getText());
+						labOtherInsurance.setText(labPracticeName.getText());
+						// GAK It appears that the intention was to change the
+						// secton and allow this to
+						// fall through to the next case "block"
+						currentSection = 3;
+
+					} else {
+						labBillingChoice.setEnabled(true);
+						labBillingChoice.requestFocus();
+						break;
+					}
+
+				}
+			case 3:
+				if (checkCarrier)
+					labOps.getCarrierInfo();
+				setEnableAllFields(false);
+				if (Utils.isNull(labAge.getText()))
+					labAge.setEnabled(true);
+				else
+					labAge.setEnabled(false);
+				if (currMode != Lab.UPDATE) {
+					labPrep.setEnabled(!labPrep.getText().equals("T"));
+					if (labPrep.getText().equals("T")
+							|| labPrep.getText().equals("I"))
+						labPrep.setEnabled(false);
+					else
+						labPrep.setEnabled(true);
+					HPVrequest.setEnabled(labPrep.getText().equals("T")
+							|| labPrep.getText().equals("I"));
+					if (currMode != Lab.UPDATE
+							&& labRec.preparation != Lab.HPV_ONLY) {
+						if (!Utils.equals(labRec.prac.practice_type, "ADPH"))
+							HPVrequest.setText(null);
+					}
+					if (labPrep.getText().equals("T")
+							|| labPrep.getText().equals("I")) {
+						labNumSlides.setEnabled(false);
+						labNumSlides.setText("1");
+					} else {
+						labNumSlides.setEnabled(true);
+						if (labPrep.getText().equals("S")) {
+							slideLbl.setText("Vials");
+							labPrep.setEnabled(false);
+						} else if (labPrep.getText().equals("H")) {
+							slideLbl.setText("HPV Source");
+							labNumSlides.setEnabled(true);
+							labNumSlides.setText(null);
+						}
+					}
+					if (labPrep.getText().equals("T"))
+						labRec.preparation = Lab.THIN_LAYER;
+					if (labPrep.getText().equals("I"))
+						labRec.preparation = Lab.IMAGED_SLIDE;
+					if (currMode == Lab.UPDATE)
+						labPrep.setEnabled(true);
+					labLMP.setEnabled(true);
+					labDetCodeEntry.setEnabled(true);
+				} else {
+					labPrep.setEnabled(true);
+					HPVrequest.setEnabled(true);
+					labNumSlides.setEnabled(true);
+					labLMP.setEnabled(true);
+					labDetCodeEntry.setEnabled(true);
+					if (labPrep.getText().equals("H"))
+						slideLbl.setText("HPV Source");
+				}
+				if (labRec.prac.hpv_regardless.equals("Y")) {
+					labPrep.setEnabled(false);
+					HPVrequest.setEnabled(false);
+					HPVrequest.setText("R");
+				}
+				if (labPrep.isEnabled()) {
+
+					labPrep.setEnabled(true);
+					labPrep.requestFocusInWindow();
+
+				} else if (HPVrequest.isEnabled()) {
+					HPVrequest.requestFocusInWindow();
+				} else {
+					labDetCodeEntry.requestFocus();
+				}
+				break;
+			}
+		}
 	}
 
-	void labDPAState_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,2);
+	public void fillForm(int mode) {
+		if (mode == Lab.ADD) {
+			if (labRec.pat.patient > 0)
+				labPatientNumber.setText(Integer.toString(labRec.pat.patient));
+			labPatientLastName.setText(labRec.pat.lname);
+			labPatientFirstName.setText(labRec.pat.fname);
+			labPatientMI.setText(labRec.pat.mi);
+			labPaAddress.setText(labRec.pat.address1);
+			labZip.setText(Utils.addZipMask(labRec.pat.zip));
+			labCity.setText(labRec.pat.city);
+			labState.setText(labRec.pat.state);
+			labSSN.setText(Utils.addSSNMask(labRec.pat.ssn));
+			labDOB.setText(Utils.addDateMask(labRec.pat.dob));
+			labPhone.setText(Utils.addPhoneMask(labRec.pat.phone));
+			patRace.setText(labRec.pat.race);
+			if (labRec.practice > 0) {
+				labPractice.setText(Utils.lpad(
+						Integer.toString(labRec.practice), 3, "0"));
+				pracType.setText(labRec.prac.practice_type);
+				if (labRec.parent_account > 0)
+					labParent.setText(Utils.lpad(
+							Integer.toString(labRec.parent_account), 3, "0"));
+				else
+					labParent.setText(null);
+				/*
+				 * April 23, 2008: Make practice field blank for Amy when adding
+				 * reqs.
+				 */
+				if (DbConnection.getUser().toUpperCase().equals("ACHIODA"))
+					labPractice.setText(null);
+				if (labRec.prac_status.equals("I")) {
+					labPracticeName.setText("Account #" + labPractice.getText()
+							+ " is INACTIVE - Enter new account");
+					labPractice.setText(null);
+					labParent.setText(null);
+				}
+				/*
+				 * Determine the doctor assigned to this lab internally and set
+				 * the doctor text field to this name
+				 */
+				for (int i = 0; i < doctorVect.size(); i++) {
+					DoctorRec dRec = (DoctorRec) doctorVect.elementAt(i);
+					if (dRec.doctor == labRec.doctor) {
+						doctorText.setText(Utils.doctorName(dRec));
+						labRec.doctor = dRec.doctor;
+						break;
+					}
+				}
+				/*
+				 * If some other text has been input to supercede the internal
+				 * doctor name, reset the doctor text field to this name
+				 */
+				if (!Utils.isNull(labRec.doctor_text))
+					doctorText.setText(labRec.doctor_text);
+			}
+			if (labRec.pat.last_lab > 0) {
+				labBillingChoice.setText(null);
+				if (labRec.billing_choice != 122) {
+					System.out.println("Another type of billing?");
+				}
+				labBillingChoice.setText(dbLogin
+						.getBillingChoiceCode(labRec.billing_choice));
+				if (!Utils.isNull(labRec.subscriber)) {
+					labSubscriber.setText(labRec.subscriber);
+					if (labRec.subscriber.equals("SELF"))
+						labRelCode.setText("S");
+					else if (labRec.subscriber.equals("SPOUSE"))
+						labRelCode.setText("H");
+					else if (labRec.subscriber.equals("DEPENDENT"))
+						labRelCode.setText("C");
+					else if (labRec.subscriber.equals("OTHER"))
+						labRelCode.setText("O");
+
+				}
+				labGrpNum.setText(labRec.group_number);
+				labBillingID.setText(labRec.id_number);
+				labOtherInsurance.setText(labRec.name);
+				if (labBillingChoice.getText().equals("OI")) {
+					labPayerID.setText(labRec.payer_id);
+					if (labRec.pcs_payer_id > 0)
+						labPCSID.setText(Integer.toString(labRec.pcs_payer_id));
+				} else if (labBillingChoice.getText().equals("DPA")) {
+					labDPAState.setText(labRec.state);
+				}
+				labSubscrLName.setText(labRec.sub_lname);
+				labSubscrFName.setText(labRec.sub_fname);
+			}
+		} else if (mode == Lab.QUERY) {
+			createdLbl.setText("Created: " + labRec.create_date + ", "
+					+ labRec.create_user);
+			changedLbl.setText("Updated: " + labRec.change_date + ", "
+					+ labRec.change_user);
+			if (labRec.pat.patient > 0)
+				labPatientNumber.setText(Integer.toString(labRec.pat.patient));
+			String buf = new String();
+			try {
+				labPrevLabNum.setText(Integer.toString(labRec.previous_lab));
+				if (labPrevLabNum.getText().equals("0"))
+					labPrevLabNum.setText(null);
+			} catch (Exception e) {
+				labPrevLabNum.setText(null);
+			}
+			try {
+				labNumber.setText(Integer.toString(labRec.lab_number));
+			} catch (Exception e) {
+				log.write(e.toString());
+			}
+			String p = new String();
+			try {
+				p = Integer.toString(labRec.practice);
+			} catch (Exception e) {
+				log.write(e.toString());
+			}
+			labPractice.setText(Utils.lpad(p, 3, "0"));
+			pracType.setText(labRec.prac.practice_type);
+			if (labRec.parent_account > 0)
+				labParent.setText(Utils.lpad(
+						Integer.toString(labRec.parent_account), 3, "0"));
+			else
+				labParent.setText(null);
+			labPatientLastName.setText(labRec.pat.lname);
+			labPatientFirstName.setText(labRec.pat.fname);
+			labPatientMI.setText(labRec.pat.mi);
+			labSSN.setText(Utils.addSSNMask(labRec.pat.ssn));
+			labPaAddress.setText(labRec.pat.address1);
+			labZip.setText(Utils.addZipMask(labRec.pat.zip));
+			labCity.setText(labRec.pat.city);
+			labState.setText(labRec.pat.state);
+			labPhone.setText(Utils.addPhoneMask(labRec.pat.phone));
+			labDOB.setText(Utils.addDateMask(labRec.pat.dob));
+			patRace.setText(labRec.pat.race);
+			labDateCollected.setText(Utils.addDateMask(labRec.date_collected));
+			labPatientID.setText(labRec.patient_id);
+			labClientNotes.setText(labRec.client_note_text);
+			if (labRec.preparation == Lab.HPV_ONLY)
+				labNumSlides.setText(labRec.hpv.hpvSource);
+			else
+				labNumSlides.setText(Integer.toString(labRec.slide_qty));
+			if (labRec.hpv.requested.equals("Y"))
+				HPVrequest.setText(labRec.hpv.hpv_code);
+			else
+				HPVrequest.setText("N");
+			for (int i = 0; i < doctorVect.size(); i++) {
+				DoctorRec dRec = (DoctorRec) doctorVect.elementAt(i);
+				if (dRec.doctor == labRec.doctor) {
+					doctorText.setText(Utils.doctorName(dRec));
+					labRec.doctor = dRec.doctor;
+					break;
+				}
+			}
+			if (!Utils.isNull(labRec.doctor_text))
+				doctorText.setText(labRec.doctor_text);
+			char c = labRec.rush.charAt(0);
+			if (c == 'Y')
+				labRush.setSelected(true);
+			labBillingChoice.setText(null);
+			labBillingChoice.setText(dbLogin
+					.getBillingChoiceCode(labRec.billing_choice));
+			labBillingID.setText(labRec.id_number);
+			if (!Utils.isNull(labRec.subscriber)) {
+				labSubscriber.setText(labRec.subscriber);
+				if (labRec.subscriber.equals("SELF"))
+					labRelCode.setText("S");
+				else if (labRec.subscriber.equals("SPOUSE"))
+					labRelCode.setText("H");
+				else if (labRec.subscriber.equals("DEPENDENT"))
+					labRelCode.setText("C");
+				else if (labRec.subscriber.equals("OTHER"))
+					labRelCode.setText("O");
+			}
+			labGrpNum.setText(labRec.group_number);
+			labDiagCode.setText(labRec.diagnosis_code);
+			labDiagCode2.setText(labRec.diagnosis_code2);
+			labDiagCode3.setText(labRec.diagnosis_code3);
+			labDiagCode4.setText(labRec.diagnosis_code4);
+			diag1lbl.setText(getDiagDescr(labDiagCode.getText()));
+			diag2lbl.setText(getDiagDescr(labDiagCode2.getText()));
+			diag3lbl.setText(getDiagDescr(labDiagCode3.getText()));
+			diag4lbl.setText(getDiagDescr(labDiagCode4.getText()));
+			labOtherInsurance.setText(labRec.name);
+			if (labBillingChoice.getText().equals("OI")) {
+				labPayerID.setText(labRec.payer_id);
+				if (labRec.pcs_payer_id > 0)
+					labPCSID.setText(Integer.toString(labRec.pcs_payer_id));
+			} else if (labBillingChoice.getText().equals("DPA")) {
+				labDPAState.setText(labRec.state);
+			} else if (labBillingChoice.getText().equals("MED")) {
+				if (Utils.isNull(labRec.medicare_code))
+					labRec.medicare_code = "F";
+				else if (labRec.medicare_code.equals("A"))
+					labRec.medicare_code = "D";
+				labMedicareType.setText(labRec.medicare_code);
+				setMedLbl();
+			}
+			if (!Utils.isNull(labRec.sign_date)) {
+				labFormSigned.setText("Y");
+			} else
+				labFormSigned.setText("N");
+			labSubscrLName.setText(labRec.sub_lname);
+			labSubscrFName.setText(labRec.sub_fname);
+			labLMP.setText(labRec.lmp);
+			try {
+				labAge.setText(Integer.toString(labRec.age));
+			} catch (Exception e) {
+				labAge.setText(null);
+			}
+			if (labRec.preparation == Lab.CONVENTIONAL) {
+				labPrep.setText("C");
+				prepLbl.setText("CONVENTIONAL");
+			} else if (labRec.preparation == Lab.THIN_LAYER) {
+				labPrep.setText("T");
+				prepLbl.setText("THIN LAYER");
+				if (labRec.prac.hpv_regardless.equals("Y")) {
+					HPVrequest.setText("R");
+				}
+			} else if (labRec.preparation == Lab.CYT_NON_PAP) {
+				labPrep.setText("N");
+				prepLbl.setText("CYT NON-PAP");
+			} else if (labRec.preparation == Lab.EXPIRED) {
+				labPrep.setText("E");
+				prepLbl.setText("EXPIRED");
+			} else if (labRec.preparation == Lab.SURGICAL) {
+				labPrep.setText("S");
+				prepLbl.setText("SURGICAL");
+			} else if (labRec.preparation == Lab.HPV_ONLY) {
+				labPrep.setText("H");
+				HPVrequest.setText("R");
+				prepLbl.setText("HPV ONLY");
+				slideLbl.setText("HPV Source");
+				labNumSlides.setText(labRec.hpv.hpvSource);
+			} else if (labRec.preparation == Lab.IMAGED_SLIDE) {
+				labPrep.setText("I");
+				prepLbl.setText("IMAGED SLIDE");
+			}
+
+			labDetailList.setSelectedIndices(selectedDetCodes);
+			// Set text for screen message
+			// String descr;
+			switch (currArea) {
+			case Lab.RESULTS_PENDING:
+				msgLabel.setText("RESULTS PENDING");
+				break;
+			case Lab.FAX_QUEUE:
+				String ltrType = null;
+				String msg = null;
+				if (labRec.billing.letter_type.equals("GENERIC"))
+					ltrType = "INFO";
+				else
+					ltrType = labRec.billing.letter_type;
+				if (labRec.billing.in_queue == 1)
+					msg = ltrType + " LETTER MUST BE PRINTED";
+				else
+					msg = "WAITING FOR RESPONSE FROM " + ltrType + " LETTER";
+				if (labRec.billing.origin == 1)
+					msg += " (REQ)";
+				else
+					msg += " (BILLING)";
+				msgLabel.setText(msg);
+				break;
+			case Lab.BILLING_QUEUE:
+				if (!Utils.isNull(labRec.invoice))
+					msgLabel.setText("INVOICE #" + labRec.invoice);
+				else
+					msgLabel.setText("BILLING QUEUE");
+				break;
+			case Lab.SUBMITTED:
+				msgLabel.setText("SUBMITTED");
+				break;
+			case Lab.PENDING:
+				msgLabel.setText("PENDING");
+				break;
+			case Lab.FINISHED:
+				msgLabel.setText("FINISHED");
+				break;
+			case Lab.HPV_PENDING:
+				if (labRec.preparation == Lab.HPV_ONLY)
+					msgLabel.setText("HPV ONLY RESULTS PENDING");
+				else if (labRec.finished == Lab.RESULTS_PENDING)
+					msgLabel.setText("RESULTS PENDING INCLUDING HPV TEST");
+				else
+					msgLabel.setText("RESULTS ENTERED; BILLING PENDING HPV TEST RESULTS");
+				break;
+			case Lab.EXPIRED_SPECIMEN:
+				msgLabel.setText("SPECIMEN EXPIRED");
+				break;
+			case Lab.UNUSED:
+				msgLabel.setText("UNUSED LAB NUMBER");
+				break;
+			case Lab.UNKNOWN:
+				msgLabel.setText("WARNING!  THERE MAY BE DATA ERRORS WITH THIS LAB");
+				break;
+			default:
+				msgLabel.setText("FINISHED");
+				break;
+			}
+			if (!Utils.isNull(labRec.hpv.HPVmsg))
+				HPVmsgLabel.setText(labRec.hpv.HPVmsg);
+			if (!Utils.isNull(labRec.receive_date))
+				recvLbl.setText("Recv: "
+						+ Utils.addDateMask(labRec.receive_date));
+		}
+		if (labAge.equals("0"))
+			labAge.setText(null);
+		setBillingLabels(labBillingChoice.getText());
+		if (labRec.billing_choice == Lab.DOC) {
+			labOtherInsurance.setText(labRec.practice_name);
+		} else if (labRec.billing_choice == Lab.DB) {
+			labOtherInsurance.setText(labRec.pat.lname + ", "
+					+ labRec.pat.fname);
+		}
+
+		if (!Utils.isNull(labRec.ADPH_program))
+			pgmLabel.setText(labRec.ADPH_program);
+		else
+			pgmLabel.setText(labRec.program);
 	}
 
-	void labLMP_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,16);
+	public void fillLabRecord() {
+		labRec.lab_number = (int) Integer.parseInt(labNumber.getText());
+		if (!Utils.isNull(labPrevLabNum.getText()))
+			labRec.previous_lab = (int) Integer.parseInt(this.labPrevLabNum
+					.getText());
+		else
+			labRec.previous_lab = 0;
+		labRec.patient = labRec.pat.patient;
+		labRec.pat.lname = labPatientLastName.getText();
+		labRec.pat.fname = labPatientFirstName.getText();
+		labRec.pat.mi = labPatientMI.getText();
+		labRec.pat.address1 = labPaAddress.getText();
+		labRec.pat.city = labCity.getText();
+		labRec.pat.state = labState.getText();
+		labRec.pat.zip = Utils.stripZipMask(labZip.getText());
+		labRec.pat.ssn = Utils.stripSSNMask(labSSN.getText());
+		labRec.pat.dob = Utils.stripDateMask(labDOB.getText());
+		labRec.pat.race = patRace.getText();
+		labRec.pat.phone = Utils.stripPhoneMask(labPhone.getText());
+		labRec.practice = (int) Integer.parseInt(labPractice.getText());
+		labRec.client_note_text = labClientNotes.getText().trim();
+		labRec.patient_id = labPatientID.getText();
+		labRec.doctor_text = doctorText.getText();
+		try {
+			labRec.lab_comments = labComments.getText();
+		} catch (Exception e) {
+		}
+		labRec.diagnosis_code = labDiagCode.getText();
+		labRec.diagnosis_code2 = labDiagCode2.getText();
+		labRec.diagnosis_code3 = labDiagCode3.getText();
+		labRec.diagnosis_code4 = labDiagCode4.getText();
+		if (Utils.isNull(labNumSlides.getText()))
+			labRec.slide_qty = 0;
+		else {
+			if (labRec.preparation == Lab.HPV_ONLY) {
+				labRec.slide_qty = 0;
+				labRec.hpv.hpvSource = labNumSlides.getText();
+			} else {
+				labRec.slide_qty = (Integer.parseInt(labNumSlides.getText()));
+			}
+		}
+		labRec.date_collected = Utils.stripDateMask(labDateCollected.getText());
+		if (HPVrequest.getText().equals("N")) {
+			labRec.hpv.requested = "N";
+			labRec.hpv.hpv_code = "N";
+		} else {
+			labRec.hpv.requested = "Y";
+			labRec.hpv.hpv_code = HPVrequest.getText();
+		}
+		labRec.lmp = labLMP.getText();
+		try {
+			String tmp = labAge.getText();
+			int age = (int) Integer.parseInt(tmp);
+			if (age > 0)
+				labRec.age = age;
+		} catch (Exception e) {
+		}
+		if (labRush.isSelected())
+			labRec.rush = "Y";
+		else
+			labRec.rush = "N";
+		labRec.billing_choice = dbLogin.getBillingChoice(labBillingChoice
+				.getText().trim());
+		labRec.description = (String) labBillingChoice.getText();
+		if (labBillingChoice.getText().equals("DOC"))
+			labRec.id_number = labPractice.getText();
+		else
+			labRec.id_number = labBillingID.getText();
+		labRec.group_number = labGrpNum.getText();
+		if (labRelCode.getText().equals("S")
+				|| labRelCode.getText().equals("O")) {
+			labRec.subscriber = "SELF";
+			labRec.sub_lname = labPatientLastName.getText();
+			labRec.sub_fname = labPatientFirstName.getText();
+		} else if (labRelCode.getText().equals("H")) {
+			labRec.subscriber = "SPOUSE";
+			labRec.sub_lname = labSubscrLName.getText();
+			labRec.sub_fname = labSubscrFName.getText();
+		} else if (labRelCode.getText().equals("C")) {
+			labRec.subscriber = "DEPENDENT";
+			labRec.sub_lname = labSubscrLName.getText();
+			labRec.sub_fname = labSubscrFName.getText();
+		} else {
+			labRec.subscriber = "SELF";
+			labRec.sub_lname = labPatientLastName.getText();
+			labRec.sub_fname = labPatientFirstName.getText();
+		}
+		if (labBillingChoice.getText().equals("MED")) {
+			labRec.medicare_code = labMedicareType.getText();
+			if (labRec.medicare_code.equals("D"))
+				labRec.medicare_code = "A";
+		} else
+			labRec.medicare_code = null;
+		labRec.name = labOtherInsurance.getText();
+		labRec.payer_id = labPayerID.getText();
+		if (!Utils.isNull(labPCSID.getText()))
+			labRec.pcs_payer_id = Integer.parseInt((String) labPCSID.getText());
+		labRec.state = labDPAState.getText();
+		if (!Utils.isNull(labRec.prac.practice_type)) {
+			if (labRec.prac.practice_type.equals("ADPH")) {
+				if (Utils.isNull(ADPHpgm.getText()))
+					ADPHpgm.setText("NP");
+				labRec.ADPH_program = Utils.removeSpaces(ADPHpgm.getText());
+				pgmLabel.setText(labRec.ADPH_program);
+			} else if (labRec.prac.practice_type.equals("WV")) {
+				pgmLabel.setText(labRec.program);
+			}
+		}
 	}
 
-	void labAge_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceDigits(event,3);
+	public void resetSelectedDetails() {
+		for (int i = 0; i < MAX_DET_CODES; i++) {
+			selectedDetCodes[i] = (-1);
+			if (detailRec[i] != null) {
+				detailRec[i].reset();
+			}
+		}
 	}
 
-	void labClientNotes_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,1000);
+	public void clearForm() {
+		msgLabel.setText(null);
+		HPVmsgLabel.setText(null);
+		pgmLabel.setText(null);
+		doctorText.setText(null);
+		labPracticeName.setText(null);
+		pracType.setText(null);
+		labPatientNumber.setText(null);
+		labPatientMI.setText(null);
+		labNumber.setText(null);
+		labPatientID.setText(null);
+		labPatientLastName.setText(null);
+		labPaAddress.setText(null);
+		labDOB.setText(null);
+		labCity.setText(null);
+		labZip.setText(null);
+		labState.setText(null);
+		labSSN.setText(null);
+		patRace.setText(null);
+		labClientNotes.setText(null);
+		labBillingChoice.setText(null);
+		labSubscriber.setText("SELF");
+		labRelCode.setText("S");
+		labPatientFirstName.setText(null);
+		labPhone.setText(null);
+		labGrpNum.setText(null);
+		labBillingID.setText(null);
+		labBillingIDLbl.setText("Billing ID");
+		labOtherInsurance.setText(null);
+		labPayerID.setText(null);
+		labPCSID.setText(null);
+		labFormSigned.setText("N");
+		labRush.setSelected(false);
+		labPractice.setText(null);
+		labParent.setText(null);
+		labDateCollected.setText(null);
+		labSubscrLName.setText(null);
+		labSubscrFName.setText(null);
+		labDPAState.setText(null);
+		labPrevLabNum.setText(null);
+		labNumSlides.setText(null);
+		labPrep.setText(defaultPrep);
+		if (labPrep.getText().equals("H"))
+			HPVrequest.setText("R");
+		else
+			HPVrequest.setText(null);
+		labLMP.setText(null);
+		labAge.setText(null);
+		clearDiagCodeDisplay();
+		labDetCodeEntry.setText(null);
+		labRecDetInfo.setText(null);
+		labRecDetInfo.setVisible(false);
+		labRecDetInfoLbl.setText(null);
+		labRecDetInfoLbl.setVisible(false);
+		resetSelectedDetails();
+		labDetailList.setSelectedIndices(selectedDetCodes);
+		currDetCode = (-1);
+		foundPrevLab = false;
+		setEnableAllFields(false);
+		CarrierNameLbl.setText(null);
+		recvLbl.setText("Recv:");
 	}
 
-	void labDetCodeEntry_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceDigits(event,2);
+	public void resetColors() {
+		Utils.setColors(this.getContentPane());
+		labPracticeName.setForeground(Color.white);
+		CarrierNameLbl.setForeground(Color.white);
+		labSubscriber.setForeground(Color.white);
+		diag1lbl.setForeground(Color.white);
+		diag2lbl.setForeground(Color.white);
+		diag3lbl.setForeground(Color.white);
+		diag4lbl.setForeground(Color.white);
+		labMedLbl.setForeground(Color.white);
+		prepLbl.setFont(new Font("Dialog", Font.BOLD, 11));
+		prepLbl.setForeground(Color.white);
+		createdLbl.setForeground(Color.white);
+		changedLbl.setForeground(Color.white);
+		msgLabel.setForeground(Color.green.brighter());
+		HPVmsgLabel.setForeground(Color.green.brighter());
+		labPracticeName.setFont(new Font("Dialog", Font.BOLD, 11));
+		CarrierNameLbl.setFont(new Font("Dialog", Font.BOLD, 11));
+		diag1lbl.setFont(new Font("SansSerif", Font.BOLD, 10));
+		diag2lbl.setFont(new Font("SansSerif", Font.BOLD, 10));
+		diag3lbl.setFont(new Font("SansSerif", Font.BOLD, 10));
+		diag4lbl.setFont(new Font("SansSerif", Font.BOLD, 10));
+		createdLbl.setFont(new Font("Dialog", Font.BOLD, 10));
+		changedLbl.setFont(new Font("Dialog", Font.BOLD, 10));
+		labRecDetInfoLbl.setFont(new Font("Dialog", Font.BOLD, 11));
+		labRush.setBackground(Utils.FORM_BACKGROUND);
+		labRush.setForeground(Utils.LABEL_FOREGROUND);
+		pgmLabel.setFont(new Font("Dialog", Font.BOLD, 11));
+		pgmLabel.setForeground(Color.white);
+		pracType.setFont(new Font("Dialog", Font.BOLD, 11));
+		pracType.setForeground(Color.white);
 	}
 
-	void labDateCollected_keyTyped(java.awt.event.KeyEvent event)
-	{
+	public boolean isSexSelected() {
+		boolean isSelected = false;
+		for (int i = 0; i < detailRec.length; i++) {
+			if (detailRec[i].detail_code == MALE
+					|| detailRec[i].detail_code == FEMALE)
+				if (detailRec[i].isSelected) {
+					isSelected = true;
+					break;
+				}
+		}
+		return (isSelected);
+	}
+
+	public void finalActions() {
+		if (currMode == Lab.ADD || currMode == Lab.UPDATE
+				|| currMode == Lab.QUEUE) {
+			if (labRec.preparation == Lab.SURGICAL
+					|| labRec.preparation == Lab.HPV_ONLY) {
+				if (Utils.isNull(labRec.receive_date)) {
+					Utils.createErrMsg("Requisition is missing required RECEIVE DATE!!");
+					(new RecvDateDialog(labNumber.getText(), labRec))
+							.setVisible(true);
+					return;
+				}
+			}
+		}
+		boolean success = false;
+		String logInfo = "(" + labNumber.getText() + ") ("
+				+ labPatientNumber.getText() + ") ("
+				+ labPatientLastName.getText() + ", "
+				+ labPatientFirstName.getText() + ")";
+		if (currMode == Lab.ADD) {
+			if (labRec.preparation == Lab.SURGICAL && !isSexSelected()) {
+				Utils.createErrMsg("Must select MALE or FEMALE");
+				return;
+			}
+			this.setCursor(new Cursor(WAIT_CURSOR));
+			fillLabRecord();
+			if (!labBillingChoice.getText().equals("DOC")
+					&& !labBillingChoice.getText().equals("DB")
+					&& !labBillingChoice.getText().equals("PRC")
+					&& !labBillingChoice.getText().equals("PPN")
+					&& !labBillingChoice.getText().equals("PPD")) {
+				if (labRec.carrier_id == (-1)) {
+					Utils.createErrMsg("Payer for Code "
+							+ (String) labBillingChoice.getText()
+							+ " does not exist");
+					this.setCursor(new Cursor(DEFAULT_CURSOR));
+					return;
+				}
+				boolean rv = billingValidation();
+				if (!rv) {
+					this.setCursor(new Cursor(DEFAULT_CURSOR));
+					return;
+				}
+			} else if (labBillingChoice.getText().equals("PPD")) {
+				labRec.carrier_id = (-1);
+				if (labRec.payment_amount <= 0) {
+					this.setCursor(new Cursor(DEFAULT_CURSOR));
+					Utils.createErrMsg("Payment Not Entered for Prepaid Lab");
+					currentSection = 1;
+					gotoNextSection();
+					labOtherInsurance.requestFocus();
+					return;
+				}
+			} else
+				labRec.carrier_id = (-1);
+			if (!dbThreadRunning) {
+				log.write("ADD " + log.datestamp() + " " + logInfo);
+				labOps.DB_action();
+			} else {
+				this.setCursor(new Cursor(DEFAULT_CURSOR));
+				Utils.createErrMsg("Database is busy ... please retry");
+				return;
+			}
+			this.setCursor(new Cursor(DEFAULT_CURSOR));
+			resetLabForm();
+			addActions();
+		} else if (currMode == Lab.QUERY) {
+			this.setCursor(new Cursor(WAIT_CURSOR));
+
+			labOps.getRequisition();
+
+			while (dbThreadRunning) {
+				continue;
+			}
+			if (labRec.lab_number > 0) {
+				fKeys.off();
+				fKeys.keyOn(fKeys.F3);
+				fKeys.keyOn(fKeys.F5);
+				fKeys.keyOn(fKeys.F9);
+				resetColors();
+				fillForm(Lab.QUERY);
+				CommentForm commentForm = null;
+				if (labOps.hasLabComments(labRec.lab_number)) {
+					commentForm = displayComments();
+				}
+				if (labRec.preparation == Lab.THIN_LAYER
+						|| labRec.preparation == Lab.HPV_ONLY
+						|| labRec.preparation == Lab.IMAGED_SLIDE) {
+					if (currArea == Lab.HPV_PENDING) {
+						if (Utils.isNull(labRec.hpv.test_sent)
+								|| labRec.hpv.test_sent.equals("R")
+								|| labRec.hpv.test_sent.equals("P")
+								|| (labRec.hpv.test_sent.equals("Y") && Utils
+										.isNull(labRec.hpv.test_results))) {
+							if (!Utils.isNull(labRec.hpv.datestamp))
+								updateHPV();
+							if (commentForm != null) {
+								commentForm.requestFocusInWindow();
+							}
+							else {
+								msgLabel.requestFocus();
+							}
+
+						}
+					}
+				}
+				setEnableAllFields(false);
+
+				currMode = Lab.IDLE;
+			} else
+				resetLabForm();
+			this.setCursor(new Cursor(DEFAULT_CURSOR));
+		} else if (currMode == Lab.QUEUE) {
+			this.setCursor(new Cursor(WAIT_CURSOR));
+			labOps.getRequisition();
+			if (labRec.lab_number > 0) {
+				fKeys.off();
+				fKeys.keyOn(fKeys.F9);
+				resetColors();
+				fillForm(Lab.QUERY);
+				if (labOps.hasLabComments(labRec.lab_number))
+					displayComments();
+				setEnableAllFields(false);
+				msgLabel.requestFocus();
+				updateActions();
+			} else
+				resetLabForm();
+			this.setCursor(new Cursor(DEFAULT_CURSOR));
+		} else if (currMode == Lab.UPDATE) {
+			this.setCursor(new Cursor(WAIT_CURSOR));
+			fillLabRecord();
+			if (!dbThreadRunning) {
+				log.write("UPDATE " + log.datestamp() + " " + logInfo);
+				labOps.DB_action();
+			} else {
+				this.setCursor(new Cursor(DEFAULT_CURSOR));
+				Utils.createErrMsg("Database is busy ... please retry");
+				return;
+			}
+			fKeys.off();
+			fKeys.keyOn(fKeys.F1);
+			fKeys.keyOn(fKeys.F2);
+			fKeys.keyOn(fKeys.F3);
+			fKeys.keyOn(fKeys.F8);
+			fKeys.keyOn(fKeys.F9);
+			setEnableAllFields(false);
+			msgLabel.requestFocus();
+			faxLetterQueue = new Vector();
+			labOps.getFaxLetters();
+			currMode = Lab.IDLE;
+			this.setCursor(new Cursor(DEFAULT_CURSOR));
+		}
+	}
+
+	void queueActions() {
+		fKeys.keyOn(fKeys.F12);
+		fKeys.keyOn(fKeys.F10);
+		currMode = Lab.UPDATE;
+		currentSection = 1;
+		gotoNextSection();
+	}
+
+	void labNumber_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceDigits(event, 10);
+	}
+
+	void labPatientID_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 16);
+	}
+
+	void labGrpNum_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 32);
+	}
+
+	void labBillingID_keyTyped(java.awt.event.KeyEvent event) {
+		if (labBillingChoice.getText().equals("DPA")) {
+			if (labDPAState.getText().equals("PA"))
+				Utils.forceUpper(event, 10);
+			else if (labDPAState.getText().equals("OH"))
+				Utils.forceUpper(event, 12);
+			else if (labDPAState.getText().equals("WV"))
+				Utils.forceUpper(event, 12);
+		} else
+			Utils.forceUpper(event, 32);
+	}
+
+	void labPractice_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceDigits(event, 3);
+	}
+
+	void labSubscrLName_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 32);
+	}
+
+	void labSubscrFName_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 32);
+	}
+
+	void labDPAState_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 2);
+	}
+
+	void labLMP_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 16);
+	}
+
+	void labAge_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceDigits(event, 3);
+	}
+
+	void labClientNotes_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 1000);
+	}
+
+	void labDetCodeEntry_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceDigits(event, 2);
+	}
+
+	void labDateCollected_keyTyped(java.awt.event.KeyEvent event) {
 		Utils.buildDateMask(event);
 	}
-	
-	public void queryActions()  
-	{
+
+	public void queryActions() {
 		resetLabForm();
 		setEnableAllFields(false);
 		labNumber.setEnabled(true);
 		labNumber.setBackground(Color.white);
 		labNumber.setForeground(Color.black);
 		labNumber.setCaretColor(Color.black);
-        currMode=Lab.QUERY;
+		currMode = Lab.QUERY;
 		labNumber.requestFocus();
-    }	    
-	
-	void labOtherInsurance_keyTyped(java.awt.event.KeyEvent event)
-	{
-	    carrierChanged=true;
-		Utils.forceUpper(event,128);
 	}
 
+	void labOtherInsurance_keyTyped(java.awt.event.KeyEvent event) {
+		carrierChanged = true;
+		Utils.forceUpper(event, 128);
+	}
 
-	class SymFocus extends java.awt.event.FocusAdapter
-	{
-		public void focusLost(java.awt.event.FocusEvent event)
-		{
+	class SymFocus extends java.awt.event.FocusAdapter {
+		public void focusLost(java.awt.event.FocusEvent event) {
 			Object object = event.getSource();
 			if (object == labRush)
 				labRush_focusLost(event);
 		}
 
-		public void focusGained(java.awt.event.FocusEvent event)
-		{
+		public void focusGained(java.awt.event.FocusEvent event) {
 			Object object = event.getSource();
 			Utils.deselect(event);
 			if (object == labDiagCode)
@@ -2936,2126 +2941,2040 @@ public class LabForm extends PcsFrame
 	}
 
 	/**
-	 * Checks for conditions that won't allow an update
-	 *   * Already in Billing Queue, unless it's a PPD
-	 * Checks for conditions that WARN for an update
-	 *   * Already Finished
-	 * if those conditions don't exist, performs the update
+	 * Checks for conditions that won't allow an update * Already in Billing
+	 * Queue, unless it's a PPD Checks for conditions that WARN for an update *
+	 * Already Finished if those conditions don't exist, performs the update
 	 */
-	public void updatePracticeInfo()  
-	{
-	    if (Utils.length(labPractice.getText())==0)
-	        labPractice.setText("0");
-	    int oldPractice=labRec.practice;
-        labRec.practice=(int)Integer.parseInt(labPractice.getText());
-        labPractice.setText(Utils.lpad(
-            Integer.toString(labRec.practice),3,"0"));
-        if (oldPractice!=labRec.practice) { 
-            if (labRec.finished>Lab.BILLING_QUEUE && labRec.billing_choice != Lab.PPD ) { 
-                Utils.createErrMsg(
-                    "ACCOUNT on Lab #"+labRec.lab_number+
-                    " may not be updated in this screen ["+
-                    Utils.getFinishedDesc(labRec.finished)+"]");
-                labRec.practice=oldPractice;
-                labPractice.setText(Utils.lpad(
-                    Integer.toString(labRec.practice),3,"0"));
-                labPractice.transferFocus();
-            }
-            else labOps.getPracticeInfo();
-        }
-        else if (labRec.finished==Lab.FINISHED) Utils.createErrMsg(
-            "UPDATE on a lab that is finalized!","WARNING!!");
-        else labOps.getPracticeInfo(doctorText.getText());
-        if (!Utils.isNull(labRec.prac.program)) pgmLabel.setText(labRec.prac.program);
-    }	    
-
-	void labDiagCode_focusGained(java.awt.event.FocusEvent event)
-	{
-        msgLabel.setText("F8 = Diagnosis Code List");
-	    labDiagCode2.setEnabled(true);
-	    labDiagCode3.setEnabled(true);
-	    labDiagCode4.setEnabled(true);
-        if (labBillingChoice.getText().equals("DPA")) {
-            if (!labDPAState.getText().equals("WV")&&!labDPAState.getText().equals("OH")) {
-                labDiagCode.setEnabled(false);
-                labDiagCode2.setEnabled(false);
-                labDiagCode3.setEnabled(false);
-                labDiagCode4.setEnabled(false);
-                //labBillingID.requestFocus();
-                return;
-            }
-        }
-        else if (labBillingChoice.getText().equals("MED")) {
-            if (labMedicareType.getText().equals("L")) {
-                if (Utils.isNull(labDiagCode.getText())) {
-                    setMedPrimaryDiag();
-                    return;
-                }
-                diag1lbl.setText(getDiagDescr(labDiagCode.getText()));
-                labDiagCode.setEnabled(false);
-                labDiagCode2.setText("V72.62");
-                diag2lbl.setText(getDiagDescr("V72.62"));
-                labDiagCode2.setEnabled(false);
-                labDiagCode3.requestFocus();
-                return;
-            }
-            else if (labMedicareType.getText().equals("H")) {
-                labDiagCode.setText("V15.89");
-                diag1lbl.setText(getDiagDescr("V15.89"));
-                labDiagCode.setEnabled(false);
-                labDiagCode2.setText("V72.62");
-                diag2lbl.setText(getDiagDescr("V72.62"));
-                labDiagCode2.setEnabled(false);
-                labDiagCode3.requestFocus();
-                return;
-            }
-        }
+	public void updatePracticeInfo() {
+		if (Utils.length(labPractice.getText()) == 0)
+			labPractice.setText("0");
+		int oldPractice = labRec.practice;
+		labRec.practice = (int) Integer.parseInt(labPractice.getText());
+		labPractice.setText(Utils.lpad(Integer.toString(labRec.practice), 3,
+				"0"));
+		if (oldPractice != labRec.practice) {
+			if (labRec.finished > Lab.BILLING_QUEUE
+					&& labRec.billing_choice != Lab.PPD) {
+				Utils.createErrMsg("ACCOUNT on Lab #" + labRec.lab_number
+						+ " may not be updated in this screen ["
+						+ Utils.getFinishedDesc(labRec.finished) + "]");
+				labRec.practice = oldPractice;
+				labPractice.setText(Utils.lpad(
+						Integer.toString(labRec.practice), 3, "0"));
+				labPractice.transferFocus();
+			} else
+				labOps.getPracticeInfo();
+		} else if (labRec.finished == Lab.FINISHED)
+			Utils.createErrMsg("UPDATE on a lab that is finalized!",
+					"WARNING!!");
+		else
+			labOps.getPracticeInfo(doctorText.getText());
+		if (!Utils.isNull(labRec.prac.program))
+			pgmLabel.setText(labRec.prac.program);
 	}
 
-	void labBillingChoice_focusGained(java.awt.event.FocusEvent event)
-	{
-        if (!Utils.isNull(labRec.invoice)&&currArea==Lab.BILLING_QUEUE) {
-            Utils.createErrMsg("UPDATE requires removal from Billing Queue.");
-            resetLabForm();
-            //return;
-        }
-        else {
-	        carrierCommentsShown=false;
-		    msgLabel.setText("F8 = Billing Code List");
-		    setEnableBillingFields(true);
+	void labDiagCode_focusGained(java.awt.event.FocusEvent event) {
+		msgLabel.setText("F8 = Diagnosis Code List");
+		labDiagCode2.setEnabled(true);
+		labDiagCode3.setEnabled(true);
+		labDiagCode4.setEnabled(true);
+		if (labBillingChoice.getText().equals("DPA")) {
+			if (!labDPAState.getText().equals("WV")
+					&& !labDPAState.getText().equals("OH")) {
+				labDiagCode.setEnabled(false);
+				labDiagCode2.setEnabled(false);
+				labDiagCode3.setEnabled(false);
+				labDiagCode4.setEnabled(false);
+				// labBillingID.requestFocus();
+				return;
+			}
+		} else if (labBillingChoice.getText().equals("MED")) {
+			if (labMedicareType.getText().equals("L")) {
+				if (Utils.isNull(labDiagCode.getText())) {
+					setMedPrimaryDiag();
+					return;
+				}
+				diag1lbl.setText(getDiagDescr(labDiagCode.getText()));
+				labDiagCode.setEnabled(false);
+				labDiagCode2.setText("V72.62");
+				diag2lbl.setText(getDiagDescr("V72.62"));
+				labDiagCode2.setEnabled(false);
+				labDiagCode3.requestFocus();
+				return;
+			} else if (labMedicareType.getText().equals("H")) {
+				labDiagCode.setText("V15.89");
+				diag1lbl.setText(getDiagDescr("V15.89"));
+				labDiagCode.setEnabled(false);
+				labDiagCode2.setText("V72.62");
+				diag2lbl.setText(getDiagDescr("V72.62"));
+				labDiagCode2.setEnabled(false);
+				labDiagCode3.requestFocus();
+				return;
+			}
 		}
 	}
 
-	void keyActions(java.awt.event.KeyEvent event) 
-	{
-	    int key = event.getKeyCode();
-	    switch (key) {
-            
-            
-            case KeyEvent.VK_RIGHT:
-                if (fKeys.isOn(fKeys.F10) && event.isAltDown()) {
-                    if (labBillingChoice.hasFocus()) {
-                        Utils.createErrMsg("F10 Key not valid");
-                        return;
-                    }
-                    event.consume();
-                    gotoNextSection();
-                }
-                else Utils.createErrMsg("F10 Key not valid");
-                break;
-            case KeyEvent.VK_LEFT:                
-                if (fKeys.isOn(fKeys.F10) && event.isAltDown()) {
-                    event.consume();
-                    currentSection++;
-                    if (currentSection==4) currentSection=1;
-                    gotoNextSection();
-                }                
-                else Utils.createErrMsg("F10 Key not valid");
-                break;
-            
-
-            case KeyEvent.VK_PAGE_DOWN:                
-                if (currentSection==1) {
-                    if (event.isShiftDown()) {
-                        labPatientFirstName.setEnabled(false);
-                        labPatientLastName.setEnabled(false);
-                        labPaAddress.setEnabled(false);
-                        labCity.setEnabled(false);
-                        labState.setEnabled(false);
-                        labZip.setEnabled(false);
-                        labPhone.setEnabled(false);
-                        labDOB.setEnabled(false);
-                        labSSN.setEnabled(false);
-                        patRace.setEnabled(false);
-                        labClientNotes.requestFocus();
-                    }
-                    else labDOB.requestFocus();
-                }
-                break;
-            case KeyEvent.VK_ESCAPE:
-               
-                break;
-
-
-	    }
-    }	    
-    
-    public void setPreparation()
-    {
-        if (defaultPrep.equals("S")) return;
-        Object[] possibleValues = 
-            {"Conventional", "Thin Layer", "HPV Only", "Expired", "Surgical Pathololgy","Imaged Slide"}; 
-        Object selectedValue = "Conventional";
-        selectedValue = JOptionPane.showInputDialog(
-            this, "Select Preparation for this Batch", "Preparation", 
-            JOptionPane.INFORMATION_MESSAGE, null, 
-            possibleValues, possibleValues[0]); 
-        if (possibleValues[1].equals(selectedValue)) {
-            defaultPrep="T";
-            defaultPrepLbl="THIN LAYER";
-            labRec.preparation=Lab.THIN_LAYER;
-            prepFlag=true;
-        }
-        else if (possibleValues[0].equals(selectedValue)) {
-            defaultPrep="C";
-            defaultPrepLbl="CONVENTIONAL";
-            labRec.preparation=Lab.CONVENTIONAL;
-            prepFlag=true;
-        }
-        else if (possibleValues[2].equals(selectedValue)) {
-            defaultPrep="H";
-            defaultPrepLbl="HPV ONLY";
-            slideLbl.setText("HPV Source");
-            labRec.preparation=Lab.HPV_ONLY;
-            HPVrequest.setText("R");
-            prepFlag=true;
-        }
-        else if (possibleValues[3].equals(selectedValue)) {
-            defaultPrep="E";
-            defaultPrepLbl="EXPIRED";
-            labRec.preparation=Lab.EXPIRED;
-            prepFlag=true;
-        }
-        else if (possibleValues[4].equals(selectedValue)) {
-            setFormForTissuePathology();
-        }
-        else if (possibleValues[5].equals(selectedValue)) {
-            defaultPrep="I";
-            defaultPrepLbl="IMAGED SLIDE";
-            labRec.preparation=Lab.IMAGED_SLIDE;
-            prepFlag=true;
-        }
-        labPrep.setText(defaultPrep);
-        prepLbl.setText(defaultPrepLbl);
-    }
-    
-    void setFormForTissuePathology()
-    {
-        this.setTitle("Requisitions:  TISSUE PATHOLOGY");
-        defaultPrep="S";
-        defaultPrepLbl="SURGICAL";
-        labRec.preparation=Lab.SURGICAL;
-        slideLbl.setText("Vials");
-        labOps.getTissueDetailCodes();
-        prepFlag=true;
-    }
-    
-    void displayFaxQueue()
-    {
-        String[] buf = new String[faxLetterQueue.size()];
-        String[] buf2 = new String[faxLetterQueue.size()];
-        for (int i=0;i<faxLetterQueue.size();i++) {
-            FaxLetters faxLetter = (FaxLetters)faxLetterQueue.elementAt(i);
-            buf[i]=Integer.toString(faxLetter.lab_number);
-            buf2[i]=buf[i]+"  "+faxLetter.date_sent+"  "+faxLetter.letter_type;
-        }
-        (new PickList("Fax Letter Queue",200,10,376,150,
-            faxLetterQueue.size(),buf2,buf,labNumber)).setVisible(true);
-    }
-    
-    
-    public void displayDoctorList()
-    {
-        String[] buf = new String[doctorVect.size()];
-        for (int i=0;i<doctorVect.size();i++) {
-	        DoctorRec dRec = (DoctorRec)doctorVect.elementAt(i);
-            buf[i]=dRec.doctor+" "+Utils.doctorName(dRec);
-        }
-        if (doctorVect.size()>1) {
-            (new PickList("Doctors",300,100,240,190,
-                doctorVect.size(),buf,buf,doctorText)).setVisible(true);
-        }
-        else doctorText.setText(buf[0]);
-        //labBillingChoice.requestFocusInWindow();
-        return;            
-    }
-
-    public void displayComments() 
-    {
-        if (currMode==Lab.ADD && !Utils.isNull(labNumber.getText()))
-            (new CommentForm(
-                "LAB #"+labNumber.getText(),labComments,true)).setVisible(true);
-         else if (labRec.lab_number>0)
-            (new CommentForm(dbLogin,labRec.lab_number)).setVisible(true);
-    }        
-
-	void labBillingChoice_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,3);
+	void labBillingChoice_focusGained(java.awt.event.FocusEvent event) {
+		if (!Utils.isNull(labRec.invoice) && currArea == Lab.BILLING_QUEUE) {
+			Utils.createErrMsg("UPDATE requires removal from Billing Queue.");
+			resetLabForm();
+			// return;
+		} else {
+			carrierCommentsShown = false;
+			msgLabel.setText("F8 = Billing Code List");
+			setEnableBillingFields(true);
+		}
 	}
 
-	void labBillingID_focusGained(java.awt.event.FocusEvent event)
-	{
-	    if (!Utils.isNull(labRec.carrier_comments))
-	        displayCarrierComments();
+	void keyActions(java.awt.event.KeyEvent event) {
+		int key = event.getKeyCode();
+		switch (key) {
+
+		case KeyEvent.VK_RIGHT:
+			if (fKeys.isOn(fKeys.F10) && event.isAltDown()) {
+				if (labBillingChoice.hasFocus()) {
+					Utils.createErrMsg("F10 Key not valid");
+					return;
+				}
+				event.consume();
+				gotoNextSection();
+			} else
+				Utils.createErrMsg("F10 Key not valid");
+			break;
+		case KeyEvent.VK_LEFT:
+			if (fKeys.isOn(fKeys.F10) && event.isAltDown()) {
+				event.consume();
+				currentSection++;
+				if (currentSection == 4)
+					currentSection = 1;
+				gotoNextSection();
+			} else
+				Utils.createErrMsg("F10 Key not valid");
+			break;
+
+		case KeyEvent.VK_PAGE_DOWN:
+			if (currentSection == 1) {
+				if (event.isShiftDown()) {
+					labPatientFirstName.setEnabled(false);
+					labPatientLastName.setEnabled(false);
+					labPaAddress.setEnabled(false);
+					labCity.setEnabled(false);
+					labState.setEnabled(false);
+					labZip.setEnabled(false);
+					labPhone.setEnabled(false);
+					labDOB.setEnabled(false);
+					labSSN.setEnabled(false);
+					patRace.setEnabled(false);
+					labClientNotes.requestFocus();
+				} else
+					labDOB.requestFocus();
+			}
+			break;
+		case KeyEvent.VK_ESCAPE:
+
+			break;
+
+		}
 	}
 
-	void labDiagCode2_focusGained(java.awt.event.FocusEvent event)
-	{
-        msgLabel.setText("F8 = Diagnosis Code List");
+	public void setPreparation() {
+		if (defaultPrep.equals("S"))
+			return;
+		Object[] possibleValues = { "Conventional", "Thin Layer", "HPV Only",
+				"Expired", "Surgical Pathololgy", "Imaged Slide" };
+		Object selectedValue = "Conventional";
+		selectedValue = JOptionPane.showInputDialog(this,
+				"Select Preparation for this Batch", "Preparation",
+				JOptionPane.INFORMATION_MESSAGE, null, possibleValues,
+				possibleValues[0]);
+		if (possibleValues[1].equals(selectedValue)) {
+			defaultPrep = "T";
+			defaultPrepLbl = "THIN LAYER";
+			labRec.preparation = Lab.THIN_LAYER;
+			prepFlag = true;
+		} else if (possibleValues[0].equals(selectedValue)) {
+			defaultPrep = "C";
+			defaultPrepLbl = "CONVENTIONAL";
+			labRec.preparation = Lab.CONVENTIONAL;
+			prepFlag = true;
+		} else if (possibleValues[2].equals(selectedValue)) {
+			defaultPrep = "H";
+			defaultPrepLbl = "HPV ONLY";
+			slideLbl.setText("HPV Source");
+			labRec.preparation = Lab.HPV_ONLY;
+			HPVrequest.setText("R");
+			prepFlag = true;
+		} else if (possibleValues[3].equals(selectedValue)) {
+			defaultPrep = "E";
+			defaultPrepLbl = "EXPIRED";
+			labRec.preparation = Lab.EXPIRED;
+			prepFlag = true;
+		} else if (possibleValues[4].equals(selectedValue)) {
+			setFormForTissuePathology();
+		} else if (possibleValues[5].equals(selectedValue)) {
+			defaultPrep = "I";
+			defaultPrepLbl = "IMAGED SLIDE";
+			labRec.preparation = Lab.IMAGED_SLIDE;
+			prepFlag = true;
+		}
+		labPrep.setText(defaultPrep);
+		prepLbl.setText(defaultPrepLbl);
 	}
 
-	void labDiagCode3_focusGained(java.awt.event.FocusEvent event)
-	{
-        msgLabel.setText("F8 = Diagnosis Code List");
+	void setFormForTissuePathology() {
+		this.setTitle("Requisitions:  TISSUE PATHOLOGY");
+		defaultPrep = "S";
+		defaultPrepLbl = "SURGICAL";
+		labRec.preparation = Lab.SURGICAL;
+		slideLbl.setText("Vials");
+		labOps.getTissueDetailCodes();
+		prepFlag = true;
 	}
 
-	void labDiagCode2_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,16);
+	void displayFaxQueue() {
+		String[] buf = new String[faxLetterQueue.size()];
+		String[] buf2 = new String[faxLetterQueue.size()];
+		for (int i = 0; i < faxLetterQueue.size(); i++) {
+			FaxLetters faxLetter = (FaxLetters) faxLetterQueue.elementAt(i);
+			buf[i] = Integer.toString(faxLetter.lab_number);
+			buf2[i] = buf[i] + "  " + faxLetter.date_sent + "  "
+					+ faxLetter.letter_type;
+		}
+		(new PickList("Fax Letter Queue", 200, 10, 376, 150,
+				faxLetterQueue.size(), buf2, buf, labNumber)).setVisible(true);
 	}
 
-	void labDiagCode3_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,16);
+	public void displayDoctorList() {
+		String[] buf = new String[doctorVect.size()];
+		for (int i = 0; i < doctorVect.size(); i++) {
+			DoctorRec dRec = (DoctorRec) doctorVect.elementAt(i);
+			buf[i] = dRec.doctor + " " + Utils.doctorName(dRec);
+		}
+		if (doctorVect.size() > 1) {
+			(new PickList("Doctors", 300, 100, 240, 190, doctorVect.size(),
+					buf, buf, doctorText)).setVisible(true);
+		} else
+			doctorText.setText(buf[0]);
+		// labBillingChoice.requestFocusInWindow();
+		return;
 	}
 
-	void labDiagCode4_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,16);
-	}
-	
-	public boolean compareDiag(JTextField diag1, JTextField diag2)  {
-	    boolean rv=false;
-	    if (diag1.getText().equals(diag2.getText()))  {
-	        String msg = "Diagnosis Codes: ["+diag1.getText()+"] and ["+diag2.getText()+"] are the same";
-	        Utils.createErrMsg(msg);
-	        diag2.setText(null);
-	        diag2.requestFocus();
-	        rv=true;
-        }	        
-        return (rv);
-    }        	    
-
-	public boolean checkDiag(JTextField diag)  
-	{
-	    boolean rv=false;
-	    for (int i=0;i<MAX_DIAG_CODES;i++)  {
-	        if (diag.getText().equals(labDiagnosisCodes[i].diagnosis_code))  {
-	            rv=true;
-	            break;
-            }	            
-        }	        
-        if (!rv)  {
-            String msg = "Diagnosis Code does not exist ["+diag.getText()+"]";
-	        Utils.createErrMsg(msg);
-	        diag.setText(null);
-	        diag.requestFocus();
-        }	        
-        return (rv);
-    }        	    
-    
-	public String getDiagDescr(String ICD9)  
-	{
-	    String s = null;
-	    for (int i=0;i<MAX_DIAG_CODES;i++)  {
-	        if (ICD9.equals(labDiagnosisCodes[i].diagnosis_code))  {
-	            s=labDiagnosisCodes[i].description;
-	            break;
-            }	            
-        }	        
-        return (s);
-    }        	    
-
-	void labDiagCode_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,16);
+	public CommentForm displayComments() {
+		CommentForm form = null;
+		if (currMode == Lab.ADD && !Utils.isNull(labNumber.getText())) {
+			form = new CommentForm("LAB #" + labNumber.getText(), labComments, true);
+		} else if (labRec.lab_number > 0) {
+			form = new CommentForm(dbLogin, labRec.lab_number);
+		}
+		if (form != null) {
+			form.setAlwaysOnTop(true);
+			form.setVisible(true);
+		}
+		return form;
 	}
 
-	void labDiagCode4_focusGained(java.awt.event.FocusEvent event)
-    {
-        msgLabel.setText("F8 = Diagnosis Code List");
+	void labBillingChoice_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 3);
 	}
 
-	void labDPAState_focusGained(java.awt.event.FocusEvent event)
-	{
+	void labBillingID_focusGained(java.awt.event.FocusEvent event) {
+		if (!Utils.isNull(labRec.carrier_comments))
+			displayCarrierComments();
+	}
+
+	void labDiagCode2_focusGained(java.awt.event.FocusEvent event) {
+		msgLabel.setText("F8 = Diagnosis Code List");
+	}
+
+	void labDiagCode3_focusGained(java.awt.event.FocusEvent event) {
+		msgLabel.setText("F8 = Diagnosis Code List");
+	}
+
+	void labDiagCode2_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 16);
+	}
+
+	void labDiagCode3_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 16);
+	}
+
+	void labDiagCode4_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 16);
+	}
+
+	public boolean compareDiag(JTextField diag1, JTextField diag2) {
+		boolean rv = false;
+		if (diag1.getText().equals(diag2.getText())) {
+			String msg = "Diagnosis Codes: [" + diag1.getText() + "] and ["
+					+ diag2.getText() + "] are the same";
+			Utils.createErrMsg(msg);
+			diag2.setText(null);
+			diag2.requestFocus();
+			rv = true;
+		}
+		return (rv);
+	}
+
+	public boolean checkDiag(JTextField diag) {
+		boolean rv = false;
+		for (int i = 0; i < MAX_DIAG_CODES; i++) {
+			if (diag.getText().equals(labDiagnosisCodes[i].diagnosis_code)) {
+				rv = true;
+				break;
+			}
+		}
+		if (!rv) {
+			String msg = "Diagnosis Code does not exist [" + diag.getText()
+					+ "]";
+			Utils.createErrMsg(msg);
+			diag.setText(null);
+			diag.requestFocus();
+		}
+		return (rv);
+	}
+
+	public String getDiagDescr(String ICD9) {
+		String s = null;
+		for (int i = 0; i < MAX_DIAG_CODES; i++) {
+			if (ICD9.equals(labDiagnosisCodes[i].diagnosis_code)) {
+				s = labDiagnosisCodes[i].description;
+				break;
+			}
+		}
+		return (s);
+	}
+
+	void labDiagCode_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 16);
+	}
+
+	void labDiagCode4_focusGained(java.awt.event.FocusEvent event) {
+		msgLabel.setText("F8 = Diagnosis Code List");
+	}
+
+	void labDPAState_focusGained(java.awt.event.FocusEvent event) {
 		msgLabel.setText("Enter DPA State");
 	}
-	
-    /*
-        Make sure valid billing choice has been entered
-    */        
-    boolean validateBillingChoice() 
-    {
-		boolean rv = Utils.required(labBillingChoice,"Billing Choice");
+
+	/*
+	 * Make sure valid billing choice has been entered
+	 */
+	boolean validateBillingChoice() {
+		boolean rv = Utils.required(labBillingChoice, "Billing Choice");
 		if (rv) {
-            msgLabel.setText(null);
-            HPVmsgLabel.setText(null);
-            if (dbLogin.getBillingChoice(labBillingChoice.getText())==-1) {
-                Utils.createErrMsg("Invalid Billing Code: "+(String)labBillingChoice.getText());
-                labBillingChoice.setText(null);
-                labBillingChoice.requestFocus();
-                rv=false;
-            }            
-        }
-        return (rv);
-    }
-
-	void labOtherInsurance_focusGained(java.awt.event.FocusEvent event)
-	{
-	    String bChoice = labBillingChoice.getText();
-	    if (!bChoice.equals("OI") && !bChoice.equals("DOC") && 
-		    !bChoice.equals("DB") && !bChoice.equals("PRC") && !bChoice.equals("PPD")) 
-        {
-            for (int i=0;i<carrierVect.size();i++) {
-		        CarrierRec cRec = (CarrierRec)carrierVect.elementAt(i);
-                if (cRec.name.equals(labOtherInsurance.getText())) {
-		            labPayerID.setText(cRec.payer_id);
-		            labPCSID.setText(Integer.toString(cRec.id_number));
-		            labRec.carrier_id=cRec.carrier_id;
-		            if (bChoice.equals("DPA")) {
-		                labDPAState.setText(cRec.state);
-                        if (!labDPAState.getText().equals("WV")&&!labDPAState.getText().equals("OH")) {
-                            clearDiagCodeDisplay();
-                        }   
-		            }
-                }
-            }
-            labOtherInsurance.setEnabled(false);
-            labPayerID.setEnabled(false);
-            labPCSID.setEnabled(false);
-            //HACK!!  labDPAState should get focus in some cases.  This line seems to prevent it
-		    if (bChoice.equals("DPA")) labDPAState.requestFocus();
-		    //Removed this line because it was causing the cursor to re-circulate on non DPA cases
-		    // if anything is to replace this it should be more lines that specifically direct the cursor
-		    // for different billing types
-		    //else labBillingChoice.requestFocusInWindow();
-        }
-	}
-	
-	void invokePrepaidDialog() 
-	{
-	    (new PpdLabDialog(this)).setVisible(true);
-	    gotoNextSection();
+			msgLabel.setText(null);
+			HPVmsgLabel.setText(null);
+			if (dbLogin.getBillingChoice(labBillingChoice.getText()) == -1) {
+				Utils.createErrMsg("Invalid Billing Code: "
+						+ (String) labBillingChoice.getText());
+				labBillingChoice.setText(null);
+				labBillingChoice.requestFocus();
+				rv = false;
+			}
+		}
+		return (rv);
 	}
 
-	void labSubscrFName_focusGained(java.awt.event.FocusEvent event)
-	{
-		Utils.required(labSubscrLName,"Subscriber Last Name");
+	void labOtherInsurance_focusGained(java.awt.event.FocusEvent event) {
+		String bChoice = labBillingChoice.getText();
+		if (!bChoice.equals("OI") && !bChoice.equals("DOC")
+				&& !bChoice.equals("DB") && !bChoice.equals("PRC")
+				&& !bChoice.equals("PPD")) {
+			for (int i = 0; i < carrierVect.size(); i++) {
+				CarrierRec cRec = (CarrierRec) carrierVect.elementAt(i);
+				if (cRec.name.equals(labOtherInsurance.getText())) {
+					labPayerID.setText(cRec.payer_id);
+					labPCSID.setText(Integer.toString(cRec.id_number));
+					labRec.carrier_id = cRec.carrier_id;
+					if (bChoice.equals("DPA")) {
+						labDPAState.setText(cRec.state);
+						if (!labDPAState.getText().equals("WV")
+								&& !labDPAState.getText().equals("OH")) {
+							clearDiagCodeDisplay();
+						}
+					}
+				}
+			}
+			labOtherInsurance.setEnabled(false);
+			labPayerID.setEnabled(false);
+			labPCSID.setEnabled(false);
+			// HACK!! labDPAState should get focus in some cases. This line
+			// seems to prevent it
+			if (bChoice.equals("DPA"))
+				labDPAState.requestFocus();
+			// Removed this line because it was causing the cursor to
+			// re-circulate on non DPA cases
+			// if anything is to replace this it should be more lines that
+			// specifically direct the cursor
+			// for different billing types
+			// else labBillingChoice.requestFocusInWindow();
+		}
 	}
 
-	public void resetFKeys()  {
-	    fKeys.off();
-	    fKeys.keyOn(fKeys.F1);
-	    fKeys.keyOn(fKeys.F2);
-	    fKeys.keyOn(fKeys.F9);
-	    fKeys.keyOn(fKeys.F8);
-    }	    
-
-	public void updateActions() 
-	{
-        currMode=Lab.UPDATE;
-	    fKeys.keyOn(fKeys.F10);
-	    currentSection=3;
-        gotoNextSection();
-	}
-	
-	void labPayerID_keyTyped(java.awt.event.KeyEvent event)
-	{
-	    carrierChanged=true;
-		Utils.forceUpper(event,32);
+	void invokePrepaidDialog() {
+		(new PpdLabDialog(this)).setVisible(true);
+		gotoNextSection();
 	}
 
-	void labPCSID_keyTyped(java.awt.event.KeyEvent event)
-	{
-	    carrierChanged=true;
-		Utils.forceUpper(event,5);
+	void labSubscrFName_focusGained(java.awt.event.FocusEvent event) {
+		Utils.required(labSubscrLName, "Subscriber Last Name");
 	}
 
-	void labPractice_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    if (event.getKeyCode()==event.VK_ENTER
-	    || event.getKeyCode()==event.VK_PAGE_DOWN) {
-	        if (Utils.required(labPractice,"Practice")) {
-	            labPractice.transferFocus();
-                updatePracticeInfo();
-            }
-	    }
+	public void resetFKeys() {
+		fKeys.off();
+		fKeys.keyOn(fKeys.F1);
+		fKeys.keyOn(fKeys.F2);
+		fKeys.keyOn(fKeys.F9);
+		fKeys.keyOn(fKeys.F8);
 	}
 
-    void clearBillingFields() 
-    {
-        labOtherInsurance.setText(null);
-        labPayerID.setText(null);
-        labPCSID.setText(null);
-        labSubscriber.setText("SELF");
-        labRelCode.setText("S");
-        labBillingID.setText(null);
-        labGrpNum.setText(null);
-        labDPAState.setText(null);
-        labMedicareType.setText(null);
-        labMedLbl.setText(null);
-        clearDiagCodeDisplay();
-        labFormSigned.setText("N");
-        labSubscrLName.setText(null);
-        labSubscrFName.setText(null);
-        labRec.carrier_id=(-1);
-        labRec.payer_id=null;
-        labRec.pcs_payer_id=(-1);
-        labRec.id_number=null;
-        labRec.group_number=null;
-        labRec.subscriber=null;
-        labRec.medicare_code=null;
-        labRec.diagnosis_code=null;
-        labRec.diagnosis_code2=null;
-        labRec.diagnosis_code3=null;
-        labRec.diagnosis_code4=null;
-        labRec.sub_lname=null;
-        labRec.sub_fname=null;
-        labRec.sign_date=null;
-    }
-    
-    void setBillingLabels(String bChoice) 
-    {
-        CarrierNameLbl.setText(dbLogin.getBillingDescription(
-            dbLogin.getBillingChoice(bChoice)));
-        if (bChoice.equals("DOC")) labBillingIDLbl.setText("Account #");
-        else if (bChoice.equals("DB")) labBillingIDLbl.setText("Patient #");
-        else if (bChoice.equals("PPD")) labBillingIDLbl.setText("Patient #");
-        else if (bChoice.equals("OI")) labBillingIDLbl.setText("Insurance ID#");
-        else if (bChoice.equals("BS")) labBillingIDLbl.setText("Blue Shield ID#");
-        else if (bChoice.equals("MED")) labBillingIDLbl.setText("Medicare # (including letter)");
-        else if (bChoice.equals("DPA")) labBillingIDLbl.setText("Medical Assistance #");
-        else labBillingIDLbl.setText(null);
-    }
-
-    boolean billingValidation() 
-    {
-        boolean rv = true;
-        String bChoice = labBillingChoice.getText();
-        int slen = 0;
-        if (bChoice.equals("PPD")) {
-            if (labRec.payment_amount<=0) {
-                Utils.createErrMsg("Missing Required Billing Fields");
-                currentSection=1;
-                gotoNextSection();
-                return (false);
-            }
-        }
-        if (bChoice.equals("MED") || bChoice.equals("BS") || 
-        bChoice.equals("DPA") || bChoice.equals("OI")) {
-            if (Utils.isNull(labBillingID.getText())) {
-                Utils.createErrMsg("Missing Required Billing Fields");
-                currentSection=1;
-                gotoNextSection();
-                return (false);
-            }
-        }
-        slen=Utils.length(labDiagCode.getText());
-        String state = labDPAState.getText();
-        if (bChoice.equals("DPA") && !state.equals("WV")&&!state.equals("OH")) slen=1;
-        else if (bChoice.equals("MED") && labMedicareType.getText().equals("F")) slen=1;
-        if (slen==0) {
-            Utils.createErrMsg("Missing Required Billing Fields");
-            currentSection=1;
-            gotoNextSection();
-            return (false);
-        }
-        if (bChoice.equals("OI")) {
-            if (Utils.isNull(labOtherInsurance.getText())) {
-                Utils.createErrMsg("Missing Required Billing Fields");
-                currentSection=1;
-                gotoNextSection();
-                return (false);
-            }
-        }
-        return (true);
-    }
-
-	void labPaAddress_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,64);
+	public void updateActions() {
+		currMode = Lab.UPDATE;
+		fKeys.keyOn(fKeys.F10);
+		currentSection = 3;
+		gotoNextSection();
 	}
 
-	void labSSN_keyTyped(java.awt.event.KeyEvent event)
-	{
+	void labPayerID_keyTyped(java.awt.event.KeyEvent event) {
+		carrierChanged = true;
+		Utils.forceUpper(event, 32);
+	}
+
+	void labPCSID_keyTyped(java.awt.event.KeyEvent event) {
+		carrierChanged = true;
+		Utils.forceUpper(event, 5);
+	}
+
+	void labPractice_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER
+				|| event.getKeyCode() == event.VK_PAGE_DOWN) {
+			if (Utils.required(labPractice, "Practice")) {
+				labPractice.transferFocus();
+				updatePracticeInfo();
+			}
+		}
+	}
+
+	void clearBillingFields() {
+		labOtherInsurance.setText(null);
+		labPayerID.setText(null);
+		labPCSID.setText(null);
+		labSubscriber.setText("SELF");
+		labRelCode.setText("S");
+		labBillingID.setText(null);
+		labGrpNum.setText(null);
+		labDPAState.setText(null);
+		labMedicareType.setText(null);
+		labMedLbl.setText(null);
+		clearDiagCodeDisplay();
+		labFormSigned.setText("N");
+		labSubscrLName.setText(null);
+		labSubscrFName.setText(null);
+		labRec.carrier_id = (-1);
+		labRec.payer_id = null;
+		labRec.pcs_payer_id = (-1);
+		labRec.id_number = null;
+		labRec.group_number = null;
+		labRec.subscriber = null;
+		labRec.medicare_code = null;
+		labRec.diagnosis_code = null;
+		labRec.diagnosis_code2 = null;
+		labRec.diagnosis_code3 = null;
+		labRec.diagnosis_code4 = null;
+		labRec.sub_lname = null;
+		labRec.sub_fname = null;
+		labRec.sign_date = null;
+	}
+
+	void setBillingLabels(String bChoice) {
+		CarrierNameLbl.setText(dbLogin.getBillingDescription(dbLogin
+				.getBillingChoice(bChoice)));
+		if (bChoice.equals("DOC"))
+			labBillingIDLbl.setText("Account #");
+		else if (bChoice.equals("DB"))
+			labBillingIDLbl.setText("Patient #");
+		else if (bChoice.equals("PPD"))
+			labBillingIDLbl.setText("Patient #");
+		else if (bChoice.equals("OI"))
+			labBillingIDLbl.setText("Insurance ID#");
+		else if (bChoice.equals("BS"))
+			labBillingIDLbl.setText("Blue Shield ID#");
+		else if (bChoice.equals("MED"))
+			labBillingIDLbl.setText("Medicare # (including letter)");
+		else if (bChoice.equals("DPA"))
+			labBillingIDLbl.setText("Medical Assistance #");
+		else
+			labBillingIDLbl.setText(null);
+	}
+
+	boolean billingValidation() {
+		boolean rv = true;
+		String bChoice = labBillingChoice.getText();
+		int slen = 0;
+		if (bChoice.equals("PPD")) {
+			if (labRec.payment_amount <= 0) {
+				Utils.createErrMsg("Missing Required Billing Fields");
+				currentSection = 1;
+				gotoNextSection();
+				return (false);
+			}
+		}
+		if (bChoice.equals("MED") || bChoice.equals("BS")
+				|| bChoice.equals("DPA") || bChoice.equals("OI")) {
+			if (Utils.isNull(labBillingID.getText())) {
+				Utils.createErrMsg("Missing Required Billing Fields");
+				currentSection = 1;
+				gotoNextSection();
+				return (false);
+			}
+		}
+		slen = Utils.length(labDiagCode.getText());
+		String state = labDPAState.getText();
+		if (bChoice.equals("DPA") && !state.equals("WV") && !state.equals("OH"))
+			slen = 1;
+		else if (bChoice.equals("MED") && labMedicareType.getText().equals("F"))
+			slen = 1;
+		if (slen == 0) {
+			Utils.createErrMsg("Missing Required Billing Fields");
+			currentSection = 1;
+			gotoNextSection();
+			return (false);
+		}
+		if (bChoice.equals("OI")) {
+			if (Utils.isNull(labOtherInsurance.getText())) {
+				Utils.createErrMsg("Missing Required Billing Fields");
+				currentSection = 1;
+				gotoNextSection();
+				return (false);
+			}
+		}
+		return (true);
+	}
+
+	void labPaAddress_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 64);
+	}
+
+	void labSSN_keyTyped(java.awt.event.KeyEvent event) {
 		Utils.buildSSNMask(event);
 	}
 
-	void labDOB_keyTyped(java.awt.event.KeyEvent event)
-	{
+	void labDOB_keyTyped(java.awt.event.KeyEvent event) {
 		Utils.buildDateMask(event);
 	}
 
-	void labZip_keyTyped(java.awt.event.KeyEvent event)
-	{
+	void labZip_keyTyped(java.awt.event.KeyEvent event) {
 		Utils.buildZipMask(event);
 	}
 
-	void labState_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,2);
+	void labState_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 2);
 	}
 
-	void labCity_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,32);
+	void labCity_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 32);
 	}
-	
-	void displayCarrierComments() 
-	{
-	    if (Utils.isNull(labRec.carrier_comments)) return;
-	    StringBuffer buf = new StringBuffer(labRec.carrier_comments.trim());
-	    StringBuffer buf2 = new StringBuffer();
-	    StringBuffer buf3 = new StringBuffer();
-	    Vector commentVect = new Vector();
-        if (Utils.length(buf.toString())>50) {
-            buf2 = new StringBuffer(buf.toString().trim());
-            int endNdx=0;
-            while (Utils.length(buf2.toString())>50) {
-                for (int j=0;j<50;j++) {
-                    if (buf2.charAt(j)==' ')
-                        endNdx=j;
-                }
-                buf = new StringBuffer(buf2.toString().substring(0,endNdx).trim());
-                buf3 = new StringBuffer(buf2.toString().substring(endNdx).trim());
-                commentVect.addElement(buf.toString().trim());
-                buf2 = new StringBuffer(buf3.toString().trim());
-            }
-            if (!Utils.isNull(buf2.toString())) {
-                commentVect.addElement(buf2.toString().trim());
-            }
-        }
-        else {
-            commentVect.addElement(buf.toString().trim());
-        }
-        String[] list = new String[commentVect.size()];
-        for (int i=0; i<commentVect.size(); i++) 
-            list[i] = new String((String)commentVect.elementAt(i));
-        if (!carrierCommentsShown) {
-            (new PickList("Additional Payer Info",200,200,330,130,
-                    commentVect.size(),list)).setVisible(true);
-            carrierCommentsShown=true;
-        }
+
+	void displayCarrierComments() {
+		if (Utils.isNull(labRec.carrier_comments))
+			return;
+		StringBuffer buf = new StringBuffer(labRec.carrier_comments.trim());
+		StringBuffer buf2 = new StringBuffer();
+		StringBuffer buf3 = new StringBuffer();
+		Vector commentVect = new Vector();
+		if (Utils.length(buf.toString()) > 50) {
+			buf2 = new StringBuffer(buf.toString().trim());
+			int endNdx = 0;
+			while (Utils.length(buf2.toString()) > 50) {
+				for (int j = 0; j < 50; j++) {
+					if (buf2.charAt(j) == ' ')
+						endNdx = j;
+				}
+				buf = new StringBuffer(buf2.toString().substring(0, endNdx)
+						.trim());
+				buf3 = new StringBuffer(buf2.toString().substring(endNdx)
+						.trim());
+				commentVect.addElement(buf.toString().trim());
+				buf2 = new StringBuffer(buf3.toString().trim());
+			}
+			if (!Utils.isNull(buf2.toString())) {
+				commentVect.addElement(buf2.toString().trim());
+			}
+		} else {
+			commentVect.addElement(buf.toString().trim());
+		}
+		String[] list = new String[commentVect.size()];
+		for (int i = 0; i < commentVect.size(); i++)
+			list[i] = new String((String) commentVect.elementAt(i));
+		if (!carrierCommentsShown) {
+			(new PickList("Additional Payer Info", 200, 200, 330, 130,
+					commentVect.size(), list)).setVisible(true);
+			carrierCommentsShown = true;
+		}
 	}
-	public boolean isTissuePathology(String lab)
-	 {
-	      boolean result = false;
-	      if (!Utils.isNull(lab)) {
-	          String baseLab = lab.substring(4);
-	          int baseLabNumber = Integer.parseInt(baseLab);
-	          if (baseLabNumber>800000 && baseLabNumber<900000) result=true;
-	      }
-	      return (result);
-	  }
-	void labNumber_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    if (event.getKeyCode()==event.VK_ENTER) {
-	        if (currMode==Lab.ADD) {
-	            if (labPrep.getText().equals("S")) {
-                    (new RecvDateDialog(labNumber.getText(),labRec)).setVisible(true);
-	                int lab = DbConnection.getNextTissueNumber();
-	                labRec.lab_number=lab;
-	                labRec.preparation=Lab.SURGICAL;
-	                labNumber.setText(Integer.toString(lab));
-	                labNumber.setEnabled(false);
-	                labNumber.transferFocus();
-	                return;
-	            }
-	            else if (labPrep.getText().equals("H")) {
-	                int lab = DbConnection.getNextHPVNumber();
-	                labRec.lab_number=lab;
-	                labRec.preparation=Lab.HPV_ONLY;
-	                labNumber.setText(Integer.toString(lab));
-	                labNumber.setEnabled(false);
-	                labNumber.transferFocus();
-                    (new RecvDateDialog(labNumber.getText(),labRec)).setVisible(true);
-	                return;
-	            }
-	        }
-            if (Utils.required(labNumber,"Lab Number")) {
-	            if (currMode==Lab.QUEUE || currMode==Lab.QUERY) { 
-	                if (isTissuePathology(labNumber.getText()))
-	                    setFormForTissuePathology();
-	                else {
-	                    this.setTitle("Requisitions");
-	                    slideLbl.setText("Slides");
-	                    
-	                    labOps.getDetailCodes();
-	                    try {
-	                    	synchronized(labOps.dbThread) {
-	                    		labOps.dbThread.wait();
-	                    	}
+
+	public boolean isTissuePathology(String lab) {
+		boolean result = false;
+		if (!Utils.isNull(lab)) {
+			String baseLab = lab.substring(4);
+			int baseLabNumber = Integer.parseInt(baseLab);
+			if (baseLabNumber > 800000 && baseLabNumber < 900000)
+				result = true;
+		}
+		return (result);
+	}
+
+	void labNumber_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (currMode == Lab.ADD) {
+				if (labPrep.getText().equals("S")) {
+					(new RecvDateDialog(labNumber.getText(), labRec))
+							.setVisible(true);
+					int lab = DbConnection.getNextTissueNumber();
+					labRec.lab_number = lab;
+					labRec.preparation = Lab.SURGICAL;
+					labNumber.setText(Integer.toString(lab));
+					labNumber.setEnabled(false);
+					labNumber.transferFocus();
+					return;
+				} else if (labPrep.getText().equals("H")) {
+					int lab = DbConnection.getNextHPVNumber();
+					labRec.lab_number = lab;
+					labRec.preparation = Lab.HPV_ONLY;
+					labNumber.setText(Integer.toString(lab));
+					labNumber.setEnabled(false);
+					labNumber.transferFocus();
+					(new RecvDateDialog(labNumber.getText(), labRec))
+							.setVisible(true);
+					return;
+				}
+			}
+			if (Utils.required(labNumber, "Lab Number")) {
+				if (currMode == Lab.QUEUE || currMode == Lab.QUERY) {
+					if (isTissuePathology(labNumber.getText()))
+						setFormForTissuePathology();
+					else {
+						this.setTitle("Requisitions");
+						slideLbl.setText("Slides");
+
+						labOps.getDetailCodes();
+						try {
+							synchronized (labOps.dbThread) {
+								labOps.dbThread.wait();
+							}
 						} catch (InterruptedException e) {
 							log.write("An error occurred trying to wait on DbThread to finish");
 							e.printStackTrace();
 						}
-	                }
-	                finalActions();
-	            }
-                else {
-                    int YYYYMM = dbLogin.getNumericDate("YYYYMM");
-                    int YYYY01 = (int)Integer.parseInt(
-                        dbLogin.getAlphaDate("YYYY")+"01");
-	                int labNum = (int)(Integer.parseInt(labNumber.getText()));
-	                int low = (int)Integer.parseInt(
-	                    dbLogin.getAlphaDate("YYYY")+"000000");
-	                int high = ((int)Integer.parseInt(
-	                    dbLogin.getAlphaDate("YYYY")+"999999")+1);
-	                /*
-	                    Restricts lab number being entered to current year;
-	                    if it is the first month (i.e. January), then lab numbers
-	                    from the prior year are permitted; otherwise the 
-	                    current year restriction is enforced.
-	                */
-	                if (YYYYMM<=YYYY01) low-=1000000;
-	                if (labNum>low && labNum<high) {
-                        labOps.queryLabNumber(labNum); 
-                        if (!Utils.isNull(labNumber.getText()))
-	                        labNumber.transferFocus();
-	                    else {
-	                        Utils.createErrMsg("Lab #"+labNum+" already exists");
-	                        labNumber.setText(null);
-	                    }
-	                }
-	                else {
-	                    Utils.createErrMsg("Lab #"+labNumber.getText()+" out of range");
-	                    labNumber.setText(null);
-	                }
-                }
-            }
+					}
+					finalActions();
+				} else {
+					int YYYYMM = dbLogin.getNumericDate("YYYYMM");
+					int YYYY01 = (int) Integer.parseInt(dbLogin
+							.getAlphaDate("YYYY") + "01");
+					int labNum = (int) (Integer.parseInt(labNumber.getText()));
+					int low = (int) Integer.parseInt(dbLogin
+							.getAlphaDate("YYYY") + "000000");
+					int high = ((int) Integer.parseInt(dbLogin
+							.getAlphaDate("YYYY") + "999999") + 1);
+					/*
+					 * Restricts lab number being entered to current year; if it
+					 * is the first month (i.e. January), then lab numbers from
+					 * the prior year are permitted; otherwise the current year
+					 * restriction is enforced.
+					 */
+					if (YYYYMM <= YYYY01)
+						low -= 1000000;
+					if (labNum > low && labNum < high) {
+						labOps.queryLabNumber(labNum);
+						if (!Utils.isNull(labNumber.getText()))
+							labNumber.transferFocus();
+						else {
+							Utils.createErrMsg("Lab #" + labNum
+									+ " already exists");
+							labNumber.setText(null);
+						}
+					} else {
+						Utils.createErrMsg("Lab #" + labNumber.getText()
+								+ " out of range");
+						labNumber.setText(null);
+					}
+				}
+			}
 		}
 	}
 
-	void labPatientNumber_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceDigits(event,8);
+	void labPatientNumber_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceDigits(event, 8);
 	}
 
-	void labPatientNumber_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    if (event.getKeyCode()==event.VK_ENTER)
-    		labPatientNumber.transferFocus();
+	void labPatientNumber_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER)
+			labPatientNumber.transferFocus();
 	}
 
-	void labPatientLastName_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,32);
+	void labPatientLastName_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 32);
 	}
 
-	void labPatientLastName_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    labSubscrLName.setText(labPatientLastName.getText());
-		    if (patientQuery) 
-		        labPatientLastName.transferFocus();
-		    else if (Utils.required(labPatientLastName,"Patient Last Name"))
-                labPatientLastName.transferFocus();
-        }
-	}
-
-	void labPatientFirstName_keyTyped(java.awt.event.KeyEvent event)
-	{
-	    Utils.forceUpper(event,32);
-	}
-
-	void labPatientFirstName_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    labSubscrFName.setText( labPatientFirstName.getText());
-		    if (patientQuery) labPatientFirstName.transferFocus();
-		    else if (Utils.required(labPatientFirstName,"Patient First Name"))
-		        labPatientFirstName.transferFocus();
+	void labPatientLastName_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			labSubscrLName.setText(labPatientLastName.getText());
+			if (patientQuery)
+				labPatientLastName.transferFocus();
+			else if (Utils.required(labPatientLastName, "Patient Last Name"))
+				labPatientLastName.transferFocus();
 		}
 	}
 
-	void labPatientMI_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,1);
+	void labPatientFirstName_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 32);
 	}
 
-	void labPatientMI_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    if (patientQuery) {
-		        labPatientMI.transferFocus();
-		        return;
-		    }
-		    while (Utils.isNull(labRec.stop_code)) { }
-		    if (labRec.stop_code.equals("D") && labRec.patient_cards.equals("N")) {
-		        labPaAddress.setEnabled(false);
-		        labZip.setEnabled(false);
-		        labCity.setEnabled(false);
-		        labState.setEnabled(false);
-		        labPhone.setEnabled(false);
-		    }
-		    if (labRec.patient_cards.equals("Y"))
-		        msgLabel.setText("Practice gets patient cards");
-		    labPatientMI.transferFocus();
+	void labPatientFirstName_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			labSubscrFName.setText(labPatientFirstName.getText());
+			if (patientQuery)
+				labPatientFirstName.transferFocus();
+			else if (Utils.required(labPatientFirstName, "Patient First Name"))
+				labPatientFirstName.transferFocus();
 		}
 	}
 
-	void labPaAddress_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER)
-		    labPaAddress.transferFocus();
+	void labPatientMI_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 1);
 	}
 
-	void labZip_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    labPhone.requestFocus();
-            if (!Utils.isNull(labZip.getText()) &&
-                 Utils.isNull(labCity.getText()) &&
-                 Utils.isNull(labState.getText())) labOps.getZipInfo();
+	void labPatientMI_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (patientQuery) {
+				labPatientMI.transferFocus();
+				return;
+			}
+			while (Utils.isNull(labRec.stop_code)) {
+			}
+			if (labRec.stop_code.equals("D")
+					&& labRec.patient_cards.equals("N")) {
+				labPaAddress.setEnabled(false);
+				labZip.setEnabled(false);
+				labCity.setEnabled(false);
+				labState.setEnabled(false);
+				labPhone.setEnabled(false);
+			}
+			if (labRec.patient_cards.equals("Y"))
+				msgLabel.setText("Practice gets patient cards");
+			labPatientMI.transferFocus();
 		}
 	}
 
-	void labCity_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    labCity.transferFocus();
+	void labPaAddress_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER)
+			labPaAddress.transferFocus();
+	}
+
+	void labZip_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			labPhone.requestFocus();
+			if (!Utils.isNull(labZip.getText())
+					&& Utils.isNull(labCity.getText())
+					&& Utils.isNull(labState.getText()))
+				labOps.getZipInfo();
 		}
 	}
 
-	void labState_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    labState.transferFocus();
+	void labCity_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			labCity.transferFocus();
 		}
 	}
 
-	void labPhone_keyTyped(java.awt.event.KeyEvent event)
-	{
+	void labState_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			labState.transferFocus();
+		}
+	}
+
+	void labPhone_keyTyped(java.awt.event.KeyEvent event) {
 		Utils.buildPhoneMask(event);
 	}
 
-	void labPhone_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    labPhone.transferFocus();
+	void labPhone_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			labPhone.transferFocus();
 		}
 	}
 
-	void labDOB_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    if (Utils.dateVerify(labDOB)) {
-		        labDOB.transferFocus();
-		    }
+	void labDOB_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (Utils.dateVerify(labDOB)) {
+				labDOB.transferFocus();
+			}
 		}
 	}
 
-	void labSSN_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-			//QUES:  Why was the null check removed?
-		    //if (!Utils.isNull(labRec.prac.practice_type)) {
-		        if ("ADPH".equals(labRec.prac.practice_type)) {
-		            getADPHProgramType();
-		        }
-		    //}
-		    String s = labSSN.getText();
-		    if (s.length()==5) {
-		        s="00000"+s.substring(0,3)+s.substring(4);
-		        s=Utils.addSSNMask(s);
-		        labSSN.setText(s);
-		    }
-		    else if (s.length()!=11 && s.length()!=0) {
-		        Utils.createErrMsg("Illegal SSN Number! Must be 4 or 9 digits long!");
-		        labSSN.setText(null);
-		    }
-		    else labSSN.transferFocus();
-		}
-	}
-	
-	void getADPHProgramType()
-	{
-	    String[] ADPHpgms = new String[labRec.prac.ADPH_programs.size()];
-	    String[] ADPHpgmDescr = new String[labRec.prac.ADPH_program_descr.size()];
-	    for (int i=0; i<labRec.prac.ADPH_programs.size(); i++) {
-	        ADPHpgms[i]=(String)labRec.prac.ADPH_programs.elementAt(i);
-	        ADPHpgmDescr[i]=
-	            Utils.rpad(ADPHpgms[i],9)+
-	                (String)labRec.prac.ADPH_program_descr.elementAt(i);
-	    }
-	    String pListTitle = null;
-	    if (Utils.isNull(labRec.ADPH_program)) pListTitle="ADPH Program Types";
-	    else pListTitle="ADPH Program Type ["+labRec.ADPH_program+"]";
-        (new PickList(pListTitle,70,30,310,120,
-            labRec.prac.ADPH_programs.size(),ADPHpgmDescr,ADPHpgms,
-            ADPHpgm)).setVisible(true);
-	}
-	
-	void setMedPrimaryDiag()
-	{
-	    String[] diagChoices = new String[2];
-	    diagChoices[0]="V76.2";
-	    diagChoices[1]="V72.31";
-        (new PickList("Select One",120,280,180,90,
-            2,diagChoices,diagChoices,
-            labDiagCode)).setVisible(true);
-	}
-
-	void labClientNotes_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    if (labRec.fillClientNotes)
-		        if (!Utils.required(labClientNotes,"Client Notes"))
-		            return;
-		    labClientNotes.transferFocus();
-		    if (Utils.isNull(labRec.program))
-		        pgmLabel.setText(ADPHpgm.getText());
+	void labSSN_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			// QUES: Why was the null check removed?
+			// if (!Utils.isNull(labRec.prac.practice_type)) {
+			if ("ADPH".equals(labRec.prac.practice_type)) {
+				getADPHProgramType();
+			}
+			// }
+			String s = labSSN.getText();
+			if (s.length() == 5) {
+				s = "00000" + s.substring(0, 3) + s.substring(4);
+				s = Utils.addSSNMask(s);
+				labSSN.setText(s);
+			} else if (s.length() != 11 && s.length() != 0) {
+				Utils.createErrMsg("Illegal SSN Number! Must be 4 or 9 digits long!");
+				labSSN.setText(null);
+			} else
+				labSSN.transferFocus();
 		}
 	}
 
-	void labDateCollected_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    if (Utils.required(labDateCollected,"Date Collected")) {
-		        if (Utils.dateVerify(labDateCollected)) {
-		            if (!Utils.isNull(labDOB.getText())) {
-		                int age = Utils.getAge(Utils.stripDateMask(labDOB.getText()),
-		                    Utils.stripDateMask(labDateCollected.getText()));
-                        labAge.setText(Integer.toString(age));
-                        if (Utils.equals(labRec.prac.practice_type,"ADPH")) {
-                            HPVrequest.setText(null);
-                        }
-		            }
-                    labDateCollected.transferFocus();
-                }
-            }
-        }
+	void getADPHProgramType() {
+		String[] ADPHpgms = new String[labRec.prac.ADPH_programs.size()];
+		String[] ADPHpgmDescr = new String[labRec.prac.ADPH_program_descr
+				.size()];
+		for (int i = 0; i < labRec.prac.ADPH_programs.size(); i++) {
+			ADPHpgms[i] = (String) labRec.prac.ADPH_programs.elementAt(i);
+			ADPHpgmDescr[i] = Utils.rpad(ADPHpgms[i], 9)
+					+ (String) labRec.prac.ADPH_program_descr.elementAt(i);
+		}
+		String pListTitle = null;
+		if (Utils.isNull(labRec.ADPH_program))
+			pListTitle = "ADPH Program Types";
+		else
+			pListTitle = "ADPH Program Type [" + labRec.ADPH_program + "]";
+		(new PickList(pListTitle, 70, 30, 310, 120,
+				labRec.prac.ADPH_programs.size(), ADPHpgmDescr, ADPHpgms,
+				ADPHpgm)).setVisible(true);
 	}
 
-	void labPatientID_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    labPatientID.transferFocus();
+	void setMedPrimaryDiag() {
+		String[] diagChoices = new String[2];
+		diagChoices[0] = "V76.2";
+		diagChoices[1] = "V72.31";
+		(new PickList("Select One", 120, 280, 180, 90, 2, diagChoices,
+				diagChoices, labDiagCode)).setVisible(true);
+	}
+
+	void labClientNotes_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (labRec.fillClientNotes)
+				if (!Utils.required(labClientNotes, "Client Notes"))
+					return;
+			labClientNotes.transferFocus();
+			if (Utils.isNull(labRec.program))
+				pgmLabel.setText(ADPHpgm.getText());
 		}
 	}
 
-	void labNumSlides_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    int key = event.getKeyCode();
-	    if (key==event.VK_F10) { 
-	        currentSection=4;
-	        keyActions(event);
-	    }
-	    else if (key==event.VK_ENTER) {
-	        if (labRec.preparation==Lab.HPV_ONLY) {
-	            if (Utils.required(labNumSlides,"HPV Source: (V)ial OR (P)robe")) {
-	                String s = labNumSlides.getText();
-	                if (!s.equals("P")&&!s.equals("V")) {
-	                    Utils.createErrMsg("HPV Source must be (V)ial OR (P)robe");
-	                    labNumSlides.setText(null);
-	                }
-	                else {
-	                    labRec.slide_qty=0;
-	                    labRec.hpv.hpvSource=labNumSlides.getText();
-	                    labNumSlides.transferFocus();
-	                }
-	            }
-	        }
-	        else {
-	            if (Utils.required(labNumSlides,"Number of Slides OR Vials")) {
-	                int x = (int)Integer.parseInt(labNumSlides.getText());
-	                if (labRec.preparation==Lab.SURGICAL) { 
-	                    if (x>=1 && x<=6) labNumSlides.transferFocus();
-	                    else Utils.createErrMsg("Illegal number of vials");
-	                }
-	                else if (x>=1 && x<=3) labNumSlides.transferFocus();
-	                else Utils.createErrMsg("Illegal number of slides");
-	            }
-	        }
-	    }
+	void labDateCollected_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (Utils.required(labDateCollected, "Date Collected")) {
+				if (Utils.dateVerify(labDateCollected)) {
+					if (!Utils.isNull(labDOB.getText())) {
+						int age = Utils
+								.getAge(Utils.stripDateMask(labDOB.getText()),
+										Utils.stripDateMask(labDateCollected
+												.getText()));
+						labAge.setText(Integer.toString(age));
+						if (Utils.equals(labRec.prac.practice_type, "ADPH")) {
+							HPVrequest.setText(null);
+						}
+					}
+					labDateCollected.transferFocus();
+				}
+			}
+		}
 	}
-	
-	boolean billingDetailEntry()
-	{
-	    boolean transfer = false;    
-	    String bChoice = labBillingChoice.getText();
-	    int bCode = dbLogin.getBillingChoice(bChoice);
-	    setBillingLabels(bChoice);
-	    if (bCode!=originalBillingChoice) {
-	        billingChanged=true;
-	        validateBillingChoice();
-	        clearBillingFields();
-	    }
-	    setEnableAllFields(false);
-	    originalBillingChoice=bCode;
-	    labRec.billing_choice=bCode;
-	    checkCarrier=false;
-	    switch (bCode) {
-	        case Lab.DOC:   
-		        if (labRec.stop_code.equals("Y")) {
-		            Utils.createErrMsg("Physician billing not available for this practice");
-		            labBillingChoice.setText(null);
-		            labBillingChoice.setEnabled(true);
-		            labBillingChoice.requestFocus();
-		            break;
-		        }
-	            labOtherInsurance.setText(labPracticeName.getText());
-                labBillingID.setText(labPractice.getText());
-                labSubscriber.setText("SELF");
-                labRelCode.setText("S");
-                labGrpNum.setText(null);
-                clearDiagCodeDisplay();
-                labPayerID.setText(null);
-                labPCSID.setText(null);
-                labDPAState.setText(null);
-                labFormSigned.setText("N");
-                labSubscrLName.setText(null);
-                labSubscrFName.setText(null);
-                transfer=true;
-	            break;
-	        case Lab.DB:
-	            labOtherInsurance.setText(
-	                labPatientLastName.getText()+", "+labPatientFirstName.getText());
-                labBillingID.setText(Integer.toString(labRec.patient));	  
-                labSubscriber.setText("SELF");
-                labRelCode.setText("S");
-                labGrpNum.setText(null);
-                clearDiagCodeDisplay();
-                labPayerID.setText(null);
-                labPCSID.setText(null);
-                labDPAState.setText(null);
-                labFormSigned.setText("N");
-                labSubscrLName.setText(null);
-                labSubscrFName.setText(null);
-                transfer=true;
-                break;
-	        case Lab.PRC:
-                labBillingID.setText(null);
-                labSubscriber.setText("SELF");
-                labRelCode.setText("S");
-                labGrpNum.setText(null);
-                clearDiagCodeDisplay();
-                labOtherInsurance.setText("PENNSYLVANIA CYTOLOGY SERVICES");
-                labPayerID.setText(null);
-                labPCSID.setText(null);
-                labDPAState.setText(null);
-                labFormSigned.setText("N");
-                labSubscrLName.setText(null);
-                labSubscrFName.setText(null);
-                transfer=true;
-	            break;
-	        case Lab.PPD:
-                labBillingID.setText(Integer.toString(labRec.pat.patient));
-                labSubscriber.setText("SELF");
-                labRelCode.setText("S");
-                labGrpNum.setText(null);
-                clearDiagCodeDisplay();
-                labOtherInsurance.setText(
-                labPatientLastName.getText()+", "+labPatientFirstName.getText());
-                labPayerID.setText(null);
-                labPCSID.setText(null);
-                labDPAState.setText(null);
-                labFormSigned.setText("N");
-                labSubscrLName.setText(null);
-                labSubscrFName.setText(null);
-                invokePrepaidDialog();
-	            break;
-	        case Lab.DPA:
-	            labDPAState.setEnabled(true);
-                labBillingID.setEnabled(true);
-                labDiagCode.setEnabled(true);
-                labDiagCode2.setEnabled(true);
-                labDiagCode3.setEnabled(true);
-                labDiagCode4.setEnabled(true);
-                labSubscriber.setText("SELF");
-                labRelCode.setText("S");
-                labGrpNum.setText(null);
-                labPayerID.setText(null);
-                labPCSID.setText(null);
-                labFormSigned.setText("N");
-                labSubscrLName.setText(null);
-                labSubscrFName.setText(null);
-	            labBillingID.setText(labRec.id_number);
-	            break;
-	        case Lab.BS:
-                labBillingID.setEnabled(true);
-                labRelCode.setEnabled(true);
-                labGrpNum.setEnabled(true);
-                labDiagCode.setEnabled(true);
-                labDiagCode2.setEnabled(true);
-                labDiagCode3.setEnabled(true);
-                labDiagCode4.setEnabled(true);
-                labDPAState.setText(null);
-                labFormSigned.setText("N");
-                labBillingID.setText(labRec.id_number);
-                labSubscriber.setText(labRec.subscriber);
-                if (!Utils.isNull(labRec.subscriber)) {
-                    if (labRec.subscriber.equals("SELF")) labRelCode.setText("S");
-                    else if (labRec.subscriber.equals("SPOUSE")) labRelCode.setText("H");
-                    else if (labRec.subscriber.equals("DEPENDENT")) labRelCode.setText("C");
-                }
-                labGrpNum.setText(labRec.group_number);
-	            break;
-	        case Lab.MED:
-                labGrpNum.setText(null);
-                labBillingID.setEnabled(true);
-                labSubscriber.setText("SELF");
-                labRelCode.setText("S");
-                labFormSigned.setEnabled(true);
-                labDiagCode.setEnabled(true);
-                labDiagCode2.setEnabled(true);
-                labDiagCode3.setEnabled(true);
-                labDiagCode4.setEnabled(true);
-                labMedicareType.setEnabled(true);
-                labPayerID.setText(null);
-                labPCSID.setText(null);
-                labDPAState.setText(null);
-	            labBillingID.setText(labRec.id_number);
-	            labRec.subscriber="SELF";
-	            break;
-	        case Lab.OI:
-                labBillingID.setEnabled(true);
-                labRelCode.setEnabled(true);
-                labGrpNum.setEnabled(true);
-                labOtherInsurance.setEnabled(true);
-                labPayerID.setEnabled(true);
-                labPCSID.setEnabled(true);
-                labFormSigned.setEnabled(true);
-                labDiagCode.setEnabled(true);
-                labDiagCode2.setEnabled(true);
-                labDiagCode3.setEnabled(true);
-                labDiagCode4.setEnabled(true);
-                labDPAState.setText(null);
-                if (!Utils.isNull(labRec.subscriber)) {
-                    if (labRec.subscriber.equals("SELF")) labRelCode.setText("S");
-                    else if (labRec.subscriber.equals("SPOUSE")) labRelCode.setText("H");
-                    else if (labRec.subscriber.equals("DEPENDENT")) labRelCode.setText("C");
-                }
-                labBillingID.setText(labRec.id_number);
-                labGrpNum.setText(labRec.group_number);
-                checkCarrier=true;
-                break;	        
-	    }
-	    return (transfer);
+
+	void labPatientID_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			labPatientID.transferFocus();
+		}
 	}
-	
-	void labBillingChoice_enterActions() 
-	{
-	    if (labRec.prac.practice_type.equals("WV")) {
-	        int age = Utils.getAge(Utils.stripDateMask(labDOB.getText()));
-	        if (age<18) {
-	            String msg = "Patient is younger than 18!";
-	            if (age<0) msg="Missing DOB info!";
-	            Utils.createErrMsg(msg,"WARNING!");
-	        }
-	    }
-	    String bChoice = labBillingChoice.getText();
-	    if (bChoice.equals("BS") || bChoice.equals("MED") ||
-	    bChoice.equals("OI") || bChoice.equals("DPA")) {
-	        boolean aFlag = Utils.isNull(labPaAddress.getText());
-	        if (!aFlag) {
-	            aFlag=Utils.isNull(labZip.getText());
-	            if (!aFlag) {
-	                aFlag=Utils.isNull(labCity.getText());
-	                if (!aFlag) {
-	                    aFlag=Utils.isNull(labState.getText());
-	                }
-	            }
-	        }
-	        if (aFlag)
-	            Utils.createErrMsg("Patient address information is missing. "+
-	            "Please fill in now or a letter will be faxed to the account "+
-	            "requesting it.");
-	    }
-	    else if (bChoice.equals("DOC")) labBillingID.setText(labPractice.getText());
-	    int pr = Integer.parseInt(labPractice.getText());
-	    if (pr==656||pr==657||pr==658||pr==659||pr==660) {
-	        if (!bChoice.equals("DOC")&&!bChoice.equals("DPA")) {
-	            Utils.createErrMsg(
-	                "DOC or DPA only valid choices for Account #"+
-	                labPractice.getText());
-	            labBillingChoice.setText(null);
-                return;	                    
-	        }
-	    }
-	    if (labRec.prac.block_patient.equals("Y")&&bChoice.equals("DB")) {
-	        Utils.createErrMsg(
-	            "Direct Billing NOT valid for Account #"+
-	        labPractice.getText());
-	        labBillingChoice.setText(null);
-	        return;
-	    }
-	    if (billingDetailEntry()) {
-	        gotoNextSection();
-	        return;
-	    }
-	    /*
-	        This section is hard-coded for special situation
-	        with accounts 656,657,658,658,660
-	    */
-	    if (bChoice.equals("OI")) labBillingChoice.transferFocus();
+
+	void labNumSlides_keyPressed(java.awt.event.KeyEvent event) {
+		int key = event.getKeyCode();
+		if (key == event.VK_F10) {
+			currentSection = 4;
+			keyActions(event);
+		} else if (key == event.VK_ENTER) {
+			if (labRec.preparation == Lab.HPV_ONLY) {
+				if (Utils.required(labNumSlides,
+						"HPV Source: (V)ial OR (P)robe")) {
+					String s = labNumSlides.getText();
+					if (!s.equals("P") && !s.equals("V")) {
+						Utils.createErrMsg("HPV Source must be (V)ial OR (P)robe");
+						labNumSlides.setText(null);
+					} else {
+						labRec.slide_qty = 0;
+						labRec.hpv.hpvSource = labNumSlides.getText();
+						labNumSlides.transferFocus();
+					}
+				}
+			} else {
+				if (Utils.required(labNumSlides, "Number of Slides OR Vials")) {
+					int x = (int) Integer.parseInt(labNumSlides.getText());
+					if (labRec.preparation == Lab.SURGICAL) {
+						if (x >= 1 && x <= 6)
+							labNumSlides.transferFocus();
+						else
+							Utils.createErrMsg("Illegal number of vials");
+					} else if (x >= 1 && x <= 3)
+						labNumSlides.transferFocus();
+					else
+						Utils.createErrMsg("Illegal number of slides");
+				}
+			}
+		}
+	}
+
+	boolean billingDetailEntry() {
+		boolean transfer = false;
+		String bChoice = labBillingChoice.getText();
+		int bCode = dbLogin.getBillingChoice(bChoice);
+		setBillingLabels(bChoice);
+		if (bCode != originalBillingChoice) {
+			billingChanged = true;
+			validateBillingChoice();
+			clearBillingFields();
+		}
+		setEnableAllFields(false);
+		originalBillingChoice = bCode;
+		labRec.billing_choice = bCode;
+		checkCarrier = false;
+		switch (bCode) {
+		case Lab.DOC:
+			if (labRec.stop_code.equals("Y")) {
+				Utils.createErrMsg("Physician billing not available for this practice");
+				labBillingChoice.setText(null);
+				labBillingChoice.setEnabled(true);
+				labBillingChoice.requestFocus();
+				break;
+			}
+			labOtherInsurance.setText(labPracticeName.getText());
+			labBillingID.setText(labPractice.getText());
+			labSubscriber.setText("SELF");
+			labRelCode.setText("S");
+			labGrpNum.setText(null);
+			clearDiagCodeDisplay();
+			labPayerID.setText(null);
+			labPCSID.setText(null);
+			labDPAState.setText(null);
+			labFormSigned.setText("N");
+			labSubscrLName.setText(null);
+			labSubscrFName.setText(null);
+			transfer = true;
+			break;
+		case Lab.DB:
+			labOtherInsurance.setText(labPatientLastName.getText() + ", "
+					+ labPatientFirstName.getText());
+			labBillingID.setText(Integer.toString(labRec.patient));
+			labSubscriber.setText("SELF");
+			labRelCode.setText("S");
+			labGrpNum.setText(null);
+			clearDiagCodeDisplay();
+			labPayerID.setText(null);
+			labPCSID.setText(null);
+			labDPAState.setText(null);
+			labFormSigned.setText("N");
+			labSubscrLName.setText(null);
+			labSubscrFName.setText(null);
+			transfer = true;
+			break;
+		case Lab.PRC:
+			labBillingID.setText(null);
+			labSubscriber.setText("SELF");
+			labRelCode.setText("S");
+			labGrpNum.setText(null);
+			clearDiagCodeDisplay();
+			labOtherInsurance.setText("PENNSYLVANIA CYTOLOGY SERVICES");
+			labPayerID.setText(null);
+			labPCSID.setText(null);
+			labDPAState.setText(null);
+			labFormSigned.setText("N");
+			labSubscrLName.setText(null);
+			labSubscrFName.setText(null);
+			transfer = true;
+			break;
+		case Lab.PPD:
+			labBillingID.setText(Integer.toString(labRec.pat.patient));
+			labSubscriber.setText("SELF");
+			labRelCode.setText("S");
+			labGrpNum.setText(null);
+			clearDiagCodeDisplay();
+			labOtherInsurance.setText(labPatientLastName.getText() + ", "
+					+ labPatientFirstName.getText());
+			labPayerID.setText(null);
+			labPCSID.setText(null);
+			labDPAState.setText(null);
+			labFormSigned.setText("N");
+			labSubscrLName.setText(null);
+			labSubscrFName.setText(null);
+			invokePrepaidDialog();
+			break;
+		case Lab.DPA:
+			labDPAState.setEnabled(true);
+			labBillingID.setEnabled(true);
+			labDiagCode.setEnabled(true);
+			labDiagCode2.setEnabled(true);
+			labDiagCode3.setEnabled(true);
+			labDiagCode4.setEnabled(true);
+			labSubscriber.setText("SELF");
+			labRelCode.setText("S");
+			labGrpNum.setText(null);
+			labPayerID.setText(null);
+			labPCSID.setText(null);
+			labFormSigned.setText("N");
+			labSubscrLName.setText(null);
+			labSubscrFName.setText(null);
+			labBillingID.setText(labRec.id_number);
+			break;
+		case Lab.BS:
+			labBillingID.setEnabled(true);
+			labRelCode.setEnabled(true);
+			labGrpNum.setEnabled(true);
+			labDiagCode.setEnabled(true);
+			labDiagCode2.setEnabled(true);
+			labDiagCode3.setEnabled(true);
+			labDiagCode4.setEnabled(true);
+			labDPAState.setText(null);
+			labFormSigned.setText("N");
+			labBillingID.setText(labRec.id_number);
+			labSubscriber.setText(labRec.subscriber);
+			if (!Utils.isNull(labRec.subscriber)) {
+				if (labRec.subscriber.equals("SELF"))
+					labRelCode.setText("S");
+				else if (labRec.subscriber.equals("SPOUSE"))
+					labRelCode.setText("H");
+				else if (labRec.subscriber.equals("DEPENDENT"))
+					labRelCode.setText("C");
+			}
+			labGrpNum.setText(labRec.group_number);
+			break;
+		case Lab.MED:
+			labGrpNum.setText(null);
+			labBillingID.setEnabled(true);
+			labSubscriber.setText("SELF");
+			labRelCode.setText("S");
+			labFormSigned.setEnabled(true);
+			labDiagCode.setEnabled(true);
+			labDiagCode2.setEnabled(true);
+			labDiagCode3.setEnabled(true);
+			labDiagCode4.setEnabled(true);
+			labMedicareType.setEnabled(true);
+			labPayerID.setText(null);
+			labPCSID.setText(null);
+			labDPAState.setText(null);
+			labBillingID.setText(labRec.id_number);
+			labRec.subscriber = "SELF";
+			break;
+		case Lab.OI:
+			labBillingID.setEnabled(true);
+			labRelCode.setEnabled(true);
+			labGrpNum.setEnabled(true);
+			labOtherInsurance.setEnabled(true);
+			labPayerID.setEnabled(true);
+			labPCSID.setEnabled(true);
+			labFormSigned.setEnabled(true);
+			labDiagCode.setEnabled(true);
+			labDiagCode2.setEnabled(true);
+			labDiagCode3.setEnabled(true);
+			labDiagCode4.setEnabled(true);
+			labDPAState.setText(null);
+			if (!Utils.isNull(labRec.subscriber)) {
+				if (labRec.subscriber.equals("SELF"))
+					labRelCode.setText("S");
+				else if (labRec.subscriber.equals("SPOUSE"))
+					labRelCode.setText("H");
+				else if (labRec.subscriber.equals("DEPENDENT"))
+					labRelCode.setText("C");
+			}
+			labBillingID.setText(labRec.id_number);
+			labGrpNum.setText(labRec.group_number);
+			checkCarrier = true;
+			break;
+		}
+		return (transfer);
+	}
+
+	void labBillingChoice_enterActions() {
+		if (labRec.prac.practice_type.equals("WV")) {
+			int age = Utils.getAge(Utils.stripDateMask(labDOB.getText()));
+			if (age < 18) {
+				String msg = "Patient is younger than 18!";
+				if (age < 0)
+					msg = "Missing DOB info!";
+				Utils.createErrMsg(msg, "WARNING!");
+			}
+		}
+		String bChoice = labBillingChoice.getText();
+		if (bChoice.equals("BS") || bChoice.equals("MED")
+				|| bChoice.equals("OI") || bChoice.equals("DPA")) {
+			boolean aFlag = Utils.isNull(labPaAddress.getText());
+			if (!aFlag) {
+				aFlag = Utils.isNull(labZip.getText());
+				if (!aFlag) {
+					aFlag = Utils.isNull(labCity.getText());
+					if (!aFlag) {
+						aFlag = Utils.isNull(labState.getText());
+					}
+				}
+			}
+			if (aFlag)
+				Utils.createErrMsg("Patient address information is missing. "
+						+ "Please fill in now or a letter will be faxed to the account "
+						+ "requesting it.");
+		} else if (bChoice.equals("DOC"))
+			labBillingID.setText(labPractice.getText());
+		int pr = Integer.parseInt(labPractice.getText());
+		if (pr == 656 || pr == 657 || pr == 658 || pr == 659 || pr == 660) {
+			if (!bChoice.equals("DOC") && !bChoice.equals("DPA")) {
+				Utils.createErrMsg("DOC or DPA only valid choices for Account #"
+						+ labPractice.getText());
+				labBillingChoice.setText(null);
+				return;
+			}
+		}
+		if (labRec.prac.block_patient.equals("Y") && bChoice.equals("DB")) {
+			Utils.createErrMsg("Direct Billing NOT valid for Account #"
+					+ labPractice.getText());
+			labBillingChoice.setText(null);
+			return;
+		}
+		if (billingDetailEntry()) {
+			gotoNextSection();
+			return;
+		}
+		/*
+		 * This section is hard-coded for special situation with accounts
+		 * 656,657,658,658,660
+		 */
+		if (bChoice.equals("OI"))
+			labBillingChoice.transferFocus();
 		else {
-		    CarrierRec cRec = null;
-            carrierVect=dbLogin.getCarrierVect(bChoice);
-            if (dbLogin.billingCodeCount(bChoice)>1 && !bChoice.equals("MED")) { }
-            else {
-                cRec = (CarrierRec)carrierVect.elementAt(0);
-                labOtherInsurance.setText(cRec.name);
-                labPayerID.setText(cRec.payer_id);
-                labPCSID.setText(Integer.toString(cRec.id_number));
-                labRec.carrier_id=cRec.carrier_id;
-                
-                labBillingChoice.transferFocus();
-                labOtherInsurance.requestFocusInWindow();
-            }
-            if (bChoice.equals("DPA")){
-            	labDPAState.requestFocusInWindow();
-            }
-            else {
-            	labBillingChoice.transferFocus();
-            }
-		}
-	}
-	
+			CarrierRec cRec = null;
+			carrierVect = dbLogin.getCarrierVect(bChoice);
+			if (dbLogin.billingCodeCount(bChoice) > 1 && !bChoice.equals("MED")) {
+			} else {
+				cRec = (CarrierRec) carrierVect.elementAt(0);
+				labOtherInsurance.setText(cRec.name);
+				labPayerID.setText(cRec.payer_id);
+				labPCSID.setText(Integer.toString(cRec.id_number));
+				labRec.carrier_id = cRec.carrier_id;
 
-	void labBillingChoice_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    labBillingChoice_enterActions();
-        }
-	}
-
-	void labOtherInsurance_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER)
-		    labOtherInsurance.transferFocus();
-	}
-
-	void labPayerID_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER)
-		    labPayerID.transferFocus();
-	}
-
-	void labPCSID_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-	            if (Utils.isNull(labOtherInsurance.getText()) && 
-	                Utils.isNull(labPayerID.getText()) &&
-	                Utils.isNull(labPCSID.getText())) {
-	                Utils.createErrMsg("Missing payer information");
-	                labOtherInsurance.requestFocus();
-	                return;
-	            }
-                else labOps.getCarrierInfo();
-		    labPCSID.transferFocus();
+				labBillingChoice.transferFocus();
+				labOtherInsurance.requestFocusInWindow();
+			}
+			if (bChoice.equals("DPA")) {
+				labDPAState.requestFocusInWindow();
+			} else {
+				labBillingChoice.transferFocus();
+			}
 		}
 	}
 
-	void labBillingID_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    if (labBillingChoice.getText().equals("BS") ||
-		    labBillingChoice.getText().equals("MED") ||
-		    labBillingChoice.getText().equals("DPA") ||
-		    labBillingChoice.getText().equals("OI")) {
-		        if (!Utils.required(labBillingID,"ID Number"))
-		            return;
-		    }
-		    if (carrierChanged) labOps.getCarrierInfo();
-		    if (Utils.required(labBillingID,"Billing ID")) {
-		        if (labBillingChoice.getText().equals("MED")) {
-		            char c = labBillingID.getText().charAt(0);
-		            if (c>='A' && c<='Z') {
-                        CarrierRec cRec = (CarrierRec)carrierVect.elementAt(1);
-                        labOtherInsurance.setText(cRec.name);
-                        labPayerID.setText(cRec.payer_id);
-                        labPCSID.setText(Integer.toString(cRec.id_number));
-                        labRec.carrier_id=cRec.carrier_id;
-                    }
-                    String s = labMedicareType.getText();
-                    if (s.equals("F")) labMedicareType.setText(null);
-                }
-                else if (labBillingChoice.getText().equals("BS")) {
-		            String prefix = labBillingID.getText().substring(0,3);
-		            try {
-		                CarrierRec cRec = null;
-		                if (labOps.isIBC(prefix)) {
-                            cRec = (CarrierRec)carrierVect.elementAt(1);
-                        }
-                        else {
-                            cRec = (CarrierRec)carrierVect.elementAt(0);
-                        }
-                        labOtherInsurance.setText(cRec.name);
-                        labPayerID.setText(cRec.payer_id);
-                        labPCSID.setText(Integer.toString(cRec.id_number));
-                        labRec.carrier_id=cRec.carrier_id;
-                    }
-                    catch (Exception e) { log.write(e); }
-                }
-		        labRec.id_number=labBillingID.getText();
-		        if (labBillingChoice.getText().equals("DPA") &&
-		            (!labDPAState.getText().equals("WV"))&&(!labDPAState.getText().equals("OH"))) {
-                    gotoNextSection();
-		        }
-                else {
-                	labBillingID.transferFocus();		
-                }
-            }
-        }
-	}
-
-	void labGrpNum_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    if (labBillingChoice.getText().equals("BS") &&
-		        Utils.isNull(labGrpNum.getText()))
-		        labGrpNum.setText("999999");
-		    labRec.group_number=labGrpNum.getText();
-		    labGrpNum.transferFocus();
+	void labBillingChoice_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			labBillingChoice_enterActions();
 		}
 	}
 
-	void labDPAState_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    boolean found = false;
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    if (Utils.required(labDPAState,"DPA State")) {
-		        carrierVect = dbLogin.getCarrierVect("DPA");
-		        for (int i=0; i<carrierVect.size(); i++) {
-		            CarrierRec cRec = (CarrierRec)carrierVect.elementAt(i);
-		            if (cRec.state.equals(labDPAState.getText())) {
-		                labRec.carrier_id=cRec.carrier_id;
-		                labOtherInsurance.setText(cRec.name);
-		                labPCSID.setText(Integer.toString(cRec.id_number));
-		                found=true;
-		            }
-		        }
-		        if (!found) Utils.createErrMsg("Invalid DPA State");
-		        else {
-		        	
-		        	labDPAState.transferFocus();
-		        }
-		    }
+	void labOtherInsurance_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER)
+			labOtherInsurance.transferFocus();
+	}
+
+	void labPayerID_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER)
+			labPayerID.transferFocus();
+	}
+
+	void labPCSID_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (Utils.isNull(labOtherInsurance.getText())
+					&& Utils.isNull(labPayerID.getText())
+					&& Utils.isNull(labPCSID.getText())) {
+				Utils.createErrMsg("Missing payer information");
+				labOtherInsurance.requestFocus();
+				return;
+			} else
+				labOps.getCarrierInfo();
+			labPCSID.transferFocus();
 		}
 	}
 
-	void labDiagCode_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-	        if (!Utils.required(labDiagCode,"Primary Diagnosis")) return;
-	        if (!checkDiag(labDiagCode)) return;
-	        labRec.diagnosis_code=labDiagCode.getText();
-	        diag1lbl.setText(getDiagDescr(labDiagCode.getText()));
-		    labDiagCode.transferFocus();
+	void labBillingID_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (labBillingChoice.getText().equals("BS")
+					|| labBillingChoice.getText().equals("MED")
+					|| labBillingChoice.getText().equals("DPA")
+					|| labBillingChoice.getText().equals("OI")) {
+				if (!Utils.required(labBillingID, "ID Number"))
+					return;
+			}
+			if (carrierChanged)
+				labOps.getCarrierInfo();
+			if (Utils.required(labBillingID, "Billing ID")) {
+				if (labBillingChoice.getText().equals("MED")) {
+					char c = labBillingID.getText().charAt(0);
+					if (c >= 'A' && c <= 'Z') {
+						CarrierRec cRec = (CarrierRec) carrierVect.elementAt(1);
+						labOtherInsurance.setText(cRec.name);
+						labPayerID.setText(cRec.payer_id);
+						labPCSID.setText(Integer.toString(cRec.id_number));
+						labRec.carrier_id = cRec.carrier_id;
+					}
+					String s = labMedicareType.getText();
+					if (s.equals("F"))
+						labMedicareType.setText(null);
+				} else if (labBillingChoice.getText().equals("BS")) {
+					String prefix = labBillingID.getText().substring(0, 3);
+					try {
+						CarrierRec cRec = null;
+						if (labOps.isIBC(prefix)) {
+							cRec = (CarrierRec) carrierVect.elementAt(1);
+						} else {
+							cRec = (CarrierRec) carrierVect.elementAt(0);
+						}
+						labOtherInsurance.setText(cRec.name);
+						labPayerID.setText(cRec.payer_id);
+						labPCSID.setText(Integer.toString(cRec.id_number));
+						labRec.carrier_id = cRec.carrier_id;
+					} catch (Exception e) {
+						log.write(e);
+					}
+				}
+				labRec.id_number = labBillingID.getText();
+				if (labBillingChoice.getText().equals("DPA")
+						&& (!labDPAState.getText().equals("WV"))
+						&& (!labDPAState.getText().equals("OH"))) {
+					gotoNextSection();
+				} else {
+					labBillingID.transferFocus();
+				}
+			}
 		}
 	}
 
-	void labDiagCode2_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    boolean transfer = false;
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    if (Utils.isNull(labDiagCode2.getText())) {
-                msgLabel.setText(null);
-                HPVmsgLabel.setText(null);
-                labDiagCode2.setText(null);
-                labDiagCode3.setText(null);
-                labDiagCode4.setText(null);
-                labDiagCode2.setEnabled(false);
-                labDiagCode3.setEnabled(false);
-                labDiagCode4.setEnabled(false);
-                if (labBillingChoice.getText().equals("DPA"))
-                    transfer=true;
-                else if (labBillingChoice.getText().equals("BS")) {
-                    if (labRelCode.getText().equals("S"))
-                        transfer=true;
-                }
-		    }
-		    else { 
-		        if (!checkDiag(labDiagCode2)) return;
-		        if (compareDiag(labDiagCode,labDiagCode2)) return;
-		    }
-		    labRec.diagnosis_code2=labDiagCode2.getText();
-		    diag2lbl.setText(getDiagDescr(labDiagCode2.getText()));
-		    if (transfer) {
-		    	gotoNextSection();
-		    }
-            else {
-            	labDiagCode2.transferFocus();
-            }
+	void labGrpNum_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (labBillingChoice.getText().equals("BS")
+					&& Utils.isNull(labGrpNum.getText()))
+				labGrpNum.setText("999999");
+			labRec.group_number = labGrpNum.getText();
+			labGrpNum.transferFocus();
+		}
+	}
+
+	void labDPAState_keyPressed(java.awt.event.KeyEvent event) {
+		boolean found = false;
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (Utils.required(labDPAState, "DPA State")) {
+				carrierVect = dbLogin.getCarrierVect("DPA");
+				for (int i = 0; i < carrierVect.size(); i++) {
+					CarrierRec cRec = (CarrierRec) carrierVect.elementAt(i);
+					if (cRec.state.equals(labDPAState.getText())) {
+						labRec.carrier_id = cRec.carrier_id;
+						labOtherInsurance.setText(cRec.name);
+						labPCSID.setText(Integer.toString(cRec.id_number));
+						found = true;
+					}
+				}
+				if (!found)
+					Utils.createErrMsg("Invalid DPA State");
+				else {
+
+					labDPAState.transferFocus();
+				}
+			}
+		}
+	}
+
+	void labDiagCode_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (!Utils.required(labDiagCode, "Primary Diagnosis"))
+				return;
+			if (!checkDiag(labDiagCode))
+				return;
+			labRec.diagnosis_code = labDiagCode.getText();
+			diag1lbl.setText(getDiagDescr(labDiagCode.getText()));
+			labDiagCode.transferFocus();
+		}
+	}
+
+	void labDiagCode2_keyPressed(java.awt.event.KeyEvent event) {
+		boolean transfer = false;
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (Utils.isNull(labDiagCode2.getText())) {
+				msgLabel.setText(null);
+				HPVmsgLabel.setText(null);
+				labDiagCode2.setText(null);
+				labDiagCode3.setText(null);
+				labDiagCode4.setText(null);
+				labDiagCode2.setEnabled(false);
+				labDiagCode3.setEnabled(false);
+				labDiagCode4.setEnabled(false);
+				if (labBillingChoice.getText().equals("DPA"))
+					transfer = true;
+				else if (labBillingChoice.getText().equals("BS")) {
+					if (labRelCode.getText().equals("S"))
+						transfer = true;
+				}
+			} else {
+				if (!checkDiag(labDiagCode2))
+					return;
+				if (compareDiag(labDiagCode, labDiagCode2))
+					return;
+			}
+			labRec.diagnosis_code2 = labDiagCode2.getText();
+			diag2lbl.setText(getDiagDescr(labDiagCode2.getText()));
+			if (transfer) {
+				gotoNextSection();
+			} else {
+				labDiagCode2.transferFocus();
+			}
 
 		}
 	}
 
-	void labDiagCode3_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    boolean transfer = false;
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    if (Utils.isNull(labDiagCode3.getText())) {
-                msgLabel.setText(null);
-                HPVmsgLabel.setText(null);
-                labDiagCode3.setText(null);
-                labDiagCode4.setText(null);
-                labDiagCode3.setEnabled(false);
-                labDiagCode4.setEnabled(false);
-                if (labBillingChoice.getText().equals("DPA"))
-                    transfer=true;
-                else if (labBillingChoice.getText().equals("BS")) {
-                    if (labRelCode.getText().equals("S"))
-                        transfer=true;
-                }
-		    }
-		    else if (labBillingChoice.getText().equals("MED") &&
-		        labMedicareType.getText().equals("L")) {
-		        String s = labDiagCode3.getText();
-		        if (s.equals("L")) {
-                    msgLabel.setText(null);
-                    HPVmsgLabel.setText(null);
-                    labDiagCode3.setText(null);
-                    labDiagCode4.setText(null);
-                    labDiagCode4.setEnabled(false);
-                    labDiagCode.setText("V76.49");
-                    diag1lbl.setText(
-                        getDiagDescr(labDiagCode.getText()));
-                    return;
-                }
-            }
-		    else {
-	            if (!checkDiag(labDiagCode3)) return;
-                if (compareDiag(labDiagCode,labDiagCode3)) return;
-                if (compareDiag(labDiagCode2,labDiagCode3)) return;
-		    }
-		    labRec.diagnosis_code3=labDiagCode3.getText();
-		    diag3lbl.setText(getDiagDescr(labDiagCode3.getText()));
-		    if (transfer) gotoNextSection();
-            else labDiagCode3.transferFocus();
+	void labDiagCode3_keyPressed(java.awt.event.KeyEvent event) {
+		boolean transfer = false;
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (Utils.isNull(labDiagCode3.getText())) {
+				msgLabel.setText(null);
+				HPVmsgLabel.setText(null);
+				labDiagCode3.setText(null);
+				labDiagCode4.setText(null);
+				labDiagCode3.setEnabled(false);
+				labDiagCode4.setEnabled(false);
+				if (labBillingChoice.getText().equals("DPA"))
+					transfer = true;
+				else if (labBillingChoice.getText().equals("BS")) {
+					if (labRelCode.getText().equals("S"))
+						transfer = true;
+				}
+			} else if (labBillingChoice.getText().equals("MED")
+					&& labMedicareType.getText().equals("L")) {
+				String s = labDiagCode3.getText();
+				if (s.equals("L")) {
+					msgLabel.setText(null);
+					HPVmsgLabel.setText(null);
+					labDiagCode3.setText(null);
+					labDiagCode4.setText(null);
+					labDiagCode4.setEnabled(false);
+					labDiagCode.setText("V76.49");
+					diag1lbl.setText(getDiagDescr(labDiagCode.getText()));
+					return;
+				}
+			} else {
+				if (!checkDiag(labDiagCode3))
+					return;
+				if (compareDiag(labDiagCode, labDiagCode3))
+					return;
+				if (compareDiag(labDiagCode2, labDiagCode3))
+					return;
+			}
+			labRec.diagnosis_code3 = labDiagCode3.getText();
+			diag3lbl.setText(getDiagDescr(labDiagCode3.getText()));
+			if (transfer)
+				gotoNextSection();
+			else
+				labDiagCode3.transferFocus();
 		}
 	}
 
-	void labDiagCode4_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    boolean transfer = false;
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    if (!Utils.isNull(labDiagCode4.getText())) {
-	            if (!checkDiag(labDiagCode4)) return;
-                if (compareDiag(labDiagCode,labDiagCode4)) return;
-                if (compareDiag(labDiagCode2,labDiagCode4)) return;
-                if (compareDiag(labDiagCode3,labDiagCode4)) return;
-		    }
-		    labRec.diagnosis_code4=labDiagCode4.getText();
-		    diag4lbl.setText(getDiagDescr(labDiagCode4.getText()));
-            if (labBillingChoice.getText().equals("DPA"))
-                transfer=true;
-            else if (labBillingChoice.getText().equals("BS")) {
-                if (labRelCode.getText().equals("S"))
-                    transfer=true;
-            }
-		    if (transfer) gotoNextSection();
-            else labDiagCode4.transferFocus();
+	void labDiagCode4_keyPressed(java.awt.event.KeyEvent event) {
+		boolean transfer = false;
+		if (event.getKeyCode() == event.VK_ENTER) {
+			if (!Utils.isNull(labDiagCode4.getText())) {
+				if (!checkDiag(labDiagCode4))
+					return;
+				if (compareDiag(labDiagCode, labDiagCode4))
+					return;
+				if (compareDiag(labDiagCode2, labDiagCode4))
+					return;
+				if (compareDiag(labDiagCode3, labDiagCode4))
+					return;
+			}
+			labRec.diagnosis_code4 = labDiagCode4.getText();
+			diag4lbl.setText(getDiagDescr(labDiagCode4.getText()));
+			if (labBillingChoice.getText().equals("DPA"))
+				transfer = true;
+			else if (labBillingChoice.getText().equals("BS")) {
+				if (labRelCode.getText().equals("S"))
+					transfer = true;
+			}
+			if (transfer)
+				gotoNextSection();
+			else
+				labDiagCode4.transferFocus();
 		}
 	}
 
-	void labSubscrLName_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    labRec.sub_lname=labSubscrLName.getText();
-		    labSubscrLName.transferFocus();
-		    
+	void labSubscrLName_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			labRec.sub_lname = labSubscrLName.getText();
+			labSubscrLName.transferFocus();
+
 		}
 	}
 
-	void labSubscrFName_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER) {
-		    labRec.sub_fname=labSubscrFName.getText();
-		    if (labBillingChoice.getText().equals("BS")) {
-		        gotoNextSection();
-		    }
-		    else {
-		    	labSubscrFName.transferFocus();
-		    }
-		}
-	}
-	void labLMP_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    int key = event.getKeyCode();
-	    if (key==event.VK_F10) { 
-	        currentSection=4;
-	        keyActions(event);
-	    }
-		else if (event.getKeyCode()==event.VK_ENTER) {
-		    if (currMode==Lab.ADD) finalActions();
-		    else gotoNextSection();
+	void labSubscrFName_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			labRec.sub_fname = labSubscrFName.getText();
+			if (labBillingChoice.getText().equals("BS")) {
+				gotoNextSection();
+			} else {
+				labSubscrFName.transferFocus();
+			}
 		}
 	}
 
-	void labAge_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    int key = event.getKeyCode();
-	    if (event.getKeyCode()==event.VK_F10) { 
-	        currentSection=4;
-	        keyActions(event);
-	    }
-		else if (key==event.VK_ENTER)
-		    labAge.transferFocus();
-	}
-
-	void labRelCode_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    int key = event.getKeyCode();
-	    if (key==event.VK_F12 && currMode==Lab.UPDATE) {
-	        keyActions(event);
-	    }
-		else if (key==event.VK_ENTER) {
-		    if (Utils.required(labRelCode,"Subscriber")) {
-		        if (!labRelCode.getText().equals("S")) {
-		            labSubscrLName.setEnabled(true);
-		            labSubscrFName.setEnabled(true);
-		            if (Utils.isNull(labRec.sub_lname))
-		                labSubscrLName.setText(labPatientLastName.getText());
-		            if (Utils.isNull(labRec.sub_fname))
-		                labSubscrFName.setText(null);
-		        }
-		        else {
-		            labSubscrLName.setEnabled(false);
-		            labSubscrFName.setEnabled(false);
-		            labSubscrLName.setText(labPatientLastName.getText());
-		            labSubscrFName.setText(labPatientFirstName.getText());
-		        }
-		        labRelCode.transferFocus();
-		    }
-		}
-		else if (key!=event.VK_ESCAPE && key!=event.VK_F9) {
-		    char c = event.getKeyChar();
-		    int x = event.getKeyCode();
-		    labRelCode.setText(null);
-		    event.consume();
-		    if (c=='S' || c=='s' || x==event.VK_S) { 
-		        labRelCode.setText("S");
-		        labSubscriber.setText("SELF");
-		    }
-		    else if (c=='H' || c=='h' || x==event.VK_H) { 
-		        labRelCode.setText("H");
-		        labSubscriber.setText("SPOUSE");
-		    }
-		    else if (c=='C' || c=='c' || x==event.VK_C) { 
-		        labRelCode.setText("C");
-		        labSubscriber.setText("DEPENDENT");
-		    }
-		    else if (c=='O' || c=='o' || x==event.VK_O) {
-		        labRelCode.setText("O");
-		        labSubscriber.setText("OTHER");
-		    }
-		    else {
-		        labRelCode.setText("S");
-		        labSubscriber.setText("SELF");
-		        msgLabel.setText("S=SELF, H=SPOUSE, C=DEPENDENT, O=OTHER");
-		    }
+	void labLMP_keyPressed(java.awt.event.KeyEvent event) {
+		int key = event.getKeyCode();
+		if (key == event.VK_F10) {
+			currentSection = 4;
+			keyActions(event);
+		} else if (event.getKeyCode() == event.VK_ENTER) {
+			if (currMode == Lab.ADD)
+				finalActions();
+			else
+				gotoNextSection();
 		}
 	}
 
-	void labRelCode_keyTyped(java.awt.event.KeyEvent event)
-	{
-	    event.consume();
+	void labAge_keyPressed(java.awt.event.KeyEvent event) {
+		int key = event.getKeyCode();
+		if (event.getKeyCode() == event.VK_F10) {
+			currentSection = 4;
+			keyActions(event);
+		} else if (key == event.VK_ENTER)
+			labAge.transferFocus();
 	}
 
-	void labRelCode_focusGained(java.awt.event.FocusEvent event)
-	{
+	void labRelCode_keyPressed(java.awt.event.KeyEvent event) {
+		int key = event.getKeyCode();
+		if (key == event.VK_F12 && currMode == Lab.UPDATE) {
+			keyActions(event);
+		} else if (key == event.VK_ENTER) {
+			if (Utils.required(labRelCode, "Subscriber")) {
+				if (!labRelCode.getText().equals("S")) {
+					labSubscrLName.setEnabled(true);
+					labSubscrFName.setEnabled(true);
+					if (Utils.isNull(labRec.sub_lname))
+						labSubscrLName.setText(labPatientLastName.getText());
+					if (Utils.isNull(labRec.sub_fname))
+						labSubscrFName.setText(null);
+				} else {
+					labSubscrLName.setEnabled(false);
+					labSubscrFName.setEnabled(false);
+					labSubscrLName.setText(labPatientLastName.getText());
+					labSubscrFName.setText(labPatientFirstName.getText());
+				}
+				labRelCode.transferFocus();
+			}
+		} else if (key != event.VK_ESCAPE && key != event.VK_F9) {
+			char c = event.getKeyChar();
+			int x = event.getKeyCode();
+			labRelCode.setText(null);
+			event.consume();
+			if (c == 'S' || c == 's' || x == event.VK_S) {
+				labRelCode.setText("S");
+				labSubscriber.setText("SELF");
+			} else if (c == 'H' || c == 'h' || x == event.VK_H) {
+				labRelCode.setText("H");
+				labSubscriber.setText("SPOUSE");
+			} else if (c == 'C' || c == 'c' || x == event.VK_C) {
+				labRelCode.setText("C");
+				labSubscriber.setText("DEPENDENT");
+			} else if (c == 'O' || c == 'o' || x == event.VK_O) {
+				labRelCode.setText("O");
+				labSubscriber.setText("OTHER");
+			} else {
+				labRelCode.setText("S");
+				labSubscriber.setText("SELF");
+				msgLabel.setText("S=SELF, H=SPOUSE, C=DEPENDENT, O=OTHER");
+			}
+		}
+	}
+
+	void labRelCode_keyTyped(java.awt.event.KeyEvent event) {
+		event.consume();
+	}
+
+	void labRelCode_focusGained(java.awt.event.FocusEvent event) {
 		msgLabel.setText("S=SELF, H=SPOUSE, C=DEPENDENT, O=OTHER");
 	}
-	
-	void queryPatientActions() 
-	{
-	    patientQuery=true;
-	    clearForm();
-	    resetColors();
-	    fKeys.keyOn(fKeys.F12);
-	    msgLabel.setText("Enter search criteria, then press F5");
-        setEnableAllFields(false);
-        setEnablePatientFields(true);
-        labPrevLabNum.setEnabled(true);
-        labNumber.setEnabled(false);
-        labClientNotes.setEnabled(false);
-        labDateCollected.setEnabled(false);
-        labPatientID.setEnabled(false);
-        labRush.setEnabled(false);
-        doctorText.setEnabled(false);
-        labPrevLabNum.setBackground(Color.white);
-        labPrevLabNum.setForeground(Color.black);
-        labPrevLabNum.setCaretColor(Color.black);
-        labPatientFirstName.setBackground(Color.white);
-        labPatientFirstName.setForeground(Color.black);
-        labPatientFirstName.setCaretColor(Color.black);
-        labPatientLastName.setBackground(Color.white);
-        labPatientLastName.setForeground(Color.black);
-        labPatientLastName.setCaretColor(Color.black);
-        labPaAddress.setBackground(Color.white);
-        labPaAddress.setForeground(Color.black);
-        labPaAddress.setCaretColor(Color.black);
-        labCity.setBackground(Color.white);
-        labCity.setForeground(Color.black);
-        labCity.setCaretColor(Color.black);
-        labState.setBackground(Color.white);
-        labState.setForeground(Color.black);
-        labState.setCaretColor(Color.black);
-        labZip.setBackground(Color.white);
-        labZip.setForeground(Color.black);
-        labZip.setCaretColor(Color.black);
-        labPhone.setBackground(Color.white);
-        labPhone.setForeground(Color.black);
-        labPhone.setCaretColor(Color.black);
-        labSSN.setBackground(Color.white);
-        labSSN.setForeground(Color.black);
-        labSSN.setCaretColor(Color.black);
-        labDOB.setBackground(Color.white);
-        labDOB.setForeground(Color.black);
-        labDOB.setCaretColor(Color.black);
-        labPractice.setBackground(Color.white);
-        labPractice.setForeground(Color.black);
-        labPractice.setCaretColor(Color.black);
-        labPatientMI.setBackground(Color.white);
-        labPatientMI.setForeground(Color.black);
-        labPatientMI.setCaretColor(Color.black);
-        labPatientLastName.requestFocusInWindow();
-       
+
+	void queryPatientActions() {
+		patientQuery = true;
+		clearForm();
+		resetColors();
+		fKeys.keyOn(fKeys.F12);
+		msgLabel.setText("Enter search criteria, then press F5");
+		setEnableAllFields(false);
+		setEnablePatientFields(true);
+		labPrevLabNum.setEnabled(true);
+		labNumber.setEnabled(false);
+		labClientNotes.setEnabled(false);
+		labDateCollected.setEnabled(false);
+		labPatientID.setEnabled(false);
+		labRush.setEnabled(false);
+		doctorText.setEnabled(false);
+		labPrevLabNum.setBackground(Color.white);
+		labPrevLabNum.setForeground(Color.black);
+		labPrevLabNum.setCaretColor(Color.black);
+		labPatientFirstName.setBackground(Color.white);
+		labPatientFirstName.setForeground(Color.black);
+		labPatientFirstName.setCaretColor(Color.black);
+		labPatientLastName.setBackground(Color.white);
+		labPatientLastName.setForeground(Color.black);
+		labPatientLastName.setCaretColor(Color.black);
+		labPaAddress.setBackground(Color.white);
+		labPaAddress.setForeground(Color.black);
+		labPaAddress.setCaretColor(Color.black);
+		labCity.setBackground(Color.white);
+		labCity.setForeground(Color.black);
+		labCity.setCaretColor(Color.black);
+		labState.setBackground(Color.white);
+		labState.setForeground(Color.black);
+		labState.setCaretColor(Color.black);
+		labZip.setBackground(Color.white);
+		labZip.setForeground(Color.black);
+		labZip.setCaretColor(Color.black);
+		labPhone.setBackground(Color.white);
+		labPhone.setForeground(Color.black);
+		labPhone.setCaretColor(Color.black);
+		labSSN.setBackground(Color.white);
+		labSSN.setForeground(Color.black);
+		labSSN.setCaretColor(Color.black);
+		labDOB.setBackground(Color.white);
+		labDOB.setForeground(Color.black);
+		labDOB.setCaretColor(Color.black);
+		labPractice.setBackground(Color.white);
+		labPractice.setForeground(Color.black);
+		labPractice.setCaretColor(Color.black);
+		labPatientMI.setBackground(Color.white);
+		labPatientMI.setForeground(Color.black);
+		labPatientMI.setCaretColor(Color.black);
+		labPatientLastName.requestFocusInWindow();
+
 	}
 
-	void labRush_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER ||
-		    event.getKeyChar()=='\r')
-        {
-            if (labRush.isSelected()) {
-                (new RecvDateDialog(labNumber.getText(),labRec)).setVisible(true);
-            }
-		    labRush.transferFocus();
-		    if (currMode!=Lab.UPDATE) displayDoctorList();
+	void labRush_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER || event.getKeyChar() == '\r') {
+			if (labRush.isSelected()) {
+				(new RecvDateDialog(labNumber.getText(), labRec))
+						.setVisible(true);
+			}
+			labRush.transferFocus();
+			if (currMode != Lab.UPDATE)
+				displayDoctorList();
 		}
 	}
 
-	void labNumSlides_keyTyped(java.awt.event.KeyEvent event)
-	{
-	    if (labPrep.getText().equals("H")) Utils.forceUpper(event,1);
-	    else Utils.forceDigits(event,1);
+	void labNumSlides_keyTyped(java.awt.event.KeyEvent event) {
+		if (labPrep.getText().equals("H"))
+			Utils.forceUpper(event, 1);
+		else
+			Utils.forceDigits(event, 1);
 	}
 
-	class SymWindow extends java.awt.event.WindowAdapter
-	{
-		public void windowClosed(java.awt.event.WindowEvent event)
-		{
+	class SymWindow extends java.awt.event.WindowAdapter {
+		public void windowClosed(java.awt.event.WindowEvent event) {
 			Object object = event.getSource();
 			if (object == LabForm.this)
 				LabForm_windowClosed(event);
 		}
 	}
 
-	void LabForm_windowClosed(java.awt.event.WindowEvent event)
-	{
-	    closingActions();
+	void LabForm_windowClosed(java.awt.event.WindowEvent event) {
+		closingActions();
 	}
-	
-	void closingActions()
-	{
+
+	void closingActions() {
 		log.stop();
 		this.dispose();
 	}
 
-	void doctorText_keyPressed(java.awt.event.KeyEvent event)
-	{
-		if (event.getKeyCode()==event.VK_ENTER || event.getKeyCode()==event.VK_F10) {
-		    if (Utils.required(doctorText,"Doctor Info")) {
-	            int x = 0;
-	            String s = null;
-	            try {
-	                s=doctorText.getText().substring(
-	                    0,(doctorText.getText().indexOf((int)' ')));
-		            x=Integer.parseInt(s);
-		        } catch (Exception e) { x=0; }
-		        if (x>0) { 
-		            labRec.doctor=x;
-		            doctorText.setText(doctorText.getText().substring(Utils.length(s)+1));
-		        }
-		        gotoNextSection();
-		    }
+	void doctorText_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER
+				|| event.getKeyCode() == event.VK_F10) {
+			if (Utils.required(doctorText, "Doctor Info")) {
+				int x = 0;
+				String s = null;
+				try {
+					s = doctorText.getText().substring(0,
+							(doctorText.getText().indexOf((int) ' ')));
+					x = Integer.parseInt(s);
+				} catch (Exception e) {
+					x = 0;
+				}
+				if (x > 0) {
+					labRec.doctor = x;
+					doctorText.setText(doctorText.getText().substring(
+							Utils.length(s) + 1));
+				}
+				gotoNextSection();
+			}
 		}
 	}
 
-	void doctorText_keyTyped(java.awt.event.KeyEvent event)
-	{
+	void doctorText_keyTyped(java.awt.event.KeyEvent event) {
 		Utils.forceUpper(event);
 	}
 
-	void labPrep_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    int key = event.getKeyCode();
-	    if (event.getKeyCode()==event.VK_F10) { 
-	        currentSection=4;
-	        keyActions(event);
-	    }
-	    else if (key==event.VK_F12 && currMode==Lab.UPDATE) {
-	        keyActions(event);
-	    }
-		else if (key==event.VK_ENTER || key==event.VK_F12) {
-		    if (key==event.VK_F12) event.consume();
-		    if (Utils.required(labPrep,"Preparation")) {
-		        String p = labPrep.getText();
-		        if (p.equals("C")) {
-		            labRec.preparation=Lab.CONVENTIONAL;
-		        }
-		        else if (p.equals("T")) { 
-		            labRec.preparation=Lab.THIN_LAYER;
-		            HPVrequest.setEnabled(true);
-		        }
-		        else if (p.equals("N")) labRec.preparation=Lab.CYT_NON_PAP;
-		        else if (p.equals("E")) {
-		            if (labRec.finished>Lab.RESULTS_PENDING) {
-		                Utils.createErrMsg(
-		                    "Cannot change to EXPIRED - Results have been entered");
-		                return;
-		            }
-		            labRec.preparation=Lab.EXPIRED;
-		        }
-		        else if (p.equals("H")) {
-		            labRec.preparation=Lab.HPV_ONLY;
-		            HPVrequest.setText("R");
-		            HPVrequest.setEnabled(false);
-		            labNumSlides.setText(null);
-		            labNumSlides.setEnabled(true);
-		        }
-		        else if (p.equals("I")) {
-		            labRec.preparation=Lab.IMAGED_SLIDE;
-		            HPVrequest.setEnabled(true);
-		            labNumSlides.setText("1");
-		            labNumSlides.setEnabled(false);
-		        }
-		        if (!p.equals("T")&&!p.equals("H")&&!p.equals("I")) {
-		            if (!Utils.equals(labRec.prac.practice_type,"ADPH")) {
-		                HPVrequest.setText("N");
-		                HPVrequest.setEnabled(false);
-		            }
-		        }
-		        else if (currMode!=Lab.UPDATE && labRec.preparation!=Lab.HPV_ONLY)
-		            if (!Utils.equals(labRec.prac.practice_type,"ADPH")) {
-		                HPVrequest.setText(null);
-		            }
-		        labPrep.transferFocus();
-		    }
-		}
-		else if (key!=event.VK_ESCAPE && key!=event.VK_F9 && key!=event.VK_F10) {
-		    char c = event.getKeyChar();
-		    int x = event.getKeyCode();
-		    labPrep.setText(null);
-		    event.consume();
-		    if (c=='C' || x==event.VK_C) { 
-		        labPrep.setText("C");
-		        prepLbl.setText("CONVENTIONAL");
-		    }
-		    else if (c=='T' || x==event.VK_T) {
-		        labPrep.setText("T");
-		        prepLbl.setText("THIN PREP");
-		    }
-		    else if (c=='N' || x==event.VK_N) {
-		        labPrep.setText("N");
-		        prepLbl.setText("CYT NON-PAP");
-		    }
-		    else if (c=='H' || x==event.VK_H) {
-		        labPrep.setText("H");
-		        prepLbl.setText("HPV ONLY");
-		    }
-		    else if (c=='E' || x==event.VK_E) {
-		        labPrep.setText("E");
-		        prepLbl.setText("EXPIRED");
-		    }
-		    else if (c=='I' || x==event.VK_I) {
-		        labPrep.setText("I");
-		        prepLbl.setText("IMAGED SLIDE");
-		    }
+	void labPrep_keyPressed(java.awt.event.KeyEvent event) {
+		int key = event.getKeyCode();
+		if (event.getKeyCode() == event.VK_F10) {
+			currentSection = 4;
+			keyActions(event);
+		} else if (key == event.VK_F12 && currMode == Lab.UPDATE) {
+			keyActions(event);
+		} else if (key == event.VK_ENTER || key == event.VK_F12) {
+			if (key == event.VK_F12)
+				event.consume();
+			if (Utils.required(labPrep, "Preparation")) {
+				String p = labPrep.getText();
+				if (p.equals("C")) {
+					labRec.preparation = Lab.CONVENTIONAL;
+				} else if (p.equals("T")) {
+					labRec.preparation = Lab.THIN_LAYER;
+					HPVrequest.setEnabled(true);
+				} else if (p.equals("N"))
+					labRec.preparation = Lab.CYT_NON_PAP;
+				else if (p.equals("E")) {
+					if (labRec.finished > Lab.RESULTS_PENDING) {
+						Utils.createErrMsg("Cannot change to EXPIRED - Results have been entered");
+						return;
+					}
+					labRec.preparation = Lab.EXPIRED;
+				} else if (p.equals("H")) {
+					labRec.preparation = Lab.HPV_ONLY;
+					HPVrequest.setText("R");
+					HPVrequest.setEnabled(false);
+					labNumSlides.setText(null);
+					labNumSlides.setEnabled(true);
+				} else if (p.equals("I")) {
+					labRec.preparation = Lab.IMAGED_SLIDE;
+					HPVrequest.setEnabled(true);
+					labNumSlides.setText("1");
+					labNumSlides.setEnabled(false);
+				}
+				if (!p.equals("T") && !p.equals("H") && !p.equals("I")) {
+					if (!Utils.equals(labRec.prac.practice_type, "ADPH")) {
+						HPVrequest.setText("N");
+						HPVrequest.setEnabled(false);
+					}
+				} else if (currMode != Lab.UPDATE
+						&& labRec.preparation != Lab.HPV_ONLY)
+					if (!Utils.equals(labRec.prac.practice_type, "ADPH")) {
+						HPVrequest.setText(null);
+					}
+				labPrep.transferFocus();
+			}
+		} else if (key != event.VK_ESCAPE && key != event.VK_F9
+				&& key != event.VK_F10) {
+			char c = event.getKeyChar();
+			int x = event.getKeyCode();
+			labPrep.setText(null);
+			event.consume();
+			if (c == 'C' || x == event.VK_C) {
+				labPrep.setText("C");
+				prepLbl.setText("CONVENTIONAL");
+			} else if (c == 'T' || x == event.VK_T) {
+				labPrep.setText("T");
+				prepLbl.setText("THIN PREP");
+			} else if (c == 'N' || x == event.VK_N) {
+				labPrep.setText("N");
+				prepLbl.setText("CYT NON-PAP");
+			} else if (c == 'H' || x == event.VK_H) {
+				labPrep.setText("H");
+				prepLbl.setText("HPV ONLY");
+			} else if (c == 'E' || x == event.VK_E) {
+				labPrep.setText("E");
+				prepLbl.setText("EXPIRED");
+			} else if (c == 'I' || x == event.VK_I) {
+				labPrep.setText("I");
+				prepLbl.setText("IMAGED SLIDE");
+			}
 		}
 	}
 
-	void labPrep_keyTyped(java.awt.event.KeyEvent event)
-	{
-        event.consume();	     
-	}
-	
-
-	void labMedicareType_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    int key = event.getKeyCode();
-		if (key==event.VK_ENTER) {
-		    if (labRec.medicare_code.equals("F")) {
-		        labDiagCode2.setEnabled(false);
-		        labDiagCode3.setEnabled(false);
-		        labDiagCode4.setEnabled(false);
-		    }
-		    if (Utils.required(labMedicareType,"Medicare Type")) {
-		        if (Utils.isNull(labRec.medicare_code)) {
-		            labRec.medicare_code=labMedicareType.getText();
-		        }
-		        if (labRec.medicare_code.equals("L")) {
-		            setMedPrimaryDiag();
-		        }
-		        labMedicareType.transferFocus();
-		    }
-		}
-		else if (key!=event.VK_ESCAPE && key!=event.VK_F9 && key!=event.VK_F10) {
-		    char c = event.getKeyChar();
-		    int x = event.getKeyCode();
-		    labMedicareType.setText(null);
-		    event.consume();
-		    if (c=='L' || x==event.VK_L) { 
-		        labMedicareType.setText("L");
-		        labRec.medicare_code="L";
-		    }
-		    else if (c=='H' || x==event.VK_H) {
-		        labMedicareType.setText("H");
-		        labRec.medicare_code="H";
-		    }
-		    else if (c=='D' || x==event.VK_D) {
-		        labMedicareType.setText("D");
-		        labRec.medicare_code="A";
-		    }
-		    else if (c=='F' || x==event.VK_F) {
-		        labMedicareType.setText("F");
-		        labRec.medicare_code="F";
-		    }
-		    setMedLbl();
-		}
-	}
-
-	void labMedicareType_keyTyped(java.awt.event.KeyEvent event)
-	{
-		event.consume();
-	}
-	
-	void setMedLbl()
-	{
-	    if (!Utils.isNull(labMedicareType.getText())) {
-	        if (labMedicareType.getText().equals("L"))
-	            labMedLbl.setText("LOW RISK");
-	        else if (labMedicareType.getText().equals("H"))
-	            labMedLbl.setText("HIGH RISK");
-	        else if (labMedicareType.getText().equals("D"))
-	            labMedLbl.setText("DIAGNOSTIC");
-	        else if (labMedicareType.getText().equals("F"))
-	            labMedLbl.setText("FAX FOR ICD9");
-	    }
-	}
-
-	void labMedicareType_focusGained(java.awt.event.FocusEvent event)
-	{
-	    labDiagCode.setEnabled(true);
-	    labDiagCode2.setEnabled(true);
-	    labDiagCode3.setEnabled(true);
-	    labDiagCode4.setEnabled(true);
-	    msgLabel.setText("L = Low;  H = High;  D = Diagnostic;  F = Fax for ICD9");
-	}
-
-	void labFormSigned_keyTyped(java.awt.event.KeyEvent event)
-	{
+	void labPrep_keyTyped(java.awt.event.KeyEvent event) {
 		event.consume();
 	}
 
-	void labFormSigned_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    int key = event.getKeyCode();
-		if (key==event.VK_ENTER) {
-		    gotoNextSection();
-		}
-		else if (key==event.VK_F12 && currMode==Lab.UPDATE) {
-		    keyActions(event);
-		}
-		else if (key!=event.VK_ESCAPE && key!=event.VK_F9 && key!=event.VK_F10) {
-		    char c = event.getKeyChar();
-		    int x = event.getKeyCode();
-		    event.consume();
-		    if (c=='Y' || x==event.VK_Y) { 
-		        labFormSigned.setText("Y");
-		        labRec.sign_date=Utils.stripDateMask(labDateCollected.getText());
-		    }
-		    else if (c=='N' || x==event.VK_N) {
-		        labFormSigned.setText("N");
-		        labRec.sign_date=null;
-		    }
+	void labMedicareType_keyPressed(java.awt.event.KeyEvent event) {
+		int key = event.getKeyCode();
+		if (key == event.VK_ENTER) {
+			if (labRec.medicare_code.equals("F")) {
+				labDiagCode2.setEnabled(false);
+				labDiagCode3.setEnabled(false);
+				labDiagCode4.setEnabled(false);
+			}
+			if (Utils.required(labMedicareType, "Medicare Type")) {
+				if (Utils.isNull(labRec.medicare_code)) {
+					labRec.medicare_code = labMedicareType.getText();
+				}
+				if (labRec.medicare_code.equals("L")) {
+					setMedPrimaryDiag();
+				}
+				labMedicareType.transferFocus();
+			}
+		} else if (key != event.VK_ESCAPE && key != event.VK_F9
+				&& key != event.VK_F10) {
+			char c = event.getKeyChar();
+			int x = event.getKeyCode();
+			labMedicareType.setText(null);
+			event.consume();
+			if (c == 'L' || x == event.VK_L) {
+				labMedicareType.setText("L");
+				labRec.medicare_code = "L";
+			} else if (c == 'H' || x == event.VK_H) {
+				labMedicareType.setText("H");
+				labRec.medicare_code = "H";
+			} else if (c == 'D' || x == event.VK_D) {
+				labMedicareType.setText("D");
+				labRec.medicare_code = "A";
+			} else if (c == 'F' || x == event.VK_F) {
+				labMedicareType.setText("F");
+				labRec.medicare_code = "F";
+			}
+			setMedLbl();
 		}
 	}
 
-	void labRush_focusGained(java.awt.event.FocusEvent event)
-	{
+	void labMedicareType_keyTyped(java.awt.event.KeyEvent event) {
+		event.consume();
+	}
+
+	void setMedLbl() {
+		if (!Utils.isNull(labMedicareType.getText())) {
+			if (labMedicareType.getText().equals("L"))
+				labMedLbl.setText("LOW RISK");
+			else if (labMedicareType.getText().equals("H"))
+				labMedLbl.setText("HIGH RISK");
+			else if (labMedicareType.getText().equals("D"))
+				labMedLbl.setText("DIAGNOSTIC");
+			else if (labMedicareType.getText().equals("F"))
+				labMedLbl.setText("FAX FOR ICD9");
+		}
+	}
+
+	void labMedicareType_focusGained(java.awt.event.FocusEvent event) {
+		labDiagCode.setEnabled(true);
+		labDiagCode2.setEnabled(true);
+		labDiagCode3.setEnabled(true);
+		labDiagCode4.setEnabled(true);
+		msgLabel.setText("L = Low;  H = High;  D = Diagnostic;  F = Fax for ICD9");
+	}
+
+	void labFormSigned_keyTyped(java.awt.event.KeyEvent event) {
+		event.consume();
+	}
+
+	void labFormSigned_keyPressed(java.awt.event.KeyEvent event) {
+		int key = event.getKeyCode();
+		if (key == event.VK_ENTER) {
+			gotoNextSection();
+		} else if (key == event.VK_F12 && currMode == Lab.UPDATE) {
+			keyActions(event);
+		} else if (key != event.VK_ESCAPE && key != event.VK_F9
+				&& key != event.VK_F10) {
+			char c = event.getKeyChar();
+			int x = event.getKeyCode();
+			event.consume();
+			if (c == 'Y' || x == event.VK_Y) {
+				labFormSigned.setText("Y");
+				labRec.sign_date = Utils.stripDateMask(labDateCollected
+						.getText());
+			} else if (c == 'N' || x == event.VK_N) {
+				labFormSigned.setText("N");
+				labRec.sign_date = null;
+			}
+		}
+	}
+
+	void labRush_focusGained(java.awt.event.FocusEvent event) {
 		labRush.setBackground((Color.red).darker());
 		labRush.setForeground(Color.white);
 	}
 
-	void labRush_focusLost(java.awt.event.FocusEvent event)
-	{
+	void labRush_focusLost(java.awt.event.FocusEvent event) {
 		labRush.setBackground(Utils.FORM_BACKGROUND);
 		labRush.setForeground(Utils.LABEL_FOREGROUND);
 	}
 
-	void HPVrequest_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,2);
+	void HPVrequest_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 2);
 	}
 
-	void HPVrequest_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    int key = event.getKeyCode();
-	    if (key==event.VK_F10) { 
-	        currentSection=4;
-	        keyActions(event);
-	    }
-		else if (event.getKeyCode()==event.VK_ENTER) {
-		    if (Utils.required(HPVrequest,"HPV Test Requested?")) {
-		        String s = HPVrequest.getText();
-		        if (s.equals("19") || s.equals("20") || s.equals("N") || s.equals("R")) {
-		            if (labRec.prac.hpv_testing.equals("Y") && s.equals("N")) {
-		                Utils.createErrMsg(
-		                    "Value must be 19 or 20 for Account "+labRec.prac.practice_id);
-		                HPVrequest.setText(null);
-		            }
-		            else if (labRec.prac.hpv_regardless.equals("R")) {
-		                HPVrequest.setText("R");
-		                HPVrequest.transferFocus();
-		            }
-		            else HPVrequest.transferFocus();
-		        }
-		        else {
-		            Utils.createErrMsg("HPV Test Request values are 19, 20, N, or R");
-		            HPVrequest.setText(null);
-		        }
-		    }
+	void HPVrequest_keyPressed(java.awt.event.KeyEvent event) {
+		int key = event.getKeyCode();
+		if (key == event.VK_F10) {
+			currentSection = 4;
+			keyActions(event);
+		} else if (event.getKeyCode() == event.VK_ENTER) {
+			if (Utils.required(HPVrequest, "HPV Test Requested?")) {
+				String s = HPVrequest.getText();
+				if (s.equals("19") || s.equals("20") || s.equals("N")
+						|| s.equals("R")) {
+					if (labRec.prac.hpv_testing.equals("Y") && s.equals("N")) {
+						Utils.createErrMsg("Value must be 19 or 20 for Account "
+								+ labRec.prac.practice_id);
+						HPVrequest.setText(null);
+					} else if (labRec.prac.hpv_regardless.equals("R")) {
+						HPVrequest.setText("R");
+						HPVrequest.transferFocus();
+					} else
+						HPVrequest.transferFocus();
+				} else {
+					Utils.createErrMsg("HPV Test Request values are 19, 20, N, or R");
+					HPVrequest.setText(null);
+				}
+			}
 		}
 	}
-	
-	void updateHPV()
-	{
-	    String s = HPVrequest.getText();
-	    if (Utils.isNull(s) || s.equals("N"))
-	        Utils.createErrMsg("HPV Testing has NOT been requested");
-	    else
-	        (new HPVTestDialog(labRec)).setVisible(true);
+
+	void updateHPV() {
+		String s = HPVrequest.getText();
+		if (Utils.isNull(s) || s.equals("N"))
+			Utils.createErrMsg("HPV Testing has NOT been requested");
+		else
+			(new HPVTestDialog(labRec)).setVisible(true);
 	}
 
-	void patRace_keyPressed(java.awt.event.KeyEvent event)
-	{
-	    if (event.getKeyCode()==event.VK_ENTER) {
-	        msgLabel.setText(null);
-	        HPVmsgLabel.setText(null);
-	        if (!Utils.isNull(labRec.prac.practice_type)) {
-	            if (labRec.prac.practice_type.equals("ADPH")) {
-	                if (Utils.required(patRace,"Patient's Race is required"))
-	                    patRace.transferFocus();
-	            }
-	            else patRace.transferFocus();
-    		}
-    		else patRace.transferFocus();
-    	}
+	void patRace_keyPressed(java.awt.event.KeyEvent event) {
+		if (event.getKeyCode() == event.VK_ENTER) {
+			msgLabel.setText(null);
+			HPVmsgLabel.setText(null);
+			if (!Utils.isNull(labRec.prac.practice_type)) {
+				if (labRec.prac.practice_type.equals("ADPH")) {
+					if (Utils.required(patRace, "Patient's Race is required"))
+						patRace.transferFocus();
+				} else
+					patRace.transferFocus();
+			} else
+				patRace.transferFocus();
+		}
 	}
 
-	void patRace_keyTyped(java.awt.event.KeyEvent event)
-	{
-		Utils.forceUpper(event,16);
+	void patRace_keyTyped(java.awt.event.KeyEvent event) {
+		Utils.forceUpper(event, 16);
 	}
 
-	void patRace_focusGained(java.awt.event.FocusEvent event)
-	{
+	void patRace_focusGained(java.awt.event.FocusEvent event) {
 		msgLabel.setText("Valid codes: W, B, AI, A, HI, and AN (separate multiples with comma)");
 	}
-	
-	void clearDiagCodeDisplay()
-	{
-	    labDiagCode.setText(null);
-	    labDiagCode2.setText(null);
-	    labDiagCode3.setText(null);
-	    labDiagCode4.setText(null);
-	    diag1lbl.setText(null);
-	    diag2lbl.setText(null);
-	    diag3lbl.setText(null);
-	    diag4lbl.setText(null);
+
+	void clearDiagCodeDisplay() {
+		labDiagCode.setText(null);
+		labDiagCode2.setText(null);
+		labDiagCode3.setText(null);
+		labDiagCode4.setText(null);
+		diag1lbl.setText(null);
+		diag2lbl.setText(null);
+		diag3lbl.setText(null);
+		diag4lbl.setText(null);
 	}
 
-    boolean confirmDetailCode(String s)
-    {
-        boolean useCode = true;
-        String msg = "Confirm "+s+" ?\n";
-	    JOptionPane confirmUse = new javax.swing.JOptionPane();
-	    Object[] options = {"YES","Cancel"};
-        int rv = confirmUse.showOptionDialog(
-		            null,msg,
-		            "Confirm Detail Code",confirmUse.DEFAULT_OPTION,
-		            confirmUse.QUESTION_MESSAGE,null,options,options[1]);
-        if (rv!=confirmUse.YES_OPTION) {
-            useCode=false;
-        }
-        return(useCode);
-    }
+	boolean confirmDetailCode(String s) {
+		boolean useCode = true;
+		String msg = "Confirm " + s + " ?\n";
+		JOptionPane confirmUse = new javax.swing.JOptionPane();
+		Object[] options = { "YES", "Cancel" };
+		int rv = confirmUse.showOptionDialog(null, msg, "Confirm Detail Code",
+				confirmUse.DEFAULT_OPTION, confirmUse.QUESTION_MESSAGE, null,
+				options, options[1]);
+		if (rv != confirmUse.YES_OPTION) {
+			useCode = false;
+		}
+		return (useCode);
+	}
 
-    /******************************************************************************
-     METHODS TO RETRIEVE AND PRINT FAX LETTERS
-    ******************************************************************************/
-    private void checkForFaxLetters()
-    {
-        Vector letterData = getLetterData();
-        Vector letterFiles = new Vector();
-        if (letterData.size()>0) {
-            String msg = "Print these letters?\n";
-            for (int i=0; i<letterData.size(); i++) { 
-                String[] s = (String[])letterData.elementAt(i);
-                msg+=s[1]+"\n";
-                letterFiles.addElement(s[0]);
-            }
-	        JOptionPane confirmPrintLetters = new JOptionPane();
-            int rv = confirmPrintLetters.showConfirmDialog(
-		                this,msg,
-		                "Fax Letters",confirmPrintLetters.YES_NO_OPTION,
-		                confirmPrintLetters.QUESTION_MESSAGE);
-            if (rv==confirmPrintLetters.YES_OPTION) {
-                printFaxLetters(letterFiles);
-                dequeueFaxLetters();
-            }
-        }
-    }
-    
-	private Vector getLetterData()
-	{
-        ResultSet rs = null;
-        Statement stmt = null;
-        Vector letterData = new Vector();
-        String SQL = 
-            "SELECT letter_type,RTRIM(LTRIM(TO_CHAR(COUNT(letter_type)))) \n"+
-            "FROM pcs.fax_letters \n"+
-            "WHERE in_queue = 1 \n"+
-            "GROUP BY letter_type \n";
-        try {
-            stmt = DbConnection.process().createStatement();
-            rs = stmt.executeQuery(SQL);
-            while (rs.next()) {
-                String[] ltrInfo = new String[2];
-                String ltrType = null;
-                String ltrCount = null;
-                ltrType=rs.getString(1);
-                ltrCount=rs.getString(2);
-                if (ltrType.equals("GENERIC")) {
-                    ltrInfo[0] = "generic.ltr";
-                    ltrInfo[1] = "   MISSING INFORMATION ["+ltrCount+"]";
-                    letterData.addElement(ltrInfo);
-                }
-                else if (ltrType.equals("DIAGNOSIS")) {
-                    ltrInfo[0] = "diag.ltr";
-                    ltrInfo[1] = "   MEDICARE TYPE ["+ltrCount+"]";
-                    letterData.addElement(ltrInfo);
-                }
-                else if (ltrType.equals("NMN")) {
-                    ltrInfo[0]="medicare.ltr";
-                    ltrInfo[1]="   NOT MEDICALLY NECESSARY ["+ltrCount+"]";
-                    letterData.addElement(ltrInfo);
-                }
-            }    
-            
-        }
-        catch (Exception e) {
-        	System.out.println("This sh*t happened");
-        }
-        finally
-        {
-            try {
-				rs.close(); 
+	/******************************************************************************
+	 * METHODS TO RETRIEVE AND PRINT FAX LETTERS
+	 ******************************************************************************/
+	private void checkForFaxLetters() {
+		Vector letterData = getLetterData();
+		Vector letterFiles = new Vector();
+		if (letterData.size() > 0) {
+			String msg = "Print these letters?\n";
+			for (int i = 0; i < letterData.size(); i++) {
+				String[] s = (String[]) letterData.elementAt(i);
+				msg += s[1] + "\n";
+				letterFiles.addElement(s[0]);
+			}
+			JOptionPane confirmPrintLetters = new JOptionPane();
+			int rv = confirmPrintLetters.showConfirmDialog(this, msg,
+					"Fax Letters", confirmPrintLetters.YES_NO_OPTION,
+					confirmPrintLetters.QUESTION_MESSAGE);
+			if (rv == confirmPrintLetters.YES_OPTION) {
+				printFaxLetters(letterFiles);
+				dequeueFaxLetters();
+			}
+		}
+	}
+
+	private Vector getLetterData() {
+		ResultSet rs = null;
+		Statement stmt = null;
+		Vector letterData = new Vector();
+		String SQL = "SELECT letter_type,RTRIM(LTRIM(TO_CHAR(COUNT(letter_type)))) \n"
+				+ "FROM pcs.fax_letters \n"
+				+ "WHERE in_queue = 1 \n"
+				+ "GROUP BY letter_type \n";
+		try {
+			stmt = DbConnection.process().createStatement();
+			rs = stmt.executeQuery(SQL);
+			while (rs.next()) {
+				String[] ltrInfo = new String[2];
+				String ltrType = null;
+				String ltrCount = null;
+				ltrType = rs.getString(1);
+				ltrCount = rs.getString(2);
+				if (ltrType.equals("GENERIC")) {
+					ltrInfo[0] = "generic.ltr";
+					ltrInfo[1] = "   MISSING INFORMATION [" + ltrCount + "]";
+					letterData.addElement(ltrInfo);
+				} else if (ltrType.equals("DIAGNOSIS")) {
+					ltrInfo[0] = "diag.ltr";
+					ltrInfo[1] = "   MEDICARE TYPE [" + ltrCount + "]";
+					letterData.addElement(ltrInfo);
+				} else if (ltrType.equals("NMN")) {
+					ltrInfo[0] = "medicare.ltr";
+					ltrInfo[1] = "   NOT MEDICALLY NECESSARY [" + ltrCount
+							+ "]";
+					letterData.addElement(ltrInfo);
+				}
+			}
+
+		} catch (Exception e) {
+			System.out.println("This sh*t happened");
+		} finally {
+			try {
+				rs.close();
 				stmt.close();
 			} catch (SQLException e) {
 				System.out.println("Fine.. we'll bail here.");
 				e.printStackTrace();
 			}
-        }
-        return (letterData);
-    }
-	
-	private void printFaxLetters(Vector letterFileNames)
-	{
-	    PrintJob pjob;
-	    Properties p = new java.util.Properties();
-	    String name = new String("Fax Letters");
-	    if (letterFileNames.size()>0) {
-	        for (int i=0; i<letterFileNames.size(); i++) {
-	            String fileName = (String)letterFileNames.elementAt(i);
-	            Utils.genericPrint(Utils.SERVER_DIR, fileName , true, Utils.PRINTER);
-	        }
-	    }
+		}
+		return (letterData);
 	}
-	
-	private void printLetterFile(String filePath, String fileName, boolean forcePage)
-	{
-        OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + "generic.ltr" );
 
-        if (out.toString().length() < 1) {
-        	Utils.createErrMsg("Cannot locate report: "+fileName); 
-        }
-		else {
+	private void printFaxLetters(Vector letterFileNames) {
+		PrintJob pjob;
+		Properties p = new java.util.Properties();
+		String name = new String("Fax Letters");
+		if (letterFileNames.size() > 0) {
+			for (int i = 0; i < letterFileNames.size(); i++) {
+				String fileName = (String) letterFileNames.elementAt(i);
+				Utils.genericPrint(Utils.SERVER_DIR, fileName, true,
+						Utils.PRINTER);
+			}
+		}
+	}
+
+	private void printLetterFile(String filePath, String fileName,
+			boolean forcePage) {
+		OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR
+				+ "generic.ltr");
+
+		if (out.toString().length() < 1) {
+			Utils.createErrMsg("Cannot locate report: " + fileName);
+		} else {
 			Utils.genericPrint(out.toString(), Utils.PRINTER);
 		}
 	}
-	
-	private void dequeueFaxLetters()
-	{
-        try  {
-            String SQL = null;
-            int rs = 0;
-            Statement stmt = DbConnection.process().createStatement();
-            SQL =   "DELETE FROM pcs.fax_letters \n"+
-                    "WHERE in_queue = -1 OR letter_type='BLANK' \n";
-            rs=stmt.executeUpdate(SQL);
-            SQL = 
-                "UPDATE pcs.fax_letters \n"+
-                "SET in_queue=0, date_sent=SysDate \n"+
-                "WHERE in_queue = 1 \n";
-            rs=stmt.executeUpdate(SQL);
-            stmt.close();
-        }
-        catch(SQLException e) { log.write(e.toString()); }
-        catch(Exception e) { log.write("ERROR: dequeueLetters\n"+e); }
-        String[] filePrefix = {"generic","medicare","diag"};
-        long fLen = 0;
-        for (int i=0; i<3; i++) {
-            try {
-                
-                String fName = filePrefix[i]+".ltr";
-                File f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fName);
-                
-                if (f.exists()) {
-                    fLen=f.length();
-                    if (fLen>0) {
-                        try { 
-                        	InputStream fileInputStream = new FileInputStream(f);
-                    		byte[] fileBytes = IOUtils.toByteArray(fileInputStream);
-                    		FileTransfer.sendFile(fileBytes, Utils.SERVER_DIR + filePrefix[i]+".old");
-                        }
-                        catch (SecurityException e) { log.write("5: renaming "+filePrefix[i]+".ltr\n"+e); }
-                    }
-                }
-                boolean deleted = FileTransfer.removeFile(Utils.SERVER_DIR, fName);
-                if (!deleted) throw new Exception("Could not delete " + fName);
-            }
-            catch (Exception e) {
-            	e.printStackTrace();
-            	log.write("Failure during fax letter dequeue: " + e.getMessage());
-            }
-        }
-    }
-	
-    /******************************************************************************
-     END METHODS TO RETRIEVE AND PRINT FAX LETTERS
-    ******************************************************************************/
-    
-    public boolean isDetailSelected(int detailCode)
-    {
-        boolean isSelected = false;
-        for (int i=0; i<detailRec.length; i++) {
-            if (detailRec[i].detail_code==detailCode) {
-                if (detailRec[i].isSelected) {
-                    isSelected=true;
-                }
-            }
-            if (isSelected) break;
-        }
-        return (isSelected);
-    }
-    
-     	
+
+	private void dequeueFaxLetters() {
+		try {
+			String SQL = null;
+			int rs = 0;
+			Statement stmt = DbConnection.process().createStatement();
+			SQL = "DELETE FROM pcs.fax_letters \n"
+					+ "WHERE in_queue = -1 OR letter_type='BLANK' \n";
+			rs = stmt.executeUpdate(SQL);
+			SQL = "UPDATE pcs.fax_letters \n"
+					+ "SET in_queue=0, date_sent=SysDate \n"
+					+ "WHERE in_queue = 1 \n";
+			rs = stmt.executeUpdate(SQL);
+			stmt.close();
+		} catch (SQLException e) {
+			log.write(e.toString());
+		} catch (Exception e) {
+			log.write("ERROR: dequeueLetters\n" + e);
+		}
+		String[] filePrefix = { "generic", "medicare", "diag" };
+		long fLen = 0;
+		for (int i = 0; i < 3; i++) {
+			try {
+
+				String fName = filePrefix[i] + ".ltr";
+				File f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR,
+						fName);
+
+				if (f.exists()) {
+					fLen = f.length();
+					if (fLen > 0) {
+						try {
+							InputStream fileInputStream = new FileInputStream(f);
+							byte[] fileBytes = IOUtils
+									.toByteArray(fileInputStream);
+							FileTransfer.sendFile(fileBytes, Utils.SERVER_DIR
+									+ filePrefix[i] + ".old");
+						} catch (SecurityException e) {
+							log.write("5: renaming " + filePrefix[i] + ".ltr\n"
+									+ e);
+						}
+					}
+				}
+				boolean deleted = FileTransfer.removeFile(Utils.SERVER_DIR,
+						fName);
+				if (!deleted)
+					throw new Exception("Could not delete " + fName);
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.write("Failure during fax letter dequeue: "
+						+ e.getMessage());
+			}
+		}
+	}
+
+	/******************************************************************************
+	 * END METHODS TO RETRIEVE AND PRINT FAX LETTERS
+	 ******************************************************************************/
+
+	public boolean isDetailSelected(int detailCode) {
+		boolean isSelected = false;
+		for (int i = 0; i < detailRec.length; i++) {
+			if (detailRec[i].detail_code == detailCode) {
+				if (detailRec[i].isSelected) {
+					isSelected = true;
+				}
+			}
+			if (isSelected)
+				break;
+		}
+		return (isSelected);
+	}
+
 	@Override
 	public void resetActions() {
-		 prepFlag=false;
-         if (!defaultPrep.equals("S")) {
-             defaultPrep="C";
-             defaultPrepLbl="CONVENTIONAL";
-         }
-         else prepFlag=true;
-         resetLabForm();
+		prepFlag = false;
+		if (!defaultPrep.equals("S")) {
+			defaultPrep = "C";
+			defaultPrepLbl = "CONVENTIONAL";
+		} else
+			prepFlag = true;
+		resetLabForm();
 	}
-	
-}   
 
+}
