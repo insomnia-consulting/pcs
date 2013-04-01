@@ -21,6 +21,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -274,12 +276,15 @@ public class DocStmtDialog extends PcsDialog
 	                numCopies=1;
 	                v.addElement(Utils.COMPRESSED);
 	            }
-	            OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR+fName); 
 
-                if (out != null && StringUtils.isNotBlank(out.toString())) {
+	            File printFile = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fName);
+				
+				if (printFile != null && printFile.length() > 0) {
+					InputStream inputStream = new FileInputStream(printFile);
+					Utils.dotMatrixPrint(inputStream);
                 	for (int i=0; i<numCopies; i++)
-                		Utils.genericPrint(out.toString(), Utils.PRINTER);
-                    }	
+                		Utils.dotMatrixPrint(inputStream);
+				}	
             }
 
             this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
