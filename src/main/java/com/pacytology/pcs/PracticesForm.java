@@ -1780,7 +1780,7 @@ public class PracticesForm extends PcsFrame
 	void blockDBs_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER)
-		    stdClinic.requestFocus();
+		    STDclinic.requestFocus();
 	}
 
 	void STDclinic_keyPressed(java.awt.event.KeyEvent event)
@@ -1794,14 +1794,14 @@ public class PracticesForm extends PcsFrame
 		if (event.getKeyCode()==event.VK_ENTER)
 		    if (HPVtesting.isSelected()) {
 		    	HPVPermission.setEnabled(true);
-			    HPVpermission.requestFocus();
+			    //HPVpermission.requestFocus();
 		    }
 		    else holdFinal.requestFocus();
 	}
 
 	void pStatements_keyTyped(java.awt.event.KeyEvent event)
 	{
-		event.forceUpper(event,1);
+		Utils.forceUpper(event,1);
 	}
 
     /* This screen field "recycled"; no longer used for obsolete
