@@ -13,7 +13,15 @@ import javax.swing.border.LineBorder;
 
 import com.pacytology.pcs.ui.Rect;
 
-
+/* Ticket #105, April 10, 2013: In revisiting this code I thought it was in need of some explanation. The origns of this task
+ * when originally assigned was to create a bar code chart. That was all well and good - great - VisualCafe had a built in
+ * chart generator. Problem was I could not get it to work no matter how many examples I looked at. Not being one who likes
+ * to be defeated by source code I generally figure out some way to get the job done; even if it means writing the ugly code
+ * that I wrote here. My solution was to create 20 text boxes, retrieve the data for the turn around times, and then resize the
+ * text boxes so that they looked like a bar chart. The biggest obstacle to this approach was the workaround that was created
+ * whereby the user could not directly print the chart, but rather had to use the <alt>+<prnt_srn> keys and then paste the
+ * image to an editor (jjc).
+ */
 public class TurnAroundForm extends javax.swing.JFrame
 {
     private int barY = 510;
@@ -546,6 +554,9 @@ public class TurnAroundForm extends javax.swing.JFrame
 	//{{DECLARE_MENUS
 	//}}
 	
+	/* Adjust the size of the text box to reflect the number of labs falling into
+	 * a particular number of days turn around time.
+	 */
 	private void setBarSize(JTextField bar, int height, boolean isVisible)
 	{
 	    bar.setVisible(isVisible);
@@ -557,6 +568,9 @@ public class TurnAroundForm extends javax.swing.JFrame
 	    }
 	}
 	
+	/* Set the amounts of the percentage of the bar for a particular number
+	 * of days turn around time.
+	 */
 	private void setPercentLabelBounds(JLabel percentLabel, int y)
 	{
 	    percentLabel.setBounds(
@@ -564,6 +578,8 @@ public class TurnAroundForm extends javax.swing.JFrame
             percentLabel.getWidth(),percentLabel.getHeight());
     }
 	
+	/* Set the labels for the number of days turn around time.
+	 */
 	private void setLabels(JLabel dayLabel, int days,
 	    JLabel percentLabel, String percent, boolean isVisible)
 	{
@@ -575,7 +591,16 @@ public class TurnAroundForm extends javax.swing.JFrame
         }
     }
 	
-    private void getData(String yearMonth)
+	/* This is the SQL statement that retrieves the individual numbers of each grouping
+	 * of turn around times, i.e. 1 day, 2 days, etc. Sometimes unusual negative results
+	 * are retrieved. Ticket #105 was not printing each grouping of days in the correct
+	 * order ... they should be consecutive. The origins here are I was always in debate
+	 * whether an ORDER BY was needed with a GROUP BY to put the data in the order you
+	 * wanted it retrieved. Experience with Oracle 8 was that a GROUP BY would always
+	 * retrieve the data in consecutive order; apparently this is not the case with 11g,
+	 * hence I added the ORDER BY and the problem was resolved (jjc).
+	 */
+	private void getData(String yearMonth)
     {
         totalRecords=0;
         int largest=0;
@@ -585,7 +610,8 @@ public class TurnAroundForm extends javax.swing.JFrame
             "from pcs.lab_results a, pcs.lab_requisitions b \n"+
             "where a.lab_number=b.lab_number \n"+
             "and to_char(a.date_completed,'YYYYMM') = ? \n"+
-            "group by round(a.date_completed-b.receive_date)";
+            "group by round(a.date_completed-b.receive_date) \n"+
+            "order by round(a.date_completed-b.receive_date) \n";
         try {
             PreparedStatement pstmt = DbConnection.process().prepareStatement(SQL);
             pstmt.setString(1,yearMonth);
