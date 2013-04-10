@@ -249,6 +249,10 @@ public class PatientClaimForm extends javax.swing.JFrame
 	
 	void PatientClaimForm_keyPressed(java.awt.event.KeyEvent event)
 	{
+		/* Updated up and down arrow keys on patient lookup table. Previous version of the app worked using
+		 * addSelectionInterval in old version of Java; to date version needs the setRowSelectionAllowed set
+		 * to true and setColumn... to false, and the the setRowSelectionInteral, not addSelectionInterval
+		 */
         // DOWN ARROW KEY PRESSED
         if (event.getKeyCode()==event.VK_DOWN)
         {
@@ -262,7 +266,9 @@ public class PatientClaimForm extends javax.swing.JFrame
                 msgLabel.setText("Bottom of List");
             }
             PatientTable.clearSelection();
-            PatientTable.addRowSelectionInterval(patNdx,patNdx);
+            PatientTable.setRowSelectionAllowed(true);
+            PatientTable.setColumnSelectionAllowed(false);
+            PatientTable.setRowSelectionInterval(patNdx,patNdx);
             PatientTable.scrollRectToVisible
                 (PatientTable.getCellRect(patNdx,0,true));
             fillForm(patNdx);
@@ -284,7 +290,9 @@ public class PatientClaimForm extends javax.swing.JFrame
                 msgLabel.setText("Top of List");
             }
             PatientTable.clearSelection();
-            PatientTable.addRowSelectionInterval(patNdx,patNdx);
+            PatientTable.setRowSelectionAllowed(true);
+            PatientTable.setColumnSelectionAllowed(false);
+            PatientTable.setRowSelectionInterval(patNdx,patNdx);
             PatientTable.scrollRectToVisible
                 (PatientTable.getCellRect(patNdx,0,true));
             fillForm(patNdx);
