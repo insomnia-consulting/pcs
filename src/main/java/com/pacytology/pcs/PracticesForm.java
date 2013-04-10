@@ -566,6 +566,7 @@ public class PracticesForm extends PcsFrame
 			public void actionPerformed(ActionEvent e) {
 				if (fKeys.isOn(fKeys.F1)) queryActions();
 		        else Utils.createErrMsg("Query Option Not Available");
+
 			}
 		});
 		

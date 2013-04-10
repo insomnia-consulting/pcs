@@ -1,5 +1,7 @@
 package com.pacytology.pcs;
 
+import java.awt.event.ActionEvent;
+
 import com.pacytology.pcs.actions.PcsActionMap;
 
 public class PraticesFormActionMap extends PcsActionMap {
@@ -8,6 +10,13 @@ public class PraticesFormActionMap extends PcsActionMap {
 		super(parentFrame);
 	}
 	
+	@Override	
+	public void shiftf1Action(ActionEvent e) {
+		PracticesForm form = (PracticesForm)this.parentFrame;
+		if ((e.getModifiers() & ActionEvent.SHIFT_MASK) != 0) {
+			 form.dateAddedList();
+		}	
+	}
 	@Override
 	public void finalAction() {
 		PracticesForm form = (PracticesForm)this.parentFrame;

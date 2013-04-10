@@ -100,16 +100,24 @@ public class PcsActionMap {
 			PcsActionMap.this.shiftf5Action(e);
 		}
 	};
+	public final Action shiftf1Action = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+			PcsActionMap.this.shiftf1Action(e);
+		}
+	};
 	public final Action altf5Action = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 			PcsActionMap.this.altf5Action(e);
 		}
 	};
+	public void shiftf1Action(ActionEvent e) {
+		
+	}
 	public void f5Action(ActionEvent e) {
 		
 	}
 	public void shiftf5Action(ActionEvent e) {
-	
+		
 	}
 	public void altf5Action(ActionEvent e) {
 		

@@ -21,11 +21,12 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 
+import com.pacytology.pcs.ui.PcsDialog;
 import com.pacytology.pcs.ui.Square;
 import java.sql.*;
 import java.util.Vector;
 
-public class HPVTestDialog extends javax.swing.JDialog
+public class HPVTestDialog extends PcsDialog
 {
     LabRec labRec;
     HPVRec hpv;
@@ -42,7 +43,7 @@ public class HPVTestDialog extends javax.swing.JDialog
 		// what Visual Cafe can generate, or Visual Cafe may be unable to back
 		// parse your Java file into its visual environment.
 		//{{INIT_CONTROLS
-		setTitle("HPV Test Information");
+		setTitle("HPV Test Information - *");
 		setResizable(false);
 		setModal(true);
 		setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
@@ -169,16 +170,23 @@ public class HPVTestDialog extends javax.swing.JDialog
 		additionalInfo.addKeyListener(aSymKey);
 		this.addKeyListener(aSymKey);
 		//}}
-		JRootPane rp = getRootPane();
-		KeyStroke f9 = KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false);
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f9, "F9");
-		rp.getActionMap().put("F9", new AbstractAction() { 
-			public void actionPerformed(ActionEvent e) { 
-				closingActions();
-			}
-		});
-	}
+		
+		setupKeyPressMap();
 
+	}
+	protected JRootPane setupKeyPressMap() {
+		JRootPane rp = super.setupKeyPressMap();
+
+		AbstractAction finalAction = new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				finalActions();
+			}
+		};
+
+		rp.getActionMap().put("F12", finalAction);
+		return rp;
+	}
 	public HPVTestDialog(HPVRec hpv, int labNumber)
 	{
 		this();
@@ -432,12 +440,12 @@ public class HPVTestDialog extends javax.swing.JDialog
 	void HPVTestDialog_keyPressed(java.awt.event.KeyEvent event)
 	{
 		int key = event.getKeyCode();
-		if (key==event.VK_F9) closingActions();
-		else if (key==event.VK_F12) finalActions(); 
-		else if (key==event.VK_CONTROL) ((JTextField)getFocusOwner()).setText(null);
+		//if (key==event.VK_F9) closingActions();
+		//else if (key==event.VK_F12) finalActions(); 
+		if (key==event.VK_CONTROL) ((JTextField)getFocusOwner()).setText(null);
 	}
 	
-	void finalActions()
+	public void finalActions()
 	{
 	    if (nullStatus&&!Utils.hasResults(labNumber)) {
 	        Utils.createErrMsg("PCS Results have not been entered yet.");
@@ -602,5 +610,29 @@ public class HPVTestDialog extends javax.swing.JDialog
 	}
 	
 	void closingActions() { log.stop(); this.dispose(); }
+
+	@Override
+	public void queryActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateActions() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resetActions() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
