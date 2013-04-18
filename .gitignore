@@ -3,6 +3,7 @@ target/
 .DS_Store
 .classpath
 .project
-.settings
+.settings/
+.metadata/
 *.pcs
 logs/
