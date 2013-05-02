@@ -234,6 +234,7 @@ public class TechForm extends PcsFrame {
 		ctMI.addKeyListener(aSymKey);
 		ctStatus.addKeyListener(aSymKey);
 		// }}
+		actionMap = new TechFormActionMap(this);
 		setupKeyPressMap();
 	}
 	protected JRootPane setupKeyPressMap() {
