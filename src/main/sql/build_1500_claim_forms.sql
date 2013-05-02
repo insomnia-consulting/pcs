@@ -1,3 +1,7 @@
+/* PL/SQL procedure that prints CMS 1500 insurance claims forms. Assumes
+ * printed is loaded with pre-printed forms, and program will print the
+ * necessary data in the correct location on the forms.
+*/
 create or replace procedure build_1500_claim_forms
 (
    C_directory in char,
@@ -458,10 +462,15 @@ begin
       cbuf1:=rtrim(patient_lname)||', '||rtrim(patient_fname)||' '||patient_mi;
       cbuf1:=substr(cbuf1,1,28);
       cbuf1:=RPAD(cbuf1,28);
+      
+      /* This block of code removed 04/18/13; it prevented the patient's DOB from
+       * being printed on the form. Code commented out for now pending testing
+       * of a batch of paper claims. The goto statement label must also be removed.
       if (C_choice_code='DPA' and carrier_state='OH') then
-
-	 goto skip_ln5;
+	     goto skip_ln5;
       end if;
+      */
+      
       -- BLOCK #3
       if (patient_dob is not null) then
 	 if (carrier_idnum=23744) then
@@ -490,7 +499,9 @@ begin
 
 	 cbuf1:=cbuf1||'   '||cbuf2;
       end if;
+      /*
       <<skip_ln5>>
+      */
       curr_line:=margin||cbuf1;
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
       UTL_FILE.NEW_LINE(file_handle);
