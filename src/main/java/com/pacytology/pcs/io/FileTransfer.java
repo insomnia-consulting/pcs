@@ -153,10 +153,8 @@ public class FileTransfer {
 			if (file != null && file.isFile()) return file;
 			else throw new FileNotFoundException();	
 		} catch (FileNotFoundException fnf){
-
-			fnf.printStackTrace();
+			System.out.println("File not found " + fnf.getMessage());
 		} catch (SshException e) {
-			
 			e.printStackTrace();
 		} finally {
 			if (ssh != null) {

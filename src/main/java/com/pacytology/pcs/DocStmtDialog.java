@@ -20,20 +20,26 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JLabel;
 import javax.swing.JRootPane;
 
-import org.apache.commons.lang.StringUtils;
-
-import com.pacytology.pcs.actions.CurrentMessageDialogActionMap;
 import com.pacytology.pcs.io.FileTransfer;
 import com.pacytology.pcs.ui.PcsDialog;
 
@@ -64,11 +70,13 @@ public class DocStmtDialog extends PcsDialog
 		setModal(true);
 		setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
 		getContentPane().setLayout(null);
-		setSize(184,162);
+		setSize(210,162);
 		setVisible(false);
-		getContentPane().add(practiceNumber);
-		practiceNumber.setFont(new Font("SansSerif", Font.BOLD, 12));
-		practiceNumber.setBounds(130,14,40,20);
+		getContentPane().add(startPracticeNumber);
+
+		startPracticeNumber.setFont(new Font("SansSerif", Font.BOLD, 12));
+		startPracticeNumber.setBounds(130,14,40,20);
+
 		getContentPane().add(stmtMonth);
 		stmtMonth.setFont(new Font("SansSerif", Font.BOLD, 12));
 		stmtMonth.setBounds(130,36,40,20);
@@ -114,7 +122,7 @@ public class DocStmtDialog extends PcsDialog
 		this.addKeyListener(aSymKey);
 		stmtMonth.addKeyListener(aSymKey);
 		stmtYear.addKeyListener(aSymKey);
-		practiceNumber.addKeyListener(aSymKey);
+		startPracticeNumber.addKeyListener(aSymKey);
 		SymWindow aSymWindow = new SymWindow();
 		this.addWindowListener(aSymWindow);
 		//}}
@@ -172,7 +180,8 @@ public class DocStmtDialog extends PcsDialog
 	boolean frameSizeAdjusted = false;
 
 	//{{DECLARE_CONTROLS
-	javax.swing.JTextField practiceNumber = new javax.swing.JTextField();
+	javax.swing.JTextField startPracticeNumber = new javax.swing.JTextField();
+	
 	javax.swing.JTextField stmtMonth = new javax.swing.JTextField();
 	javax.swing.JTextField stmtYear = new javax.swing.JTextField();
 	javax.swing.JLabel JLabel11 = new javax.swing.JLabel();
@@ -187,15 +196,15 @@ public class DocStmtDialog extends PcsDialog
 	void viewReport()
 	{
 	    String dir = null;
-	    if (Utils.isNull(practiceNumber.getText()) ||
+	    if (Utils.isNull(startPracticeNumber.getText()) ||
 	        Utils.isNull(stmtMonth.getText()) ||
 	        Utils.isNull(stmtYear.getText())) {
 	        Utils.createErrMsg("No Data Entered");
         }
         else {
 	        if (practice>0) {
-	            String title = "Account #"+practiceNumber.getText();
-	            String fName=practiceNumber.getText()+stmtMonth.getText()+
+	            String title = "Account #"+startPracticeNumber.getText();
+	            String fName=startPracticeNumber.getText()+stmtMonth.getText()+
 	                stmtYear.getText().substring(0,1)+
 	                stmtYear.getText().substring(2);
 	            /*
@@ -249,9 +258,14 @@ public class DocStmtDialog extends PcsDialog
         try  {
             String SQL = 
                 "SELECT TO_CHAR(practice,'009'),statement_copies \n"+
-                "FROM pcs.practices \n";
+                "FROM pcs.practices " + 
+                "where practice not in (15, 17, 27, 82, 86, 109, 140 ,176, 226, 238, 241, 242, 247, 251, 340, 345, 389, 397, 439, 441, 493, 663, " + 
+                "664, 675, 705, 714, 792, 801, 802, 803, 804, 805, 806, 807,808, 809, 811, 812, 814, 816, 817,818,819,821,822,823,824, " + 
+                "825,826,827,828,830,831,832,838,839,841,842,843,844,845,846,847,848,849,850,851,852,853,854, " + 
+                "855,856,857,858,859,860,861,862,863,864,865,866,867,868,869,870,871,872,873,879,880,881,882,883,890)";
+
             if (reprintBox.isSelected()) {
-                SQL+="WHERE practice>="+practiceNumber.getText()+" \n";   
+                SQL+="WHERE practice>="+startPracticeNumber.getText()+" \n";   
             }
             SQL+="ORDER BY ";
             if (!reportType.equals("STATEMENT")) SQL += "parent_account,practice \n";
@@ -260,8 +274,10 @@ public class DocStmtDialog extends PcsDialog
             ResultSet rs = stmt.executeQuery(SQL);
             this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             parent.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+            List<File> files = new ArrayList<File>();
             while (rs.next()) { 
                 String prac = rs.getString(1).trim();
+
                 int numCopies = rs.getInt(2);
 	            String fName = new String (prac+stmtMonth.getText()+
 	                stmtYear.getText().substring(0,1)+
@@ -278,15 +294,16 @@ public class DocStmtDialog extends PcsDialog
 	            }
 
 	            File printFile = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fName);
-				
-				if (printFile != null && printFile.length() > 0) {
-					InputStream inputStream = new FileInputStream(printFile);
-					Utils.dotMatrixPrint(inputStream);
-                	for (int i=0; i<numCopies; i++)
-                		Utils.dotMatrixPrint(inputStream);
-				}	
-            }
+	            if (printFile != null) {
+	            	files.add(printFile);	
+	            }
+	            //if (files.size() > 5) break ; 
 
+
+            }
+			byte[] bArr = concatenate(files);
+
+			//Utils.dotMatrixPrint(bArr);
             this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             parent.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
@@ -294,11 +311,37 @@ public class DocStmtDialog extends PcsDialog
         	e.printStackTrace();
         	System.out.println(e+" printAllCopies"); 
         	
-        	}
+        }
 		try { this.dispose(); } 
 		catch (Exception e) { }
 	}
 	
+
+	private byte[] concatenate(List<File> files) throws FileNotFoundException, IOException {
+		PrintWriter pw = new PrintWriter(new FileOutputStream(Utils.TMP_DIR + "concat.txt"));
+		
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        for (File file : files) {
+                System.out.println("Processing " + file.getPath() + "... ");
+                BufferedReader br = new BufferedReader(new FileReader(file.getPath()));
+            	String line = br.readLine();
+                while (line != null) {
+                	out.write(line.getBytes());
+                	String newline = System.getProperty("line.separator");
+                	out.write(newline.getBytes());
+                	line = br.readLine();
+                }
+
+                br.close();
+        }
+        byte[] bArr = out.toByteArray();
+        //pw is just for saving the concatenated results.. temp for debugging
+        pw.write(out.toString());
+        pw.flush();
+        pw.close();
+        return bArr ;
+	}
+
 
 	class SymKey extends java.awt.event.KeyAdapter
 	{
@@ -309,7 +352,7 @@ public class DocStmtDialog extends PcsDialog
 				stmtMonth_keyTyped(event);
 			else if (object == stmtYear)
 				stmtYear_keyTyped(event);
-			else if (object == practiceNumber)
+			else if (object == startPracticeNumber)
 				practiceNumber_keyTyped(event);
 		}
 
@@ -322,7 +365,7 @@ public class DocStmtDialog extends PcsDialog
 				stmtMonth_keyPressed(event);
 			else if (object == stmtYear)
 				stmtYear_keyPressed(event);
-			else if (object == practiceNumber)
+			else if (object == startPracticeNumber)
 				practiceNumber_keyPressed(event);
 		}
 	}
@@ -333,10 +376,10 @@ public class DocStmtDialog extends PcsDialog
 		    this.dispose();
 		}
 		else if (event.getKeyCode()==event.VK_ESCAPE) {
-		    practiceNumber.setText(null);
+		    startPracticeNumber.setText(null);
 		    stmtMonth.setText(null);
 		    stmtYear.setText(null);
-		    practiceNumber.requestFocus();
+		    startPracticeNumber.requestFocus();
 		}
 	}
 
@@ -358,8 +401,8 @@ public class DocStmtDialog extends PcsDialog
 		if (event.getKeyCode()==event.VK_ENTER) {
 			
 		    if (Utils.required(stmtYear,"Year"))
-		    	if (Utils.isNull(practiceNumber.getText())) practice=0;
-			    else practice=Integer.parseInt(practiceNumber.getText());
+		    	if (Utils.isNull(startPracticeNumber.getText())) practice=0;
+			    else practice=Integer.parseInt(startPracticeNumber.getText());
 		        if (practice==0 || reprintBox.isSelected()) { 
 		            if (verifyPrinter()) {
 		            	printAllCopies();
@@ -381,7 +424,7 @@ public class DocStmtDialog extends PcsDialog
 	void practiceNumber_keyPressed(java.awt.event.KeyEvent event)
 	{
 		if (event.getKeyCode()==event.VK_ENTER) {
-            practiceNumber.transferFocus();
+            startPracticeNumber.transferFocus();
 		}
 	}
 
@@ -403,7 +446,7 @@ public class DocStmtDialog extends PcsDialog
 
 	void DocStmtDialog_windowOpened(java.awt.event.WindowEvent event)
 	{
-		practiceNumber.requestFocus();
+		startPracticeNumber.requestFocus();
 	}
 	
 	boolean verifyPrinter()
