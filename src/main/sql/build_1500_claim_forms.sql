@@ -1,3 +1,13 @@
+/* PL/SQL procedure that prints CMS 1500 insurance claims forms. Assumes
+ * printed is loaded with pre-printed forms, and program will print the
+ * necessary data in the correct location on the forms.
+ * 
+ * May 2, 2013: FP modifier printing on WV DPA claims and should not be;
+ * this was a transitional error (i.e. correction made after initial 
+ * load of database. As of this comment, the FP modifier will now be
+ * omitted from OH and WV Medicaid claims; any other states with
+ * Medicaid claims the modifier will print on the form.
+*/
 create or replace procedure build_1500_claim_forms
 (
    C_directory in char,
@@ -458,10 +468,15 @@ begin
       cbuf1:=rtrim(patient_lname)||', '||rtrim(patient_fname)||' '||patient_mi;
       cbuf1:=substr(cbuf1,1,28);
       cbuf1:=RPAD(cbuf1,28);
+      
+      /* This block of code removed 04/18/13; it prevented the patient's DOB from
+       * being printed on the form. Code commented out for now pending testing
+       * of a batch of paper claims. The goto statement label must also be removed.
       if (C_choice_code='DPA' and carrier_state='OH') then
-
-	 goto skip_ln5;
+	     goto skip_ln5;
       end if;
+      */
+      
       -- BLOCK #3
       if (patient_dob is not null) then
 	 if (carrier_idnum=23744) then
@@ -490,7 +505,9 @@ begin
 
 	 cbuf1:=cbuf1||'   '||cbuf2;
       end if;
+      /*
       <<skip_ln5>>
+      */
       curr_line:=margin||cbuf1;
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
       UTL_FILE.NEW_LINE(file_handle);
@@ -916,7 +933,9 @@ begin
 	 if (C_choice_code='MED' and policy_sign is NOT NULL) then
 	    cbuf1:=cbuf1||'  GA';
 	 -- AS PER LISA INCLUDE FP MODIFIER ON ALL DPA PROCEDURE CODES (2/4/9)
-	 elsif (C_choice_code='DPA' AND carrier_idnum<>1046) then
+	 -- 5/2/13: Exclude WV (carrier_id=1047) from modifier along
+	 -- with OH (1046)
+	 elsif (C_choice_code='DPA' AND carrier_idnum NOT IN (1046,1047)) then
 	    cbuf1:=cbuf1||'  FP';
 	 end if;
 	 -- THIS IS WHERE THE DIAGNOSIS POINTER GOES (24E)
