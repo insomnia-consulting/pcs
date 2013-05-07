@@ -18,12 +18,16 @@ package com.pacytology.pcs;
 import java.awt.*;
 import javax.swing.*;
 
+import org.apache.commons.io.FileUtils;
+
 import com.pacytology.pcs.io.FileTransfer;
 
 import java.sql.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class WksheetDialog extends javax.swing.JDialog
 {
@@ -139,14 +143,17 @@ public class WksheetDialog extends javax.swing.JDialog
 	        cstmt.setInt(1,startLab);
 	        cstmt.setInt(2,endLab);
             cstmt.executeUpdate();
-            File f = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, "copy_wks");
-            long fLen = f.length();
-            if (fLen>0) { 
-                Utils.genericPrint(Utils.SERVER_DIR,"copy_wks",false); 
+            OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + "copy_wks");
+			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "copy_wks"), out.toString());		
+			InputStream fileInput = new FileInputStream(Utils.TMP_DIR + "copy_wks");
+			if (out.toString().length() > 0) {
+				Utils.dotMatrixPrint(fileInput);
                 this.dispose();
             }
         }
-        catch (Exception e) {  }
+        catch (Exception e) {
+        	e.printStackTrace();
+        }
         
     }
     
