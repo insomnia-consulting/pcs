@@ -155,7 +155,7 @@ public class FileTransfer {
 		} catch (FileNotFoundException fnf){
 			System.out.println("File not found " + fnf.getMessage());
 		} catch (SshException e) {
-			e.printStackTrace();
+			System.out.println("File not found " + e.getMessage());
 		} finally {
 			if (ssh != null) {
 				ssh.disconnect();

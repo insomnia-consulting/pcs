@@ -36,6 +36,8 @@ import com.pacytology.pcs.ui.Square;
 
 import java.text.MessageFormat;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ReportViewer extends PcsFrame
 {
@@ -108,6 +110,12 @@ public class ReportViewer extends PcsFrame
 		actionMap = new ReportViewerActionMap(this);
 		setupKeyPressMap();
 	}
+	private boolean matchesAccountSummary(String title) {
+		Pattern pattern = Pattern.compile("Account.*Summary");
+		Matcher matcher = pattern.matcher(title);
+		return matcher.find() ; 
+	}
+	
 	protected JRootPane setupKeyPressMap() {
 		JRootPane rp = super.setupKeyPressMap();
 
@@ -115,6 +123,7 @@ public class ReportViewer extends PcsFrame
 			public void actionPerformed(ActionEvent e) { 
 				if (verifyPrinter()) {
 			        ReportViewer.this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+			        
 			        if ("whp".equals(ReportViewer.this.getTitle())
 			        	|| "is1".equals(ReportViewer.this.getTitle())
 			        	|| "is2".equals(ReportViewer.this.getTitle())
@@ -124,19 +133,23 @@ public class ReportViewer extends PcsFrame
 			        	|| "ahp".equals(ReportViewer.this.getTitle())
 			        	|| "sbt".equals(ReportViewer.this.getTitle())
 			        	|| "rfb".equals(ReportViewer.this.getTitle())
-			        	|| "rbl".equals(ReportViewer.this.getTitle())) {
+			        	|| "rbl".equals(ReportViewer.this.getTitle())
+			        	|| matchesAccountSummary(ReportViewer.this.getTitle())) {
 			        	
 			        	try {
-			        		FileInputStream stream = new FileInputStream(ReportViewer.this.fileName);
-							Utils.dotMatrixPrint(stream);
+//			        		OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + ReportViewer.this.fileName);
+//			    			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "curr_wks"), out.toString());		
+//			    			InputStream fileInput = new FileInputStream(Utils.TMP_DIR + "curr_wks");
+			        		//FileInputStream stream = new FileInputStream();
+							Utils.dotMatrixPrint(ReportViewer.this.reportText.getText().getBytes());
 						} catch (FileNotFoundException e1) {
-							// TODO Auto-generated catch block
+
 							e1.printStackTrace();
 						} catch (PrintException e1) {
-							// TODO Auto-generated catch block
+
 							e1.printStackTrace();
 						} catch (IOException e1) {
-							// TODO Auto-generated catch block
+
 							e1.printStackTrace();
 						}
 			        }
