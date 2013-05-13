@@ -138,20 +138,17 @@ begin
    UTL_FILE.PUTF(file_handle,'\n%s\n\n',curr_line);
 
 
-   curr_line:=margin||'Our laboratory has been notified by Medicare that according to Medicare';
+   curr_line:=margin||'Our laboratory has been notified by Medicare that according to Medicare regulations,';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-   curr_line:=margin||'regulations, Pap smears performed with a diagnosis which they consider';
+   curr_line:=margin||'Pap smears performed with a diagnosis which they consider "not medically necessary"';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-   curr_line:=margin||'"not medically necessary" will not be covered under the Medicare program.';
+   curr_line:=margin||'"will not be covered under the Medicare program.  In order to comply with Medicare';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-   curr_line:=margin||'In order to comply with Medicare regulations, we will need documentation';
+   curr_line:=margin||'regulations, we will need documentation of medical necessity from the ordering ';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-   curr_line:=margin||'of medical necessity from the ordering physician for this Pap smear';
+   curr_line:=margin||'physician for this Pap smear rejected as "not medically necessary.  Please indicate';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-   curr_line:=margin||'rejected as "not medically necessary."  Please indicate any information to';
-   UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-   curr_line:=margin||'support the medical necessity for the Pap smear so that we may review this';
-
+   curr_line:=margin||'any information to support support the medical necessity for the Pap smear so that we may review this';
    UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
    curr_line:=margin||'claim for payment so that your patient will not be billed.';
    UTL_FILE.PUTF(file_handle,'%s\n\n',curr_line);
