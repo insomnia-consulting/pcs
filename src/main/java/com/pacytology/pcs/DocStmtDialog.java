@@ -259,7 +259,12 @@ public class DocStmtDialog extends PcsDialog
 
             String SQL = 
                 "SELECT to_char(parent_account, '009'), TO_CHAR(practice,'009'), statement_copies \n"+
-                "FROM pcs.practices "           ;
+                "FROM pcs.practices";
+        	
+//        	 String SQL = 
+//                   "SELECT to_char(parent_account, '009'), TO_CHAR(practice,'009'), statement_copies \n"+
+//                   "FROM pcs.practices  " + 
+//                   "where parent_account  in (203)";
 
             if (reprintBox.isSelected()) {
                 SQL+="WHERE practice>="+startPracticeNumber.getText()+" \n";   
@@ -276,7 +281,7 @@ public class DocStmtDialog extends PcsDialog
             String tempParent = "" ; 
             boolean hasRecord = rs.next();
             int i = 0; 
-			while (hasRecord) {
+			while (hasRecord) { 
 				List<File> files = new ArrayList<File>();
 				tempParent = rs.getString(1) ; 
 				while (hasRecord && tempParent.equals(rs.getString(1)))  {
@@ -308,6 +313,7 @@ public class DocStmtDialog extends PcsDialog
 				}
 				if (files.size() > 0) {
 					byte[] bArr = concatenate(files, i++);
+					Thread.sleep(bArr.length*2) ; //Sleep for a minute to slow down printing
 					Utils.dotMatrixPrint(bArr);
 				}
 			} 
@@ -316,6 +322,7 @@ public class DocStmtDialog extends PcsDialog
             parent.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
         catch( Exception e ) {
+        	// If printer fails to start here.. Give it some time to recover and start again?
         	e.printStackTrace();
         	System.out.println(e+" printAllCopies"); 
         	
