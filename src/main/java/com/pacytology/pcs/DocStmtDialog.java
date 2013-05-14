@@ -258,55 +258,60 @@ public class DocStmtDialog extends PcsDialog
         try  {
 
             String SQL = 
-                "SELECT TO_CHAR(practice,'009'),statement_copies \n"+
-                "FROM pcs.practices " + 
-                "where practice not in (15, 17, 27, 82, 86, 109, 140 ,176, 226, 238, 241, 242, 247, 251, 340, 345, 389, 397, 439, 441, 493, 663, " + 
-                "664, 675, 705, 714, 792, 801, 802, 803, 804, 805, 806, 807,808, 809, 811, 812, 814, 816, 817,818,819,821,822,823,824, " + 
-                "825,826,827,828,830,831,832,838,839,841,842,843,844,845,846,847,848,849,850,851,852,853,854, " + 
-                "855,856,857,858,859,860,861,862,863,864,865,866,867,868,869,870,871,872,873,879,880,881,882,883,890, " + 
-                "088,158,790,813,829,833,026,041,042,057,063,072,697,074,087,385,090,096,594,099,106,544,985,108,331,110, " +
-                "549,111,332,112,334,114,116,503,915,117,339,924,118,351,119,353,120,121,122)";
+                "SELECT to_char(parent_account, '009'), TO_CHAR(practice,'009'), statement_copies \n"+
+                "FROM pcs.practices "           ;
 
             if (reprintBox.isSelected()) {
                 SQL+="WHERE practice>="+startPracticeNumber.getText()+" \n";   
             }
+            
             SQL+="ORDER BY ";
-            if (!reportType.equals("STATEMENT")) SQL += "parent_account,practice \n";
+            if (!reportType.equals("STATEMENT")) SQL += "parent_account, practice \n";
             else SQL += "statement_copies,practice \n";
             Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             parent.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            List<File> files = new ArrayList<File>();
-            while (rs.next()) { 
-                String prac = rs.getString(1).trim();
+            
+            String tempParent = "" ; 
+            boolean hasRecord = rs.next();
+            int i = 0; 
+			while (hasRecord) {
+				List<File> files = new ArrayList<File>();
+				tempParent = rs.getString(1) ; 
+				while (hasRecord && tempParent.equals(rs.getString(1)))  {
 
-                int numCopies = rs.getInt(2);
-	            String fName = new String (prac+stmtMonth.getText()+
-	                stmtYear.getText().substring(0,1)+
-	                stmtYear.getText().substring(2));
-                Vector v = new Vector();
-	            if (reportType.equals("SUMMARY")) {
-	                fName=fName+".sum";
-	                numCopies=1;
-	            }
-	            else if (reportType.equals("PATIENT_CARD")) {
-	                fName=fName+".pcd";
-	                numCopies=1;
-	                v.addElement(Utils.COMPRESSED);
-	            }
+					tempParent = rs.getString(1);
+					String prac = rs.getString(2).trim();
 
-	            File printFile = FileTransfer.getFile(Utils.TMP_DIR, Utils.SERVER_DIR, fName);
-	            if (printFile != null) {
-	            	files.add(printFile);	
-	            }
-	            //if (files.size() > 5) break ; 
+					int numCopies = rs.getInt(3);
+					String fName = new String(prac + stmtMonth.getText()
+							+ stmtYear.getText().substring(0, 1)
+							+ stmtYear.getText().substring(2));
+					Vector v = new Vector();
+					if (reportType.equals("SUMMARY")) {
+						fName = fName + ".sum";
+						numCopies = 1;
+					} else if (reportType.equals("PATIENT_CARD")) {
+						fName = fName + ".pcd";
+						numCopies = 1;
+						v.addElement(Utils.COMPRESSED);
+					}
 
+					File printFile = FileTransfer.getFile(Utils.TMP_DIR,
+							Utils.SERVER_DIR, fName);
+					if (printFile != null) {
+						files.add(printFile);
+					}
 
-            }
-			byte[] bArr = concatenate(files);
-
-			Utils.dotMatrixPrint(bArr);
+					hasRecord = rs.next();
+				}
+				if (files.size() > 0) {
+					byte[] bArr = concatenate(files, i++);
+					Utils.dotMatrixPrint(bArr);
+				}
+			} 
+			
             this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             parent.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
@@ -320,8 +325,8 @@ public class DocStmtDialog extends PcsDialog
 	}
 	
 
-	private byte[] concatenate(List<File> files) throws FileNotFoundException, IOException {
-		PrintWriter pw = new PrintWriter(new FileOutputStream(Utils.TMP_DIR + "concat.txt"));
+	private byte[] concatenate(List<File> files, int i) throws FileNotFoundException, IOException {
+		PrintWriter pw = new PrintWriter(new FileOutputStream(Utils.TMP_DIR + "concat"+i+".txt"));
 		
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         for (File file : files) {
