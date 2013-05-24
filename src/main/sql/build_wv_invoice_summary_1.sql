@@ -119,8 +119,7 @@ begin
    curr_page:=1;
    dline:='-------------------------------------'||
       '-------------------------------------------';
-   dline2:=
-      ' 								       --------';
+   dline2:= lpad('--------', 80);
    heading1A:='PENNSYLVANIA CYTOLOGY SERVICES';
    heading1B:='SUITE 1700 PARKWAY BUILDLING';
 
