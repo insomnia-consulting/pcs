@@ -78,8 +78,7 @@ begin
    P_code_area:='HEADER';
    dline_1:='-------------------------------------'||
       '-------------------------------------------';
-   dline_2:=
-      ' 								       --------';
+   dline_2 := lpad('--------', 80);
    heading1:='PENNSYLVANIA CYTOLOGY SERVICES';
 
    heading2:=
