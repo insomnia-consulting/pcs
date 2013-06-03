@@ -121,7 +121,7 @@ begin
       '-------------------------------------------';
    dline2:= lpad('--------', 80);
    heading1A:='PENNSYLVANIA CYTOLOGY SERVICES';
-   heading1B:='SUITE 1700 PARKWAY BUILDLING';
+   heading1B:='SUITE 1700 PARKWAY BUILDING';
 
    heading1C:='339 OLD HAYMAKER ROAD';
    heading1D:='MONROEVILLE, PA	15146';
