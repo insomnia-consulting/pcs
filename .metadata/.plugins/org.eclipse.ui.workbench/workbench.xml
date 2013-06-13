@@ -21,7 +21,7 @@
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="190" y="22"/>
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
-<coolItem id="org.eclipse.jdt.ui.CompilationUnitEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="org.eclipse.jdt.ui.CompilationUnitEditor" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="group.help" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.help" itemType="typeToolBarContribution" x="-1" y="-1"/>
 </coolbarLayout>
@@ -30,26 +30,10 @@
 <editorArea activeWorkbook="DefaultEditorWorkbook">
 <info part="DefaultEditorWorkbook">
 <folder appearance="1" expanded="2">
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
-<part id="0"/>
-<part id="1"/>
-<part id="2"/>
-</presentation>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
 </editorArea>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="CytoPathDbOps.java" partName="CytoPathDbOps.java" title="CytoPathDbOps.java" tooltip="C:\Users\john\workspace\pcs\src\main\java\com\pacytology\pcs\CytoPathDbOps.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/john/workspace/pcs/src/main/java/com/pacytology/pcs/CytoPathDbOps.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="10" selectionOffset="16033" selectionTopPixel="4080"/>
-</editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="CytoPathReport.java" partName="CytoPathReport.java" title="CytoPathReport.java" tooltip="C:\Users\john\workspace\pcs\src\main\java\com\pacytology\pcs\CytoPathReport.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/john/workspace/pcs/src/main/java/com/pacytology/pcs/CytoPathReport.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="3" selectionOffset="32127" selectionTopPixel="11085"/>
-</editor>
-<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="HPVReport.java" partName="HPVReport.java" title="HPVReport.java" tooltip="C:\Users\john\workspace\pcs\src\main\java\com\pacytology\pcs\HPVReport.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" uri="file:/C:/Users/john/workspace/pcs/src/main/java/com/pacytology/pcs/HPVReport.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="18856" selectionTopPixel="7350"/>
-</editor>
 </editors>
 <views>
 <view id="org.eclipse.ui.navigator.ProjectExplorer" partName="Project Explorer">
@@ -74,7 +58,7 @@
 </view>
 <view id="org.eclipse.wst.server.ui.ServersView" partName="Servers"/>
 </views>
-<perspectives activePart="org.eclipse.jdt.ui.CompilationUnitEditor" activePerspective="org.eclipse.jst.j2ee.J2EEPerspective">
+<perspectives activePart="org.eclipse.ui.navigator.ProjectExplorer" activePerspective="org.eclipse.jst.j2ee.J2EEPerspective">
 <perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
 <descriptor class="org.eclipse.jst.j2ee.internal.perspective.J2EEPerspective" id="org.eclipse.jst.j2ee.J2EEPerspective" label="Java EE"/>
 <alwaysOnActionSet id="org.eclipse.mylyn.context.ui.actionSet"/>
@@ -199,22 +183,7 @@
 </perspective>
 </perspectives>
 <workingSets/>
-<navigationHistory>
-<editors>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" uri="file:/C:/Users/john/workspace/pcs/src/main/java/com/pacytology/pcs/CytoPathDbOps.java"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" uri="file:/C:/Users/john/workspace/pcs/src/main/java/com/pacytology/pcs/CytoPathReport.java"/>
-<editor factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" uri="file:/C:/Users/john/workspace/pcs/src/main/java/com/pacytology/pcs/HPVReport.java"/>
-</editors>
-<item historyLabel="CytoPathDbOps.java" index="0">
-<position info="not_deleted" x="16033" y="10"/>
-</item>
-<item historyLabel="CytoPathReport.java" index="1">
-<position info="not_deleted" x="32127" y="3"/>
-</item>
-<item active="true" historyLabel="HPVReport.java" index="2">
-<position info="not_deleted" x="0" y="0"/>
-</item>
-</navigationHistory>
+<navigationHistory/>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
 </page>
 <workbenchWindowAdvisor/>

@@ -24,31 +24,30 @@ as
 
    cursor claim_list is
       select
-	 c.carrier_id,
-	 SUBSTR(c.name,1,48),
-	 c.address1,
-	 c.address2,
-	 c.city,
-	 c.state,
-	 c.zip,
-	 c.payer_id,
-	 bd.id_number,
-	 bd.group_number,
-	 bd.subscriber,
-
-	 bd.sub_lname,
-	 bd.sub_fname,
-	 TO_CHAR(bd.sign_date,'MMDDYYYY'),
-	 p.lname,
-	 p.fname,
-	 p.mi,
-	 p.address1,
-	 p.city,
-	 p.state,
-	 p.zip,
-	 p.phone,
-	 p.patient,
-	 TO_CHAR(p.dob,'MMDDYYYY'),
+	    c.carrier_id,
+	    SUBSTR(c.name,1,48),
+	    c.address1,
+	    c.address2,
+	    c.city,
+	    c.state,
+	    c.zip,
+	    c.payer_id,
+	    bd.id_number,
+	    bd.group_number,
+	    bd.subscriber,
+	    bd.sub_lname,
+	    bd.sub_fname,
+	    TO_CHAR(bd.sign_date,'MMDDYYYY'),
+	    p.lname,
+	    p.fname,
+	    p.mi,
+	    p.address1,
+	    p.city,
+	    p.state,
+	    p.zip,
+	    p.phone,
+	    p.patient,
+	    TO_CHAR(p.dob,'MMDDYYYY'),
 
 	 pr.name,
 	 lb.bill_amount,
@@ -488,15 +487,19 @@ begin
 	    cbuf1:=cbuf1||' '||substr(patient_dob,3,2);
 	    cbuf1:=cbuf1||' '||substr(patient_dob,5,4);
 	 end if;
-
+	 /* Fix for F sex field being printe in problem location on form 
+	  */
+     cbuf1:=cbuf1||'       X'
       else
+                           
 	 cbuf1:=cbuf1||'	   ';
       end if;
+                           
       cbuf1:=cbuf1||'	   X';
       -- BLOCK #4
-      if (policy_subscriber='SELF' and C_billing_route<>'PPR') then
-	 cbuf1:=cbuf1||'  '||'SAME';
-      elsif (carrier_idnum=1048) then
+     if (policy_subscriber='SELF' and C_billing_route<>'PPR') then
+	    cbuf1:=cbuf1||'  '||'SAME';
+     elsif (carrier_idnum=1048) then
 	 -- do nothing
 	 cbuf1:=cbuf1;
       elsif (C_choice_code<>'MED') then
@@ -911,7 +914,10 @@ begin
 	 curr_line:=null;
 	 --   For a one day only service PA DPA does not want to
 
-	 ---  see the same date twice (i.e both TO and FROM)
+	 --   see the same date twice (i.e both TO and FROM)
+	 --   As per current specs PA DPA was getting DOS 
+	 --   on form once; all Alabama were getting it
+	 --  twice, and then everyone else twice
 	 if (carrier_idnum=1048) then
 	    cbuf1:=lab_completed||'       ';
 	 elsif (carrier_idnum=23744) then
@@ -954,7 +960,6 @@ begin
 	    if (carrier_idnum=23744) then
 	       diag_string:='1';
 	    else
-
 	       diag_string:=diag_5;
 	    end if;
 	 end if;
@@ -980,13 +985,6 @@ begin
 	    cbuf3:='1';
 	 end if;
 	 cbuf1:=RPAD(cbuf1,58)||cbuf3;
-	 -- PA DPA IS 1048; OH DPA IS 1046
-	 -- take next three lines out; put npi on all claims for 24J
-
-	 -- if (carrier_idnum IN (1046,1048) OR trav_med='Y') then
-	 --    cbuf1:=cbuf1||'	  '||lab_npi;
-	 -- end if;
-
 	 cbuf1:=cbuf1||'       '||lab_npi;
 	 curr_line:=margin||cbuf1;
 	 curr_line:=REPLACE(curr_line,' 081 ','  81 ');
@@ -998,12 +996,11 @@ begin
 
 	 elsif (trav_med='Y') then
 	    cbuf1:=RPAD(' ',65)||'1C';
-	    UTL_FILE.PUTF(file_handle,'%s\n',cbuf1);
-	 else
-	    UTL_FILE.NEW_LINE(file_handle);
-	 end if;
-	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-	 --UTL_FILE.NEW_LINE(file_handle);
+	       UTL_FILE.PUTF(file_handle,'%s\n',cbuf1);
+	     else
+	       UTL_FILE.NEW_LINE(file_handle);
+	     end if;
+	     UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
       end loop;
       close procedure_list;
       for ndx in (rcnt+1)..6 loop
@@ -1019,19 +1016,9 @@ begin
       cbuf1:=null;
       cbuf2:=null;
       curr_line:=null;
-      -- temporarily use old tax id for PA DPA
-      -- added 1/26; use new tax id for DOS later than 1/21
-      -- No longer need old tax id (11/29/06)
-
-
-      -- if (carrier_idnum in (1048,1047)) then
-      -- 	 cbuf1:=RPAD(lab_tax_id,18)||'X';
-      -- elsif (C_choice_code='DPA') then
-      -- 	 cbuf1:=RPAD(' ',18)||' ';
-      -- else
-      -- 	 cbuf1:=RPAD(lab_tax_id,18)||'X';
-      -- end if;
-
+      /* Note there was a comment to get rid of the old EIN after
+       * Nov. 29, 2006; this was reoved today (06/13/2013
+       */
       cbuf1:=RPAD(lab_tax_id,18)||'X';
       --cbuf1:=RPAD(cbuf1,22);
       cbuf2:='	'||SUBSTR(RTRIM(LTRIM(TO_CHAR(claim_lab_number))),3);
@@ -1138,8 +1125,7 @@ begin
 	 curr_line:=margin||cbuf1;
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 
-      else
-	 if (C_choice_code='DPA' or C_choice_code='OI') then
+      elsif (C_choice_code='DPA' or C_choice_code='OI') then
 	    if (C_choice_code='DPA') then
 	       cbuf1:=LPAD(' ',26);
 	    -- hardcoded for Molina Healthcare
