@@ -489,12 +489,6 @@ begin
 	 end if;
 	 /* Fix for F sex field being printe in problem location on form 
 	  */
-     cbuf1:=cbuf1||'       X'
-      else
-                           
-	 cbuf1:=cbuf1||'	   ';
-      end if;
-                           
       cbuf1:=cbuf1||'	   X';
       -- BLOCK #4
      if (policy_subscriber='SELF' and C_billing_route<>'PPR') then
