@@ -206,7 +206,8 @@ create or replace procedure build_1500_claim_forms
  end if;                                                                        
 
  select id_number into lab_CLIA from pcs.business_id_nums where id_code='CLIA'; 
- select id_number into lab_tax_id from pcs.business_id_nums where id_code='TAXID';                                                                             select id_number into lab_npi from pcs.business_id_nums where id_code='NPI';   
+ select id_number into lab_tax_id from pcs.business_id_nums where id_code='TAXID';                                                                             
+ select id_number into lab_npi from pcs.business_id_nums where id_code='NPI';   
 
  P_code_area:='CHECK_NPI';                                                      
  pcs.check_npi_numbers(C_billing_route);                                        
@@ -277,11 +278,11 @@ create or replace procedure build_1500_claim_forms
       end if;                                                                        
     end if;                                                                        
 
-    P_code_area:='CLAIMS Q3 '||claim_lab_number;                                   
+    P_code_area:='CLAIMS Q3 '||to_char(claim_lab_number);                                   
     select MAX(rebilling) into max_rebilling from pcs.billing_details              
     where lab_number=claim_lab_number;                                             
     if (max_rebilling>lab_rebilling) then                                          
-       P_code_area:='CLAIMS Q4';                                                      
+       P_code_area:='CLAIMS Q4 '||claim_lab_number||' and '||max_rebilling;                                                      
        select                                                                         
           c.carrier_id,c.name,c.address1,c.address2,c.city,c.state,                      
           c.zip,c.payer_id,bd.id_number,bd.group_number,bd.subscriber,                   
@@ -445,7 +446,7 @@ create or replace procedure build_1500_claim_forms
  else                   
  cbuf1:=cbuf1||'           ';                                                          
  end if;                                                                        
- cbuf1:=cbuf1||LPAD('X',6);                                                         
+ cbuf1:=cbuf1||LPAD('X',7);                                                         
  if (policy_subscriber='SELF' and C_billing_route<>'PPR') then                  
  cbuf1:=cbuf1||'  '||'SAME';                                                    
 
@@ -1201,11 +1202,7 @@ create or replace procedure build_1500_claim_forms
  if (resubmitted=0) then                                                        
  P_code_area:='CLAIMS Q16';                                                     
  select pcs.claim_seq.nextval into lab_claim_id from dual;                      
- insert into pcs.lab_claims (claim_id,lab_number,batch_number,                  
-
-
-
- claim_status,datestamp,change_date)                                            
+ insert into pcs.lab_claims (claim_id,lab_number,batch_number, claim_status,datestamp,change_date)                                            
 
  values (lab_claim_id,claim_lab_number,claim_batch_number,                      
  'S',SysDate,SysDate);                                                          
@@ -1232,8 +1229,7 @@ create or replace procedure build_1500_claim_forms
                                                                                 
  delete from pcs.billing_queue where billing_route=C_billing_route;             
  if (C_claims>0 and C_billing_route<>'DUP') then                                
- insert into pcs.claim_submissions (batch_number,tpp,submission_number,creation_
-date)                                                                           
+ insert into pcs.claim_submissions (batch_number,tpp,submission_number,creation_date)                                                                           
                                                                                 
                                                                                 
  values (claim_batch_number,C_billing_route,1,SysDate);                         
@@ -1302,14 +1298,8 @@ date)
 
 
  P_error_message:=SQLERRM;                                                      
- insert into pcs.error_log (error_code,error_message,proc_name,code_area,datesta
-mp,sys_user,ref_id)                                                             
-                                                                                
-                                                                                
- values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,claim_
-lab_number);                                                                    
-                                                                                
-                                                                                
+ insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)                                                             
+ values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,claim_lab_number);                                                                    
  commit;                                                                        
 
  RAISE;                                                                         
