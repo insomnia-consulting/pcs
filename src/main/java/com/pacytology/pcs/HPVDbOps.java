@@ -101,7 +101,12 @@ public class HPVDbOps implements Runnable
                 Export eFile = new Export(Lab.HPV_REPORTS);
                 eFile.write(eReports);
             }
-	        parent.hpvReport();
+	        try {
+				parent.hpvReport();
+			} catch (Exception e) {
+				
+				e.printStackTrace();
+			}
 	        parent.closingActions();
         }
         // otherwise reset the HPVReport screen
