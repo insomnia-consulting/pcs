@@ -1608,15 +1608,15 @@ public class PCSLabEntry extends PcsFrame {
 			while (rs.next()) {
 				midMonthCount = rs.getInt(1);
 			}
-			query = "SELECT billing_route,LPAD(TO_CHAR(count(billing_route)),4), \n"
-					+ "   count(billing_route) \n"
-					+ "FROM pcs.billing_queue \n"
-					+ "GROUP BY billing_route \n"
-					+ "ORDER BY billing_route \n";
+			query = "SELECT a.billing_route, RPAD(a.billing_route||' ['||a.description||']', 50), count(a.billing_route) \n"
+					+ "FROM pcs.billing_routes a, pcs.billing_queue b \n"
+					+ "WHERE a.billing_route=b.billing_route \n"
+					+ "GROUP BY a.billing_route, a.description \n"
+					+ "ORDER BY a.billing_route \n";
 			stmt = DbConnection.process().createStatement();
 			rs = stmt.executeQuery(query);
-			Vector routes = new Vector();
-			Vector counts = new Vector();
+			Vector results = new Vector();
+
 			String billingRoute = null;
 			int qCount = 0;
 			while (rs.next()) {
@@ -1624,28 +1624,17 @@ public class PCSLabEntry extends PcsFrame {
 				qCount = rs.getInt(3);
 				if (billingRoute.equals("PRA")) {
 					qCount -= midMonthCount;
-					counts.addElement(Utils.lpad(Integer.toString(qCount), 4));
+					results.addElement(rs.getString(2) + "  " + Utils.lpad(Integer.toString(qCount), 4));
 				} else
-					counts.addElement(rs.getString(2));
+					results.addElement(rs.getString(2) + "  " + rs.getString(3));
 			}
-			query = "SELECT DISTINCT a.description, \n"
-					+ "   RPAD(a.billing_route||' ['||a.description||']',50), \n"
-					+ "   a.billing_route \n"
-					+ "FROM pcs.billing_routes a, pcs.billing_queue b \n"
-					+ "WHERE a.billing_route=b.billing_route \n"
-					+ "ORDER BY a.billing_route \n";
-			stmt = DbConnection.process().createStatement();
-			rs = stmt.executeQuery(query);
-			while (rs.next()) {
-				routes.addElement(rs.getString(2));
-			}
-			String[] list = new String[routes.size() + 2];
+			String[] list = new String[results.size() + 2];
 			list[0] = "ROUTE OF BILLING                                     LABS";
 			list[1] = "----------------------------------------------------------";
-			for (int i = 0; i < routes.size(); i++)
-				list[i + 2] = routes.elementAt(i) + "  " + counts.elementAt(i);
+			for (int i = 0; i < results.size(); i++)
+				list[i + 2] = "" + results.elementAt(i) ;
 			(new PickList("Current Billing Queue", 180, 110, 440, 240,
-					routes.size() + 2, list)).setVisible(true);
+					results.size() + 2, list)).setVisible(true);
 		} catch (Exception e) {
 			log.write("ERROR: getBillQueueData\n" + e);
 		}
