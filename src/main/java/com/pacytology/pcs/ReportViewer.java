@@ -22,11 +22,14 @@ import javax.print.PrintException;
 import javax.print.attribute.standard.MediaSize;
 import javax.swing.*;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import com.pacytology.pcs.actions.LabFormActionMap;
 import com.pacytology.pcs.actions.ReportViewerActionMap;
@@ -35,6 +38,8 @@ import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -137,11 +142,12 @@ public class ReportViewer extends PcsFrame
 			        	|| matchesAccountSummary(ReportViewer.this.getTitle())) {
 			        	
 			        	try {
-//			        		OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + ReportViewer.this.fileName);
-//			    			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "curr_wks"), out.toString());		
-//			    			InputStream fileInput = new FileInputStream(Utils.TMP_DIR + "curr_wks");
-			        		//FileInputStream stream = new FileInputStream();
-							Utils.dotMatrixPrint(ReportViewer.this.reportText.getText().getBytes());
+			        		
+			        		File outputFile = new File(ReportViewer.this.fileName) ; 
+			        		List<File> fileList = new ArrayList<File>();
+			        		fileList.add(outputFile);
+			    			byte[] bArr = Utils.concatenate(fileList, 0) ; 
+							Utils.dotMatrixPrint(bArr);
 						} catch (FileNotFoundException e1) {
 
 							e1.printStackTrace();

@@ -267,10 +267,10 @@ public class DocStmtDialog extends PcsDialog
 //                   "where parent_account  in (203)";
 
             if (reprintBox.isSelected()) {
-                SQL+="WHERE practice>="+startPracticeNumber.getText()+" \n";   
+                SQL+="WHERE practice >="+startPracticeNumber.getText()+"\n";   
             }
             
-            SQL+="ORDER BY ";
+            SQL+=" where parent_account <> -1  ORDER BY ";
             if (!reportType.equals("STATEMENT")) SQL += "parent_account, practice \n";
             else SQL += "statement_copies,practice \n";
             Statement stmt = DbConnection.process().createStatement();
@@ -312,9 +312,9 @@ public class DocStmtDialog extends PcsDialog
 					hasRecord = rs.next();
 				}
 				if (files.size() > 0) {
-					byte[] bArr = concatenate(files, i++);
-					Thread.sleep(bArr.length*2) ; //Sleep for a minute to slow down printing
+					byte[] bArr = Utils.concatenate(files, i++);
 					Utils.dotMatrixPrint(bArr);
+					Thread.sleep(bArr.length*2) ; //Sleep for a minute to slow down printing
 				}
 			} 
 			
@@ -332,30 +332,7 @@ public class DocStmtDialog extends PcsDialog
 	}
 	
 
-	private byte[] concatenate(List<File> files, int i) throws FileNotFoundException, IOException {
-		PrintWriter pw = new PrintWriter(new FileOutputStream(Utils.TMP_DIR + "concat"+i+".txt"));
-		
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        for (File file : files) {
-                System.out.println("Processing " + file.getPath() + "... ");
-                BufferedReader br = new BufferedReader(new FileReader(file.getPath()));
-            	String line = br.readLine();
-                while (line != null) {
-                	out.write(line.getBytes());
-                	String newline = System.getProperty("line.separator");
-                	out.write(newline.getBytes());
-                	line = br.readLine();
-                }
 
-                br.close();
-        }
-        byte[] bArr = out.toByteArray();
-        //pw is just for saving the concatenated results.. temp for debugging
-        pw.write(out.toString());
-        pw.flush();
-        pw.close();
-        return bArr ;
-	}
 
 
 	class SymKey extends java.awt.event.KeyAdapter
