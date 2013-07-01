@@ -63,7 +63,7 @@ exception
       RAISE;
 
 end;
-\d
+\
 
 grant execute on pcs.build_hm_worksheets to pcs_user
 \

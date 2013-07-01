@@ -369,7 +369,12 @@ public class ReceiveDateForm extends PcsFrame {
 						maxLab = 0;
 					}
 					if (maxLab > 0) {
-						deleteReceiveDate(maxLab);
+						try {
+							deleteReceiveDate(maxLab);
+						} catch (Exception e1) {
+
+							e1.printStackTrace();
+						}
 						rDay00.setText(null);
 						rBegin00.setText(null);
 						rEnd00.setText(null);
@@ -1027,17 +1032,20 @@ public class ReceiveDateForm extends PcsFrame {
 		setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 	}
 
-	void deleteReceiveDate(int maxLab) {
+	void deleteReceiveDate(int maxLab) throws Exception {
+
 		try {
 			String SQL = "DELETE FROM pcs.receive_dates WHERE start_lab_number = ? \n";
 			PreparedStatement pstmt = DbConnection.process().prepareStatement(
 					SQL);
 			pstmt.setInt(1, maxLab);
 			pstmt.executeUpdate();
+			String year = ("" + maxLab).substring(0, 4) ;
 			SQL = "UPDATE pcs.lab_requisitions SET receive_date = NULL \n"
-					+ "WHERE lab_number >= ? \n";
+					+ "WHERE lab_number >= ? and lab_number < ?\n";
 			pstmt = DbConnection.process().prepareStatement(SQL);
 			pstmt.setInt(1, maxLab);
+			pstmt.setString(2, year+"800000");
 			pstmt.executeUpdate();
 			try {
 				pstmt.close();

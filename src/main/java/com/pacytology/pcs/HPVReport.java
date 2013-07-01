@@ -228,7 +228,7 @@ public class HPVReport extends javax.swing.JFrame
     /*
         Method that controls printing of the reports
     */
-    public void hpvReport() {
+    public void hpvReport() throws Exception {
         PrintJob pjob;
         Properties p = new java.util.Properties();
         Graphics pgraphics;
@@ -284,7 +284,13 @@ public class HPVReport extends javax.swing.JFrame
                         pgraphics=pjob.getGraphics();
                         if (pgraphics!=null) {
                             PCSHeader(pgraphics,labReport);     // header part of report
-                            labData(pgraphics,labReport);       // requisition data
+                            try {
+								labData(pgraphics,labReport);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+								throw e ; 
+							}       // requisition data
                             resultsData(pgraphics,labReport);   // result data
                             pgraphics.dispose();
                         }
@@ -493,7 +499,7 @@ public class HPVReport extends javax.swing.JFrame
         Formats and prints selected data from the requisition
         on the report.
     */
-	public void labData(Graphics pgraphics, LabReportRec labReport) 
+	public void labData(Graphics pgraphics, LabReportRec labReport) throws Exception 
 	{
 	    int x,y;
 	    int gap;
@@ -634,6 +640,10 @@ public class HPVReport extends javax.swing.JFrame
         /* DATE RECEIVED */
         buf = new StringBuffer("RECEIVED:");
         pgraphics.drawString(buf.toString(),x,y+5);
+        if (labReport.receive_date == null) {
+        	throw new Exception("Lab: " + labReport.lab_number + " does not have a receive date");
+        }
+        	
         pgraphics.drawString(labReport.receive_date,x+66,y+5);
         
         /* DATE REPORTED */
