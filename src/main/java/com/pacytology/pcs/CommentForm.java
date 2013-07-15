@@ -292,7 +292,7 @@ public class CommentForm extends PcsFrame
             pstmt=DbConnection.process().prepareStatement(SQL);
             pstmt.setInt(1,labNumber);
             pstmt.executeUpdate();
-            	rs.close(); pstmt.close(); }
+            rs.close(); pstmt.close(); }
             catch (SQLException f) { System.out.println("[U01] "+f.toString()); }
             catch (Exception f) { System.out.println("[U02] "+f); }
             return;
