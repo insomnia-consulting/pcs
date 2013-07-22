@@ -2,6 +2,8 @@ package com.pacytology.pcs;
 
 import java.awt.*;
 import javax.swing.*;
+
+import com.pacytology.pcs.models.PatientRec;
 import com.pacytology.pcs.ui.Square;
 import com.pacytology.pcs.utils.StringUtils;
 

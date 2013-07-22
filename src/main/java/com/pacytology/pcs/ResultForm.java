@@ -20,6 +20,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 
+import com.pacytology.pcs.db.ResultDbOps;
+import com.pacytology.pcs.db.ResultTableData;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import java.util.Vector;
@@ -27,7 +29,7 @@ import javax.swing.table.*;
 
 public class ResultForm extends PcsFrame
 {
-    Login dbLogin;
+    public Login dbLogin;
     Vector labResults = new Vector();
     Vector qcResults = new Vector();
     Vector pathResults = new Vector();
@@ -38,7 +40,7 @@ public class ResultForm extends PcsFrame
     public boolean PC=false;
     public boolean hasPC=false;
     public int currMode=Lab.IDLE;
-    ResultRec resultRec = new ResultRec();
+    public ResultRec resultRec = new ResultRec();
     public int NUM_RESULTS=0;
     public int MAX_TECHS=0;
     public TechRec[] techs;
@@ -53,7 +55,7 @@ public class ResultForm extends PcsFrame
     public static final int DRAFT_COPY = 3;
     public static final int FINAL_COPY = 4;
     ResultDbOps resDbOps;
-    boolean dbThreadRunning=false;
+    public boolean dbThreadRunning=false;
     boolean completedFlag=false;
     boolean ctFlag=false;
     String resCompletedSave;
@@ -72,9 +74,9 @@ public class ResultForm extends PcsFrame
     int oldCodeNdx;
     int ndx;
     
-    int numSCR=0;
-    int numQC=0;
-    int numPATH=0;
+    public int numSCR=0;
+    public int numQC=0;
+    public int numPATH=0;
     
     boolean hxOverride=true;
 
@@ -2566,7 +2568,7 @@ public class ResultForm extends PcsFrame
 		Utils.forceUpper(event);
 	}
 	
-	void setMsgLabel(String s)
+	public void setMsgLabel(String s)
 	{
 		msgLabel.setText(s);
 
@@ -3040,9 +3042,9 @@ System.out.println("inside of hasCode");
 System.out.println("SIZES --> "+labResults.size()+", "+qcResults.size()+", "+pathResults.size());	    
 	    for (int i=0; i<numSCR; i++) {
 	        bCode=(String)rData.getValueAt(i,0);
-System.out.println("   got code: "+bCode);	        
+	        System.out.println("   got code: "+bCode);	        
 	        if (bCode.equals(checkCode)) {
-System.out.println("      found match!");	            
+	        	System.out.println("      found match!");	            
 	            codeEntered=true;
 	            break;
 	        }
@@ -3077,158 +3079,6 @@ System.out.println("      found match!");
 /* END OF RESULT FORM */
 
 
-/* Class that displays the table on the Results Form
-*/
-class ResultData 
-{
-    public String result_code;
-    public String qc_result_code;
-    public String path_result_code;
-    public String description;
-    
-    public ResultData(String result_code, String qc_result_code, 
-        String path_result_code, String description)
-    {
-        this.result_code=result_code;
-        this.qc_result_code=qc_result_code;
-        this.path_result_code=path_result_code;
-        this.description=description;
-    }
-    
-}    
 
-class ResultTableData extends AbstractTableModel
-{
-    static final public ColumnData columns[] = {
-        new ColumnData("SCR",50,JLabel.CENTER,(new Font("DialogInput",Font.PLAIN,12))),
-        new ColumnData("QC",50,JLabel.CENTER,(new Font("DialogInput",Font.PLAIN,12))),
-        new ColumnData("PATH",50,JLabel.CENTER,(new Font("DialogInput",Font.PLAIN,12))),
-        new ColumnData("DESCRIPTION",300,JLabel.LEFT,(new Font("DialogInput",Font.PLAIN,10)))
-    };
 
-    private Vector rVect;
 
-    public ResultTableData() { 
-        rVect = new Vector();
-    }
-    
-    public boolean resultEntered(String bCode, int column)
-    {
-        boolean rv = false;
-        for (int i=0; i<rVect.size(); i++) {
-            String rCode = (String)getValueAt(i,column);
-            try {
-                if (rCode.equals(bCode)) {
-                    rv=true;
-                    break;
-                }
-            }
-            catch (Exception e) { }
-        }
-        return (rv);
-    }
-    
-    public void addRow(String result_code, String qc_result_code, String path_result_code, String description) {
-        rVect.addElement(new ResultData(result_code,qc_result_code,path_result_code,description));
-    }
-
-    public void removeRow(int nRow) {
-        rVect.removeElementAt(nRow);
-    }
-    
-    public void removeAllRows() {
-        rVect.removeAllElements();
-    }
-    
-    public int removeSCR(String code, int max) 
-    {
-        Vector codes = new Vector();
-        for (int i=0; i<rVect.size(); i++) {
-            if (i==max) break;
-            String bCode = (String)getValueAt(i,0);
-            if (!bCode.equals(code)) 
-                codes.addElement(bCode);
-        }
-        for (int i=0; i<codes.size(); i++) {
-            setValueAt(codes.elementAt(i),i,0);
-        }
-        for (int i=codes.size(); i<rVect.size(); i++) {
-            setValueAt(null,i,0);
-        }
-        return (codes.size());
-    }
-    
-    public int removeQC(String code, int max) 
-    {
-        Vector codes = new Vector();
-        for (int i=0; i<rVect.size(); i++) {
-            if (i==max) break;
-            String bCode = (String)getValueAt(i,1);
-            try {
-                if (!bCode.equals(code)) 
-                    codes.addElement(bCode);
-            }
-            catch (Exception e) { }
-        }
-        for (int i=0; i<codes.size(); i++) {
-            setValueAt(codes.elementAt(i),i,1);
-        }
-        for (int i=codes.size(); i<rVect.size(); i++) {
-            setValueAt(null,i,1);
-        }
-        return (codes.size());
-    }
-
-    public int removePATH(String code, int max) 
-    {
-        Vector codes = new Vector();
-        for (int i=0; i<rVect.size(); i++) {
-            if (i==max) break;
-            String bCode = (String)getValueAt(i,2);
-            if (!bCode.equals(code)) 
-                codes.addElement(bCode);
-        }
-        for (int i=0; i<codes.size(); i++) {
-            setValueAt(codes.elementAt(i),i,2);
-        }
-        for (int i=codes.size(); i<rVect.size(); i++) {
-            setValueAt(null,i,2);
-        }
-        return (codes.size());
-    }
-   
-    @Override
-	public void setValueAt(Object value, int row, int column) {
-        ResultData cRow = (ResultData)rVect.elementAt(row);
-        switch (column) {
-            case 0: cRow.result_code=(String)value;break;
-            case 1: cRow.qc_result_code=(String)value;break;
-            case 2: cRow.path_result_code=(String)value;break;
-            case 3: cRow.description=(String)value;break;
-        }
-        rVect.setElementAt(cRow,row);
-    }
-
-    @Override
-	public Object getValueAt(int row, int column) { 
-        if (row<0 || row>=getRowCount()) return "";
-        ResultData cRow = (ResultData)rVect.elementAt(row);
-        switch (column) {
-            case 0: return cRow.result_code;
-            case 1: return cRow.qc_result_code;
-            case 2: return cRow.path_result_code;
-            case 3: return cRow.description;
-        }
-        return "";
-    }
-    
-    @Override
-	public int getRowCount() { return rVect.size(); }
-    @Override
-	public int getColumnCount() { return columns.length; }
-    @Override
-	public boolean isCellEditable(int row, int column) { return (true); }
-    @Override
-	public String getColumnName(int column) { return columns[column].title; }
-    
-}

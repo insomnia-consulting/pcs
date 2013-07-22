@@ -8,18 +8,18 @@ package com.pacytology.pcs;
 */
 public class PathRec
 {
-    int pathologist;
-    String lname;
-    String fname;
-    String mi;
-    String address1;
-    String city;
-    String state;
-    String zip;
-    String phone;
-    String pathologist_code;
-    String title;
-    String degree;
+	public int pathologist;
+	public String lname;
+	public String fname;
+	public String mi;
+	public String address1;
+	public String city;
+	public String state;
+	public String zip;
+	public String phone;
+	public String pathologist_code;
+	public String title;
+	public String degree;
     
     public PathRec()  { this.reset(); }
     
