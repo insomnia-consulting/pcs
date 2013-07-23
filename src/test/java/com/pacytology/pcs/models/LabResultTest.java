@@ -1,27 +1,27 @@
-package com.pacytology.pcs.db;
+package com.pacytology.pcs.models;
 
 import static org.junit.Assert.*;
 
-import java.sql.SQLException;
 import java.util.Properties;
 
 import org.junit.Test;
 
-import com.pacytology.pcs.Login;
+import com.pacytology.pcs.LabDbOps;
 import com.pacytology.pcs.PCSLabEntry;
+import com.pacytology.pcs.db.ResultDbOps;
 
-public class HypRequestDbOpsTest {
+public class LabResultTest {
 
 	@Test
-	public void testAscusUnder21() {
+	public void testGetLabResult() {
 		Properties props = new Properties();
 		props.put("username", "pcs");
 		props.put("password", "ahb21");
 		props.put("jdbc.connection", "jdbc:oracle:thin:@10.211.55.18:1521:pcsdev"); 
 		PCSLabEntry.sqlSessionFactory(props) ;  
-		HpvRequestDbOps.setAscusHpv(2013012693) ;
-		boolean hpv = HpvRequestDbOps.isHpv(2013012693) ;
-		assertFalse(hpv);
+		LabResult labResult = ResultDbOps.getLabResult(2013001269) ;  
+		assertNotNull(labResult) ;
+		assertEquals(6, labResult.getDetailCodes().size()) ; 
 
 	}
 

@@ -1398,6 +1398,7 @@ public class PCSLabEntry extends PcsFrame {
 				this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		} catch (Exception e) {
+			e.printStackTrace() ; 
 			log.write("ERROR: invokeLogin\n" + e);
 		}
 		if (!dbLogin.hasLatestRecvDate && dbLogin.loginEstablished) {

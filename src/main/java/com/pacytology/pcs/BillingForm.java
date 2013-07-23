@@ -2450,6 +2450,7 @@ public class BillingForm extends PcsFrame
                     createErrMsg("Operation Failed");
                 }                
             }
+
             this.setCursor(new Cursor(DEFAULT_CURSOR));
         }	
 		else if (currMode==Lab.PATIENT_UPDATE)  {

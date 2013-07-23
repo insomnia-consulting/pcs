@@ -25,6 +25,11 @@ import java.lang.*;
 import java.sql.*;
 import java.util.Vector;
 
+import org.apache.ibatis.session.SqlSession;
+
+import com.pacytology.pcs.models.LabRequisition;
+import com.pacytology.pcs.models.Patient;
+
 public class LabDbOps implements Runnable {
 	Thread dbThread;
 	int tLab;
@@ -1856,6 +1861,15 @@ public class LabDbOps implements Runnable {
 		r.program = tLabRec.program;
 		Export eFile = new Export(Lab.HPV_ONLY, r);
 		eFile.write();
+	}
+
+	public static LabRequisition getLabRequisition(int labNumber) {
+
+		SqlSession session = PCSLabEntry.sqlSessionFactory(null).openSession();
+
+		LabRequisition labReq = session.selectOne("com.pacytology.pcs.sqlmaps.LabRequisitionMapper.selectLabRequisition", labNumber); 
+		return labReq ; 
+		
 	}
 
 }

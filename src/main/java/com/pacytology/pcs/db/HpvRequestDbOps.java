@@ -8,15 +8,12 @@ import org.apache.ibatis.session.SqlSession;
 import com.pacytology.pcs.DbConnection;
 import com.pacytology.pcs.PCSLabEntry;
 import com.pacytology.pcs.models.HpvRequest;
+import com.pacytology.pcs.models.LabRequisition;
 import com.pacytology.pcs.models.Patient;
-import com.pacytology.pcs.models.PatientRec;
-import com.pacytology.pcs.sqlmaps.HpvRequestMapper;
-import com.pacytology.pcs.sqlmaps.PatientMapper;
 
 public class HpvRequestDbOps {
 	public static void set_hpv(int labNumber) throws SQLException {
-		CallableStatement cstmt = DbConnection.process().prepareCall(
-				"{call pcs.set_hpv(?)}");
+		CallableStatement cstmt = DbConnection.process().prepareCall("{call pcs.set_hpv(?)}" );
 		cstmt.setInt(1, labNumber);
 		cstmt.executeUpdate();
 		cstmt.close();
@@ -35,23 +32,29 @@ public class HpvRequestDbOps {
 	public static void setAscusHpv(int labNumber) {
 		// if age < 21 return
 		SqlSession session = PCSLabEntry.sqlSessionFactory(null).openSession();
-		PatientMapper mapper = session.getMapper(PatientMapper.class);
-		PatientRec patientRec = new PatientRec() ; 
-		Patient patient = mapper.selectPatient(2423468);
+
+		LabRequisition labReq = session.selectOne("com.pacytology.pcs.sqlmaps.LabRequisitionMapper.selectLabRequisition", labNumber); 
+		Patient patient = labReq.getPatient() ;  
+
 		if (patient.getAge() < 21) {
 			return ; 
 		}
 		else {
-			
+
 		}
 	}
 
 	public static boolean isHpv(int labNumber) {
 		SqlSession session = PCSLabEntry.sqlSessionFactory(null).openSession();
-		HpvRequestMapper mapper = session.getMapper(HpvRequestMapper.class);
-		HpvRequest request = mapper.selectHpvRequest(labNumber);
-		return request.isHpv() ; 
-		
+		HpvRequest request =  session.selectOne("com.pacytology.pcs.sqlmaps.HpvRequestMapper.selectHpvRequest", labNumber);
+		boolean isHpv ;
+		if (request == null) { 
+			isHpv = false ; 
+		}
+		else {
+			isHpv = request.isHpv() ;
+		}
+		return isHpv ; 
 		
 	}
 }
