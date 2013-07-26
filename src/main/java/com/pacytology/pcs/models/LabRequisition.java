@@ -25,6 +25,7 @@ public class LabRequisition {
 
 	private int lab_number ;
 	private Patient patient ;
+	private Practice practice ; 
 	private HpvRequest hpvRequest ; 
 	private LabResult labResult ; 
 	
@@ -56,6 +57,14 @@ public class LabRequisition {
 
 	public void setLabResult(LabResult labResult) {
 		this.labResult = labResult;
+	}
+
+	public Practice getPractice() {
+		return practice;
+	}
+
+	public void setPractice(Practice practice) {
+		this.practice = practice;
 	}
 
 

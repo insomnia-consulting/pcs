@@ -1014,7 +1014,7 @@ EXCEPTION
 
       COMMIT;
       RAISE;
-END
+END;
 \
 
 grant execute on build_bs_x12_file to pcs_user

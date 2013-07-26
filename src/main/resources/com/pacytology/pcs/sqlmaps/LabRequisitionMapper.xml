@@ -8,6 +8,8 @@
 		type="com.pacytology.pcs.models.LabRequisition">
 		<association property="patient" javaType="com.pacytology.pcs.models.Patient"
 			column="patient" select="selectPatientForLabRequisition" />
+		<association property="practice" javaType="com.pacytology.pcs.models.Practice"
+			column="practice" select="selectPracticeForLabRequisition" />
 		<association property="hpvRequest"
 			javaType="com.pacytology.pcs.models.HpvRequest" column="lab_number"
 			select="selectHpvRequestForLabRequisition" />
@@ -18,12 +20,16 @@
 
 	<select id="selectLabRequisition" parameterType="int"
 		resultMap="labRequisitionResult">
-		select patient, lab_number from lab_requisitions where lab_number = #{id}
+		select patient, practice, lab_number from lab_requisitions where lab_number = #{id}
 	</select>
 
 	<select id="selectPatientForLabRequisition" parameterType="int"
 		resultType="com.pacytology.pcs.models.Patient">
 		SELECT * FROM patients WHERE patient = #{patient}
+	</select>
+	<select id="selectPracticeForLabRequisition" parameterType="int"
+		resultType="com.pacytology.pcs.models.Practice">
+		SELECT * FROM practices WHERE practice = #{practice}
 	</select>
 
 	<select id="selectHpvRequestForLabRequisition" parameterType="int"

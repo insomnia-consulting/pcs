@@ -17,6 +17,7 @@
   </environments>
 <mappers>
 <mapper resource="com/pacytology/pcs/sqlmaps/PatientMapper.xml"/>
+<mapper resource="com/pacytology/pcs/sqlmaps/PracticeMapper.xml"/>
 <mapper resource="com/pacytology/pcs/sqlmaps/HpvRequestMapper.xml"/>
 <mapper resource="com/pacytology/pcs/sqlmaps/LabRequisitionMapper.xml"/>
 <mapper resource="com/pacytology/pcs/sqlmaps/LabResultMapper.xml"/>

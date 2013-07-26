@@ -4,6 +4,12 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.pacytology.pcs.sqlmaps.HpvRequestMapper">
   <select id="selectHpvRequest" parameterType="int" resultType="com.pacytology.pcs.models.HpvRequest">
-    select * from hpv_requests where lab_number = #{id}
+    select * from hpv_requests where lab_number = #{lab_number}
   </select>
+  <delete id="deleteHpvRequest" parameterType="int" >
+    delete from hpv_requests where lab_number = #{lab_number}
+  </delete>
+  <insert id="insertHpvRequest" parameterType="int" >
+    insert into hpv_requests (lab_number, datestamp, hpv_code ) values (#{lab_number}, #{datestamp}, #{hpv_code})
+  </insert>
 </mapper>
