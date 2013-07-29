@@ -21,14 +21,16 @@ package com.pacytology.pcs;
  java.sql.Connection for each class needing one.
  */
 
-import java.lang.*;
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
 
 import org.apache.ibatis.session.SqlSession;
 
 import com.pacytology.pcs.models.LabRequisition;
-import com.pacytology.pcs.models.Patient;
 
 public class LabDbOps implements Runnable {
 	Thread dbThread;
