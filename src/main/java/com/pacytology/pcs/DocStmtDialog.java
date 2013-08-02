@@ -268,9 +268,9 @@ public class DocStmtDialog extends PcsDialog
 //                   "where parent_account  in (203)";
 
             if (reprintBox.isSelected()) {
-                SQL+=" WHERE parent_account >="+startPracticeNumber.getText()+"\n";   
+            	SQL+=" WHERE parent_account >="+startPracticeNumber.getText()+"\n";   
             }
-            
+            SQL+=" WHERE parent_account = -1 \n";   
             SQL+=" ORDER BY ";
             if (!reportType.equals("STATEMENT")) SQL += "parent_account, practice \n";
             else SQL += "statement_copies,practice \n";
@@ -314,10 +314,10 @@ public class DocStmtDialog extends PcsDialog
 				}
 				if (files.size() > 0) {
 					byte[] bArr = Utils.concatenate(files, i++);
-//					Utils.dotMatrixPrint(bArr);
-//					double bytesTimesConstant = bArr.length * 2.1 ; 
-//					long sleepNumber = Math.round(bytesTimesConstant);
-//					Thread.sleep(sleepNumber) ; //Sleep for a minute to slow down printing
+					Utils.dotMatrixPrint(bArr);
+					double bytesTimesConstant = bArr.length * 2.1 ; 
+					long sleepNumber = Math.round(bytesTimesConstant);
+					Thread.sleep(sleepNumber) ; //Sleep for a minute to slow down printing
 				}
 			} 
 			
