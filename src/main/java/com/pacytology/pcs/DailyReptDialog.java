@@ -22,6 +22,10 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.OutputStream;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import com.pacytology.pcs.io.FileTransfer;
 
 public class DailyReptDialog extends javax.swing.JDialog
@@ -124,22 +128,29 @@ public class DailyReptDialog extends javax.swing.JDialog
 	//}}
 
 	void viewReport()
-	{
-	    if (Utils.isNull(stmtMonth.getText()) ||
-	        Utils.isNull(stmtYear.getText())) {
-	        Utils.createErrMsg("No Data Entered");
-        }
-        else {
-                String fName = stmtYear.getText()+stmtMonth.getText()+stmtDay.getText()+".dwr";
-                OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + fName);
-                if (out != null && out.toString().length() > 0) {
-        			ReportViewer viewer = ReportViewer.create(out.toString(), "Daily Summary Report");
-        			viewer.setVisible(true);
-                }
-        		else {
-                	Utils.createErrMsg("Cannot locate report: "+fName); 
-        		}
-        }
+ {
+		if (Utils.isNull(stmtDay.getText())
+				|| Utils.isNull(stmtMonth.getText())
+				|| Utils.isNull(stmtYear.getText())) {
+			Utils.createErrMsg("No Data Entered");
+		} else {
+			DateTimeFormatter formatter = DateTimeFormat
+					.forPattern("MM/dd/yyyy");
+			String dateStr = stmtMonth.getText() + "/" + stmtDay.getText()
+					+ "/" + stmtYear.getText();
+			DateTime date = DateTime.parse(dateStr, formatter);
+
+			String fName = date.toString("yyyyMMdd") + ".dwr";
+			OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR
+					+ fName);
+			if (out != null && out.toString().length() > 0) {
+				ReportViewer viewer = ReportViewer.create(out.toString(),
+						"Daily Summary Report");
+				viewer.setVisible(true);
+			} else {
+				Utils.createErrMsg("Cannot locate report: " + fName);
+			}
+		}
 	}
 	
 	class SymKey extends java.awt.event.KeyAdapter

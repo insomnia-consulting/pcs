@@ -200,7 +200,7 @@ dbms_output.put_line('Starting Lab reqs add');
 	 end if;
       end if;
       P_code_area:='HPV REQUEST';
-      if (L_hpv_request in ('Y','19','20','R')) then
+     if (L_hpv_request in ('Y','19','20','R')) then
 	 insert into pcs.hpv_requests (lab_number,datestamp,hpv_code)
 	 values (L_lab_number,SysDate,L_hpv_request);
 

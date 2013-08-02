@@ -123,7 +123,7 @@ begin
    job_indicator:=DAILY;
 
    -- the day the job is running for (yesterday)
-   select TO_CHAR(SysDate-1,'YYYYMMDD') into S_day from dual;
+   select TO_CHAR(SysDate,'YYYYMMDD') into S_day from dual;
    -- current day and time
    select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
 

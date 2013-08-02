@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  <environments default="development">
+    <environment id="localdev">
+      <transactionManager type="JDBC"/>
+      <dataSource type="POOLED">
+        <property name="driver" value="oracle.jdbc.driver.OracleDriver"/>
+      <!-- jdbc:oracle:thin:@192.168.1.110:1521:pcsdev -->
+        <property name="url" value="${jdbc.connection}"/>
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+      </dataSource>
+    </environment>
+  </environments>
+<mappers>
+<mapper resource="com/pacytology/pcs/sqlmaps/PatientMapper.xml"/>
+<mapper resource="com/pacytology/pcs/sqlmaps/PracticeMapper.xml"/>
+<mapper resource="com/pacytology/pcs/sqlmaps/HpvRequestMapper.xml"/>
+<mapper resource="com/pacytology/pcs/sqlmaps/LabRequisitionMapper.xml"/>
+<mapper resource="com/pacytology/pcs/sqlmaps/LabResultMapper.xml"/>
+</mappers>
+</configuration>

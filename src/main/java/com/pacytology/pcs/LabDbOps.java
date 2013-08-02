@@ -21,9 +21,16 @@ package com.pacytology.pcs;
  java.sql.Connection for each class needing one.
  */
 
-import java.lang.*;
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
+
+import org.apache.ibatis.session.SqlSession;
+
+import com.pacytology.pcs.models.LabRequisition;
 
 public class LabDbOps implements Runnable {
 	Thread dbThread;
@@ -1856,6 +1863,15 @@ public class LabDbOps implements Runnable {
 		r.program = tLabRec.program;
 		Export eFile = new Export(Lab.HPV_ONLY, r);
 		eFile.write();
+	}
+
+	public static LabRequisition getLabRequisition(int labNumber) {
+
+		SqlSession session = PCSLabEntry.sqlSessionFactory(null).openSession();
+
+		LabRequisition labReq = session.selectOne("com.pacytology.pcs.sqlmaps.LabRequisitionMapper.selectLabRequisition", labNumber); 
+		return labReq ; 
+		
 	}
 
 }

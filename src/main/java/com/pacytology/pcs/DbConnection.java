@@ -15,6 +15,7 @@ package com.pacytology.pcs;
     Date/Staff      Description:
 */
 
+import java.io.File;
 import java.sql.*;
 import java.util.Vector;
 
@@ -53,7 +54,9 @@ public class DbConnection
     }
     */
     
-    public static synchronized Connection process() { return (dbProc); } 
+    public static synchronized Connection process() { 
+    		return (dbProc); 
+    } 
     
     private static void openDB()
     {
@@ -280,7 +283,16 @@ public class DbConnection
     
     public static String getDate() { return dbLogin.dateToday; }
     public static String getUser() { return dbLogin.userName; }
-    public static String getLogPath() { return dbLogin.logPath; }
+    public static String getLogPath() {
+    	String path ; 
+    		if (dbLogin.logPath != null) {
+    			path = dbLogin.logPath;
+    		}
+    		else {
+    			path =  new File(".").getAbsolutePath() ; 
+    		}
+    		return path ; 
+    }
     public static String getUserName(int uid) { return dbLogin.getUserName(uid); }
     
     public static int getTime(String mask) { return dbLogin.getNumericDate(mask); }

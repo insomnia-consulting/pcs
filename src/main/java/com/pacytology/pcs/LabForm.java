@@ -4744,7 +4744,7 @@ public class LabForm extends PcsFrame {
 
 	void updateHPV() {
 		String s = HPVrequest.getText();
-		if (Utils.isNull(s) || s.equals("N"))
+		if (Utils.isNull(s)) // || s.equals("N"))
 			Utils.createErrMsg("HPV Testing has NOT been requested");
 		else
 			(new HPVTestDialog(labRec)).setVisible(true);
