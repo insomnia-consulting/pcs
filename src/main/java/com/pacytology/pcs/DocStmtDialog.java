@@ -261,16 +261,11 @@ public class DocStmtDialog extends PcsDialog
             String SQL = 
                 "SELECT to_char(parent_account, '009'), TO_CHAR(practice,'009'), statement_copies \n"+
                 "FROM pcs.practices ";
-        	
-//        	 String SQL = 
-//                   "SELECT to_char(parent_account, '009'), TO_CHAR(practice,'009'), statement_copies \n"+
-//                   "FROM pcs.practices  " + 
-//                   "where parent_account  in (203)";
 
             if (reprintBox.isSelected()) {
             	SQL+=" WHERE parent_account >="+startPracticeNumber.getText()+"\n";   
             }
-            SQL+=" WHERE parent_account = -1 \n";   
+
             SQL+=" ORDER BY ";
             if (!reportType.equals("STATEMENT")) SQL += "parent_account, practice \n";
             else SQL += "statement_copies,practice \n";
