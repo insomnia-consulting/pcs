@@ -26,6 +26,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.ibatis.session.SqlSession;
@@ -1871,6 +1874,16 @@ public class LabDbOps implements Runnable {
 
 		LabRequisition labReq = session.selectOne("com.pacytology.pcs.sqlmaps.LabRequisitionMapper.selectLabRequisition", labNumber); 
 		return labReq ; 
+		
+	}
+	public static List<LabRequisition> getLabRequisitions(int startingLabNumber, int endingLabNumber) {
+
+		SqlSession session = PCSLabEntry.sqlSessionFactory(null).openSession();
+		Map<String, Integer> labNumberRange = new HashMap<String, Integer>();
+		labNumberRange.put("startingLabNumber", new Integer(startingLabNumber));
+		labNumberRange.put("endingLabNumber", new Integer(endingLabNumber));
+		List<LabRequisition> labReqs = session.selectList("com.pacytology.pcs.sqlmaps.LabRequisitionMapper.selectLabRequisitions", labNumberRange); 
+		return labReqs ; 
 		
 	}
 
