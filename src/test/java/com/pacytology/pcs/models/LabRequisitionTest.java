@@ -2,6 +2,7 @@ package com.pacytology.pcs.models;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.Before;
@@ -65,6 +66,15 @@ public void testGetPractice() {
 		LabRequisition labReq = LabDbOps.getLabRequisition(2013012694) ;
 		assertNotNull(labReq.getLabResult()) ; 
 		assertNotNull(labReq.getLabResult().getDetailCodes()) ; 
-	}	
+	}
+	
+	@Test
+	public void testGetLabRequisitions() {
+		PCSLabEntry.sqlSessionFactory(props) ;  
+		List<LabRequisition> labReqs = LabDbOps.getLabRequisitions(2013012693, 2013012694);
+		assertNotNull(labReqs);
+		assertEquals(2013012693, labReqs.get(0).getLabResult().getLabNumber());
+		
+	}
 
 }

@@ -21,8 +21,10 @@ import javax.swing.*;
 import org.apache.commons.io.FileUtils;
 
 import com.pacytology.pcs.io.FileTransfer;
+import com.pacytology.pcs.models.LabRequisition;
 
 import java.sql.*;
+import java.util.List;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -135,27 +137,47 @@ public class WksheetDialog extends javax.swing.JDialog
 	javax.swing.JOptionPane wksheetOption = new javax.swing.JOptionPane();
 	//}}
 	
-    void buildWorksheets() {
-        try  {
-            CallableStatement cstmt;
-	        cstmt=DbConnection.process().prepareCall(
-	            "{call pcs.build_hm_worksheet_copy(?,?)}");
-	        cstmt.setInt(1,startLab);
-	        cstmt.setInt(2,endLab);
-            cstmt.executeUpdate();
-            OutputStream out = FileTransfer.getOutputStream(Utils.SERVER_DIR + "copy_wks");
-			FileUtils.writeStringToFile(new File(Utils.TMP_DIR + "copy_wks"), out.toString());		
-			InputStream fileInput = new FileInputStream(Utils.TMP_DIR + "copy_wks");
-			if (out.toString().length() > 0) {
-				Utils.dotMatrixPrint(fileInput);
-                this.dispose();
-            }
-        }
-        catch (Exception e) {
-        	e.printStackTrace();
-        }
-        
-    }
+	void buildWorksheets(int startLab, int endLab) {
+		try {
+			// Make sure that start_lab and end_lab are populated nad that
+			// start_lab is greater than end_lab
+			if (startLab <= endLab) {
+				// build the lab list
+				List<LabRequisition> labReqs = LabDbOps.getLabRequisitions(
+						startLab, endLab);
+				CallableStatement cstmt ; 
+				for (LabRequisition lab : labReqs) {
+					cstmt = DbConnection.process()
+							.prepareCall(
+									"{call pcs.get_patient_history(?,?, ?, ?)}");
+					cstmt.setInt(1, lab.getPatient().getPatient());
+					cstmt.setInt(2, lab.getLabResult().getLabNumber());
+					cstmt.setInt(3, lab.getPractice().getPractice());
+					cstmt.setInt(4, 1) ; 
+					cstmt.executeUpdate();
+					
+				}
+				cstmt = DbConnection.process()
+						.prepareCall(
+								"{call pcs.build_hm_worksheets(1, 'copy_wks', ?)}");
+				cstmt.setString(1, Utils.UTL_FILE_DIR);
+				cstmt.executeUpdate();
+				
+				OutputStream out = FileTransfer
+						.getOutputStream(Utils.SERVER_DIR + "copy_wks");
+				FileUtils.writeStringToFile(new File(Utils.TMP_DIR
+						+ "copy_wks"), out.toString());
+				InputStream fileInput = new FileInputStream(Utils.TMP_DIR
+						+ "copy_wks");
+				if (out.toString().length() > 0) {
+					Utils.dotMatrixPrint(fileInput);
+					this.dispose();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
     
 	class SymKey extends java.awt.event.KeyAdapter
 	{
@@ -209,7 +231,7 @@ public class WksheetDialog extends javax.swing.JDialog
 		            "History Match Worksheets",wksheetOption.YES_NO_OPTION,wksheetOption.QUESTION_MESSAGE);
 		        if (rv==wksheetOption.YES_OPTION) {
 		            this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-		            buildWorksheets();
+		            buildWorksheets(startLab, endLab);
 		            this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		            this.repaint();
 		        }

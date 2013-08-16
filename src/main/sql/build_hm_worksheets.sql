@@ -1,6 +1,3 @@
-drop function build_hm_worksheets
-\
-
 create or replace procedure build_hm_worksheets
 (
    P_mode in number,

@@ -22,6 +22,12 @@
 		resultMap="labRequisitionResult">
 		select patient, practice, lab_number from lab_requisitions where lab_number = #{id}
 	</select>
+	<select id="selectLabRequisitions" parameterType="Map"
+		resultMap="labRequisitionResult">
+		select patient, practice, lab_number 
+		from lab_requisitions 
+		where lab_number between #{startingLabNumber} and #{endingLabNumber}
+	</select>
 
 	<select id="selectPatientForLabRequisition" parameterType="int"
 		resultType="com.pacytology.pcs.models.Patient">
