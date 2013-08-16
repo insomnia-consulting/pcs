@@ -796,7 +796,7 @@ create or replace procedure build_1500_claim_forms
 
 
 
- curr_line:=margin||cbuf1;                                                      
+ curr_line:=margin||cbuf1;                                                       
 
  UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
  UTL_FILE.NEW_LINE(file_handle);                                                
@@ -883,9 +883,12 @@ create or replace procedure build_1500_claim_forms
  cbuf1:=lab_completed||' '||lab_completed;                                      
  end if;                                                                        
 
-
- cbuf1:=RPAD(cbuf1,11 )||'       81';                                           
-
+  if (carrier_idnum=22797 OR carrier_idnum=26254) then
+   cbuf1:=RPAD(cbuf1,8 )||' '||RPAD(cbuf1,8 )||' 81'; 
+   else
+   cbuf1:=RPAD(cbuf1,11 )||'       81';                                           
+  end if;
+  
  cbuf1:=RPAD(cbuf1,24)||procedure_fields.procedure_code;                        
  if (C_choice_code='MED' and policy_sign is NOT NULL) then                      
  cbuf1:=cbuf1||'  GA';                                                          
@@ -1304,7 +1307,6 @@ create or replace procedure build_1500_claim_forms
 
  RAISE;                                                                         
  end; 
- \
+ 
    
- grant execute on update_receive_dates to pcs_user
- \
+ -- grant execute on update_receive_dates to pcs_user
