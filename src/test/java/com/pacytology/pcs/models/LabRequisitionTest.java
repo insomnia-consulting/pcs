@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import com.pacytology.pcs.LabDbOps;
 import com.pacytology.pcs.PCSLabEntry;
+import com.pacytology.pcs.TestUtils;
 
 public class LabRequisitionTest {
 	Properties props = new Properties();
@@ -19,7 +20,7 @@ public void setup() {
 	
 	props.put("username", "pcs");
 	props.put("password", "ahb21");
-	props.put("jdbc.connection", "jdbc:oracle:thin:@10.211.55.18:1521:pcsdev");	
+	props.put("jdbc.connection", TestUtils.URL); 
 }
 @Test
 public void testGetPatient() {

@@ -1,9 +1,6 @@
 package com.pacytology.pcs.db;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -17,6 +14,7 @@ import com.pacytology.pcs.DbConnection;
 import com.pacytology.pcs.LabDbOps;
 import com.pacytology.pcs.Login;
 import com.pacytology.pcs.PCSLabEntry;
+import com.pacytology.pcs.TestUtils;
 import com.pacytology.pcs.models.HpvRequest;
 import com.pacytology.pcs.models.LabRequisition;
 
@@ -28,7 +26,7 @@ public class HpvRequestDbOpsTest {
 		Login dbLogin = new Login();
 		dbLogin.dateToday = DateTime.now().toString();
 		dbLogin.driver = "oracle.jdbc.driver.OracleDriver";
-		dbLogin.URL = "jdbc:oracle:thin:@10.211.55.18:1521:pcsdev";
+		dbLogin.URL = TestUtils.URL;
 		dbLogin.userName = "pcs";
 		dbLogin.userPassword = "ahb21";
 		props.put("username", dbLogin.userName);

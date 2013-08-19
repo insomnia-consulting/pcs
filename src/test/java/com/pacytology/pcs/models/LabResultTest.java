@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.pacytology.pcs.LabDbOps;
 import com.pacytology.pcs.PCSLabEntry;
+import com.pacytology.pcs.TestUtils;
 import com.pacytology.pcs.db.ResultDbOps;
 
 public class LabResultTest {
@@ -17,7 +18,7 @@ public class LabResultTest {
 		Properties props = new Properties();
 		props.put("username", "pcs");
 		props.put("password", "ahb21");
-		props.put("jdbc.connection", "jdbc:oracle:thin:@10.211.55.18:1521:pcsdev"); 
+		props.put("jdbc.connection", TestUtils.URL); 
 		PCSLabEntry.sqlSessionFactory(props) ;  
 		LabResult labResult = ResultDbOps.getLabResult(2013001269) ;  
 		assertNotNull(labResult) ;
