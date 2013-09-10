@@ -821,8 +821,8 @@ public class LabDbOps implements Runnable {
 				int d_seq = rs.getInt(1);
 				String d_code = rs.getString(2);
 				if (parent.labRec.billing_choice == Lab.MED) {
-					if (d_code.equals("V72.6"))
-						d_code = "V72.62";
+					if (d_code.equals(Utils.LAB_MED_DIAGCODE))
+						d_code = Utils.LAB_MED_DIAGCODE;
 				}
 				if (d_seq == 1)
 					parent.labRec.diagnosis_code = d_code;

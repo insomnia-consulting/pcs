@@ -2996,8 +2996,8 @@ public class LabForm extends PcsFrame {
 				}
 				diag1lbl.setText(getDiagDescr(labDiagCode.getText()));
 				labDiagCode.setEnabled(false);
-				labDiagCode2.setText("V72.62");
-				diag2lbl.setText(getDiagDescr("V72.62"));
+				labDiagCode2.setText(Utils.LAB_MED_DIAGCODE);
+				diag2lbl.setText(getDiagDescr(Utils.LAB_MED_DIAGCODE));
 				labDiagCode2.setEnabled(false);
 				labDiagCode3.requestFocus();
 				return;
@@ -3005,8 +3005,8 @@ public class LabForm extends PcsFrame {
 				labDiagCode.setText("V15.89");
 				diag1lbl.setText(getDiagDescr("V15.89"));
 				labDiagCode.setEnabled(false);
-				labDiagCode2.setText("V72.62");
-				diag2lbl.setText(getDiagDescr("V72.62"));
+				labDiagCode2.setText(Utils.LAB_MED_DIAGCODE);
+				diag2lbl.setText(getDiagDescr(Utils.LAB_MED_DIAGCODE));
 				labDiagCode2.setEnabled(false);
 				labDiagCode3.requestFocus();
 				return;

@@ -2802,8 +2802,9 @@ public class BillingForm extends PcsFrame
                 }
                 diag1lbl.setText(getDiagDescr(labDiagCode.getText()));
                 labDiagCode.setEnabled(false);
-                labDiagCode2.setText("V72.6");
-                diag2lbl.setText(getDiagDescr("V72.6"));
+
+                labDiagCode2.setText(Utils.LAB_MED_DIAGCODE);
+                diag2lbl.setText(getDiagDescr(Utils.LAB_MED_DIAGCODE));
                 labDiagCode2.setEnabled(false);
                 labDiagCode3.setText(null);
                 labDiagCode4.setText(null);
@@ -2816,8 +2817,8 @@ public class BillingForm extends PcsFrame
                 labDiagCode.setText("V15.89");
                 diag1lbl.setText(getDiagDescr("V15.89"));
                 labDiagCode.setEnabled(false);
-                labDiagCode2.setText("V72.6");
-                diag2lbl.setText(getDiagDescr("V72.6"));
+                labDiagCode2.setText(Utils.LAB_MED_DIAGCODE);
+                diag2lbl.setText(getDiagDescr(Utils.LAB_MED_DIAGCODE));
                 labDiagCode2.setEnabled(false);
                 labDiagCode3.setText(null);
                 labDiagCode4.setText(null);
