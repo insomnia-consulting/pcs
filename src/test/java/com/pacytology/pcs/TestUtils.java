@@ -12,9 +12,9 @@ public class TestUtils
 		if (StringUtils.isBlank(URL))
 		{
 			System.out.println("jdbc.connection not defined.  Using default");
-			URL="jdbc:oracle:thin:@10.211.55.18:1521:pcsdev";
+			URL="jdbc:oracle:thin:@localhost:1521:pcsdev";
 		}
-		URL="jdbc:oracle:thin:@localhost:1521:pcsdev";
+
 		System.out.println("URL: "+URL);
 	}
 }

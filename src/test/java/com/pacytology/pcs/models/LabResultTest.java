@@ -20,9 +20,9 @@ public class LabResultTest {
 		props.put("password", "ahb21");
 		props.put("jdbc.connection", TestUtils.URL); 
 		PCSLabEntry.sqlSessionFactory(props) ;  
-		LabResult labResult = ResultDbOps.getLabResult(2013001269) ;  
+		LabResult labResult = ResultDbOps.getLabResult(2013012687) ;  
 		assertNotNull(labResult) ;
-		assertEquals(6, labResult.getDetailCodes().size()) ; 
+		assertEquals(1, labResult.getDetailCodes().size()) ; 
 
 	}
 

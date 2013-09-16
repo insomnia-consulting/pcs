@@ -46,7 +46,7 @@ public void testGetPractice() {
 	public void testGetHpvRequest() {
 
 		PCSLabEntry.sqlSessionFactory(props) ;  
-		LabRequisition labReq = LabDbOps.getLabRequisition(2013012693) ; 
+		LabRequisition labReq = LabDbOps.getLabRequisition(2009073630) ; 
 		HpvRequest hpvRequest= labReq.getHpvRequest() ;
 		assertNotNull(hpvRequest) ;
 		 
@@ -55,7 +55,7 @@ public void testGetPractice() {
 	public void testAscusRules() {
 
 		PCSLabEntry.sqlSessionFactory(props) ;  
-		LabRequisition labReq = LabDbOps.getLabRequisition(2013012694) ;
+		LabRequisition labReq = LabDbOps.getLabRequisition(2013012687) ;
 		LabResult labResult = labReq.getLabResult() ;
 		assertNotNull(labResult) ;
 
@@ -64,7 +64,7 @@ public void testGetPractice() {
 	public void testGetLabResult() {
 
 		PCSLabEntry.sqlSessionFactory(props) ;  
-		LabRequisition labReq = LabDbOps.getLabRequisition(2013012694) ;
+		LabRequisition labReq = LabDbOps.getLabRequisition(2013012687) ;
 		assertNotNull(labReq.getLabResult()) ; 
 		assertNotNull(labReq.getLabResult().getDetailCodes()) ; 
 	}
@@ -72,9 +72,9 @@ public void testGetPractice() {
 	@Test
 	public void testGetLabRequisitions() {
 		PCSLabEntry.sqlSessionFactory(props) ;  
-		List<LabRequisition> labReqs = LabDbOps.getLabRequisitions(2013012693, 2013012694);
+		List<LabRequisition> labReqs = LabDbOps.getLabRequisitions(2013011664, 2013012687);
 		assertNotNull(labReqs);
-		assertEquals(2013012693, labReqs.get(0).getLabResult().getLabNumber());
+		assertEquals(2013011664, labReqs.get(0).getLabResult().getLabNumber());
 		
 	}
 

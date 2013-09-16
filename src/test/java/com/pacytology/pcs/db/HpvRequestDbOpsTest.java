@@ -41,7 +41,7 @@ public class HpvRequestDbOpsTest {
 	public void testAscusUnder21() {
 
 		PCSLabEntry.sqlSessionFactory(props);
-		int labNumber = 2013011947;
+		int labNumber = 2013012685;
 
 		HpvRequestDbOps.set_hpv(labNumber);
 

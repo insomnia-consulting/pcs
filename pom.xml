@@ -104,7 +104,7 @@
 					<driver>oracle.jdbc.driver.OracleDriver</driver>
 					<url>jdbc:oracle:thin:@${db.host.ip}:1521:${sid}</url>
 					<username>pcs</username>
-					<password>ahb21</password>
+					<password>${password}</password>
 					<autocommit>true</autocommit>
 					<delimiter>\</delimiter>
 					<onError>continue</onError>
