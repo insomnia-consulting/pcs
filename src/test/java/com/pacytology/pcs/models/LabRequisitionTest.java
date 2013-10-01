@@ -74,7 +74,7 @@ public void testGetPractice() {
 		PCSLabEntry.sqlSessionFactory(props) ;  
 		List<LabRequisition> labReqs = LabDbOps.getLabRequisitions(2013011664, 2013012687);
 		assertNotNull(labReqs);
-		assertEquals(2013011664, labReqs.get(0).getLabResult().getLabNumber());
+		assertTrue(labReqs.get(0).getLabResult().getLabNumber() >= 2013011664 && labReqs.get(0).getLabResult().getLabNumber() <= 2013012687);
 		
 	}
 
