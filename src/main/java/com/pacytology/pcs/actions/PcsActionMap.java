@@ -130,7 +130,7 @@ public class PcsActionMap {
 	};
 	public void finalAction() {
 		PcsActionMap.this.parentFrame.msgLabel.setText(null);
-		if (PcsActionMap.this.parentFrame.fKeys.isOn(PcsActionMap.this.parentFrame.fKeys.F12)==true) {
+		if (PcsActionMap.this.parentFrame.fKeys.isOn(FunctionKeyControl.F12)==true) {
 			PcsActionMap.this.parentFrame.finalActions();
 		}
         else PcsActionMap.this.parentFrame.msgLabel.setText("Finalize option not available");

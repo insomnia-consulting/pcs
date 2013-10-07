@@ -32,7 +32,17 @@ public class PriceListFormActionMap extends PcsActionMap {
          form.resetForm();
          form.displayList(0,form.priceNdx);
          form.setEntryFields();
+         
+         
 	}
+
+	@Override
+	public void updateAction(ActionEvent e) {
+		PriceListForm form = (PriceListForm)PriceListFormActionMap.this.parentFrame;
+		form.updateActions() ; 
+	}
+	
+	
 	
 
 

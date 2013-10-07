@@ -46,6 +46,8 @@ public abstract class PcsFrame extends JFrame {
 		KeyStroke vk_i = KeyStroke.getKeyStroke(KeyEvent.VK_I, 0, false);
 		KeyStroke down = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false);
 		KeyStroke up = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false);
+		KeyStroke left = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0, false);
+		KeyStroke right = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, false);
 		KeyStroke page_down = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0,
 				false);
 		KeyStroke page_up = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0,
@@ -95,6 +97,8 @@ public abstract class PcsFrame extends JFrame {
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(vk_i, "VK_I");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(down, "VK_DOWN");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(up, "VK_UP");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(left, "VK_LEFT");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(right, "VK_RIGHT");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(page_down,
 				"VK_PAGE_DOWN");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(page_up,

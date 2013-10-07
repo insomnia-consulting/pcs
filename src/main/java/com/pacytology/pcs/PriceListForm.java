@@ -32,7 +32,7 @@ public class PriceListForm extends PcsFrame
     public int rowID=1;
     public int priceNdx=0;
     private int priceSwitch=0;
-    public FunctionKeyControl fKeys = new FunctionKeyControl();
+    
     
 	public PriceListForm()
 	{
@@ -248,13 +248,70 @@ public class PriceListForm extends PcsFrame
 	}
 	protected JRootPane setupKeyPressMap() {
 		JRootPane rp = super.setupKeyPressMap();
-
-
-		rp.getActionMap().put("F3", new AbstractAction() { 
+		rp.getActionMap().put("VK_UP", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
+				increment();
 			}
 		});
+		rp.getActionMap().put("VK_DOWN", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				decrement();
+			}
+		});
+		rp.getActionMap().put("VK_LEFT", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				left();
+			}
+		});
+		rp.getActionMap().put("VK_RIGHT", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				right();
+			}
+		});
+		
 		return rp;
+	}
+	protected void left() {
+		msgLabel.setText(null);
+        priceNdx--;
+        if (priceNdx<0) priceNdx=0;
+        else displayList(0,priceNdx);
+	}
+	protected void right() {
+		msgLabel.setText(null);
+        priceNdx++;
+        if (priceNdx>=MAX_PRICE_CODES) priceNdx--;
+        else displayList(0,priceNdx);
+	}
+	protected void decrement() {
+		int ndx = 0;
+		if (currMode==Lab.IDLE) {
+            msgLabel.setText(null);
+            ndx=descList.getSelectedIndex();
+            ndx+=CODES_PER_SCREEN+1;
+            if (ndx>=MAX_PROC_CODES) ndx=MAX_PROC_CODES-1;
+            displayList(ndx,priceNdx);
+            setEntryFields();
+            }
+	        
+		
+	}
+	protected void increment() {
+		int ndx = 0;
+		if (currMode==Lab.IDLE) {
+            msgLabel.setText(null);
+	        if ((codeList.getSelectedIndex()==(-1))
+	         || (descList.getSelectedIndex()==(-1)))
+	        {
+	            ndx=0;
+	        }
+	        else ndx=descList.getSelectedIndex()-1;
+            if (ndx==(-1)) ndx=0;
+            displayList(ndx,priceNdx);
+            setEntryFields();
+	        }
+	        
+		
 	}
 	public PriceListForm(String sTitle)
 	{
@@ -382,7 +439,7 @@ public class PriceListForm extends PcsFrame
     }
 
     public void displayList(int ndx, int pNdx) {
-        Vector cVect=new Vector();
+        Vector<String> cVect=new Vector<String>();
         Vector dVect=new Vector();
         Vector bVect=new Vector();
         Vector pVect=new Vector();
@@ -471,56 +528,29 @@ public class PriceListForm extends PcsFrame
         if ((key!=java.awt.event.KeyEvent.VK_HOME)&&
             (key!=java.awt.event.KeyEvent.VK_END)) priceSwitch=0;
 		switch (key) {
-		    case java.awt.event.KeyEvent.VK_DOWN:
-		        if (currMode==Lab.IDLE) {
-                msgLabel.setText(null);
-		        if ((codeList.getSelectedIndex()==(-1))
-		         || (descList.getSelectedIndex()==(-1)))
-		        {
-		            ndx=0;
-		        }
-		        else ndx=descList.getSelectedIndex()+1;
-                if (ndx==MAX_PROC_CODES) ndx--;
-                displayList(ndx,priceNdx);
-		        setEntryFields();
-		        }
-		        break;
-            case java.awt.event.KeyEvent.VK_UP:
-                if (currMode==Lab.IDLE) {
-                msgLabel.setText(null);
-		        if ((codeList.getSelectedIndex()==(-1))
-		         || (descList.getSelectedIndex()==(-1)))
-		        {
-		            ndx=0;
-		        }
-		        else ndx=descList.getSelectedIndex()-1;
-                if (ndx==(-1)) ndx=0;
-                displayList(ndx,priceNdx);
-                setEntryFields();
-		        }
-		        break;
+		    
             
 
-            case java.awt.event.KeyEvent.VK_PAGE_DOWN:
-                if (currMode==Lab.IDLE) {
-                msgLabel.setText(null);
-                ndx=descList.getSelectedIndex();
-                ndx+=CODES_PER_SCREEN+1;
-                if (ndx>=MAX_PROC_CODES) ndx=MAX_PROC_CODES-1;
-                displayList(ndx,priceNdx);
-                setEntryFields();
-                }
-		        break; 
-            case java.awt.event.KeyEvent.VK_PAGE_UP:
-                if (currMode==Lab.IDLE) {
-                msgLabel.setText(null);
-                ndx=descList.getSelectedIndex();
-                ndx-=CODES_PER_SCREEN-1;
-                if (ndx<0) ndx=0;
-                displayList(ndx,priceNdx);
-                setEntryFields();
-                }
-		        break; 
+//            case java.awt.event.KeyEvent.VK_PAGE_DOWN:
+//                if (currMode==Lab.IDLE) {
+//                msgLabel.setText(null);
+//                ndx=descList.getSelectedIndex();
+//                ndx+=CODES_PER_SCREEN+1;
+//                if (ndx>=MAX_PROC_CODES) ndx=MAX_PROC_CODES-1;
+//                displayList(ndx,priceNdx);
+//                setEntryFields();
+//                }
+//		        break; 
+//            case java.awt.event.KeyEvent.VK_PAGE_UP:
+//                if (currMode==Lab.IDLE) {
+//                msgLabel.setText(null);
+//                ndx=descList.getSelectedIndex();
+//                ndx-=CODES_PER_SCREEN-1;
+//                if (ndx<0) ndx=0;
+//                displayList(ndx,priceNdx);
+//                setEntryFields();
+//                }
+//		        break; 
             case java.awt.event.KeyEvent.VK_HOME:
                 if (currMode==Lab.IDLE) {
                     msgLabel.setText(null);
@@ -547,26 +577,15 @@ public class PriceListForm extends PcsFrame
                 }
 		        break; 
 
-            case java.awt.event.KeyEvent.VK_LEFT:
-                msgLabel.setText(null);
-                priceNdx--;
-                if (priceNdx<0) priceNdx=0;
-                else displayList(0,priceNdx);
-                break;
-            case java.awt.event.KeyEvent.VK_RIGHT:
-                msgLabel.setText(null);
-                priceNdx++;
-                if (priceNdx>=MAX_PRICE_CODES) priceNdx--;
-                else displayList(0,priceNdx);
-                break;
+            
 		}
 	}
 	
 	public void queryActions() {
 	    currMode=Lab.QUERY;
 	    fKeys.off();
-	    fKeys.keyOn(fKeys.F12);
-	    fKeys.keyOn(fKeys.F9);
+	    fKeys.keyOn(FunctionKeyControl.F12);
+	    fKeys.keyOn(FunctionKeyControl.F9);
 	    priceCode.setText(null);
 	    codeStatus.setText(null);
 	    procCode.setText(null);
@@ -597,11 +616,11 @@ public class PriceListForm extends PcsFrame
 	            msgLabel.setText("Price Code Not Found");
 	        }
             fKeys.off();
-	        fKeys.keyOn(fKeys.F1);
-	        fKeys.keyOn(fKeys.F2);
-	        fKeys.keyOn(fKeys.F3);
-	        fKeys.keyOn(fKeys.F4);
-	        fKeys.keyOn(fKeys.F9);
+	        fKeys.keyOn(FunctionKeyControl.F1);
+	        fKeys.keyOn(FunctionKeyControl.F2);
+	        fKeys.keyOn(FunctionKeyControl.F3);
+	        fKeys.keyOn(FunctionKeyControl.F4);
+	        fKeys.keyOn(FunctionKeyControl.F9);
 	    }
 	    else if (currMode==Lab.ADD) {
 	        boolean codeExists=false;
@@ -637,11 +656,11 @@ public class PriceListForm extends PcsFrame
 	        msgLabel.requestFocus();
 	        currMode=Lab.IDLE;
             fKeys.off();
-	        fKeys.keyOn(fKeys.F1);
-	        fKeys.keyOn(fKeys.F2);
-	        fKeys.keyOn(fKeys.F3);
-	        fKeys.keyOn(fKeys.F4);
-	        fKeys.keyOn(fKeys.F9);
+	        fKeys.keyOn(FunctionKeyControl.F1);
+	        fKeys.keyOn(FunctionKeyControl.F2);
+	        fKeys.keyOn(FunctionKeyControl.F3);
+	        fKeys.keyOn(FunctionKeyControl.F4);
+	        fKeys.keyOn(FunctionKeyControl.F9);
 	    }
 	    
 	    else if (currMode==Lab.DELETE) {
@@ -660,11 +679,11 @@ public class PriceListForm extends PcsFrame
 	        currMode=Lab.IDLE;
 	        msgLabel.requestFocus();
             fKeys.off();
-            fKeys.keyOn(fKeys.F1);
-	        fKeys.keyOn(fKeys.F2);
-	        fKeys.keyOn(fKeys.F3);
-	        fKeys.keyOn(fKeys.F4);
-	        fKeys.keyOn(fKeys.F9);
+            fKeys.keyOn(FunctionKeyControl.F1);
+	        fKeys.keyOn(FunctionKeyControl.F2);
+	        fKeys.keyOn(FunctionKeyControl.F3);
+	        fKeys.keyOn(FunctionKeyControl.F4);
+	        fKeys.keyOn(FunctionKeyControl.F9);
 	    }
 	    
 	    else if (currMode==Lab.UPDATE) {
@@ -690,8 +709,8 @@ public class PriceListForm extends PcsFrame
                     priceCodes[priceNdx].pricing[baseList.getSelectedIndex()].procedure_code+
                     " - Base Price FROM "+base+
                     " TO "+basePrice.getText();
-                int result = priceChangeConfirm.showConfirmDialog(this,msg);
-                if (result!=priceChangeConfirm.YES_OPTION) {
+                int result = JOptionPane.showConfirmDialog(this,msg);
+                if (result!=JOptionPane.YES_OPTION) {
                     basePrice.setText((String)baseList.getSelectedValue());
                 }
             }
@@ -702,8 +721,8 @@ public class PriceListForm extends PcsFrame
                     priceCodes[priceNdx].pricing[discountList.getSelectedIndex()].procedure_code+
                     " - Physician Price FROM "+discount+
                     " TO "+discountPrice.getText();
-                int result = priceChangeConfirm.showConfirmDialog(this,msg);
-                if (result!=priceChangeConfirm.YES_OPTION) {
+                int result = JOptionPane.showConfirmDialog(this,msg);
+                if (result!=JOptionPane.YES_OPTION) {
                     discountPrice.setText((String)discountList.getSelectedValue());
                 }
             }
@@ -720,11 +739,11 @@ public class PriceListForm extends PcsFrame
 	        discountPrice.setEnabled(false);
 	        msgLabel.requestFocus();
             fKeys.off();
-            fKeys.keyOn(fKeys.F1);
-	        fKeys.keyOn(fKeys.F2);
-	        fKeys.keyOn(fKeys.F3);
-	        fKeys.keyOn(fKeys.F4);
-	        fKeys.keyOn(fKeys.F9);
+            fKeys.keyOn(FunctionKeyControl.F1);
+	        fKeys.keyOn(FunctionKeyControl.F2);
+	        fKeys.keyOn(FunctionKeyControl.F3);
+	        fKeys.keyOn(FunctionKeyControl.F4);
+	        fKeys.keyOn(FunctionKeyControl.F9);
 	    }
 	}
 
@@ -737,8 +756,8 @@ public class PriceListForm extends PcsFrame
 	public void addActions() {
 	    currMode=Lab.ADD;
 	    fKeys.off();
-	    fKeys.keyOn(fKeys.F12);
-	    fKeys.keyOn(fKeys.F9);
+	    fKeys.keyOn(FunctionKeyControl.F12);
+	    fKeys.keyOn(FunctionKeyControl.F9);
 	    Vector v = new Vector();
 	    v.addElement("  ");
 	    baseList.setListData(v);
@@ -839,8 +858,8 @@ public class PriceListForm extends PcsFrame
 	public void deleteActions() {
 	    currMode=Lab.DELETE;
 	    fKeys.off();
-	    fKeys.keyOn(fKeys.F12);
-	    fKeys.keyOn(fKeys.F9);
+	    fKeys.keyOn(FunctionKeyControl.F12);
+	    fKeys.keyOn(FunctionKeyControl.F9);
 	    finalActions();
 	}
 	
@@ -880,11 +899,11 @@ public class PriceListForm extends PcsFrame
 	    basePrice.setEnabled(false);
 	    discountPrice.setEnabled(false);
 	    fKeys.off();
-	    fKeys.keyOn(fKeys.F1);
-	    fKeys.keyOn(fKeys.F2);
-	    fKeys.keyOn(fKeys.F3);
-	    fKeys.keyOn(fKeys.F4);
-	    fKeys.keyOn(fKeys.F9);
+	    fKeys.keyOn(FunctionKeyControl.F1);
+	    fKeys.keyOn(FunctionKeyControl.F2);
+	    fKeys.keyOn(FunctionKeyControl.F3);
+	    fKeys.keyOn(FunctionKeyControl.F4);
+	    fKeys.keyOn(FunctionKeyControl.F9);
 	    priceNdx=0;
 	}
 	
@@ -896,8 +915,8 @@ public class PriceListForm extends PcsFrame
 	    }
 	    currMode=Lab.UPDATE;
 	    fKeys.off();
-	    fKeys.keyOn(fKeys.F12);
-	    fKeys.keyOn(fKeys.F9);
+	    fKeys.keyOn(FunctionKeyControl.F12);
+	    fKeys.keyOn(FunctionKeyControl.F9);
 	    basePrice.setText(null);
 	    discountPrice.setText(null);
         basePrice.setEnabled(true);
