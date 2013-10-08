@@ -464,6 +464,11 @@ public class HPVTestDialog extends PcsDialog
                     "Valid actions for pending HPV are: Y, P, or Q - no action taken.");
             }
 	    }
+	    else if (priorStatus.equals("Q")) { 
+	    	fillRecord();
+	    	update(true);
+
+	    }
 	    else if (priorStatus.equals("R")) {
 	        Utils.createErrMsg("HPV Requisition queued to be printed - no action taken.");
 	    }
@@ -487,7 +492,7 @@ public class HPVTestDialog extends PcsDialog
 	            hpv.test_sent=priorStatus;
 	            HPVTestSent.setText(priorStatus);
 	            fillRecord();
-	            update(false);
+	            update(true);
 	        }
 	        else Utils.createErrMsg("HPV Results not pending - no action taken.");
 	    }
@@ -587,17 +592,16 @@ public class HPVTestDialog extends PcsDialog
                     cstmt.executeUpdate();
                     cstmt.close();
                     log.write("Charges calculated for "+labNumber);
-                    // Needs finished
-                    /*
+                    
                     SQL =
                         "INSERT INTO pcs.hpv_print_queue (lab_number,first_print) \n"+
                         "VALUES (?,?) \n";
-                    pstmt = dbConnection.process().prepareStatement(SQL);
+                    pstmt = DbConnection.process().prepareStatement(SQL);
                     pstmt.setInt(1,labNumber);
                     pstmt.setInt(2,Lab.CURR_FINAL);
                     pstmt.execute();
                     pstmt.close();
-                    */
+
 	            }
 	            else {
 	                log.write("Charges NOT computed for "+labNumber);

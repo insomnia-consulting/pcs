@@ -854,7 +854,7 @@ public class LabForm extends PcsFrame {
 
 	protected JRootPane setupKeyPressMap() {
 		JRootPane rp = super.setupKeyPressMap();
-
+		
 		rp.getActionMap().put("F3", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				if (fKeys.isOn(fKeys.F3)) {
@@ -898,6 +898,22 @@ public class LabForm extends PcsFrame {
 			}
 		});
 		rp.getActionMap().put("F5", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if ((e.getModifiers() & ActionEvent.ALT_MASK) != 0) {
+					if (currentSection == 1)
+						invokeDoctorForm();
+					else
+						Utils.createErrMsg("Doctor Form Not Available");
+				} else if (fKeys.isOn(fKeys.F5)) {
+					if (currentSection == 1 && currMode == Lab.ADD) {
+						invokePatientForm();
+
+					} else
+						Utils.createErrMsg("Patient Form Not Available");
+				}
+			}
+		});
+		rp.getActionMap().put("altF5", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				if ((e.getModifiers() & ActionEvent.ALT_MASK) != 0) {
 					if (currentSection == 1)
@@ -4742,7 +4758,7 @@ public class LabForm extends PcsFrame {
 		}
 	}
 
-	void updateHPV() {
+	public void updateHPV() {
 		String s = HPVrequest.getText();
 		if (Utils.isNull(s)) // || s.equals("N"))
 			Utils.createErrMsg("HPV Testing has NOT been requested");

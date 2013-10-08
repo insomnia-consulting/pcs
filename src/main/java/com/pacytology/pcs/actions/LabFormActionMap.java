@@ -32,7 +32,7 @@ public class LabFormActionMap extends PcsActionMap {
 	
 	@Override
 	public void controlAction() {
-		LabForm form = (LabForm)this.parentFrame;
+		LabForm form = (LabForm)this.parentFrame;		
 		if (form.labRelCode.hasFocus()) return;
 		if (form.getFocusOwner() instanceof JTextField) {
 			((JTextField)form.getFocusOwner()).setText(null);
@@ -54,6 +54,12 @@ public class LabFormActionMap extends PcsActionMap {
         }
 		
 
+	}
+	@Override
+	public void shiftf3Action(ActionEvent e) {
+
+		LabForm form = (LabForm)this.parentFrame;
+		form.updateHPV() ; 
 	}
 	
 	

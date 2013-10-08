@@ -82,6 +82,11 @@ public class PcsActionMap {
         	PcsActionMap.this.parentFrame.updateActions();
 
 	}
+	public final Action shiftf3Action = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+			PcsActionMap.this.shiftf3Action(e);
+		}
+	};
 	public final Action f4Action = new AbstractAction() {
 		public void actionPerformed(ActionEvent e) {
 			PcsActionMap.this.f4Action(e);
@@ -111,6 +116,9 @@ public class PcsActionMap {
 		}
 	};
 	public void shiftf1Action(ActionEvent e) {
+		
+	}
+	public void shiftf3Action(ActionEvent e) {
 		
 	}
 	public void f5Action(ActionEvent e) {

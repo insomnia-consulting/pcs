@@ -30,6 +30,7 @@ public abstract class PcsFrame extends JFrame {
 		KeyStroke shiftf1 = KeyStroke.getKeyStroke(KeyEvent.VK_F1, ActionEvent.SHIFT_MASK, false);
 		KeyStroke f2 = KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false);
 		KeyStroke f3 = KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false);
+		KeyStroke shiftf3 = KeyStroke.getKeyStroke(KeyEvent.VK_F3, ActionEvent.SHIFT_MASK, false);
 		KeyStroke f4 = KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false);
 		KeyStroke f5 = KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false);
 		KeyStroke shiftf5 = KeyStroke.getKeyStroke(KeyEvent.VK_F5, ActionEvent.SHIFT_MASK, false);
@@ -67,6 +68,7 @@ public abstract class PcsFrame extends JFrame {
 		rp.getActionMap().put("shiftF1", actionMap.shiftf1Action);
 		rp.getActionMap().put("F2", actionMap.addAction);
 		rp.getActionMap().put("F3", actionMap.updateAction);
+		rp.getActionMap().put("shiftF3", actionMap.shiftf3Action);
 		rp.getActionMap().put("F4", actionMap.f4Action);
 		rp.getActionMap().put("F5", actionMap.f5Action);
 		rp.getActionMap().put("shiftF5", actionMap.shiftf5Action);
@@ -81,10 +83,11 @@ public abstract class PcsFrame extends JFrame {
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(shiftf1, "shiftF1");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f2, "F2");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f3, "F3");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(shiftf3, "shiftF3");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f4, "F4");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f5, "F5");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(shiftf5, "shiftF5");
-		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(altf5, "shiftF5");
+		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(altf5, "altF5");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f6, "F6");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f7, "F7");
 		rp.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f8, "F8");
