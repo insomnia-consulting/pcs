@@ -288,7 +288,7 @@ public class PriceListForm extends PcsFrame
 		if (currMode==Lab.IDLE) {
             msgLabel.setText(null);
             ndx=descList.getSelectedIndex();
-            ndx+=CODES_PER_SCREEN+1;
+            ndx+=1;
             if (ndx>=MAX_PROC_CODES) ndx=MAX_PROC_CODES-1;
             displayList(ndx,priceNdx);
             setEntryFields();
