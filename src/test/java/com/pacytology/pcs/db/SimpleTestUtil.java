@@ -1,98 +1,385 @@
 package com.pacytology.pcs.db;
 
+import java.awt.AWTEvent;
+import java.awt.Component;
+import java.awt.Label;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
+import javax.swing.JLabel;
+import javax.swing.text.JTextComponent;
+
 import com.pacytology.pcs.DbConnection;
+import com.pacytology.pcs.LabForm;
 import com.pacytology.pcs.Login;
 import com.pacytology.pcs.PCSLabEntry;
 public class SimpleTestUtil
 {
+	static boolean outNoOthers=false;
+	private static PrintStream m_out;
+
 	public static void main(String args[]) throws Exception
 	{
-		System.setProperty("jdbc.connection","jdbc:oracle:thin:@192.168.0.106:1521:pcsdev");
+		System.setProperty("jdbc.connection","jdbc:oracle:thin:@127.0.0.1:1521:pcsdev");
+		System.setProperty("host.ip","127.0.0.1");
+		System.setProperty("host.pwd","123456");
+		System.setProperty("java.io.tmpdir","/tmp/");
+
+		if (true)
+		{
+			lookForPatientAccounts();
+		}
+
+
 		String e = System.getProperty("jdbc.connection");
+		startGUIWatcher();
 		mainApp();
-		
+
 		if (true)return;
 		setUp();
 	}
-	 private static void mainApp() 
-	 {
+	
+	protected static Object singleValue(String sql, String col) throws Exception
+	{
+		Connection proc = DbConnection.process();
+
+		Object ret=null;
+		
+		if (proc!=null && !proc.isClosed())
+		{
+			Statement stmt = DbConnection.process().createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			if (rs.next())
+			{
+				ret=rs.getInt(col);
+			}
+			
+			stmt.close();
+			rs.close();
+		} else
+		{
+		
+		}
+		
+		return ret;
+	}
+	
+	protected static Integer getHighestPatient() throws Exception
+	{
+		String sql = "select PATIENT from pcs.patient_statements order by datestamp desc";
+		return (Integer) singleValue(sql,"PATIENT");
+	}
+	
+	private static void lookForPatientAccounts() {
+		new Thread()
+		{
+			public void run()
+			{
+
+				int cycleCounter=-1;
+				int counter=0;
+				//int num=-1;
+				
+				Map<String,Integer>mapOfInitialNums=new TreeMap();
+				Map<String,List>mapOfAllNums=new TreeMap();
+				
+				
+				Set<String>allSql=new TreeSet();
+				String sql1=
+						"select count(*) from pcs.patient_statements";
+
+				//allSql.add(sql1);
+
+				allSql.add("select count(*) from pcs.billing_queue");
+				allSql.add("select count(*) from pcs.lab_billings");
+				allSql.add("select count(*) from pcs.patient_accounts");
+				allSql.add("select count(*) from pcs.patient_statements");
+				
+				
+						
+				Integer highestPatientId=null;
+						
+				
+				allSql.add("select count(*) from pcs.patients");
+				
+				/*
+         select billing_type,rebill_code,rebilling 
+         into P_bill_type,P_rebill_code,P_rebilling
+         from pcs.patient_statements
+         where patient=2423828 and lab_number=P_lab_num;				 
+				 */
+				
+				
+				
+				Set<String>outOnce=new TreeSet();
+				
+				while(true)
+				{
+					cycleCounter++;
+
+					//	"select count(*) from pcs.billing_queue";
+					//"select count(*) from pcs.patient_accounts pa, pcs.lab_requisitions lb where pa.lab_number= lb.lab_number and pa.lab_number= lb.lab_number";
+					//"select count(*) from lab_billings";
+					//"select  count(*) from pcs.patient_accounts";
+
+
+					try {
+
+						Connection proc = DbConnection.process();
+
+						
+						if (proc!=null && !proc.isClosed())
+						{
+							//String sql="select  count(*) from pcs.patient_accounts";
+
+							boolean firstNewVal=true;
+							String add=null;
+							String lastLab=
+									null;
+									//LabForm.lastLab_dontCommit;
+							for (String cur : allSql)
+							{
+								highestPatientId=getHighestPatient();
+								if (highestPatientId!=null && highestPatientId!=2409324 && 
+										lastLab!=null && lastLab.length()==10)
+								{
+									
+									add="select count(*) from pcs.patient_statements where patient=PATIENT_ID and lab_number="+lastLab;
+									add=add.replace ("PATIENT_ID",highestPatientId+"");
+								}
+								
+								Statement stmt = DbConnection.process().createStatement();
+								ResultSet rs = stmt.executeQuery(cur);
+								
+								if (rs.next())
+								{
+									int val=rs.getInt(1);
+									
+
+									Integer num=mapOfInitialNums.get(cur);
+									
+									if (num==null)
+									{
+										num=val;
+										mapOfInitialNums.put(cur,num);
+										putToListOfValues(cur,num,mapOfAllNums);
+									}
+									
+									
+									List nums=mapOfAllNums.get(cur);
+									
+									boolean newVal=val!=((Integer)nums.get(nums.size()-1));
+									
+							
+									if (newVal)
+									{
+									//	screenShot(cur);
+										putToListOfValues(cur,val,mapOfAllNums);
+										
+									} 
+
+									String out = counter+" "+cur+"; val: "+nums;
+								
+									if (newVal)
+									{
+										if (firstNewVal)
+										{
+											outNoOthers("--------------------------------------------------------");
+										} 
+										firstNewVal=false;
+										
+										outNoOthers(out);
+									} 
+									
+									
+									//else if (cycleCounter==0)
+									else if (!outOnce.contains(cur))
+									{
+										outOnce.add(cur);
+										outNoOthers(out);
+										//System.out.println(out);
+									}
+									
+									if (false && val!=num)
+									{
+										System.out.println("STOP "+val);
+										//System.exit(0);
+										pause(10000000);
+										mapOfInitialNums.put(cur,val);
+									}
+								}
+								rs.close();
+								stmt.close();
+							}
+							if (add!=null)
+							{
+							allSql.add(add);
+							}
+						} else
+						{
+							System.out.println(counter+" ... no conn");
+						}
+					} catch (Exception e)
+					{
+						e.printStackTrace();
+					} finally
+					{
+						try {
+							Thread.sleep(200);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						counter++;
+					}
+				}
+			}
+		}.start();
+	}
+	
+	
+	
+
+	protected static void outNoOthers(Object out) 
+	{
+		outNoOthers(out,true);
+	}
+	
+	protected static void outNoOthers(Object out, boolean enable) 
+	{
+		if (!enable || !outNoOthers)
+		{
+			System.out.println(out);
+			return;
+		}
+		
+		if (m_out==null)
+		{
+		m_out=System.out;
+		
+		OutputStream newOut=new OutputStream() {
+			
+			@Override
+			public void write(int b) throws IOException {
+				
+			}
+		};
+		System.setOut(new PrintStream(newOut));
+		System.setErr(System.out);
+		}
+		
+		m_out.println(out);
+	}
+	protected static void pause(int i) {
+		try {
+			synchronized (stopMutex)
+			{
+			stopMutex.wait(i);
+			}
+			int x=1;
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	private static void mainApp() 
+	{
 		PCSLabEntry.main(null);
 	}
 	static Properties props = new Properties();
-	    private static DbConnection conn;
-	    
-	    public static DbConnection setUp() throws Exception 
-	    {
-	    
-	        Login dbLogin = new Login();
-	        dbLogin.dateToday = new Date().toString();
-	        dbLogin.driver = "oracle.jdbc.driver.OracleDriver";
-	        dbLogin.URL = "jdbc:oracle:thin:@192.168.0.103:1521:pcsdev";
-	        dbLogin.userName = "pcs";
-	        dbLogin.userPassword = "ahb21";
-	        props.put("username", dbLogin.userName);
-	        props.put("password", dbLogin.userPassword);
-	        props.put("jdbc.connection", dbLogin.URL);
+	private static DbConnection conn;
 
-	        conn=new DbConnection(dbLogin);
-	        System.out.println("conn: "+conn);
-	        
-	        Vector vect=new Vector();
-	        Vector params=new Vector();
-	        params.add(new com.pacytology.pcs.SQLValue(
-	        		-2));
-	        	//XXX not visible
-	        		//DbConnection.STRING));
-	        
-	        //Vector vect2 = conn.query("select a.DOCTOR_TEXT from lab_requisitions a where rownum<10",params,vect);
-	        
-	        PreparedStatement stat = conn.process().prepareStatement("select DOCTOR_TEXT from lab_requisitions where rownum<10");
-	        
-	        ResultSet rs = stat.executeQuery();
-	        return conn;
-	    }
-	    
-	    public static void close()
-	    {
-	    	conn.close();
-	    }
-	    
-	    public static SortedMap<Integer,SortedMap<String,Object>> mapRs(ResultSet rs) throws Exception 
-	    {
-	    	ResultSetMetaData rsmd = rs.getMetaData();
+	public static DbConnection setUp() throws Exception 
+	{
 
-	    	int numCols = rsmd.getColumnCount();
+		Login dbLogin = new Login();
+		dbLogin.dateToday = new Date().toString();
+		dbLogin.driver = "oracle.jdbc.driver.OracleDriver";
+		dbLogin.URL = "jdbc:oracle:thin:@192.168.0.103:1521:pcsdev";
+		dbLogin.userName = "pcs";
+		dbLogin.userPassword = "ahb21";
+		props.put("username", dbLogin.userName);
+		props.put("password", dbLogin.userPassword);
+		props.put("jdbc.connection", dbLogin.URL);
 
-	    	int counter=0;
-	    	SortedMap<Integer, SortedMap<String, Object>> ret=new TreeMap();
-			while (rs.next())
-	    	{
-	    		SortedMap<String,Object>current=new TreeMap();
-	    		for (Integer col=0;col<numCols;col++)
-	    		{
-	    			Object ob = rs.getObject(col+1);
-	    			String name = rsmd.getColumnName(col+1);
-	    			current.put(name,ob);
-	    		}
-	    		ret.put(counter,current);
-	    		
-	    		counter++;
-	    	}
-	    	return ret;
+		conn=new DbConnection(dbLogin);
+		System.out.println("conn: "+conn);
+
+		Vector vect=new Vector();
+		Vector params=new Vector();
+		params.add(new com.pacytology.pcs.SQLValue(
+				-2));
+		//XXX not visible
+		//DbConnection.STRING));
+
+		//Vector vect2 = conn.query("select a.DOCTOR_TEXT from lab_requisitions a where rownum<10",params,vect);
+
+		PreparedStatement stat = conn.process().prepareStatement("select DOCTOR_TEXT from lab_requisitions where rownum<10");
+
+		ResultSet rs = stat.executeQuery();
+		return conn;
+	}
+
+	public static void close()
+	{
+		conn.close();
+	}
+
+	public static SortedMap<Integer,SortedMap<String,Object>> mapRs(ResultSet rs) throws Exception 
+	{
+		ResultSetMetaData rsmd = rs.getMetaData();
+
+		int numCols = rsmd.getColumnCount();
+
+		int counter=0;
+		SortedMap<Integer, SortedMap<String, Object>> ret=new TreeMap();
+		while (rs.next())
+		{
+			SortedMap<String,Object>current=new TreeMap();
+			for (Integer col=0;col<numCols;col++)
+			{
+				Object ob = rs.getObject(col+1);
+				String name = rsmd.getColumnName(col+1);
+				current.put(name,ob);
+			}
+			ret.put(counter,current);
+
+			counter++;
 		}
+		return ret;
+	}
 
-		public void testAscusUnder21() {
-/*
+	public void testAscusUnder21() {
+		/*
 	        PCSLabEntry.sqlSessionFactory(props);
 	        int labNumber = 2013011947;
 
@@ -100,48 +387,239 @@ public class SimpleTestUtil
 
 	        boolean hpv = HpvRequestDbOps.isHpv(labNumber);
 	        assertFalse(hpv);
-*/
-	    
+		 */
+
 	}
-		public static SortedMap<Integer, SortedMap<String, Object>> outputSql(String sql) throws Exception {
-			PreparedStatement stat = conn.process().prepareStatement(sql);
-			ResultSet rs = stat.executeQuery();
-			return outputRs(rs);
-		}
-		private static SortedMap<Integer, SortedMap<String, Object>> outputRs(ResultSet rs) throws Exception {
-			SortedMap<Integer, SortedMap<String, Object>> map = mapRs(rs);
-		 
-			String str = rsToString(map);
-			System.out.println("db: "+str);
-			return map;
-		}
-		private static String rsToString(
-				SortedMap<Integer, SortedMap<String, Object>> map) 
+	public static SortedMap<Integer, SortedMap<String, Object>> outputSql(String sql) throws Exception {
+		PreparedStatement stat = conn.process().prepareStatement(sql);
+		ResultSet rs = stat.executeQuery();
+		return outputRs(rs);
+	}
+	private static SortedMap<Integer, SortedMap<String, Object>> outputRs(ResultSet rs) throws Exception {
+		SortedMap<Integer, SortedMap<String, Object>> map = mapRs(rs);
+
+		String str = rsToString(map);
+		System.out.println("db: "+str);
+		return map;
+	}
+	private static String rsToString(
+			SortedMap<Integer, SortedMap<String, Object>> map) 
+	{
+		StringBuilder ret=new StringBuilder();
+		for (Integer cur : map.keySet())
 		{
-			StringBuilder ret=new StringBuilder();
-			for (Integer cur : map.keySet())
+			ret.append("********************* "+cur+" ***********************\n");
+			SortedMap<String, Object> colsToObj = map.get(cur);
+
+			for (String col : colsToObj.keySet())
 			{
-				ret.append("********************* "+cur+" ***********************\n");
-				SortedMap<String, Object> colsToObj = map.get(cur);
-				
-				for (String col : colsToObj.keySet())
+				Object obj=colsToObj.get(col);
+				ret.append(col+"	->		"+obj+"\n");
+
+			}
+		}
+
+		return ret.toString();
+	}
+	public static int executeUpdate(String sql) throws Exception
+	{
+		Statement state = conn.process().createStatement();
+		return state.executeUpdate(sql);
+	}
+	public static DbConnection getConn() {
+		return conn;
+	}
+
+	static Set<Component>added=new HashSet();
+
+	static int mouseCounter=0;
+
+	static int curCounter=0;
+	public static Object stopMutex=new Object();
+	public static void add(Component comp)
+	{
+		if (added.contains(comp))
+		{
+			return;
+		}
+		added.add(comp);
+
+		comp.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(MouseEvent e)
+			{
+				curCounter--;
+
+				if (curCounter==0)
 				{
-					Object obj=colsToObj.get(col);
-					ret.append(col+"	->		"+obj+"\n");
-					
+					System.out.println("****************************************\n");
+				}
+
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e)
+			{
+				Component comp = (Component) e.getSource();
+				System.out.println("------------- "+mouseCounter+" -----------\n"+e.getSource()+":\nbounds: "+comp.getBounds());
+				
+				String text=getText(comp);
+				
+				if (text!=null)
+				{
+					System.out.println("Text: '"+text+"'");
+				}
+				mouseCounter++;
+
+				curCounter++;
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+		});
+	}
+
+	protected static String getText(Component comp) 
+	{
+		if (comp instanceof JTextComponent)
+		{
+			return ((JTextComponent)comp).getText();
+		}
+		
+		if (comp instanceof JLabel)
+		{
+			return ((JLabel)comp).getText();
+		}
+		
+		return null;
+
+	}
+	private static void startGUIWatcher()
+	{
+		long eventMask =
+				AWTEvent.CONTAINER_EVENT_MASK;
+
+		Toolkit.getDefaultToolkit().addAWTEventListener( new AWTEventListener()
+		{
+			public void eventDispatched(AWTEvent e)
+			{
+				if (!(e instanceof ContainerEvent))
+				{
+					return;
+				}
+
+				ContainerEvent ce=(ContainerEvent) e;
+				Component child = ce.getChild();
+				String str = e.paramString();
+				int id = e.getID();
+				Component source = (Component) e.getSource();
+				//		                System.out.println(str+": "+source);
+
+				if (str.contains("COMPONENT_ADDED"))
+				{
+					add(child);
+
+					child.addMouseMotionListener(new MouseAdapter() 
+					{
+						@Override
+						public void mouseMoved(MouseEvent e)
+						{
+							Component comp=(Component) e.getSource();
+
+							if (comp instanceof JLabel)
+							{
+								JLabel label=(JLabel)comp;
+								System.out.println("text: "+label.getText());
+							}		
+							if (comp instanceof Label)
+							{
+								Label label=(Label)comp;
+								System.out.println("ltext: "+label.getText());
+							}
+						}
+					});
+
+
+					boolean lookingForSomething=true;
+
+					if (lookingForSomething)
+					{
+						if (child.getX()==4 && child.getY()==405 && child.getWidth()==310 && child.getHeight()==44)
+						{
+							int x=1;
+						}
+					}
+				} else if (str.contains("COMPONENT_REMOVED"))
+				{
+					added.remove(child);
+
+
 				}
 			}
-			
-			return ret.toString();
+		}, eventMask);    
+	}
+	
+	
+	public static List putToListOfValues(Object key, Object val,
+			Map keysToListsOfValues) 
+	{
+		return putToListOfValues(key,val,keysToListsOfValues,false);
+	}
+
+
+	public static List putToListOfValues(Object key, Object val,
+			Map keysToListsOfValues, boolean avoidDuplicates) {
+		List list = (List) keysToListsOfValues.get(key);
+
+		if (list == null) {
+			list = new ArrayList();
+			keysToListsOfValues.put(key, list);
+		} else {
+			if (avoidDuplicates)
+			{
+				if (list.contains(val))
+				{
+					return list;
+				}
+			}
 		}
-		public static int executeUpdate(String sql) throws Exception
-		{
-			Statement state = conn.process().createStatement();
-			return state.executeUpdate(sql);
-		}
-		public static DbConnection getConn() {
-			return conn;
-		}
-		
-		
+		list.add(val);
+
+		return list;
+	}
+	
+	public final static SimpleDateFormat yearMonthDayHourMinuteSecond=new SimpleDateFormat(
+			"yyyy-MM-dd HH-mm-ss");
+	
+	static long start=System.currentTimeMillis();
+	
+    public static void screenShot(String append) throws Exception {
+        
+            Robot robot = new Robot();
+            // Capture the screen shot of the area of the screen defined by the rectangle
+            BufferedImage bi=robot.createScreenCapture(new Rectangle(1000,1000));
+            
+            String path="/home/oracle/Pictures/screenshots/";
+            
+            long time=System.currentTimeMillis();
+            Date cur=new Date();
+            
+            String file=yearMonthDayHourMinuteSecond.format(cur)+"_"+((time-start)/1000)+" seconds "+append+".png";
+            
+            
+            ImageIO.write(bi, "png", new File(path+file));
+            
+    }
+
 }
