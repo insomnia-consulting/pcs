@@ -1164,7 +1164,12 @@ public class PatientAccountsForm extends PcsFrame
 		        if ((Double.valueOf(paymentAmount.getText())).doubleValue()==0) {
 		            Utils.createErrMsg("Payment must be greater than 0");
 		        }
-		        else paymentAmount.transferFocus();
+		        else 
+		        {
+		        	currBal.setText(paymentAmount.getText());
+		        	currBAL=Double.valueOf(paymentAmount.getText());
+		        	paymentAmount.transferFocus();
+		        }
 		    }
 		}
 	}

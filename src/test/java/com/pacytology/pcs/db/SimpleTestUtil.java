@@ -36,6 +36,8 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JLabel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.JTextComponent;
 
 import com.pacytology.pcs.DbConnection;
@@ -67,53 +69,63 @@ public class SimpleTestUtil
 		if (true)return;
 		setUp();
 	}
-	
+
 	protected static Object singleValue(String sql, String col) throws Exception
 	{
 		Connection proc = DbConnection.process();
 
 		Object ret=null;
-		
+
 		if (proc!=null && !proc.isClosed())
 		{
 			Statement stmt = DbConnection.process().createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
-			
+
 			if (rs.next())
 			{
 				ret=rs.getInt(col);
 			}
-			
+
 			stmt.close();
 			rs.close();
 		} else
 		{
-		
+
 		}
-		
+
 		return ret;
 	}
-	
+
 	protected static Integer getHighestPatient() throws Exception
 	{
 		String sql = "select PATIENT from pcs.patient_statements order by datestamp desc";
 		return (Integer) singleValue(sql,"PATIENT");
 	}
-	
+
 	private static void lookForPatientAccounts() {
 		new Thread()
 		{
 			public void run()
 			{
-
+				try {
+				subRun();
+				} catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+		
+			}
+			
+			public void subRun()
+			{
 				int cycleCounter=-1;
 				int counter=0;
 				//int num=-1;
-				
+
 				Map<String,Integer>mapOfInitialNums=new TreeMap();
 				Map<String,List>mapOfAllNums=new TreeMap();
-				
-				
+
+
 				Set<String>allSql=new TreeSet();
 				String sql1=
 						"select count(*) from pcs.patient_statements";
@@ -124,25 +136,25 @@ public class SimpleTestUtil
 				allSql.add("select count(*) from pcs.lab_billings");
 				allSql.add("select count(*) from pcs.patient_accounts");
 				allSql.add("select count(*) from pcs.patient_statements");
-				
-				
-						
+
+
+
 				Integer highestPatientId=null;
-						
-				
+
+
 				allSql.add("select count(*) from pcs.patients");
-				
+
 				/*
          select billing_type,rebill_code,rebilling 
          into P_bill_type,P_rebill_code,P_rebilling
          from pcs.patient_statements
          where patient=2423828 and lab_number=P_lab_num;				 
 				 */
-				
-				
-				
+
+
+
 				Set<String>outOnce=new TreeSet();
-				
+
 				while(true)
 				{
 					cycleCounter++;
@@ -157,7 +169,7 @@ public class SimpleTestUtil
 
 						Connection proc = DbConnection.process();
 
-						
+
 						if (proc!=null && !proc.isClosed())
 						{
 							//String sql="select  count(*) from pcs.patient_accounts";
@@ -166,50 +178,50 @@ public class SimpleTestUtil
 							String add=null;
 							String lastLab=
 									null;
-									//LabForm.lastLab_dontCommit;
+							//LabForm.lastLab_dontCommit;
 							for (String cur : allSql)
 							{
 								highestPatientId=getHighestPatient();
 								if (highestPatientId!=null && highestPatientId!=2409324 && 
 										lastLab!=null && lastLab.length()==10)
 								{
-									
+
 									add="select count(*) from pcs.patient_statements where patient=PATIENT_ID and lab_number="+lastLab;
 									add=add.replace ("PATIENT_ID",highestPatientId+"");
 								}
-								
+
 								Statement stmt = DbConnection.process().createStatement();
 								ResultSet rs = stmt.executeQuery(cur);
-								
+
 								if (rs.next())
 								{
 									int val=rs.getInt(1);
-									
+
 
 									Integer num=mapOfInitialNums.get(cur);
-									
+
 									if (num==null)
 									{
 										num=val;
 										mapOfInitialNums.put(cur,num);
 										putToListOfValues(cur,num,mapOfAllNums);
 									}
-									
-									
+
+
 									List nums=mapOfAllNums.get(cur);
-									
+
 									boolean newVal=val!=((Integer)nums.get(nums.size()-1));
-									
-							
+
+
 									if (newVal)
 									{
-									//	screenShot(cur);
+										//	screenShot(cur);
 										putToListOfValues(cur,val,mapOfAllNums);
-										
+
 									} 
 
 									String out = counter+" "+cur+"; val: "+nums;
-								
+
 									if (newVal)
 									{
 										if (firstNewVal)
@@ -217,11 +229,11 @@ public class SimpleTestUtil
 											outNoOthers("--------------------------------------------------------");
 										} 
 										firstNewVal=false;
-										
+
 										outNoOthers(out);
 									} 
-									
-									
+
+
 									//else if (cycleCounter==0)
 									else if (!outOnce.contains(cur))
 									{
@@ -229,7 +241,7 @@ public class SimpleTestUtil
 										outNoOthers(out);
 										//System.out.println(out);
 									}
-									
+
 									if (false && val!=num)
 									{
 										System.out.println("STOP "+val);
@@ -243,7 +255,7 @@ public class SimpleTestUtil
 							}
 							if (add!=null)
 							{
-							allSql.add(add);
+								allSql.add(add);
 							}
 						} else
 						{
@@ -265,15 +277,15 @@ public class SimpleTestUtil
 			}
 		}.start();
 	}
-	
-	
-	
+
+
+
 
 	protected static void outNoOthers(Object out) 
 	{
 		outNoOthers(out,true);
 	}
-	
+
 	protected static void outNoOthers(Object out, boolean enable) 
 	{
 		if (!enable || !outNoOthers)
@@ -281,29 +293,29 @@ public class SimpleTestUtil
 			System.out.println(out);
 			return;
 		}
-		
+
 		if (m_out==null)
 		{
-		m_out=System.out;
-		
-		OutputStream newOut=new OutputStream() {
-			
-			@Override
-			public void write(int b) throws IOException {
-				
-			}
-		};
-		System.setOut(new PrintStream(newOut));
-		System.setErr(System.out);
+			m_out=System.out;
+
+			OutputStream newOut=new OutputStream() {
+
+				@Override
+				public void write(int b) throws IOException {
+
+				}
+			};
+			System.setOut(new PrintStream(newOut));
+			System.setErr(System.out);
 		}
-		
+
 		m_out.println(out);
 	}
 	protected static void pause(int i) {
 		try {
 			synchronized (stopMutex)
 			{
-			stopMutex.wait(i);
+				stopMutex.wait(i);
 			}
 			int x=1;
 		} catch (InterruptedException e) {
@@ -463,9 +475,9 @@ public class SimpleTestUtil
 			{
 				Component comp = (Component) e.getSource();
 				System.out.println("------------- "+mouseCounter+" -----------\n"+e.getSource()+":\nbounds: "+comp.getBounds());
-				
+
 				String text=getText(comp);
-				
+
 				if (text!=null)
 				{
 					System.out.println("Text: '"+text+"'");
@@ -496,12 +508,12 @@ public class SimpleTestUtil
 		{
 			return ((JTextComponent)comp).getText();
 		}
-		
+
 		if (comp instanceof JLabel)
 		{
 			return ((JLabel)comp).getText();
 		}
-		
+
 		return null;
 
 	}
@@ -569,8 +581,8 @@ public class SimpleTestUtil
 			}
 		}, eventMask);    
 	}
-	
-	
+
+
 	public static List putToListOfValues(Object key, Object val,
 			Map keysToListsOfValues) 
 	{
@@ -598,28 +610,28 @@ public class SimpleTestUtil
 
 		return list;
 	}
-	
+
 	public final static SimpleDateFormat yearMonthDayHourMinuteSecond=new SimpleDateFormat(
 			"yyyy-MM-dd HH-mm-ss");
-	
+
 	static long start=System.currentTimeMillis();
-	
-    public static void screenShot(String append) throws Exception {
-        
-            Robot robot = new Robot();
-            // Capture the screen shot of the area of the screen defined by the rectangle
-            BufferedImage bi=robot.createScreenCapture(new Rectangle(1000,1000));
-            
-            String path="/home/oracle/Pictures/screenshots/";
-            
-            long time=System.currentTimeMillis();
-            Date cur=new Date();
-            
-            String file=yearMonthDayHourMinuteSecond.format(cur)+"_"+((time-start)/1000)+" seconds "+append+".png";
-            
-            
-            ImageIO.write(bi, "png", new File(path+file));
-            
-    }
+
+	public static void screenShot(String append) throws Exception {
+
+		Robot robot = new Robot();
+		// Capture the screen shot of the area of the screen defined by the rectangle
+		BufferedImage bi=robot.createScreenCapture(new Rectangle(1000,1000));
+
+		String path="/home/oracle/Pictures/screenshots/";
+
+		long time=System.currentTimeMillis();
+		Date cur=new Date();
+
+		String file=yearMonthDayHourMinuteSecond.format(cur)+"_"+((time-start)/1000)+" seconds "+append+".png";
+
+
+		ImageIO.write(bi, "png", new File(path+file));
+
+	}
 
 }
