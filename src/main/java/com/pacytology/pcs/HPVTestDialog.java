@@ -573,9 +573,8 @@ public class HPVTestDialog extends PcsDialog
 	        pstmt.setInt(1,labNumber);
 	        pstmt.executeUpdate();
 	        pstmt.close();
-	        if (!Utils.isNull(hpv.test_sent)&&withBilling) {
-	            if (hpv.test_sent.equals("N") 
-	            ||  hpv.test_sent.equals("Y") || hpv.test_sent.equals("Q")) {
+	        if (!Utils.isNull(hpv.test_sent) && withBilling) {
+	            if (hpv.test_sent.equals("N") || hpv.test_sent.equals("Y") || hpv.test_sent.equals("Q")) {
 	                int practice = 0;
 	                SQL = 
 	                    "SELECT practice from pcs.lab_requisitions \n"+
@@ -593,14 +592,15 @@ public class HPVTestDialog extends PcsDialog
                     cstmt.close();
                     log.write("Charges calculated for "+labNumber);
                     
-                    SQL =
-                        "INSERT INTO pcs.hpv_print_queue (lab_number,first_print) \n"+
-                        "VALUES (?,?) \n";
-                    pstmt = DbConnection.process().prepareStatement(SQL);
-                    pstmt.setInt(1,labNumber);
-                    pstmt.setInt(2,Lab.CURR_FINAL);
-                    pstmt.execute();
-                    pstmt.close();
+                    if (hpv.test_sent.equals("Y") || hpv.test_sent.equals("Q")) {
+                    		SQL ="INSERT INTO pcs.hpv_print_queue (lab_number,first_print) \n"+
+                                    "VALUES (?,?) \n";
+                            pstmt = DbConnection.process().prepareStatement(SQL);
+                            pstmt.setInt(1,labNumber);
+                            pstmt.setInt(2,Lab.CURR_FINAL);
+                            pstmt.execute();
+                            pstmt.close();
+                    }
 
 	            }
 	            else {
