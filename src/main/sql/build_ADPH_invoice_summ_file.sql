@@ -154,7 +154,7 @@ begin
 	 select discount_price into tran_item
 
 	 from pcs.price_code_details
-	 where procedure_code=tran_proc and price_code=ADPH_price;
+	 where procedure_code=tran_proc and price_code=ADPH_price and lab_number=0;
 	 cbuf1:=TO_CHAR(tran_count);
 	 cbuf2:=TO_CHAR(tran_item,'999.00');
 	 cbuf3:=TO_CHAR(tran_amount,'99,999.00');

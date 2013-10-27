@@ -308,7 +308,8 @@ public class ProcCodePrices extends javax.swing.JFrame
                 "WHERE \n"+
                 "   a.price_code=b.price_code and \n"+
                 "   b.active_status='A' and \n"+
-                "   a.procedure_code='"+procedureCode+"' \n"+
+                "   a.procedure_code='"+procedureCode+"' and \n"+
+                "   a.lab_number= (select max(lab_number) from  price_code_details c where c.price_code = b.price_code and c.procedure_code= a.procedure_code or c.lab_number=0) \n"+
                 "ORDER BY b.price_code";
             int ndx=0;
             rs=stmt.executeQuery(query);

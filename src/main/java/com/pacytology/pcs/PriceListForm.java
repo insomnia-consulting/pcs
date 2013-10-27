@@ -726,7 +726,16 @@ public class PriceListForm extends PcsFrame
                     discountPrice.setText((String)discountList.getSelectedValue());
                 }
             }
-            boolean rv=updatePricing(codeList.getSelectedIndex(),priceNdx);
+            
+            String labNumber="";
+            
+            do {
+            	labNumber=JOptionPane.showInputDialog("What lab number is associated\nwith this price change?");
+            } while (!labNumber.matches("[0-9]+"));
+            
+            Integer i_labNumber=Integer.parseInt(labNumber);
+            
+            boolean rv=updatePricing(codeList.getSelectedIndex(),priceNdx, i_labNumber);
             if (rv==true) {
                 priceCodes[priceNdx].pricing[baseList.getSelectedIndex()].base_price =
                     Double.valueOf(basePrice.getText()).doubleValue();
@@ -943,8 +952,10 @@ public class PriceListForm extends PcsFrame
                     "   pcs.price_code_details a, \n"+
                     "   pcs.price_codes b \n"+
                     "WHERE \n"+
-                    "   a.price_code=b.price_code \n"+
+                    "   a.price_code=b.price_code and \n"+
+                    "   a.lab_number= (select max(lab_number) from  price_code_details c where c.price_code = b.price_code and c.procedure_code= a.procedure_code or c.lab_number=0) \n"+
                     "ORDER BY a.price_code,a.procedure_code";
+                
                 MAX_PRICE_CODES=rowsReturned;
                 priceCodes = new PriceArray[MAX_PRICE_CODES];
                 for (int i=0;i<MAX_PRICE_CODES;i++) {
@@ -956,7 +967,7 @@ public class PriceListForm extends PcsFrame
                         if (rs.next()) {
                             if (j==0) { 
                                 priceCodes[i].priceCode=rs.getString(1);
-                                priceCodes[i].activeStatus=rs.getString(5);
+                                priceCodes[i].activeStatus=rs.getString(5);                                
                                 priceCodes[i].pricingComments=rs.getString(6);
                             }
                             priceCodes[i].pricing[j].procedure_code=rs.getString(2);
@@ -976,32 +987,27 @@ public class PriceListForm extends PcsFrame
 		forceUpper(event);
 	}
 	
-	public boolean updatePricing(int procedure, int pNdx) {
+	public boolean updatePricing(int procedure, int pNdx, int labNumber) {
         boolean exitStatus=true;
         try  {
             double base = Double.valueOf(basePrice.getText()).doubleValue();
             double discount = Double.valueOf(discountPrice.getText()).doubleValue();
-            String query = 
-                "UPDATE pcs.price_code_details \n"+
-                "SET \n"+
-                "   base_price="+base+
-                ", \n   discount_price="+discount+" \n "+
-                "WHERE  \n"+
-                "   price_code='"+priceCodes[pNdx].priceCode+
-                "' and \n"+
-                "   procedure_code='"+priceCodes[pNdx].pricing[procedure].procedure_code+
-                "' \n";
-                
-            System.out.println(query);                
+
+            String insert="insert into pcs.price_code_details values "+
+            		"('"+priceCodes[pNdx].priceCode+
+            		"','"+priceCodes[pNdx].pricing[procedure].procedure_code+"',"+
+            		base+","+discount+",SysDate,UID,"+labNumber+")";
+            System.out.println("insert: "+insert);
             Statement stmt = DbConnection.process().createStatement();
-            int rs = stmt.executeUpdate(query);
-            System.out.println("ROWS UPDATED: "+rs);
+            int rs = stmt.executeUpdate(insert);
+            System.out.println("ROWS INSERTED: "+rs);
             if (rs<1) {
                 exitStatus=false;
             }
         }
         catch( Exception e ) {
             System.out.println(e+" updatePricing");
+            e.printStackTrace();
             exitStatus=false;
             msgLabel.setText("Operation Failed");
         }

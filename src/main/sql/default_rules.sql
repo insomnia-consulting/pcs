@@ -201,8 +201,9 @@ begin
 	    CPT_code:=LEVEL4_SURGICAL_PATH;
 	 end if;
       end if;
-      select base_price into L_item_cost from pcs.price_code_details
-      where price_code=L_price_code and procedure_code=CPT_code;
+      select base_price into L_item_cost from pcs.price_code_details p where PRICE_CODE=L_price_code and
+      procedure_code=CPT_code and lab_number = (select max(lab_number) from price_code_details where lab_number <= L_num
+      and PRICE_CODE=L_price_code and procedure_code=CPT_code);      
 
 
       /* Before insert into charges, check for special charges that would
@@ -258,8 +259,9 @@ begin
       P_code_area:='PATH CHARGES';
       if (screening_level=PATHOLOGIST) then
 	 CPT_code:=PHYSICIAN_REQ;
-	 select base_price into L_item_cost from pcs.price_code_details
-	 where price_code=L_price_code and procedure_code=CPT_code;
+     select base_price into L_item_cost from pcs.price_code_details p where PRICE_CODE=L_price_code and
+     procedure_code=CPT_code and lab_number = (select max(lab_number) from price_code_details where lab_number <= L_num
+     and PRICE_CODE=L_price_code and procedure_code=CPT_code);
 	 /*
 	    Before insert into charges, check for special charges that would
 	    over-ride these ones; variable L_payer being not null indicates
@@ -291,8 +293,9 @@ begin
       select count(*) into rcnt from pcs.lab_mat_index where lab_number=L_num;
       if (rcnt>0) then
 	 CPT_code:=HORMONAL_EVAL;
-	 select base_price into L_item_cost from pcs.price_code_details
-	 where price_code=L_price_code and procedure_code=CPT_code;
+     select base_price into L_item_cost from pcs.price_code_details p where PRICE_CODE=L_price_code and
+     procedure_code=CPT_code and lab_number = (select max(lab_number) from price_code_details  where lab_number <= L_num
+     and PRICE_CODE=L_price_code and procedure_code=CPT_code);
 
 	 /*
 	    Check for special charges (see other comment for additional
@@ -331,8 +334,8 @@ begin
 	 from pcs.hpv_requests where lab_number=L_num;
 	 if (H_date is NOT NULL) then
 	    CPT_code:=HPV_TEST;
-	    select base_price into L_item_cost from pcs.price_code_details
-	    where price_code=L_price_code and procedure_code=CPT_code;
+      select base_price into L_item_cost from pcs.price_code_details p where PRICE_CODE=L_price_code and
+      procedure_code=CPT_code and lab_number = (select max(lab_number) from price_code_details where lab_number <= L_num);       
 	    /*
 	       Check for special charges (see other comment for additional
 
