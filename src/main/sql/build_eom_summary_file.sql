@@ -104,21 +104,22 @@ as
 
    cursor procedure_list is
       select procedure_code,count(procedure_code),sum(item_amount)
-      from pcs.bt_sum_work group by procedure_code;
+      from pcs.bt_sum_work2 group by procedure_code;
 
    cursor practice_list is
-      select distinct practice from pcs.bt_sum_work where procedure_code=S_procedure
+      select distinct practice from pcs.bt_sum_work2 where procedure_code=S_procedure
       order by practice;
 
    practice_fields practice_list%ROWTYPE;
 
    cursor update_work_table is
-      select practice, procedure_code
-      from pcs.bt_sum_work
+      select practice, procedure_code,lab_number
+      from pcs.bt_sum_work2
       where choice_code<>'DOC'
    for update of item_amount;
    U_practice number;
    U_procedure_code varchar2(5);
+   U_lab_number number(11,0);
    U_item_amount number;
    U_price_code varchar2(2);
 
@@ -133,8 +134,7 @@ as
 
    file_handle UTL_FILE.FILE_TYPE;
 
-begin
-
+begin   
    P_proc_name:='BUILD_EOM_SUMMARY_FILE';
 
 
@@ -187,19 +187,19 @@ begin
    heading4:=margin||'PAGE '||curr_page;
 
    P_code_area:='WORK AREA';
-   delete from pcs.bt_sum_work;
-   insert into pcs.bt_sum_work
+   delete from pcs.bt_sum_work2;
+   insert into pcs.bt_sum_work2
 
-      (procedure_code,practice,name,choice_code,item_amount,description)
+      (procedure_code,practice,name,choice_code,item_amount,description,lab_number)
       select ps.procedure_code, ps.practice, pr.name, ps.choice_code,
-	 ps.item_amount, pc.description
+	 ps.item_amount, pc.description, lab_number
       from pcs.practice_statement_labs ps, pcs.practices pr,
 	 pcs.procedure_codes pc
       where ps.statement_id=S_month and ps.procedure_code=pc.procedure_code and
 	 ps.practice=pr.practice;
    open update_work_table;
    loop
-      fetch update_work_table into U_practice,U_procedure_code;
+      fetch update_work_table into U_practice,U_procedure_code,U_lab_number;
       exit when update_work_table%NOTFOUND;
       select price_code into U_price_code
       from pcs.practices where practice=U_practice;
@@ -207,23 +207,24 @@ begin
       select base_price into U_item_amount
       from pcs.price_code_details
       where procedure_code=U_procedure_code
-      and price_code=U_price_code;
-      update pcs.bt_sum_work set item_amount=U_item_amount
+      and price_code=U_price_code and lab_number = (select max(lab_number) from price_code_details where lab_number <= U_lab_number
+      and price_code=U_price_code and procedure_code=U_procedure_code);
+      update pcs.bt_sum_work2 set item_amount=U_item_amount
       where current of update_work_table;
    end loop;
    close update_work_table;
 
-   insert into pcs.bt_sum_work (procedure_code,description,item_amount)
+   insert into pcs.bt_sum_work2 (procedure_code,description,item_amount)
       select procedure_code,description,0 from pcs.procedure_codes
       where active_status='A' and procedure_code NOT IN
-	 (select distinct procedure_code from pcs.bt_sum_work);
+	 (select distinct procedure_code from pcs.bt_sum_work2);
 
 
    open ucr_list;
    loop
       fetch ucr_list into L_choice_code,L_limit_amount,L_procedure_code;
       exit when ucr_list%NOTFOUND;
-      update pcs.bt_sum_work
+      update pcs.bt_sum_work2
       set item_amount=L_limit_amount
       where choice_code=L_choice_code and procedure_code=L_procedure_code;
    end loop;
@@ -308,26 +309,26 @@ begin
 	    sum(item_amount)
 	 into doc_amount,dpa_amount,db_amount,prc_amount,bs_amount,med_amount,
 	    oth_amount,ppd_amount,total_amount
-	 from pcs.bt_sum_work
+	 from pcs.bt_sum_work2
 	 where procedure_code=S_procedure and practice=S_practice;
-	 select count(*) into doc_count from pcs.bt_sum_work
+	 select count(*) into doc_count from pcs.bt_sum_work2
 	 where procedure_code=S_procedure and practice=S_practice and choice_code='DOC';
-	 select count(*) into dpa_count from pcs.bt_sum_work
+	 select count(*) into dpa_count from pcs.bt_sum_work2
 	 where procedure_code=S_procedure and practice=S_practice and choice_code='DPA';
 
-	 select count(*) into db_count from pcs.bt_sum_work
+	 select count(*) into db_count from pcs.bt_sum_work2
 	 where procedure_code=S_procedure and practice=S_practice and choice_code='DB';
-	 select count(*) into prc_count from pcs.bt_sum_work
+	 select count(*) into prc_count from pcs.bt_sum_work2
 	 where procedure_code=S_procedure and practice=S_practice and choice_code='PRC';
-	 select count(*) into bs_count from pcs.bt_sum_work
+	 select count(*) into bs_count from pcs.bt_sum_work2
 	 where procedure_code=S_procedure and practice=S_practice and choice_code='BS';
-	 select count(*) into med_count from pcs.bt_sum_work
+	 select count(*) into med_count from pcs.bt_sum_work2
 	 where procedure_code=S_procedure and practice=S_practice and choice_code='MED';
-	 select count(*) into oth_count from pcs.bt_sum_work
+	 select count(*) into oth_count from pcs.bt_sum_work2
 	 where procedure_code=S_procedure and practice=S_practice and choice_code='OI';
-	 select count(*) into ppd_count from pcs.bt_sum_work
+	 select count(*) into ppd_count from pcs.bt_sum_work2
 	 where procedure_code=S_procedure and practice=S_practice and choice_code='PPD';
-	 select count(*) into total_count from pcs.bt_sum_work
+	 select count(*) into total_count from pcs.bt_sum_work2
 
 	 where procedure_code=S_procedure and practice=S_practice;
 	 if ((line_num+5)>=60) then
@@ -393,27 +394,27 @@ begin
 	 sum(item_amount)
       into doc_amount,dpa_amount,db_amount,prc_amount,bs_amount,med_amount,
 	 oth_amount,ppd_amount,total_amount
-      from pcs.bt_sum_work
+      from pcs.bt_sum_work2
       where procedure_code=S_procedure;
-      select count(*) into doc_count from pcs.bt_sum_work
+      select count(*) into doc_count from pcs.bt_sum_work2
       where procedure_code=S_procedure and choice_code='DOC';
-      select count(*) into dpa_count from pcs.bt_sum_work
+      select count(*) into dpa_count from pcs.bt_sum_work2
 
       where procedure_code=S_procedure and choice_code='DPA';
-      select count(*) into db_count from pcs.bt_sum_work
+      select count(*) into db_count from pcs.bt_sum_work2
       where procedure_code=S_procedure and choice_code='DB';
-      select count(*) into prc_count from pcs.bt_sum_work
+      select count(*) into prc_count from pcs.bt_sum_work2
       where procedure_code=S_procedure and choice_code='PRC';
-      select count(*) into bs_count from pcs.bt_sum_work
+      select count(*) into bs_count from pcs.bt_sum_work2
       where procedure_code=S_procedure and choice_code='BS';
-      select count(*) into med_count from pcs.bt_sum_work
+      select count(*) into med_count from pcs.bt_sum_work2
       where procedure_code=S_procedure and choice_code='MED';
-      select count(*) into oth_count from pcs.bt_sum_work
+      select count(*) into oth_count from pcs.bt_sum_work2
       where procedure_code=S_procedure and choice_code='OI';
-      select count(*) into ppd_count from pcs.bt_sum_work
+      select count(*) into ppd_count from pcs.bt_sum_work2
       where procedure_code=S_procedure and choice_code='PPD';
 
-      select count(*) into total_count from pcs.bt_sum_work
+      select count(*) into total_count from pcs.bt_sum_work2
       where procedure_code=S_procedure;
       curr_line:=margin||'     '||RPAD('TEST TOTALS:',40)||
 	 LPAD(LTRIM(TO_CHAR(doc_count,'99999')),6)||' '||LPAD(LTRIM(TO_CHAR(doc_amount,'999,990.00')),10)||'   '||
