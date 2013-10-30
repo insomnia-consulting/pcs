@@ -8,6 +8,7 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ContainerEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -35,6 +37,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -48,14 +51,81 @@ public class SimpleTestUtil
 {
 	static boolean outNoOthers=false;
 	private static PrintStream m_out;
+	private static Connection dbProc;
 
+	public static void openDB() throws Exception
+	{
+        dbProc=DriverManager.getConnection
+                ("jdbc:oracle:thin:@127.0.0.1:1521:pcsdev",
+                 "pcs",
+                 "ahb21");
+	}
+	
+	public static Statement getStatement() throws Exception
+	{
+		return dbProc.createStatement();
+	}
+	
+	public static void closeDB() throws Exception
+	{
+		dbProc.close();
+	}
+	
 	public static void main(String args[]) throws Exception
 	{
+		if (false)
+		{
+		
+			return;
+		}
+		
+		if (false)
+		{
+			///bin/sh -c "mv /Desktop/Patient_Statement_namexzz.pdf ~/Desktop/reports/"
+//			Runtime.getRuntime().exec("/bin/sh -c \"mv /home/oracle/Desktop/Patient_Statement_namexzz.pdf /home/oracle/Desktop/reports/\"");
+			
+			Runtime.getRuntime().exec(new String[]{"mv","/home/oracle/Desktop/Patient_Statement_namexzz.pdf","/home/oracle/Desktop/reports/"});
+			return;
+		}
+		
+		if (false)
+		{
+		Thread.sleep(2000); 
+		System.out.println("ok... KeyEvent.VK_LEFT: "+KeyEvent.VK_LEFT);
+		Robot robot=new Robot();
+		robot.keyPress(KeyEvent.VK_LEFT);
+		robot.keyRelease(KeyEvent.VK_LEFT);
+		if (true) return;
+		}
 		System.setProperty("jdbc.connection","jdbc:oracle:thin:@127.0.0.1:1521:pcsdev");
 		System.setProperty("host.ip","127.0.0.1");
 		System.setProperty("host.pwd","123456");
 		System.setProperty("java.io.tmpdir","/tmp/");
 
+		
+		
+		if (false)
+		{
+			issue77();
+			return;
+		}
+		
+		if (false)
+		{
+			new Thread()
+			{
+				public void run()
+				{
+					try {
+						testPriceCodes();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}.start();
+		}
+		
 		if (true)
 		{
 			lookForPatientAccounts();
@@ -70,6 +140,89 @@ public class SimpleTestUtil
 		setUp();
 	}
 
+	
+
+
+	private static void testPriceCodes() throws Exception 
+	{
+		while (true)
+		{
+		Connection proc1 = DbConnection.process();
+		if (proc1!=null && !proc1.isClosed())
+		{
+		
+		String sql="select  * from price_code_details order by price_code, procedure_code";
+		
+		Statement stmt = DbConnection.process().createStatement();
+		ResultSet rs = stmt.executeQuery(sql);
+		
+		HashSet hash=new HashSet();
+		while (rs.next())
+		{
+			String price=rs.getString("price_code");
+			String proc=rs.getString("procedure_code");
+			String cur=price+"_"+proc;
+			
+			System.out.println("cur: "+cur);
+			if (hash.contains(cur))
+			{
+				System.out.println("dupe: "+cur);
+				return;
+			}
+			hash.add(cur);
+
+		}
+		} else
+		{
+			Thread.sleep(25);
+		}
+		}
+	}
+
+	private static void issue77() throws Exception 
+	{
+		startConnection();
+		
+		if (true) throw new Exception("First, set up some method to copy anything from patient_accounts_in_coll_temp into patient_accounts_in_collection that isn't there."+
+		"\n Then catalog how patient_accounts_in_collection (especially .sent) is populated");
+		
+		String sql="select count(*) from lab_requisitions";
+		Statement stmt = DbConnection.process().createStatement();
+		ResultSet rs = stmt.executeQuery(sql);
+		System.out.println("rs: "+rs.next());
+		
+	}
+
+	private static void startConnection() throws Exception
+	{
+        //Connection dbProc = DriverManager.getConnection(
+         //       "jdbc:oracle:thin:@127.0.0.1:1521:pcsdev","pcs","ahb21");
+		try {
+		Login log = new Login();
+		log.userName="pcs";
+		log.userPassword="ahb21";
+		
+		new DbConnection(log);
+		} catch (Exception e)
+		{
+			//catching meaningless error
+		}
+	}
+
+	protected static void update(String sql) throws Exception
+	{
+		Connection proc = DbConnection.process();
+
+		Object ret=null;
+
+		if (proc!=null && !proc.isClosed())
+		{
+			Statement stmt = DbConnection.process().createStatement();
+			stmt.executeUpdate(sql);
+			stmt.close();
+		}
+	}
+	
 	protected static Object singleValue(String sql, String col) throws Exception
 	{
 		Connection proc = DbConnection.process();
@@ -155,6 +308,7 @@ public class SimpleTestUtil
 
 				Set<String>outOnce=new TreeSet();
 
+				int connectedCounter=0;
 				while(true)
 				{
 					cycleCounter++;
@@ -164,7 +318,7 @@ public class SimpleTestUtil
 					//"select count(*) from lab_billings";
 					//"select  count(*) from pcs.patient_accounts";
 
-
+					
 					try {
 
 						Connection proc = DbConnection.process();
@@ -172,6 +326,11 @@ public class SimpleTestUtil
 
 						if (proc!=null && !proc.isClosed())
 						{
+							if (connectedCounter==0)
+							{
+								deleteAllCustomPrices();
+							}
+							
 							//String sql="select  count(*) from pcs.patient_accounts";
 
 							boolean firstNewVal=true;
@@ -257,6 +416,7 @@ public class SimpleTestUtil
 							{
 								allSql.add(add);
 							}
+							connectedCounter++;
 						} else
 						{
 							System.out.println(counter+" ... no conn");
@@ -278,8 +438,10 @@ public class SimpleTestUtil
 		}.start();
 	}
 
-
-
+	protected static void deleteAllCustomPrices() throws Exception 
+	{
+		update("delete from price_code_details where lab_number <> 0");
+	}
 
 	protected static void outNoOthers(Object out) 
 	{
@@ -514,6 +676,11 @@ public class SimpleTestUtil
 			return ((JLabel)comp).getText();
 		}
 
+		if (comp instanceof JCheckBox)
+		{
+			return ((JCheckBox)comp).getText();
+		}
+		
 		return null;
 
 	}
