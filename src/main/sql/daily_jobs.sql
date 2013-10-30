@@ -430,44 +430,44 @@ begin
       curr_line:=curr_line||procedure_begin||' to '||procedure_end;
       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
 
-      curr_line:='***WV PROGRAMS********************************************';
-      UTL_FILE.PUTF(file_handle,'\n%s\n',curr_line);
-
-      P_code_area:='EOM.WV.FPP.INV_SUMM_1';
-      curr_line:='FPP INVOICE SUMMARY FILE: ';
-      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
-
-      pcs.build_WV_invoice_summary_1(S_month,2,'FPP');
-      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
-      curr_line:=curr_line||procedure_begin||' to '||procedure_end;
-      UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-
-      P_code_area:='EOM.WV.BCCSP.INV_SUMM_1';
-      curr_line:='BCCSP INVOICE SUMMARY FILE: ';
-      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
-      pcs.build_WV_invoice_summary_1(S_month,2,'BCCSP');
-      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
-      curr_line:=curr_line||procedure_begin||' to '||procedure_end;
-      UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-
-
-      P_code_area:='EOM.WV.FPP.INV_SUMM_9';
-      curr_line:='FPP INVOICE SUMMARY FILE, PCS OFFICE COPY: ';
-      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
-      pcs.build_WV_invoice_summary_9(S_month,2,'FPP');
-      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
-      curr_line:=curr_line||procedure_begin||' to '||procedure_end;
-      UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-
-      P_code_area:='EOM.WV.BCCSP.INV_SUMM_9';
-      curr_line:='BCCSP INVOICE SUMMARY FILE, PCS OFFICE COPY: ';
-      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
-      pcs.build_WV_invoice_summary_9(S_month,2,'BCCSP');
-      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
-
-      curr_line:=curr_line||procedure_begin||' to '||procedure_end;
-      UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
-      select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
+--      curr_line:='***WV PROGRAMS********************************************';
+--      UTL_FILE.PUTF(file_handle,'\n%s\n',curr_line);
+--
+--      P_code_area:='EOM.WV.FPP.INV_SUMM_1';
+--      curr_line:='FPP INVOICE SUMMARY FILE: ';
+--      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
+--
+--      pcs.build_WV_invoice_summary_1(S_month,2,'FPP');
+--      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
+--      curr_line:=curr_line||procedure_begin||' to '||procedure_end;
+--      UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
+--
+--      P_code_area:='EOM.WV.BCCSP.INV_SUMM_1';
+--      curr_line:='BCCSP INVOICE SUMMARY FILE: ';
+--      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
+--      pcs.build_WV_invoice_summary_1(S_month,2,'BCCSP');
+--      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
+--      curr_line:=curr_line||procedure_begin||' to '||procedure_end;
+--      UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
+--
+--
+--      P_code_area:='EOM.WV.FPP.INV_SUMM_9';
+--      curr_line:='FPP INVOICE SUMMARY FILE, PCS OFFICE COPY: ';
+--      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
+--      pcs.build_WV_invoice_summary_9(S_month,2,'FPP');
+--      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
+--      curr_line:=curr_line||procedure_begin||' to '||procedure_end;
+--      UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
+--
+--      P_code_area:='EOM.WV.BCCSP.INV_SUMM_9';
+--      curr_line:='BCCSP INVOICE SUMMARY FILE, PCS OFFICE COPY: ';
+--      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_begin from dual;
+--      pcs.build_WV_invoice_summary_9(S_month,2,'BCCSP');
+--      select TO_CHAR(SysDate,'HH:Mi:SS') into procedure_end from dual;
+--
+--      curr_line:=curr_line||procedure_begin||' to '||procedure_end;
+--      UTL_FILE.PUTF(file_handle,'%s\n',curr_line);
+--      select TO_CHAR(SysDate,'HH:Mi:SS') into date_today from dual;
 
       P_code_area:='EOM.INIT_NEXT';
       select MAX(a.lab_number) into rcnt
