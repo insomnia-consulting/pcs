@@ -1,8 +1,11 @@
-create or replace procedure     build_WV_invoice_summary_1
+create or replace
+procedure     build_WV_invoice_summary_1
 (
    S_month in number,
    cycle in number,
-   pgm in varchar2
+   pgm in varchar2,
+   fromDate in VARCHAR2,
+   toDateExclusive in VARCHAR2   
 )
 as
 
@@ -93,6 +96,8 @@ as
       and ps.practice=WV_account
       and ps.statement_id=S_month
       and ps.billing_cycle=cycle
+      and a.receive_date>=to_date(fromDate,'YYYY-MM-DD')
+      and a.receive_date<to_date(toDateExclusive,'YYYY-MM-DD')         
       order by a.lab_number;
 
 
@@ -228,7 +233,3 @@ exception
       RAISE;
 
 end;
-\
-
-grant execute on build_WV_invoice_summary_1 to pcs_user
-\
