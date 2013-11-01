@@ -233,3 +233,6 @@ exception
       RAISE;
 
 end;
+\
+grant execute on build_wv_invoice_summary_1 to pcs_user
+\
