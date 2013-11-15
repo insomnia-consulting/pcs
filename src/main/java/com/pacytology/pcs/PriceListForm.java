@@ -2,14 +2,24 @@ package com.pacytology.pcs;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.*;
+
+import org.apache.ibatis.session.SqlSession;
 
 import com.pacytology.pcs.actions.LabFormActionMap;
 import com.pacytology.pcs.actions.PriceListFormActionMap;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
+import com.pacytology.pcs.utils.PriceUtil;
+import com.pacytology.pcs.utils.PriceUtil.PriceChange;
+import com.pacytology.pcs.utils.PriceUtil.PriceCodeDetails;
+
 import java.sql.*;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 
@@ -735,12 +745,15 @@ public class PriceListForm extends PcsFrame
             
             Integer i_labNumber=Integer.parseInt(labNumber);
             
-            boolean rv=updatePricing(codeList.getSelectedIndex(),priceNdx, i_labNumber);
+            double newBase=Double.valueOf(basePrice.getText()).doubleValue();
+            double newDiscount=Double.valueOf(discountPrice.getText()).doubleValue();
+            
+            boolean rv=updatePricing(codeList.getSelectedIndex(),priceNdx, i_labNumber,newBase,newDiscount);
             if (rv==true) {
                 priceCodes[priceNdx].pricing[baseList.getSelectedIndex()].base_price =
-                    Double.valueOf(basePrice.getText()).doubleValue();
+                    newBase;
                 priceCodes[priceNdx].pricing[discountList.getSelectedIndex()].discount_price =
-                    Double.valueOf(discountPrice.getText()).doubleValue();
+                    newDiscount;
             }
             displayList(codeList.getSelectedIndex(),priceNdx);
 	        currMode=Lab.IDLE;
@@ -987,22 +1000,86 @@ public class PriceListForm extends PcsFrame
 		forceUpper(event);
 	}
 	
-	public boolean updatePricing(int procedure, int pNdx, int labNumber) {
+	public boolean updatePricing(int procedure, int priceIndex, int labNumber, double newBase, double newDiscount) {
         boolean exitStatus=true;
         try  {
+        	String priceCode=priceCodes[priceIndex].priceCode;
+        	String procedureCode=priceCodes[priceIndex].pricing[procedure].procedure_code;
+        	
             double base = Double.valueOf(basePrice.getText()).doubleValue();
             double discount = Double.valueOf(discountPrice.getText()).doubleValue();
+  
+            List<PriceCodeDetails> priceDetails = PriceUtil.getPriceCodeDetails(0,priceCode,procedureCode);
 
-            String insert="insert into pcs.price_code_details values "+
-            		"('"+priceCodes[pNdx].priceCode+
-            		"','"+priceCodes[pNdx].pricing[procedure].procedure_code+"',"+
-            		base+","+discount+",SysDate,UID,"+labNumber+")";
-            System.out.println("insert: "+insert);
-            Statement stmt = DbConnection.process().createStatement();
-            int rs = stmt.executeUpdate(insert);
-            System.out.println("ROWS INSERTED: "+rs);
-            if (rs<1) {
-                exitStatus=false;
+            Integer changeFrom=labNumber;
+            Integer changeTo=null;
+            
+            double oldBase=0;
+            double oldDiscount=0;
+            
+            for (PriceCodeDetails cur : priceDetails)
+            {
+            	if (cur.getLabNumber()<=labNumber)
+            	{
+            		oldBase=cur.getBasePrice().doubleValue();
+            		oldDiscount=cur.getDiscountPrice().doubleValue();
+            	}
+            	
+            	if (cur.getLabNumber()>labNumber)
+            	{
+            		changeTo=cur.getLabNumber();
+            		break;
+            	}
+            }
+            
+
+            try {
+            	//This goes through once to get the count,
+            	//and a second time to actually update.
+            	for (int index=0;index<2;index++)
+            	{
+            		int count=PriceUtil.updatePrices(oldBase,oldDiscount,newBase,newDiscount,
+            				priceCode,procedureCode,labNumber,changeTo,true,index==1);
+
+            		if (index==0)
+            		{
+            			int accept = JOptionPane.showConfirmDialog(null,
+            					"There will be "+count+" update"+(count==1?"":"s")+" once this change is made.","Confirm Changes",
+            					JOptionPane.YES_NO_OPTION);
+
+            			if (accept==JOptionPane.NO_OPTION)
+            			{
+            				exitStatus=false;
+            				return false;
+            			}
+            		}
+            	}
+            	
+            	String insert="insert into pcs.price_code_details values "+
+            			"('"+priceCode+ "','"+procedureCode+"',"+
+            			base+","+discount+",SysDate,UID,"+labNumber+")";
+
+            	Statement statement = DbConnection.process().createStatement();
+            	
+            	int rs=statement.executeUpdate(insert);
+            	statement.close();
+            	if (rs<1) {
+            		exitStatus=false;
+            	}
+            	
+            } catch (Throwable t)
+            {
+            	t.printStackTrace();
+            	exitStatus=false;
+            } finally
+            {
+            	if (!exitStatus)
+            	{
+            		DbConnection.process().rollback();;
+            	} else
+            	{
+            		DbConnection.process().commit();
+            	}
             }
         }
         catch( Exception e ) {
