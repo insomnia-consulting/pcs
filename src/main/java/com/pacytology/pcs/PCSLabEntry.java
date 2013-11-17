@@ -538,6 +538,8 @@ public class PCSLabEntry extends PcsFrame {
 		mgmtReptMenu.add(WVreportsMenu);
 		generateInvSummItemFPP.setText("Generate FPP Inv. Summ.");
 		WVreportsMenu.add(generateInvSummItemFPP);
+		generateInvSummItemBCCSP.setText("Generate BCCSP Inv. Summ.");
+		WVreportsMenu.add(generateInvSummItemBCCSP);
 		invSummItemFPP.setText("FPP Inv. Summ.");
 		invSummItemFPP.setActionCommand("FPP Inv. Summ.");
 		WVreportsMenu.add(invSummItemFPP);
@@ -724,6 +726,7 @@ public class PCSLabEntry extends PcsFrame {
 		tissueCodeItem.addActionListener(lSymAction);
 		invSummItemFPP.addActionListener(lSymAction);
 		generateInvSummItemFPP.addActionListener(lSymAction);
+		generateInvSummItemBCCSP.addActionListener(lSymAction);
 		invSummItemBCCSP.addActionListener(lSymAction);
 		hpvItem.addActionListener(lSymAction);
 		eomItem.addActionListener(lSymAction);
@@ -932,6 +935,7 @@ public class PCSLabEntry extends PcsFrame {
 	JMenuItem invSummEomItem = new JMenuItem();
 	JMenu WVreportsMenu = new JMenu();
 	JMenuItem generateInvSummItemFPP = new JMenuItem();
+	JMenuItem generateInvSummItemBCCSP = new JMenuItem();
 	JMenuItem invSummItemFPP = new JMenuItem();
 	JMenuItem invSummItemBCCSP = new JMenuItem();
 	JSeparator JSeparator6 = new JSeparator();
@@ -1194,7 +1198,9 @@ public class PCSLabEntry extends PcsFrame {
 			else if (object == invSummItemFPP)
 				invSummItemFPP_actionPerformed(event);
 			else if (object == generateInvSummItemFPP)
-				generateInvSummItemFPP_actionPerformed(event);
+				generateInvSummItemFPP(event);
+			else if (object == generateInvSummItemBCCSP)
+				generateInvSummItemBCCSP(event);
 			else if (object == invSummItemBCCSP)
 				invSummItemBCCSP_actionPerformed(event);
 			else if (object == hpvItem)
@@ -2565,8 +2571,12 @@ public class PCSLabEntry extends PcsFrame {
 		(new TissueCodeForm(dbLogin)).setVisible(true);
 	}
 
-	void generateInvSummItemFPP_actionPerformed(ActionEvent event) {
+	void generateInvSummItemFPP(ActionEvent event) {
 		generateMonthlyReport("FPP");
+	}
+	
+	void generateInvSummItemBCCSP(ActionEvent event) {
+		generateMonthlyReport("BCCSP");
 	}
 	
 	void invSummItemFPP_actionPerformed(java.awt.event.ActionEvent event) {
