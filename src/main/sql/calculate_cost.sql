@@ -141,7 +141,8 @@ BEGIN
 
       IF (L_billing_choice = BS)
       THEN
-         P_code_area := 'BS';
+         
+		 P_code_area := 'BS';
          pcs.pbs_rules (L_num, L_billing_choice);
 
          SELECT NVL (MIN (a.tpp), 'PPR')
