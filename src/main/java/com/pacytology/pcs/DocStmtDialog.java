@@ -271,8 +271,6 @@ public class DocStmtDialog extends PcsDialog
             else SQL += "statement_copies,practice \n";
             Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
-            this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            parent.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             
             String tempParent = "" ; 
             boolean hasRecord = rs.next();
@@ -316,8 +314,7 @@ public class DocStmtDialog extends PcsDialog
 				}
 			} 
 			
-            this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            parent.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
         }
         catch( Exception e ) {
         	// If printer fails to start here.. Give it some time to recover and start again?
@@ -395,7 +392,23 @@ public class DocStmtDialog extends PcsDialog
 			    else practice=Integer.parseInt(startPracticeNumber.getText());
 		        if (practice==0 || reprintBox.isSelected()) { 
 		            if (verifyPrinter()) {
-		            	printAllCopies();
+		            	final DocStmtDialog dialog=this;
+		            	
+		                this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+		                parent.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+		            	Thread thread=new Thread()
+		            	{
+		            		@Override
+		            		public void run()
+		            		{
+		            			printAllCopies();
+		            		}
+		            	};
+
+		            	thread.start();
+		            	
+		            	this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		                parent.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		            }
 		            this.dispose();
 		        }
