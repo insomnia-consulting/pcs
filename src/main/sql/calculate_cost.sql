@@ -151,18 +151,18 @@ BEGIN
                 AND b.lab_number = L_num
                 AND b.rebilling = L_rebilling;
 
-         INSERT INTO pcs.billing_queue (lab_number,
-                                        billing_route,
-                                        billing_type,
-                                        rebilling,
-                                        rebill_code,
-                                        datestamp)
-              VALUES (L_num,
-                      L_tpp,
-                      NULL,
-                      L_rebilling,
-                      L_rebill_code,
-                      SYSDATE);
+		 INSERT INTO pcs.billing_queue (lab_number,
+										billing_route,
+										billing_type,
+										rebilling,
+										rebill_code,
+										datestamp)
+			  VALUES (L_num,
+					  L_tpp,
+					  NULL,
+					  L_rebilling,
+					  L_rebill_code,
+					  SYSDATE);
       ELSIF (L_billing_choice = MED)
       THEN
          P_code_area := 'MED';
@@ -180,35 +180,35 @@ BEGIN
                 AND b.lab_number = L_num
                 AND b.rebilling = L_rebilling;
 
-         INSERT INTO pcs.billing_queue (lab_number,
-                                        billing_route,
-                                        billing_type,
-                                        rebilling,
-                                        rebill_code,
-                                        datestamp)
-              VALUES (L_num,
-                      L_tpp,
-                      NULL,
-                      L_rebilling,
-                      L_rebill_code,
-                      SYSDATE);
+		 INSERT INTO pcs.billing_queue (lab_number,
+										billing_route,
+										billing_type,
+										rebilling,
+										rebill_code,
+										datestamp)
+			  VALUES (L_num,
+					  L_tpp,
+					  NULL,
+					  L_rebilling,
+					  L_rebill_code,
+					  SYSDATE);
       ELSIF (L_billing_choice = DOC)
       THEN
          P_code_area := 'DOC';
          pcs.doc_rules (L_num, L_billing_choice);
 
-         INSERT INTO pcs.billing_queue (lab_number,
-                                        billing_route,
-                                        billing_type,
-                                        rebilling,
-                                        rebill_code,
-                                        datestamp)
-              VALUES (L_num,
-                      'PRA',
-                      NULL,
-                      L_rebilling,
-                      L_rebill_code,
-                      SYSDATE);
+		 INSERT INTO pcs.billing_queue (lab_number,
+										billing_route,
+										billing_type,
+										rebilling,
+										rebill_code,
+										datestamp)
+			  VALUES (L_num,
+					  'PRA',
+					  NULL,
+					  L_rebilling,
+					  L_rebill_code,
+					  SYSDATE);
       ELSIF (L_billing_choice = DB)
       THEN
          P_code_area := 'DB';
@@ -229,18 +229,18 @@ BEGIN
             pcs.default_rules (L_num, L_billing_choice);
          END IF;
 
-         INSERT INTO pcs.billing_queue (lab_number,
-                                        billing_route,
-                                        billing_type,
-                                        rebilling,
-                                        rebill_code,
-                                        datestamp)
-              VALUES (L_num,
-                      'PAT',
-                      'DB00',
-                      L_rebilling,
-                      L_rebill_code,
-                      SYSDATE);
+		 INSERT INTO pcs.billing_queue (lab_number,
+										billing_route,
+										billing_type,
+										rebilling,
+										rebill_code,
+										datestamp)
+			  VALUES (L_num,
+					  'PAT',
+					  'DB00',
+					  L_rebilling,
+					  L_rebill_code,
+					  SYSDATE);
       ELSIF (L_billing_choice = OI)
       THEN
          P_code_area := 'OI';
@@ -259,18 +259,18 @@ BEGIN
                 AND b.lab_number = L_num
                 AND b.rebilling = L_rebilling;
 
-         INSERT INTO pcs.billing_queue (lab_number,
-                                        billing_route,
-                                        billing_type,
-                                        rebilling,
-                                        rebill_code,
-                                        datestamp)
-              VALUES (L_num,
-                      L_tpp,
-                      NULL,
-                      L_rebilling,
-                      L_rebill_code,
-                      SYSDATE);
+		 INSERT INTO pcs.billing_queue (lab_number,
+										billing_route,
+										billing_type,
+										rebilling,
+										rebill_code,
+										datestamp)
+			  VALUES (L_num,
+					  L_tpp,
+					  NULL,
+					  L_rebilling,
+					  L_rebill_code,
+					  SYSDATE);
       ELSIF (L_billing_choice = DPA)
       THEN
          P_code_area := 'DPA';
@@ -283,18 +283,18 @@ BEGIN
                 AND b.lab_number = L_num
                 AND b.rebilling = L_rebilling;
 
-         INSERT INTO pcs.billing_queue (lab_number,
-                                        billing_route,
-                                        billing_type,
-                                        rebilling,
-                                        rebill_code,
-                                        datestamp)
-              VALUES (L_num,
-                      L_tpp,
-                      NULL,
-                      L_rebilling,
-                      L_rebill_code,
-                      SYSDATE);
+		 INSERT INTO pcs.billing_queue (lab_number,
+										billing_route,
+										billing_type,
+										rebilling,
+										rebill_code,
+										datestamp)
+			  VALUES (L_num,
+					  L_tpp,
+					  NULL,
+					  L_rebilling,
+					  L_rebill_code,
+					  SYSDATE);
       ELSIF (L_billing_choice = PPD)
       THEN
          IF (L_ptype = 'WV')
@@ -545,3 +545,4 @@ EXCEPTION
       COMMIT;
       RAISE;
 END;
+\ 
