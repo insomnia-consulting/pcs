@@ -51,25 +51,10 @@ public class SimpleTestUtil
 {
 	static boolean outNoOthers=false;
 	private static PrintStream m_out;
-	private static Connection dbProc;
 
-	public static void openDB() throws Exception
-	{
-        dbProc=DriverManager.getConnection
-                ("jdbc:oracle:thin:@127.0.0.1:1521:pcsdev",
-                 "pcs",
-                 "ahb21");
-	}
-	
-	public static Statement getStatement() throws Exception
-	{
-		return dbProc.createStatement();
-	}
-	
-	public static void closeDB() throws Exception
-	{
-		dbProc.close();
-	}
+	private static DbConnection conn;
+
+
 	
 	public static void main(String args[]) throws Exception
 	{
@@ -328,7 +313,7 @@ public class SimpleTestUtil
 						{
 							if (connectedCounter==0)
 							{
-								deleteAllCustomPrices();
+								//deleteAllCustomPrices();
 							}
 							
 							//String sql="select  count(*) from pcs.patient_accounts";
@@ -490,11 +475,10 @@ public class SimpleTestUtil
 		PCSLabEntry.main(null);
 	}
 	static Properties props = new Properties();
-	private static DbConnection conn;
+	
 
 	public static DbConnection setUp() throws Exception 
 	{
-
 		Login dbLogin = new Login();
 		dbLogin.dateToday = new Date().toString();
 		dbLogin.driver = "oracle.jdbc.driver.OracleDriver";
@@ -506,20 +490,11 @@ public class SimpleTestUtil
 		props.put("jdbc.connection", dbLogin.URL);
 
 		conn=new DbConnection(dbLogin);
-		System.out.println("conn: "+conn);
 
 		Vector vect=new Vector();
 		Vector params=new Vector();
 		params.add(new com.pacytology.pcs.SQLValue(
 				-2));
-		//XXX not visible
-		//DbConnection.STRING));
-
-		//Vector vect2 = conn.query("select a.DOCTOR_TEXT from lab_requisitions a where rownum<10",params,vect);
-
-		PreparedStatement stat = conn.process().prepareStatement("select DOCTOR_TEXT from lab_requisitions where rownum<10");
-
-		ResultSet rs = stat.executeQuery();
 		return conn;
 	}
 

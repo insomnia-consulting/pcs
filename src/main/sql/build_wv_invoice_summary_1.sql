@@ -4,8 +4,10 @@ procedure     build_WV_invoice_summary_1
    S_month in number,
    cycle in number,
    pgm in varchar2,
-   fromDate in VARCHAR2,
-   toDateExclusive in VARCHAR2   
+   fromLab in number,
+   toLabExclusive in number,
+   curIndex in number,
+   total in number
 )
 as
 
@@ -15,7 +17,7 @@ as
    P_code_area varchar2(32);
 
 
-   S_file_name varchar2(12);
+   S_file_name varchar2(50);
    dir_name varchar2(128);
 
    curr_line varchar2(300);
@@ -96,10 +98,9 @@ as
       and ps.practice=WV_account
       and ps.statement_id=S_month
       and ps.billing_cycle=cycle
-      and a.receive_date>=to_date(fromDate,'YYYY-MM-DD')
-      and a.receive_date<to_date(toDateExclusive,'YYYY-MM-DD')         
+      and a.lab_number>=fromLab
+      and a.lab_number<toLabExclusive
       order by a.lab_number;
-
 
    file_handle UTL_FILE.FILE_TYPE;
    check_point number;
@@ -116,7 +117,7 @@ begin
    cbuf2:=RTRIM(LTRIM(TO_CHAR(cycle)));
 
    cbuf3:=SUBSTR(pgm,1,2);
-   S_file_name:=cbuf1||'.'||cbuf3||'1';
+   S_file_name:=cbuf1||'_'||curIndex||'_of_'||total||'.'||cbuf3||'1';
    dir_name:='REPORTS_DIR';
    file_handle:=UTL_FILE.FOPEN(dir_name,S_file_name,'w');
 
