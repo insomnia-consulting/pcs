@@ -153,10 +153,20 @@ public class PriceUtil {
 	}
 
 
-
+	public static void callWVInvoiceSumm_9(Integer month, int cycle,
+			String pgm) throws Exception 
+	{
+		CallableStatement statement=prepareCall(
+				"{call pcs.build_WV_invoice_summary_1(?,?,?)}");
+		
+		statement.setInt(1,month);
+		statement.setInt(2,cycle);
+		statement.setString(3,pgm);
+	}
+	
 	public static void callWVInvoiceSumm(Integer month, int cycle,
 			String pgm, Integer from, Integer to, int index, int total) throws Exception 
-			{
+	{
 		CallableStatement statement;
 		statement=prepareCall(
 				"{call pcs.build_WV_invoice_summary_1(?,?,?,?,?,?,?)}");
@@ -194,7 +204,7 @@ public class PriceUtil {
 				"select ps.lab_number, pr.price_code, ps.procedure_code  \n"+
 						"from pcs.practice_statement_labs ps  \n"+
 						"inner join pcs.practices pr on pr.practice=ps.practice where \n"+ 
-						"ps.statement_id='201311'  \n"+
+						"ps.statement_id='"+month+"'  \n"+
 						"order by ps.lab_number asc";
 		//"select ps.lab_number, ps.price_code, ps.procedure_code from pcs.practice_statement_labs ps where statement_id='"+month+"' order by ps.lab_number asc";
 
@@ -604,5 +614,8 @@ public class PriceUtil {
 			return discount+base;
 		}
 			}
+
+
+
 
 }
