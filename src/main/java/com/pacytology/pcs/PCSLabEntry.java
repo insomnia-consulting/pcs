@@ -21,7 +21,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.PrintJob;
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,8 +35,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -536,10 +533,6 @@ public class PCSLabEntry extends PcsFrame {
 		WVreportsMenu.setText("WV Reports");
 		WVreportsMenu.setActionCommand("WV Reports");
 		mgmtReptMenu.add(WVreportsMenu);
-		generateInvSummItemFPP.setText("Generate FPP Inv. Summ.");
-		WVreportsMenu.add(generateInvSummItemFPP);
-		generateInvSummItemBCCSP.setText("Generate BCCSP Inv. Summ.");
-		WVreportsMenu.add(generateInvSummItemBCCSP);
 		invSummItemFPP.setText("FPP Inv. Summ.");
 		invSummItemFPP.setActionCommand("FPP Inv. Summ.");
 		WVreportsMenu.add(invSummItemFPP);
@@ -725,8 +718,6 @@ public class PCSLabEntry extends PcsFrame {
 		letterQueueRemoveItem.addActionListener(lSymAction);
 		tissueCodeItem.addActionListener(lSymAction);
 		invSummItemFPP.addActionListener(lSymAction);
-		generateInvSummItemFPP.addActionListener(lSymAction);
-		generateInvSummItemBCCSP.addActionListener(lSymAction);
 		invSummItemBCCSP.addActionListener(lSymAction);
 		hpvItem.addActionListener(lSymAction);
 		eomItem.addActionListener(lSymAction);
@@ -760,8 +751,7 @@ public class PCSLabEntry extends PcsFrame {
 			// to be set to the Look and Feel of the native system.
 			try {
 				UIManager.setLookAndFeel(UIManager
-						.getCrossPlatformLookAndFeelClassName());
-						//.getSystemLookAndFeelClassName());
+						.getSystemLookAndFeelClassName());
 			} catch (Exception e) {
 			}
 			// Create a new instance of our application's frame, and make it
@@ -934,8 +924,6 @@ public class PCSLabEntry extends PcsFrame {
 	JMenuItem invSummMidItem = new JMenuItem();
 	JMenuItem invSummEomItem = new JMenuItem();
 	JMenu WVreportsMenu = new JMenu();
-	JMenuItem generateInvSummItemFPP = new JMenuItem();
-	JMenuItem generateInvSummItemBCCSP = new JMenuItem();
 	JMenuItem invSummItemFPP = new JMenuItem();
 	JMenuItem invSummItemBCCSP = new JMenuItem();
 	JSeparator JSeparator6 = new JSeparator();
@@ -1197,10 +1185,6 @@ public class PCSLabEntry extends PcsFrame {
 				tissueCodeItem_actionPerformed(event);
 			else if (object == invSummItemFPP)
 				invSummItemFPP_actionPerformed(event);
-			else if (object == generateInvSummItemFPP)
-				generateInvSummItemFPP(event);
-			else if (object == generateInvSummItemBCCSP)
-				generateInvSummItemBCCSP(event);
 			else if (object == invSummItemBCCSP)
 				invSummItemBCCSP_actionPerformed(event);
 			else if (object == hpvItem)
@@ -1484,7 +1468,7 @@ public class PCSLabEntry extends PcsFrame {
 		// (new DocListForm(dbLogin)).setVisible(true);
 		DoctorListing d = new DoctorListing(dbLogin);
 	}
-	static int billCounter=0;
+
 	void patBillQueue_actionPerformed(java.awt.event.ActionEvent event) {
 		String query = "SELECT count(*) \n" + "FROM \n"
 				+ "   pcs.lab_requisitions l, pcs.patients p, \n"
@@ -1496,31 +1480,15 @@ public class PCSLabEntry extends PcsFrame {
 				+ "   l.patient=p.patient and \n"
 				+ "   lb.lab_number=bq.lab_number and \n"
 				+ "   bq.billing_route='PAT' and \n"
-				+ "   bq.rebilling=lb.rebilling order by l.lab_number asc \n";
+				+ "   bq.rebilling=lb.rebilling \n";
 		int rv = getCount(query);
 		if (rv > 0) {
 			PrintJob pjob = null;
 			Properties p = new java.util.Properties();
-			
-			String name = "Patient Statement_"+new SimpleDateFormat("MMM_dd_HH_mm").format(new Date())+"_"+(billCounter++);
+			String name = "Patient Statement";
 			pjob = getToolkit().getPrintJob(this, name, p);
 			pStmt = new PatientStatement(dbLogin, pjob);
 			pStmt.printStatements();
-			
-			try {
-				String full="/home/oracle/Desktop/"+(name.replace("Patient ","Patient_"))+".pdf";
-				
-				while (!new File(full).exists())
-				{
-					Thread.sleep(25);
-				}
-				Runtime.getRuntime().exec(new String[]{"mv",
-						full,
-						"/home/oracle/Desktop/reports/"});
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		} else
 			(new ErrorDialog("No Statements to Print")).setVisible(true);
 	}
@@ -1874,13 +1842,6 @@ public class PCSLabEntry extends PcsFrame {
 		printMonthlyReport("uns");
 	}
 
-	void generateMonthlyReport(String ext) {
-		GenerateMonthlyReptDialog dialog = new GenerateMonthlyReptDialog(ext);
-		dialog.setVisible(true);
-		dialog.toFront();
-	}
-	
-	
 	void printMonthlyReport(String ext) {
 		MonthlyReptDialog dialog = new MonthlyReptDialog(ext);
 		dialog.setVisible(true);
@@ -2571,14 +2532,6 @@ public class PCSLabEntry extends PcsFrame {
 		(new TissueCodeForm(dbLogin)).setVisible(true);
 	}
 
-	void generateInvSummItemFPP(ActionEvent event) {
-		generateMonthlyReport("FPP");
-	}
-	
-	void generateInvSummItemBCCSP(ActionEvent event) {
-		generateMonthlyReport("BCCSP");
-	}
-	
 	void invSummItemFPP_actionPerformed(java.awt.event.ActionEvent event) {
 		printMonthlyReport("FP1");
 	}
@@ -2626,3 +2579,4 @@ public class PCSLabEntry extends PcsFrame {
 	}
 
 }
+
