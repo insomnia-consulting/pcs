@@ -1532,7 +1532,7 @@ public class PatientAccountsForm extends PcsFrame
 
 	void releaseDate_keyPressed(java.awt.event.KeyEvent event)
 	{
-		if (event.getKeyCode()==event.VK_ENTER) {
+		if (event.getKeyCode()==KeyEvent.VK_ENTER) {
 		    if (Utils.dateVerify(releaseDate)) {
 		        if (!Utils.afterToday(releaseDate.getText())) {
 		            Utils.createErrMsg("Date entered ["+releaseDate.getText()+

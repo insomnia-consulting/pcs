@@ -235,6 +235,5 @@ exception
 
 end;
 \
-
-grant execute on build_WV_invoice_summary_1 to pcs_user
+grant execute on build_wv_invoice_summary_1 to pcs_user
 \

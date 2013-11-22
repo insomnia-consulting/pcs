@@ -264,7 +264,7 @@ as
       if (rcnt>0) then
          select datestamp,test_sent 
          into H_date,H_test_sent 
-         from pcs.hpv_requests where lab_number=L_num;
+         from pcs.hpv_requests where lab_number=L_num ;
          if (H_date is NOT NULL) then
             CPT_code:=HPV_TEST;
             select base_price into L_item_cost from pcs.price_code_details p where PRICE_CODE=L_price_code and

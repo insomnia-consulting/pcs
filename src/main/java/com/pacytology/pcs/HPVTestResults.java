@@ -746,7 +746,7 @@ public class HPVTestResults extends javax.swing.JDialog
                 "SELECT H.test_sent,H.test_results,NVL(C.first_print,0) \n"+
                 "FROM pcs.hpv_requests H, pcs.cytopath_print_queue C \n"+
                 "WHERE H.lab_number=C.lab_number(+) \n"+
-                "AND H.lab_number = ? \n";
+                "AND H.lab_number = ? \n and H.test_sent <> 'N'";
 	        pstmt = DbConnection.process().prepareStatement(SQL); 
 	        pstmt.setInt(1,lab_number);
 	        ResultSet rs = pstmt.executeQuery();
