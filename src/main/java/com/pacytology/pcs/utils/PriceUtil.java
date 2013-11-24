@@ -155,13 +155,21 @@ public class PriceUtil {
 
 	public static void callWVInvoiceSumm_9(Integer month, int cycle,
 			String pgm) throws Exception 
-	{
+			{
 		CallableStatement statement=prepareCall(
-				"{call pcs.build_WV_invoice_summary_1(?,?,?)}");
-		
-		statement.setInt(1,month);
-		statement.setInt(2,cycle);
-		statement.setString(3,pgm);
+				"{call pcs.build_WV_invoice_summary_9(?,"
+						+ ""
+						+ "?,?)}");
+		try {
+
+			statement.setInt(1,month);
+			statement.setInt(2,cycle);
+			statement.setString(3,pgm);
+			statement.execute();
+		} finally
+		{
+			statement.close();
+		}
 	}
 	
 	public static void callWVInvoiceSumm(Integer month, int cycle,

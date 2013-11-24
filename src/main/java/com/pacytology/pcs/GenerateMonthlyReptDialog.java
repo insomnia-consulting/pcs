@@ -16,14 +16,19 @@ import com.pacytology.pcs.utils.PriceUtil.PriceMonthInfo;
 
 public class GenerateMonthlyReptDialog extends javax.swing.JDialog
 {
+	public static enum WvInvoiceSummaryVariant {One,Nine};
+	
 	String reportName;
 	JTextField statementMonth = new javax.swing.JTextField();
 	JTextField statementYear = new javax.swing.JTextField();
 	JLabel monthLabel = new javax.swing.JLabel();
 	JLabel yearLabel = new javax.swing.JLabel();
+	private WvInvoiceSummaryVariant variant;
+	int cycle=2;
 	
-	public GenerateMonthlyReptDialog()
+	public GenerateMonthlyReptDialog(WvInvoiceSummaryVariant variant)
 	{
+		this.variant=variant;
 		setResizable(false);
 		setModal(true);
 		setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
@@ -53,16 +58,18 @@ public class GenerateMonthlyReptDialog extends javax.swing.JDialog
 		statementYear.addKeyListener(aSymKey);
 	}
 
-	public GenerateMonthlyReptDialog(String reptName)
+	public GenerateMonthlyReptDialog(String reportName,WvInvoiceSummaryVariant variant)
 	{
-		this();
-		this.reportName=reptName;
+		this(variant);
+		this.reportName=reportName;
 		
-		if (reptName.equals("BCC")) {
-			setTitle("WV BCCSP INV SUM");
+		String num=variant==WvInvoiceSummaryVariant.One?"(1)":"(9)";
+		
+		if (reportName.equals("BCCSP")) {
+			setTitle("WV BCCSP INV SUM "+num);
 		}
-		else if (reptName.equals("FPP")) {
-			setTitle("WV FPP INV SUM");
+		else if (reportName.equals("FPP")) {
+			setTitle("WV FPP INV SUM"+num);
 		}
 	}
 
@@ -128,20 +135,42 @@ public class GenerateMonthlyReptDialog extends javax.swing.JDialog
 		if (event.getKeyCode()==event.VK_ENTER) {
 			if (Utils.required(statementYear,"Year")) {
 				try {
-				generateReport();
+					if (variant==WvInvoiceSummaryVariant.One)
+					{
+						generateReport_1();
+					} else if (variant==WvInvoiceSummaryVariant.Nine)
+					{
+						generateReport_9();
+					}
 				} catch (Exception e)
 				{
 					e.printStackTrace();
+				} finally
+				{
+					this.dispose();
 				}
 			}
 		}
 	}
 
-	private void generateReport() throws Exception 
+	private String getMonth()
 	{
 		String month=statementYear.getText()+statementMonth.getText();
+		return month;
+	}
+	
+	private void generateReport_9() throws Exception 
+	{
+		String month=getMonth();
+		Integer i_month=Integer.parseInt(month);
+		PriceUtil.callWVInvoiceSumm_9(i_month,cycle,reportName);
+		
+	}
+
+	private void generateReport_1() throws Exception 
+	{
+		String month=getMonth();
 		PriceMonthInfo priceInfo=PriceUtil.getRangeForMonth(month);
-		int cycle=2;
 		SortedSet<PriceChange> all = priceInfo.getAllPriceChanges(cycle,this.reportName);
 
 		Integer i_month=Integer.parseInt(month);
@@ -168,7 +197,6 @@ public class GenerateMonthlyReptDialog extends javax.swing.JDialog
 		
 		int reports=all.size()+1;
 		JOptionPane.showMessageDialog(null,reports+" report"+(reports==1?"":"s")+" created.","Information",JOptionPane.INFORMATION_MESSAGE);
-		this.dispose();
 	}
 
 	void statementMonth_keyTyped(java.awt.event.KeyEvent event)
