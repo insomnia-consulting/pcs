@@ -373,8 +373,8 @@ public class Export implements Runnable
 		Vector otherVect = extractDetails("OTHER", labReport.detailVect);
 		Vector conditionVect = extractDetails("CONDITION", labReport.detailVect);
 		Vector historyVect = extractDetails("HISTORY", labReport.detailVect);
-		if (labReport.numSources > 0) {
-			writeDetails(sourceVect, conditionVect, fOUT, "SOURCE:");
+		
+			writeSources(sourceVect, conditionVect, fOUT, "SOURCE:");
 			s = new StringBuffer();
 			s.append(Utils.rpad(" ", 50));
 			if (conditionVect.size() > 0
@@ -385,7 +385,7 @@ public class Export implements Runnable
 				fOUT.write(s.toString() + "\n");
 			} else
 				fOUT.write("\n");
-		}
+		
 		s = new StringBuffer();
 		if (labReport.numDevices > 0) {
 			writeDetails(deviceVect, conditionVect, fOUT, "SAMPLING DEVICE:");
@@ -561,7 +561,50 @@ public class Export implements Runnable
 		}
 		return (v);
 	}
-
+	/**
+	 * This code is the same as @see writeDetail() 
+	 * Except it won't print the SOURCE header if one doesn't exist 
+	 * 
+	 * @param src
+	 * @param cnd
+	 * @param fOUT
+	 * @param hdr
+	 */
+	private void writeSources(Vector src, Vector cnd, PrintWriter fOUT,
+			String hdr) {
+		StringBuffer s = new StringBuffer();
+		DetailCodeRec dCodeRec = null;
+		if (src.size() < 1) {
+			hdr = Utils.rpad("", 50);
+		}
+		s.append(Utils.rpad(hdr, 50));
+		if (cnd.size() > 0 && !conditionHeader) {
+			s.append("CONDITIONS:");
+			conditionHeader = true;
+		} else {
+			if (cnd.size() > 0 && conditionsPrinted < cnd.size()) {
+				dCodeRec = (DetailCodeRec) cnd.elementAt(conditionsPrinted++);
+				s.append(dCodeRec.description);
+			}
+		}
+		fOUT.write(s.toString() + "\n");
+		s = new StringBuffer();
+		for (int i = 0; i < src.size(); i++) {
+			dCodeRec = (DetailCodeRec) src.elementAt(i);
+			StringBuffer t = new StringBuffer(dCodeRec.description);
+			if (dCodeRec.additional_info.equals("Y")) {
+				t.append(": ");
+				t.append(dCodeRec.textEntered);
+			}
+			s.append(Utils.rpad(t.toString(), 50));
+			if (cnd.size() > 0 && conditionsPrinted < cnd.size()) {
+				dCodeRec = (DetailCodeRec) cnd.elementAt(conditionsPrinted++);
+				s.append(dCodeRec.description);
+			}
+			fOUT.write(s.toString() + "\n");
+			s = new StringBuffer();
+		}
+	}
 	private void writeDetails(Vector src, Vector cnd, PrintWriter fOUT,
 			String hdr) {
 		StringBuffer s = new StringBuffer();
