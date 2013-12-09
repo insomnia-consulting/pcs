@@ -9,6 +9,7 @@ disconnect
 connect pcs/ahb21@pcs
 
 create or replace directory REPORTS_DIR as '/u01/reports'
+create or replace directory WV_REPORTS_DIR as '/u01/reports/LabInfoSystem/ElectronicReporting/wv'
 /
 drop procedure stupid
 /
