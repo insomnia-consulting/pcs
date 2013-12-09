@@ -23,7 +23,7 @@ public class LabRequisition {
 	 DOCTOR_TEXT										VARCHAR2(128)
 	 */
 
-	
+	private int labNumber ;
 	private Patient patient ;
 	private Practice practice ; 
 	private HpvRequest hpvRequest ; 
@@ -58,6 +58,12 @@ public class LabRequisition {
 
 	public void setPractice(Practice practice) {
 		this.practice = practice;
+	}
+	public int getLabNumber() {
+		return labNumber;
+	}
+	public void setLabNumber(int labNumber) {
+		this.labNumber = labNumber;
 	}
 
 

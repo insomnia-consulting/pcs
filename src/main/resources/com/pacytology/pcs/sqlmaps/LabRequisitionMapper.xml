@@ -6,6 +6,7 @@
 
 	<resultMap  id="labRequisitionResult"
 		type="com.pacytology.pcs.models.LabRequisition">
+		<id property="labNumber" column="lab_number" />
 		<association property="patient" javaType="com.pacytology.pcs.models.Patient"
 			column="patient" select="selectPatientForLabRequisition" />
 		<association property="practice" javaType="com.pacytology.pcs.models.Practice"

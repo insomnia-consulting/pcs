@@ -151,7 +151,7 @@ public class WksheetDialog extends javax.swing.JDialog
 							.prepareCall(
 									"{call pcs.get_patient_history(?,?, ?, ?)}");
 					cstmt.setInt(1, lab.getPatient().getPatient());
-					cstmt.setInt(2, lab.getLabResult().getLabNumber());
+					cstmt.setInt(2, lab.getLabNumber());
 					cstmt.setInt(3, lab.getPractice().getPractice());
 					cstmt.setInt(4, 1) ; 
 					cstmt.executeUpdate();
@@ -162,17 +162,17 @@ public class WksheetDialog extends javax.swing.JDialog
 								"{call pcs.build_hm_worksheets(1, 'copy_wks', ?)}");
 				cstmt.setString(1, Utils.UTL_FILE_DIR);
 				cstmt.executeUpdate();
-				
-				OutputStream out = FileTransfer
-						.getOutputStream(Utils.SERVER_DIR + "copy_wks");
-				FileUtils.writeStringToFile(new File(Utils.TMP_DIR
-						+ "copy_wks"), out.toString());
-				InputStream fileInput = new FileInputStream(Utils.TMP_DIR
-						+ "copy_wks");
-				if (out.toString().length() > 0) {
-					Utils.dotMatrixPrint(fileInput);
-					this.dispose();
-				}
+//				
+//				OutputStream out = FileTransfer
+//						.getOutputStream(Utils.SERVER_DIR + "copy_wks");
+//				FileUtils.writeStringToFile(new File(Utils.TMP_DIR
+//						+ "copy_wks"), out.toString());
+//				InputStream fileInput = new FileInputStream(Utils.TMP_DIR
+//						+ "copy_wks");
+//				if (out.toString().length() > 0) {
+//					Utils.dotMatrixPrint(fileInput);
+//					this.dispose();
+//				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
