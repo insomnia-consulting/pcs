@@ -55,46 +55,46 @@ public class SimpleTestUtil
 	private static DbConnection conn;
 
 
-	
+
 	public static void main(String args[]) throws Exception
 	{
 		if (false)
 		{
-		
+
 			return;
 		}
-		
+
 		if (false)
 		{
 			///bin/sh -c "mv /Desktop/Patient_Statement_namexzz.pdf ~/Desktop/reports/"
-//			Runtime.getRuntime().exec("/bin/sh -c \"mv /home/oracle/Desktop/Patient_Statement_namexzz.pdf /home/oracle/Desktop/reports/\"");
-			
+			//			Runtime.getRuntime().exec("/bin/sh -c \"mv /home/oracle/Desktop/Patient_Statement_namexzz.pdf /home/oracle/Desktop/reports/\"");
+
 			Runtime.getRuntime().exec(new String[]{"mv","/home/oracle/Desktop/Patient_Statement_namexzz.pdf","/home/oracle/Desktop/reports/"});
 			return;
 		}
-		
+
 		if (false)
 		{
-		Thread.sleep(2000); 
-		System.out.println("ok... KeyEvent.VK_LEFT: "+KeyEvent.VK_LEFT);
-		Robot robot=new Robot();
-		robot.keyPress(KeyEvent.VK_LEFT);
-		robot.keyRelease(KeyEvent.VK_LEFT);
-		if (true) return;
+			Thread.sleep(2000); 
+			System.out.println("ok... KeyEvent.VK_LEFT: "+KeyEvent.VK_LEFT);
+			Robot robot=new Robot();
+			robot.keyPress(KeyEvent.VK_LEFT);
+			robot.keyRelease(KeyEvent.VK_LEFT);
+			if (true) return;
 		}
 		System.setProperty("jdbc.connection","jdbc:oracle:thin:@127.0.0.1:1521:pcsdev");
 		System.setProperty("host.ip","127.0.0.1");
 		System.setProperty("host.pwd","123456");
 		System.setProperty("java.io.tmpdir","/tmp/");
 
-		
-		
+
+
 		if (false)
 		{
 			issue77();
 			return;
 		}
-		
+
 		if (false)
 		{
 			new Thread()
@@ -110,7 +110,7 @@ public class SimpleTestUtil
 				}
 			}.start();
 		}
-		
+
 		if (true)
 		{
 			lookForPatientAccounts();
@@ -125,69 +125,69 @@ public class SimpleTestUtil
 		setUp();
 	}
 
-	
+
 
 
 	private static void testPriceCodes() throws Exception 
 	{
 		while (true)
 		{
-		Connection proc1 = DbConnection.process();
-		if (proc1!=null && !proc1.isClosed())
-		{
-		
-		String sql="select  * from price_code_details order by price_code, procedure_code";
-		
-		Statement stmt = DbConnection.process().createStatement();
-		ResultSet rs = stmt.executeQuery(sql);
-		
-		HashSet hash=new HashSet();
-		while (rs.next())
-		{
-			String price=rs.getString("price_code");
-			String proc=rs.getString("procedure_code");
-			String cur=price+"_"+proc;
-			
-			System.out.println("cur: "+cur);
-			if (hash.contains(cur))
+			Connection proc1 = DbConnection.process();
+			if (proc1!=null && !proc1.isClosed())
 			{
-				System.out.println("dupe: "+cur);
-				return;
-			}
-			hash.add(cur);
 
-		}
-		} else
-		{
-			Thread.sleep(25);
-		}
+				String sql="select  * from price_code_details order by price_code, procedure_code";
+
+				Statement stmt = DbConnection.process().createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+
+				HashSet hash=new HashSet();
+				while (rs.next())
+				{
+					String price=rs.getString("price_code");
+					String proc=rs.getString("procedure_code");
+					String cur=price+"_"+proc;
+
+					System.out.println("cur: "+cur);
+					if (hash.contains(cur))
+					{
+						System.out.println("dupe: "+cur);
+						return;
+					}
+					hash.add(cur);
+
+				}
+			} else
+			{
+				Thread.sleep(25);
+			}
 		}
 	}
 
 	private static void issue77() throws Exception 
 	{
 		startConnection();
-		
+
 		if (true) throw new Exception("First, set up some method to copy anything from patient_accounts_in_coll_temp into patient_accounts_in_collection that isn't there."+
-		"\n Then catalog how patient_accounts_in_collection (especially .sent) is populated");
-		
+				"\n Then catalog how patient_accounts_in_collection (especially .sent) is populated");
+
 		String sql="select count(*) from lab_requisitions";
 		Statement stmt = DbConnection.process().createStatement();
 		ResultSet rs = stmt.executeQuery(sql);
 		System.out.println("rs: "+rs.next());
-		
+
 	}
 
 	private static void startConnection() throws Exception
 	{
-        //Connection dbProc = DriverManager.getConnection(
-         //       "jdbc:oracle:thin:@127.0.0.1:1521:pcsdev","pcs","ahb21");
+		//Connection dbProc = DriverManager.getConnection(
+		//       "jdbc:oracle:thin:@127.0.0.1:1521:pcsdev","pcs","ahb21");
 		try {
-		Login log = new Login();
-		log.userName="pcs";
-		log.userPassword="ahb21";
-		
-		new DbConnection(log);
+			Login log = new Login();
+			log.userName="pcs";
+			log.userPassword="abh21";
+
+			new DbConnection(log);
 		} catch (Exception e)
 		{
 			//catching meaningless error
@@ -207,7 +207,7 @@ public class SimpleTestUtil
 			stmt.close();
 		}
 	}
-	
+
 	protected static Object singleValue(String sql, String col) throws Exception
 	{
 		Connection proc = DbConnection.process();
@@ -230,7 +230,6 @@ public class SimpleTestUtil
 		{
 
 		}
-
 		return ret;
 	}
 
@@ -246,14 +245,14 @@ public class SimpleTestUtil
 			public void run()
 			{
 				try {
-				subRun();
+					subRun();
 				} catch (Exception e)
 				{
 					e.printStackTrace();
 				}
-		
+
 			}
-			
+
 			public void subRun()
 			{
 				int cycleCounter=-1;
@@ -303,7 +302,7 @@ public class SimpleTestUtil
 					//"select count(*) from lab_billings";
 					//"select  count(*) from pcs.patient_accounts";
 
-					
+
 					try {
 
 						Connection proc = DbConnection.process();
@@ -315,7 +314,7 @@ public class SimpleTestUtil
 							{
 								//deleteAllCustomPrices();
 							}
-							
+
 							//String sql="select  count(*) from pcs.patient_accounts";
 
 							boolean firstNewVal=true;
@@ -475,7 +474,7 @@ public class SimpleTestUtil
 		PCSLabEntry.main(null);
 	}
 	static Properties props = new Properties();
-	
+
 
 	public static DbConnection setUp() throws Exception 
 	{
@@ -484,7 +483,7 @@ public class SimpleTestUtil
 		dbLogin.driver = "oracle.jdbc.driver.OracleDriver";
 		dbLogin.URL = "jdbc:oracle:thin:@192.168.0.103:1521:pcsdev";
 		dbLogin.userName = "pcs";
-		dbLogin.userPassword = "ahb21";
+		dbLogin.userPassword = "abh21";
 		props.put("username", dbLogin.userName);
 		props.put("password", dbLogin.userPassword);
 		props.put("jdbc.connection", dbLogin.URL);
@@ -611,13 +610,19 @@ public class SimpleTestUtil
 			public void mousePressed(MouseEvent e)
 			{
 				Component comp = (Component) e.getSource();
-				System.out.println("------------- "+mouseCounter+" -----------\n"+e.getSource()+":\nbounds: "+comp.getBounds());
 
-				String text=getText(comp);
+				boolean output=false;
 
-				if (text!=null)
+				if (output)
 				{
-					System.out.println("Text: '"+text+"'");
+					System.out.println("------------- "+mouseCounter+" -----------\n"+e.getSource()+":\nbounds: "+comp.getBounds());
+
+					String text=getText(comp);
+
+					if (text!=null)
+					{
+						System.out.println("Text: '"+text+"'");
+					}
 				}
 				mouseCounter++;
 
@@ -655,7 +660,7 @@ public class SimpleTestUtil
 		{
 			return ((JCheckBox)comp).getText();
 		}
-		
+
 		return null;
 
 	}

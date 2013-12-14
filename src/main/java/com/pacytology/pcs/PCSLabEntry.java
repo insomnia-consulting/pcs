@@ -541,10 +541,6 @@ public class PCSLabEntry extends PcsFrame {
 		WVreportsMenu.add(generateInvSummItemFPP);
 		generateInvSummItemBCCSP.setText("Generate BCCSP Inv. Summ.");
 		WVreportsMenu.add(generateInvSummItemBCCSP);
-		generateInvSummItemFPP_9.setText("Generate FPP Inv. Summ. (9)");
-		WVreportsMenu.add(generateInvSummItemFPP_9);
-		generateInvSummItemBCCSP_9.setText("Generate BCCSP Inv. Summ. (9)");
-		WVreportsMenu.add(generateInvSummItemBCCSP_9);		
 		invSummItemFPP.setText("FPP Inv. Summ.");
 		invSummItemFPP.setActionCommand("FPP Inv. Summ.");
 		WVreportsMenu.add(invSummItemFPP);
@@ -732,8 +728,6 @@ public class PCSLabEntry extends PcsFrame {
 		invSummItemFPP.addActionListener(lSymAction);
 		generateInvSummItemFPP.addActionListener(lSymAction);
 		generateInvSummItemBCCSP.addActionListener(lSymAction);
-		generateInvSummItemFPP_9.addActionListener(lSymAction);
-		generateInvSummItemBCCSP_9.addActionListener(lSymAction);
 		invSummItemBCCSP.addActionListener(lSymAction);
 		hpvItem.addActionListener(lSymAction);
 		eomItem.addActionListener(lSymAction);
@@ -943,8 +937,6 @@ public class PCSLabEntry extends PcsFrame {
 	JMenu WVreportsMenu = new JMenu();
 	JMenuItem generateInvSummItemFPP = new JMenuItem();
 	JMenuItem generateInvSummItemBCCSP = new JMenuItem();
-	JMenuItem generateInvSummItemFPP_9 = new JMenuItem();
-	JMenuItem generateInvSummItemBCCSP_9 = new JMenuItem();
 	JMenuItem invSummItemFPP = new JMenuItem();
 	JMenuItem invSummItemBCCSP = new JMenuItem();
 	JSeparator JSeparator6 = new JSeparator();
@@ -1210,10 +1202,6 @@ public class PCSLabEntry extends PcsFrame {
 				generateInvSummItemFPP(event);
 			else if (object == generateInvSummItemBCCSP)
 				generateInvSummItemBCCSP(event);
-			else if (object == generateInvSummItemFPP_9)
-				generateInvSummItemFPP_9(event);
-			else if (object == generateInvSummItemBCCSP_9)
-				generateInvSummItemBCCSP_9(event);
 			else if (object == invSummItemBCCSP)
 				invSummItemBCCSP_actionPerformed(event);
 			else if (object == hpvItem)
@@ -1888,17 +1876,10 @@ public class PCSLabEntry extends PcsFrame {
 	}
 
 	void generateMonthlyReport(String ext) {
-		GenerateMonthlyReptDialog dialog = new GenerateMonthlyReptDialog(ext, WvInvoiceSummaryVariant.One);
+		GenerateMonthlyReptDialog dialog = new GenerateMonthlyReptDialog(ext, WvInvoiceSummaryVariant.Both);
 		dialog.setVisible(true);
 		dialog.toFront();
 	}
-	
-	void generateMonthlyReport_9(String ext) {
-		GenerateMonthlyReptDialog dialog = new GenerateMonthlyReptDialog(ext,WvInvoiceSummaryVariant.Nine);
-		dialog.setVisible(true);
-		dialog.toFront();
-	}
-	
 	
 	void printMonthlyReport(String ext) {
 		MonthlyReptDialog dialog = new MonthlyReptDialog(ext);
@@ -2596,14 +2577,6 @@ public class PCSLabEntry extends PcsFrame {
 	
 	void generateInvSummItemBCCSP(ActionEvent event) {
 		generateMonthlyReport("BCCSP");
-	}
-	
-	void generateInvSummItemFPP_9(ActionEvent event) {
-		generateMonthlyReport_9("FPP");
-	}
-	
-	void generateInvSummItemBCCSP_9(ActionEvent event) {
-		generateMonthlyReport_9("BCCSP");
 	}
 	
 	void invSummItemFPP_actionPerformed(java.awt.event.ActionEvent event) {
