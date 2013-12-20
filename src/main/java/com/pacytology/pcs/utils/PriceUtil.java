@@ -83,15 +83,21 @@ public class PriceUtil {
 			}
 			return false;
 		}
-		public SortedSet<PriceChange> getAllPriceChanges(int cycle, String program) throws Exception 
+		public SortedSet<PriceChange> getAllPriceChanges(int cycle, String program, String month) throws Exception 
 		{
 			SortedSet<PriceChange> all = new TreeSet();
 
 			for (String priceAndProcedure[] : this.getPricesAndProcedures())
 			{
+				if (priceAndProcedure[0].equals("T") && priceAndProcedure[1].equals("88142"))
+				{
+					int x=1;
+				}
+				
 				List<PriceChange> current = getPriceChanges(priceAndProcedure[0],priceAndProcedure[1],
 						range[0],range[1],
-						true,cycle,null,program);
+						true,cycle,null,month,program);
+				
 				all.addAll(current);
 			}
 			return all;
@@ -117,7 +123,7 @@ public class PriceUtil {
 				int cycle=2;
 				Integer[] range = priceInfo.getRange();
 
-				SortedSet<PriceChange> all = priceInfo.getAllPriceChanges(cycle,program);
+				SortedSet<PriceChange> all = priceInfo.getAllPriceChanges(cycle,program,month);
 
 				System.out.println("Number of changes: "+all.size()+"\n"+all);
 
@@ -221,7 +227,7 @@ public class PriceUtil {
 
 		ResultSet rs = statement.executeQuery(sql);
 
-
+		//TODO this could be more efficient
 		Integer[] labs=null;
 		while (rs.next())
 		{
@@ -410,6 +416,7 @@ public class PriceUtil {
 			boolean exclusiveTo,
 			Integer cycle, 
 			Map<String,Float>expectedChanges,
+			String month,
 			String program) throws Exception 
 			{
 		List<PriceChange> ret=new ArrayList();
@@ -422,6 +429,7 @@ public class PriceUtil {
 		String cycleSql="";
 		String fromQuery="";
 		String toQuery="";
+		String monthSql="";
 
 		procedures=" ps.procedure_code = '"+procCode+"'  ";
 
@@ -441,11 +449,16 @@ public class PriceUtil {
 		{
 			cycleSql=" ps.billing_cycle="+cycle+" ";
 		}
+		
+		if (month!=null)
+		{
+			monthSql=" ps.statement_id='"+month+"' ";
+		}
 
 		String programSql = " pr.program= '"+program+"' ";
 
 		String addl=combineWhereExpressions(practiceTypeSql,procedures,prices,
-				cycleSql,labFromSql,labToSql,fromQuery,toQuery,programSql);
+				cycleSql,labFromSql,labToSql,fromQuery,toQuery,programSql,monthSql);
 
 		String query="select lr.receive_date, ps.date_collected,\n"+
 				" ps.item_amount, ps.lab_number from \n"+
@@ -581,7 +594,18 @@ public class PriceUtil {
 			select=select.replace("TO_LAB","");
 		}
 
-		String selectDiscount=select.replace("PRICE_AMT",""+previousDiscount);
+		//Special case for a bug.
+		
+		String selectDiscount;
+		if (fromLabNumber==2013057609)
+		{
+			selectDiscount=select.replace("ps.item_amount=PRICE_AMT","(ps.item_amount=12.85 or ps.item_amount=11.95)");
+		} else
+		{
+			selectDiscount=select.replace("PRICE_AMT",""+previousDiscount);
+		}
+		
+
 		String selectBase=select.replace("PRICE_AMT",""+previousBase);
 
 		if (update)
