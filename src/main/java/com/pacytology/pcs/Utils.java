@@ -1499,8 +1499,8 @@ public class Utils {
 		}
 		return printService;
 	}
-	public static byte[] concatenate(List<File> files, int i) throws FileNotFoundException, IOException {
-		PrintWriter pw = new PrintWriter(new FileOutputStream(Utils.TMP_DIR + "concat"+i+".txt"));
+	public static byte[] concatenate(List<File> files, int filenameIndicator) throws FileNotFoundException, IOException {
+		PrintWriter pw = new PrintWriter(new FileOutputStream(Utils.TMP_DIR + "concat"+filenameIndicator+".txt"));
 		
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         for (File file : files) {

@@ -258,18 +258,20 @@ public class DocStmtDialog extends PcsDialog
 	{
         try  {
 
-            String SQL = 
-                "SELECT to_char(parent_account, '009'), TO_CHAR(practice,'009'), statement_copies \n"+
-                "FROM pcs.practices ";
-
-            if (reprintBox.isSelected()) {
-            	SQL+=" WHERE parent_account >="+startPracticeNumber.getText()+"\n";   
-            }
-
-            SQL+=" ORDER BY ";
-            if (!reportType.equals("STATEMENT")) SQL += "parent_account, practice \n";
-            else SQL += "statement_copies,practice \n";
-            Statement stmt = DbConnection.process().createStatement();
+        	String SQL = "SELECT to_char(parent_account, '009'), TO_CHAR(practice,'009'), statement_copies \n"
+					+ "FROM pcs.practices ";
+			
+			if (reprintBox.isSelected()) {
+				SQL += " WHERE (parent_account is null or parent_account = -1) and parent_account >= "
+						+ startPracticeNumber.getText() + "\n";
+			}
+			SQL += " WHERE (parent_account is not null and parent_account <> -1) " ; 
+			SQL += " ORDER BY ";
+			if (!reportType.equals("STATEMENT"))
+				SQL += "parent_account, practice \n";
+			else
+				SQL += "statement_copies,practice \n";
+			Statement stmt = DbConnection.process().createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
             
             String tempParent = "" ; 
@@ -278,8 +280,10 @@ public class DocStmtDialog extends PcsDialog
 			while (hasRecord) { 
 				List<File> files = new ArrayList<File>();
 				tempParent = rs.getString(1) ; 
-				while (hasRecord && tempParent.equals(rs.getString(1)))  {
-
+				final int maxFileSize = 20 ; 
+				int maxFileCounter = 0 ; 
+				while (hasRecord && tempParent.equals(rs.getString(1)) && maxFileCounter < maxFileSize)  {
+					
 					tempParent = rs.getString(1);
 					String prac = rs.getString(2).trim();
 
@@ -300,6 +304,7 @@ public class DocStmtDialog extends PcsDialog
 					File printFile = FileTransfer.getFile(Utils.TMP_DIR,
 							Utils.SERVER_DIR, fName);
 					if (printFile != null) {
+						maxFileCounter++ ; 
 						files.add(printFile);
 					}
 
