@@ -143,6 +143,7 @@ BEGIN
       THEN
          
 		 P_code_area := 'BS';
+		 dbms_output.put_line('CODE AREA '||P_code_area);
          pcs.pbs_rules (L_num, L_billing_choice);
 
          SELECT NVL (MIN (a.tpp), 'PPR')
@@ -167,6 +168,7 @@ BEGIN
       ELSIF (L_billing_choice = MED)
       THEN
          P_code_area := 'MED';
+		 dbms_output.put_line('CODE AREA '||P_code_area);
          pcs.med_rules (L_num, L_billing_choice);
 
          SELECT pap_class
@@ -196,6 +198,7 @@ BEGIN
       ELSIF (L_billing_choice = DOC)
       THEN
          P_code_area := 'DOC';
+		 dbms_output.put_line('CODE AREA '||P_code_area);
          pcs.doc_rules (L_num, L_billing_choice);
 
 		 INSERT INTO pcs.billing_queue (lab_number,
@@ -213,6 +216,7 @@ BEGIN
       ELSIF (L_billing_choice = DB)
       THEN
          P_code_area := 'DB';
+		 dbms_output.put_line('CODE AREA '||P_code_area);
          rcnt := 0;
 
          IF (L_ptype = 'WV')
@@ -225,8 +229,10 @@ BEGIN
 
          IF (rcnt = 1)
          THEN
+		 	dbms_output.put_line('doc_rules in CODE AREA '||P_code_area);
             pcs.doc_rules (L_num, L_billing_choice);
-         ELSE
+		ELSE
+			dbms_output.put_line('default_rules in CODE AREA '||P_code_area);
             pcs.default_rules (L_num, L_billing_choice);
          END IF;
 
@@ -248,8 +254,10 @@ BEGIN
 
          IF (L_carrier IN (HIGHMARK_WV, CAPITAL_BC))
          THEN
+		 	dbms_output.put_line('pbs_rules in CODE AREA '||P_code_area);
             pcs.pbs_rules (L_num, L_billing_choice);
-         ELSE
+		ELSE
+			dbms_output.put_line('default_rules in CODE AREA '||P_code_area);
             pcs.default_rules (L_num, L_billing_choice);
          END IF;
 
@@ -275,6 +283,7 @@ BEGIN
       ELSIF (L_billing_choice = DPA)
       THEN
          P_code_area := 'DPA';
+		 dbms_output.put_line('default_rules in CODE AREA '||P_code_area);
          pcs.default_rules (L_num, L_billing_choice);
 
          SELECT NVL (MIN (a.tpp), 'PPR')
@@ -300,13 +309,16 @@ BEGIN
       THEN
          IF (L_ptype = 'WV')
          THEN
+		 	dbms_output.put_line('doc_rules in CODE AREA '||P_code_area);
             pcs.doc_rules (L_num, L_billing_choice);
-         ELSE
+		ELSE
+			dbms_output.put_line('default_rules in CODE AREA '||P_code_area);
             pcs.default_rules (L_num, L_billing_choice);
          END IF;
       END IF;
    ELSE
       P_code_area := 'PRC';
+	  dbms_output.put_line('default_rules in CODE AREA '||P_code_area);
       pcs.default_rules (L_num, L_billing_choice);
 
       UPDATE pcs.lab_billing_items

@@ -10,21 +10,44 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Vector;
 
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
 
+
+import org.apache.ibatis.session.SqlSession;
+
+import com.pacytology.pcs.actions.LabFormActionMap;
+
 import com.pacytology.pcs.actions.PriceListFormActionMap;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import com.pacytology.pcs.utils.PriceUtil;
+
 import com.pacytology.pcs.utils.PriceUtil.PriceCodeDetails;
+
+import com.pacytology.pcs.utils.PriceUtil.PriceChange;
+import com.pacytology.pcs.utils.PriceUtil.PriceCodeDetails;
+
+import java.sql.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
 
 
 public class PriceListForm extends PcsFrame
 {
-    public Login dbLogin;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 4223809440347024933L;
+	public Login dbLogin;
     public int MAX_PRICE_CODES=0;
     public PriceArray[] priceCodes;
     public int MAX_PROC_CODES=0;
@@ -747,13 +770,12 @@ public class PriceListForm extends PcsFrame
             double newBase=Double.valueOf(basePrice.getText()).doubleValue();
             double newDiscount=Double.valueOf(discountPrice.getText()).doubleValue();
             
-            
             boolean rv=updatePricing(codeList.getSelectedIndex(),priceNdx, i_labNumber,newBase,newDiscount);
             if (rv==true) {
                 priceCodes[priceNdx].pricing[baseList.getSelectedIndex()].base_price =
-                    Double.valueOf(basePrice.getText()).doubleValue();
+                    newBase;
                 priceCodes[priceNdx].pricing[discountList.getSelectedIndex()].discount_price =
-                    Double.valueOf(discountPrice.getText()).doubleValue();
+                    newDiscount;
             }
             displayList(codeList.getSelectedIndex(),priceNdx);
 	        currMode=Lab.IDLE;
@@ -966,7 +988,7 @@ public class PriceListForm extends PcsFrame
                     "   pcs.price_codes b \n"+
                     "WHERE \n"+
                     "   a.price_code=b.price_code and \n"+
-                    "   a.lab_number= (select max(lab_number) from  pcs.price_code_details c where c.price_code = b.price_code and c.procedure_code= a.procedure_code or c.lab_number=0) \n"+
+                    "   a.lab_number= (select max(lab_number) from  price_code_details c where c.price_code = b.price_code and c.procedure_code= a.procedure_code or c.lab_number=0) \n"+
                     "ORDER BY a.price_code,a.procedure_code";
                 
                 MAX_PRICE_CODES=rowsReturned;
@@ -1000,6 +1022,8 @@ public class PriceListForm extends PcsFrame
 		forceUpper(event);
 	}
 	
+
+
 	/**
 	 * This method seems overly complicated (why not just update all the prices after the labNumber, for instance?)  But
 	 * the problem is that any special cases, of which I'm uncertain of, will get overwritten as well.
@@ -1036,7 +1060,9 @@ public class PriceListForm extends PcsFrame
             	}
             }
             
+
             try {
+
             	String del="delete from pcs.price_code_details where "+
             			"price_code= '"+priceCode+ "' and procedure_code= '"+procedureCode+"' "+
             			" and lab_number = "+labNumber;
@@ -1046,7 +1072,8 @@ public class PriceListForm extends PcsFrame
             	statement.executeUpdate(del);
             	statement.close();
             	
-            	
+
+
             	//This goes through once to get the count,
             	//and a second time to actually update.
             	for (int index=0;index<2;index++)
@@ -1059,7 +1086,6 @@ public class PriceListForm extends PcsFrame
             			int accept = JOptionPane.showConfirmDialog(null,
             					"There will be "+count+" update"+(count==1?"":"s")+" once this change is made.","Confirm Changes",
             					JOptionPane.YES_NO_OPTION);
-            			
 
             			if (accept==JOptionPane.NO_OPTION)
             			{
@@ -1073,7 +1099,6 @@ public class PriceListForm extends PcsFrame
             			"('"+priceCode+ "','"+procedureCode+"',"+
             			base+","+discount+",SysDate,UID,"+labNumber+")";
 
-            	statement = DbConnection.process().createStatement();
             	
             	int rs=statement.executeUpdate(insert);
             	statement.close();

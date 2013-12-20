@@ -534,9 +534,7 @@ are added to the lab.
                 				   AND procedure_code = CPT_code);
 
          /*
-            Check for special charges (see other comment for additional
-
-            information).
+            Check for special charges (see other comment for additional               information).
          */
          IF (L_payer IS NOT NULL)
          THEN
@@ -592,14 +590,14 @@ the carrier is going to pay for the testing.
    THEN
       pcs.diagnosis_update (L_num);
    END IF;
---exception
---   when OTHERS then
---      P_error_code:=SQLCODE;
---      P_error_message:=SQLERRM;
---      insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)
---      values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,L_num);
---      commit;
---      RAISE;
+exception
+   when OTHERS then
+      P_error_code:=SQLCODE;
+      P_error_message:=SQLERRM;
+      insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)
+      values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,L_num);
+      commit;
+      RAISE;
 
 END;
 \

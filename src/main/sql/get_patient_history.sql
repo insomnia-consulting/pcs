@@ -100,7 +100,7 @@ begin
 		 from pcs.history_match_queue where lab_match=M_lab;
 		dbms_output.put_line('GPH: Found Matches '||rcnt||'  for '||to_char(M_lab));
 	 	if (rcnt=0) then
-	 		dbms_output.put_line('GPH: Staring inserting for '||to_char(rcnt)||' rows');
+	 		dbms_output.put_line('GPH: Starting inserting for '||to_char(rcnt)||' rows');
 		    insert into pcs.history_match_queue
 		      (lab_number,lab_match,patient,m_level,sys_user,printed)
 		    values (P_lab_number,M_lab,P_patient,M_level,UID,P_mode);
@@ -130,7 +130,7 @@ begin
 	 select count(*) into rcnt
 	 from pcs.history_match_queue where lab_match=M_lab;
 	 if (rcnt=0) then
-
+		dbms_output.put_line('GPH: Inserting history_match_queue match print_mode:  '||P_mode);	
 	    insert into pcs.history_match_queue
 	      (lab_number,lab_match,patient,m_level,sys_user,printed)
 	    values (P_lab_number,M_lab,P_patient,M_level,UID,P_mode);
@@ -171,6 +171,7 @@ begin
       select count(*) into rcnt from pcs.history_match_queue where lab_match=M_lab;
 
       if (rcnt=0 and M_level>0) then
+	  			dbms_output.put_line('GPH: Inserting history_match_queue match print_mode:  '||P_mode);	
 	 insert into pcs.history_match_queue
 	    (lab_number,lab_match,patient,m_level,sys_user,printed)
 	 values (P_lab_number,M_lab,P_patient,M_level,UID,P_mode);

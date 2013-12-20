@@ -29,7 +29,7 @@ BEGIN
     selected at data entry.  The code is typically 19 or 20.  Use
     of the letter Y is obsolete.  A code of R indicates HPV test
     should be done (R)egardless of the lab results.
-        */
+     */
 
    SELECT COUNT (*)
      INTO rcnt
