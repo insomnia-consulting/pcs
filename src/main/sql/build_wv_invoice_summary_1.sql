@@ -32,7 +32,7 @@ as
    WV_state varchar2(2);
    WV_zip varchar2(5);
    WV_price varchar2(2);
-
+	tran_labnumber varchar2(11);
    tran_DOS varchar2(16);
    tran_SSN varchar2(16);
    tran_patient varchar2(32);
@@ -79,6 +79,7 @@ as
 
    cursor transaction_list is
       select
+     a.lab_number,
 	 to_char(ps.date_collected,'MM/DD/YY'),
 	 SUBSTR(p.ssn,1,3)||'-'||SUBSTR(p.ssn,4,2)||'-'||SUBSTR(p.ssn,6),
 	 SUBSTR(ps.patient_name,1,19),
@@ -172,15 +173,16 @@ begin
 
       loop
 	 fetch transaction_list into
-	    tran_DOS,tran_SSN,tran_patient,tran_CPT,tran_descr,
+	    tran_labnumber, tran_DOS,tran_SSN,tran_patient,tran_CPT,tran_descr,
 	    tran_item,tran_cost;
 	 exit when transaction_list%NOTFOUND;
 	 curr_line:=RPAD(tran_DOS,9)||RPAD(tran_SSN,13)||RPAD(tran_patient,21)||
-	    tran_CPT||'-'||RPAD(tran_descr,24)||LPAD(tran_item,7);
+	    tran_CPT||'-'||RPAD(tran_descr,24)||LPAD(tran_item,7)||tran_labnumber;
 	 UTL_FILE.PUTF(file_handle,'%s\n',curr_line); line_num:=line_num+1;
 	 tran_total:=tran_total+tran_cost;
       end loop;
       close transaction_list;
+      
       cbuf1:=TO_CHAR(tran_total,'99,999.00');
       curr_line:=LPAD(cbuf1,80);
 
@@ -233,6 +235,4 @@ exception
       RAISE;
 
 end;
-\
-grant execute on build_wv_invoice_summary_1 to pcs_user
 \

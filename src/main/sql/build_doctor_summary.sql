@@ -17,7 +17,7 @@ AS
    P_csz                                   VARCHAR2 (80);
    P_parent                                NUMBER (6);
    P_e_reporting                           CHAR (1);
-   P_program								VARCHAR2(16);
+   P_program                               VARCHAR2 (16);
    P_type                                  VARCHAR2 (32);
    P_print_doctors                         CHAR (1);
    P_print_hpv                             CHAR (1);
@@ -100,8 +100,10 @@ AS
    -- File variables
    file_handle                             UTL_FILE.FILE_TYPE;
    directory_name                          VARCHAR2 (256);
+   wv_directory_name                       VARCHAR2 (256);
 
-   file_name                               VARCHAR2 (256);
+   print_file_name                         VARCHAR2 (256);
+   trans_file_name                         VARCHAR2 (256);
    file_extension                          VARCHAR2 (256);
 
    CURSOR pap_class_list
@@ -191,8 +193,8 @@ BEGIN
           parent_account,
           practice_type,
           e_reporting,
-		  program,
-		  hpv_on_summary,
+          program,
+          hpv_on_summary,
           print_doctors
      INTO P_name,
           P_address1,
@@ -203,7 +205,7 @@ BEGIN
           P_parent,
           P_type,
           P_e_reporting,
-		  P_program,
+          P_program,
           P_print_hpv,
           P_print_doctors
      FROM pcs.practices
@@ -366,28 +368,37 @@ BEGIN
    --   <YY>  = 09
    --    so the file name would be:  56708209.sum
    directory_name := 'REPORTS_DIR';
+   wv_directory_name := 'WV_REPORTS_DIR';
    file_extension := '.sum';
 
    -- Need to decide here if the file needs to be printed
-   -- Those that don't need printed are 'WV' and practice not marked as 'B'
-   IF ( (P_type = 'WV') AND (P_e_reporting <> 'B'))
+   -- Those need printed are not marked as 'N', 'B' needs printed and transmitted, 'Y' is just transmitted
+   -- prepare both filenames.. if e_reporting is a 'B' then at the end of the procedure we copy from one file to the other; otherwise, we just use one filename
+   trans_file_name :=
+         LTRIM (RTRIM (TO_CHAR (P_parent, '009')))
+      || '_'
+      || P_program
+      || '_'
+      || SUBSTR (TO_CHAR (S_month), 1, 4)
+      || SUBSTR (TO_CHAR (S_month), 5, 2)
+      || file_extension;
+   print_file_name :=
+         LTRIM (RTRIM (TO_CHAR (S_practice, '009')))
+      || SUBSTR (TO_CHAR (S_month), 5, 2)
+      || SUBSTR (TO_CHAR (S_month), 1, 1)
+      || SUBSTR (TO_CHAR (S_month), 3, 2)
+      || file_extension;
+
+   IF (P_e_reporting = 'Y' OR P_e_reporting = 'B')
    THEN
-      file_name :=
-            LTRIM (RTRIM (TO_CHAR (P_parent, '009')))
-		|| '_' || P_program || '_'  
-         || SUBSTR (TO_CHAR (S_month), 1, 4)
-         || SUBSTR (TO_CHAR (S_month), 5, 2)
-         || file_extension;
-      file_handle := UTL_FILE.FOPEN (directory_name, file_name, 'w');
-  ELSE
-  	-- Does a weird thing with S_month to get a 3 digit year.
-      file_name :=
-            LTRIM (RTRIM (TO_CHAR (S_practice, '009')))
-         || SUBSTR (TO_CHAR (S_month), 5, 2)
-         || SUBSTR (TO_CHAR (S_month), 1, 1)
-         || SUBSTR (TO_CHAR (S_month), 3, 2)
-         || file_extension;
-      file_handle := UTL_FILE.FOPEN (directory_name, file_name, 'w');
+      --TRANSMITTED
+
+      file_handle := UTL_FILE.FOPEN (wv_directory_name, trans_file_name, 'w');
+   ELSE
+      --PRINTED
+      -- Does a weird thing with S_month to get a 3 digit year.
+
+      file_handle := UTL_FILE.FOPEN (directory_name, print_file_name, 'w');
    END IF;
 
    P_code_area := 'WRITE PG1 HEADING';
@@ -848,9 +859,17 @@ BEGIN
 
    UTL_FILE.FCLOSE (file_handle);
 
+   IF (P_e_reporting = 'B')
+   THEN
+      UTL_FILE.FCOPY (wv_directory_name,
+                      trans_file_name,
+                      directory_name,
+                      print_file_name);
+   END IF;
+
   <<exit_point>>
    COMMIT;
-EXCEPTION
+   EXCEPTION
    WHEN UTL_FILE.INVALID_PATH
    THEN
       UTL_FILE.FCLOSE (file_handle);
@@ -862,7 +881,6 @@ EXCEPTION
    WHEN UTL_FILE.INVALID_FILEHANDLE
    THEN
       UTL_FILE.FCLOSE (file_handle);
-
       RAISE_APPLICATION_ERROR (-20053, 'invalid file handle');
    WHEN UTL_FILE.INVALID_OPERATION
    THEN
@@ -880,9 +898,7 @@ EXCEPTION
    THEN
       UTL_FILE.FCLOSE (file_handle);
       P_error_code := SQLCODE;
-
       P_error_message := SQLERRM;
-
       INSERT INTO pcs.error_log (ERROR_CODE,
                                  error_message,
                                  proc_name,
@@ -897,11 +913,9 @@ EXCEPTION
                    SYSDATE,
                    UID,
                    S_practice);
-
       COMMIT;
       RAISE;
-END ; 
+END;
 \
-
-grant execute on build_doctor_summary to pcs_user 
+grant execute on build_doctor_summary to pcs_user
 \

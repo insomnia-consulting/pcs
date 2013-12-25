@@ -1508,20 +1508,7 @@ public class PCSLabEntry extends PcsFrame {
 			pStmt = new PatientStatement(dbLogin, pjob);
 			pStmt.printStatements();
 			
-			try {
-				String full="/home/oracle/Desktop/"+(name.replace("Patient ","Patient_"))+".pdf";
-				
-				while (!new File(full).exists())
-				{
-					Thread.sleep(25);
-				}
-				Runtime.getRuntime().exec(new String[]{"mv",
-						full,
-						"/home/oracle/Desktop/reports/"});
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 		} else
 			(new ErrorDialog("No Statements to Print")).setVisible(true);
 	}

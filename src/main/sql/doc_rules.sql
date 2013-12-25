@@ -57,7 +57,7 @@ BEGIN
    P_proc_name := 'DOC_RULES';
 
    P_code_area := 'GET DECISION DATA';
-
+dbms_output.put_line('DOC_RULES code area: '||P_code_area);
    SELECT practice, slide_qty, preparation
      INTO L_practice, L_num_slides, L_prep
      FROM pcs.lab_requisitions
@@ -86,7 +86,7 @@ BEGIN
       determine which code to use.
    */
    P_code_area := 'GET CPT CODE';
-
+	dbms_output.put_line('DOC_RULES code area: '||P_code_area);
    IF (L_prep = CONVENTIONAL)
    THEN
       IF (L_num_slides = 3)
@@ -180,7 +180,7 @@ BEGIN
       are stored in the table lab_mat_index.
    */
    P_code_area := 'MAT INDEX';
-
+dbms_output.put_line('DOC_RULES code area: '||P_code_area);
    SELECT COUNT (*)
      INTO rcnt
      FROM pcs.lab_mat_index
@@ -241,7 +241,7 @@ BEGIN
   */
   <<HPV_SECTION>>
    P_code_area := 'HPV';
-
+	dbms_output.put_line('DOC_RULES code area: '||P_code_area);
    SELECT COUNT (*)
      INTO rcnt
      FROM pcs.hpv_requests
@@ -257,7 +257,7 @@ BEGIN
       IF (H_date IS NOT NULL)
       THEN
          CPT_code := HPV_TEST;
-
+	     dbms_output.put_line('Looking for special charges');
          /*
             Check for special charges (see other comment for additional
             information.
@@ -273,7 +273,8 @@ BEGIN
               INTO L_item_cost
               FROM pcs.special_charges
              WHERE payer_id = L_payer AND procedure_code = CPT_code;
-         ELSE
+		 ELSE
+		    dbms_output.put_line('Looking for item cost');
             SELECT discount_price
               INTO L_item_cost
               FROM pcs.price_code_details p
@@ -297,7 +298,7 @@ BEGIN
          THEN
             L_item_cost := 0;
          END IF;
-
+		dbms_output.put_line('Inserting into lab_billing_items'||CPT_code);
          INSERT INTO pcs.lab_billing_items (lab_number,
                                             price_code,
                                             procedure_code,
@@ -315,7 +316,7 @@ EXCEPTION
    THEN
       P_error_code := SQLCODE;
       P_error_message := SQLERRM;
-
+	  dbms_output.put_line('Error: '||P_error_message);
       INSERT INTO pcs.error_log (ERROR_CODE,
                                  error_message,
                                  proc_name,
