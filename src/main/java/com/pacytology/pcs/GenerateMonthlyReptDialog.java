@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.KeyAdapter;
+import java.util.Date;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -193,6 +194,7 @@ public class GenerateMonthlyReptDialog extends javax.swing.JDialog
 		SortedSet<PriceChange> all = priceInfo.getAllPriceChanges(cycle,this.reportName,month);
 		Integer i_month=Integer.parseInt(month);
 		Integer[] range = priceInfo.getRange();
+		Date[] receivedRange = priceInfo.getReceivedRange();
 
 		int reports;
 		if (pricesAndProcs.size()==0)
@@ -201,21 +203,21 @@ public class GenerateMonthlyReptDialog extends javax.swing.JDialog
 		} else
 		if (all.size()==0)
 		{
-			PriceUtil.callWVInvoiceSumm(i_month,cycle,reportName,range[0],range[1],1,1);
+			PriceUtil.callWVInvoiceSumm(i_month,cycle,reportName,receivedRange[0],receivedRange[1],true,1,1);
 			reports=all.size()+1;
 		} else
 		{
-			Integer from=range[0];
+			Date from=receivedRange[0];
 			int counter=0;
 			for (PriceChange cur : all)
 			{
-				Integer to = cur.getLab();
-				PriceUtil.callWVInvoiceSumm(i_month,cycle,reportName,from,to,counter+1,all.size()+1);
+				Date to = cur.getReceived();
+				PriceUtil.callWVInvoiceSumm(i_month,cycle,reportName,from,to,false,counter+1,all.size()+1);
 				from=to;
 				counter++;
 			}
 
-			PriceUtil.callWVInvoiceSumm(i_month,cycle,reportName,from,range[1]+1,counter+1,all.size()+1);
+			PriceUtil.callWVInvoiceSumm(i_month,cycle	,reportName,from,receivedRange[1],true,counter+1,all.size()+1);
 			reports=all.size()+1;
 		}
 		

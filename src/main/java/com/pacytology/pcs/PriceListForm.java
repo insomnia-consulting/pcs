@@ -7,37 +7,20 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Vector;
-
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
 
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
 
-
-import org.apache.ibatis.session.SqlSession;
-
-import com.pacytology.pcs.actions.LabFormActionMap;
-
 import com.pacytology.pcs.actions.PriceListFormActionMap;
 import com.pacytology.pcs.ui.PcsFrame;
 import com.pacytology.pcs.ui.Square;
 import com.pacytology.pcs.utils.PriceUtil;
-
 import com.pacytology.pcs.utils.PriceUtil.PriceCodeDetails;
-
-import com.pacytology.pcs.utils.PriceUtil.PriceChange;
-import com.pacytology.pcs.utils.PriceUtil.PriceCodeDetails;
-
-import java.sql.*;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 
 
@@ -1063,23 +1046,20 @@ public class PriceListForm extends PcsFrame
 
             try {
 
-            	String del="delete from pcs.price_code_details where "+
-            			"price_code= '"+priceCode+ "' and procedure_code= '"+procedureCode+"' "+
-            			" and lab_number = "+labNumber;
-
-            	Statement statement = DbConnection.process().createStatement();
+            	Timestamp receivedDate=(Timestamp) PriceUtil.getSingleValue("lab_requisitions","receive_date","lab_number",labNumber);
             	
-            	statement.executeUpdate(del);
-            	statement.close();
-            	
-
+            	if (receivedDate==null)
+            	{
+            		JOptionPane.showMessageDialog(null,"No statement associated with "+labNumber);
+            		return false;
+            	}
 
             	//This goes through once to get the count,
             	//and a second time to actually update.
             	for (int index=0;index<2;index++)
             	{
             		int count=PriceUtil.updatePrices(oldBase,oldDiscount,newBase,newDiscount,
-            				priceCode,procedureCode,labNumber,changeTo,true,index==1);
+            				priceCode,procedureCode,null,changeTo,true,receivedDate,index==1,labNumber==2013057609);
 
             		if (index==0)
             		{
@@ -1095,10 +1075,20 @@ public class PriceListForm extends PcsFrame
             		}
             	}
             	
+            	String del="delete from pcs.price_code_details where "+
+            			"price_code= '"+priceCode+ "' and procedure_code= '"+procedureCode+"' "+
+            			" and lab_number = "+labNumber;
+
+            	Statement statement = DbConnection.process().createStatement();
+            	
+            	statement.executeUpdate(del);
+            	statement.close();
+            	
             	String insert="insert into pcs.price_code_details values "+
             			"('"+priceCode+ "','"+procedureCode+"',"+
             			base+","+discount+",SysDate,UID,"+labNumber+")";
-
+            	
+            	statement = DbConnection.process().createStatement();
             	
             	int rs=statement.executeUpdate(insert);
             	statement.close();
