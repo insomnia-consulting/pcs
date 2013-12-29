@@ -21,27 +21,27 @@
 
 	<select id="selectLabRequisition" parameterType="int"
 		resultMap="labRequisitionResult">
-		select patient, practice, lab_number from lab_requisitions where lab_number = #{id}
+		select patient, practice, lab_number from pcs.lab_requisitions where lab_number = #{id}
 	</select>
 	<select id="selectLabRequisitions" parameterType="Map"
 		resultMap="labRequisitionResult">
 		select patient, practice, lab_number 
-		from lab_requisitions 
+		from pcs.lab_requisitions 
 		where lab_number between #{startingLabNumber} and #{endingLabNumber}
 	</select>
 
 	<select id="selectPatientForLabRequisition" parameterType="int"
 		resultType="com.pacytology.pcs.models.Patient">
-		SELECT * FROM patients WHERE patient = #{patient}
+		SELECT * FROM pcs.patients WHERE patient = #{patient}
 	</select>
 	<select id="selectPracticeForLabRequisition" parameterType="int"
 		resultType="com.pacytology.pcs.models.Practice">
-		SELECT * FROM practices WHERE practice = #{practice}
+		SELECT * FROM pcs.practices WHERE practice = #{practice}
 	</select>
 
 	<select id="selectHpvRequestForLabRequisition" parameterType="int"
 		resultType="com.pacytology.pcs.models.HpvRequest">
-		SELECT * FROM hpv_requests WHERE lab_number = #{lab_number}
+		SELECT * FROM pcs.hpv_requests WHERE lab_number = #{lab_number}
 	</select>
 
 

@@ -11,12 +11,12 @@
 	</resultMap>
 	<select id="selectLabResult" parameterType="int" resultMap="LabResult">
 		select *
-		from lab_results lr
+		from pcs.lab_results lr
 		where lr.lab_number = #{id}
 	</select>
 	<select id="selectDetailCodes" parameterType="int" resultType="String">
 		select lrc.bethesda_code as "detail_code"
-		from lab_result_codes lrc
+		from pcs.lab_result_codes lrc
 		where lrc.lab_number = #{lab_number}
 	</select>
 </mapper>

@@ -385,7 +385,7 @@ public class PriceUtil {
 	public static List<PriceCodeDetails> getPriceCodeDetails(Integer labFrom, String priceCode, String procedureCode) throws Exception
 	{
 		String query="select PRICE_CODE, PROCEDURE_CODE, BASE_PRICE, DISCOUNT_PRICE, DATESTAMP, LAB_NUMBER \n"+
-				"from price_code_details where procedure_code='"+procedureCode+"'\n"+
+				"from pcs.price_code_details where procedure_code='"+procedureCode+"'\n"+
 				"and price_code='"+priceCode+"' and lab_number>="+labFrom+" order by lab_number asc";
 
 		Statement statement = 

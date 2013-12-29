@@ -51,7 +51,8 @@ as
    cursor db_space is
       select RPAD(SUBSTR(tablespace_name,1,20),22),
    	  LPAD(TO_CHAR(sum(bytes/(1024*1024) ),'99990.00'),10)
-      from sys.dba_free_space group by tablespace_name;
+      from sys.dba_free_space 
+      group by tablespace_name;
 
    t_name varchar2(32);
    t_left varchar2(32);
@@ -857,4 +858,6 @@ exception
       RAISE;
 
 end;
+\
+grant execute on pcs.daily_jobs to pcs_user 
 \

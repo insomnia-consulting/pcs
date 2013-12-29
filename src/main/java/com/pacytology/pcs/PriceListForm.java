@@ -988,7 +988,7 @@ public class PriceListForm extends PcsFrame
                     "   pcs.price_codes b \n"+
                     "WHERE \n"+
                     "   a.price_code=b.price_code and \n"+
-                    "   a.lab_number= (select max(lab_number) from  price_code_details c where c.price_code = b.price_code and c.procedure_code= a.procedure_code or c.lab_number=0) \n"+
+                    "   a.lab_number= (select max(lab_number) from  pcs.price_code_details c where c.price_code = b.price_code and c.procedure_code= a.procedure_code or c.lab_number=0) \n"+
                     "ORDER BY a.price_code,a.procedure_code";
                 
                 MAX_PRICE_CODES=rowsReturned;
@@ -1099,7 +1099,7 @@ public class PriceListForm extends PcsFrame
             			"('"+priceCode+ "','"+procedureCode+"',"+
             			base+","+discount+",SysDate,UID,"+labNumber+")";
 
-            	
+            	statement = DbConnection.process().createStatement();
             	int rs=statement.executeUpdate(insert);
             	statement.close();
             	if (rs<1) {

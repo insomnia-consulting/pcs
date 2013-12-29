@@ -33,7 +33,7 @@ begin
 	    update pcs.lab_results set pap_class=p_class
 	    where lab_number=R_lab_number;
 	 end if;
-	 insert into pcs.lab_result_codes (lab_number,bethesda_code)d
+	 insert into pcs.lab_result_codes (lab_number,bethesda_code)
 	 values (R_lab_number,R_result_code);
       end if;
       if (R_mode=2)
@@ -72,5 +72,5 @@ exception
 
 end;
 \
-grant execute on lab_result_codes_add to pcsuser 
+grant execute on lab_result_codes_add to pcs_user 
 \

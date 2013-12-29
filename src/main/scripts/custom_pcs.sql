@@ -13,7 +13,10 @@ create or replace directory REPORTS_DIR as '/u01/reports';
 create or replace directory WV_REPORTS_DIR as '/u01/reports/LabInfoSystem/ElectronicReporting/wv';
 grant read, write on directory reports_dir to pcs_user ;
 grant read, write on directory wv_reports_dir to pcs_user ;
+grant connect to pcs_user ; 
 grant pcs_user to lritchey ;
 grant pcs_user to pcs ; 
+create user gakins identified by Password1
+grant pcs_user to gakins ; 
 
 grant dba to pcs ;
