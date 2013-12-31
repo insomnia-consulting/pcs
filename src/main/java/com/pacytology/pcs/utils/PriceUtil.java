@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,28 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
-
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.ibatis.session.ResultContext;
-import org.apache.ibatis.session.ResultHandler;
-import org.apache.ibatis.session.SqlSession;
-import org.joda.time.MutableDateTime;
 
 import com.pacytology.pcs.DbConnection;
 
 public class PriceUtil {
+	private static final long MS_PER_DAY = 86400000L;
 	private static Connection conn;
-
-	private static void openDB() throws Exception
-	{
-		conn=DriverManager.getConnection
-				("jdbc:oracle:thin:@127.0.0.1:1521:pcsdev",
-						"pcs",
-						"ahb21");
-	}
-
 
 	public static void closeDB() throws Exception
 	{
@@ -47,11 +33,12 @@ public class PriceUtil {
 	{
 		Integer[]range;
 		private Set<String[]> pricesAndProcedures;
+		private Date[] receivedRange;
 
-
-		public PriceMonthInfo(Integer[] range, Set<String[]>pricesAndProcedures) {
+		public PriceMonthInfo(Integer[] range, Date []receivedRange, Set<String[]>pricesAndProcedures) {
 			super();
 			this.range = range;
+			this.receivedRange= receivedRange;
 			this.pricesAndProcedures = pricesAndProcedures;
 		}
 		public Integer[] getRange() {
@@ -61,7 +48,7 @@ public class PriceUtil {
 			return pricesAndProcedures;
 		}
 
-		public String toString()
+		public String toString()	
 		{
 			String ret="Range: "+range[0]+" to "+range[1]+"\n";
 
@@ -89,79 +76,21 @@ public class PriceUtil {
 
 			for (String priceAndProcedure[] : this.getPricesAndProcedures())
 			{
-				if (priceAndProcedure[0].equals("T") && priceAndProcedure[1].equals("88142"))
-				{
-					int x=1;
-				}
-				
 				List<PriceChange> current = getPriceChanges(priceAndProcedure[0],priceAndProcedure[1],
-						range[0],range[1],
-						true,cycle,null,month,program);
-				
+						null,null,true,cycle,null,month,program);
+
 				all.addAll(current);
 			}
 			return all;
 		}
-	}
-
-	//87621 88142
-	public static void main(String args[]) throws Exception
-	{
-		openDB();
-		try {
-			boolean findChanges=false;
-			boolean full=true;
-			Map<String,Float>expectedChanges=null;
-
-			if (full)
-			{
-				String month="201311";
-				String program="FPP";
-
-				PriceMonthInfo priceInfo=getRangeForMonth(month);
-
-				int cycle=2;
-				Integer[] range = priceInfo.getRange();
-
-				SortedSet<PriceChange> all = priceInfo.getAllPriceChanges(cycle,program,month);
-
-				System.out.println("Number of changes: "+all.size()+"\n"+all);
-
-				Integer i_month=Integer.parseInt(month);
-
-				if (all.size()==0)
-				{
-					callWVInvoiceSumm(i_month,cycle,program,range[0],range[1],1,1);
-				} else
-				{
-					Integer from=range[0];
-					int counter=0;
-					for (PriceChange cur : all)
-					{
-						Integer to = cur.getLab();
-						callWVInvoiceSumm(i_month,cycle,program,from,to,counter+1,all.size()+1);
-						from=to;
-						counter++;
-					}
-
-					callWVInvoiceSumm(i_month,cycle,program,from,range[1]+1,counter+1,all.size()+1);
-				}
-
-			}
-		} catch (Throwable t)
-		{
-			t.printStackTrace();;
-		}
-		finally 
-		{
-			closeDB();
+		public Date[] getReceivedRange() {
+			return receivedRange;
 		}
 	}
-
 
 	public static void callWVInvoiceSumm_9(Integer month, int cycle,
 			String pgm) throws Exception 
-			{
+	{
 		CallableStatement statement=prepareCall(
 				"{call pcs.build_WV_invoice_summary_9(?,"
 						+ ""
@@ -177,19 +106,25 @@ public class PriceUtil {
 			statement.close();
 		}
 	}
-	
+
 	public static void callWVInvoiceSumm(Integer month, int cycle,
-			String pgm, Integer from, Integer to, int index, int total) throws Exception 
+			String pgm, Date from, Date toDate, boolean toDateInclusive, int index, int total) throws Exception 
 	{
 		CallableStatement statement;
 		statement=prepareCall(
 				"{call pcs.build_WV_invoice_summary_1(?,?,?,?,?,?,?)}");
 
+		
+		if (toDateInclusive)
+		{
+			toDate=new Date(toDate.getTime()+MS_PER_DAY);
+		}
+
 		String all="S_MONTH := "+month+";\n"+
 				"CYCLE := "+cycle+";\n"+
 				"PGM :='"+pgm+"';\n"+ 
-				"FROMLAB := "+from+";\n"+
-				"TOLABEXCLUSIVE := "+to+";\n"+
+				"FROMRECEIVED := TO_DATE('"+spFormat.format(from)+"','YYYY-MM-DD');\n"+
+				"TORECEIVED := TO_DATE('"+spFormat.format(toDate)+"','YYYY-MM-DD');\n"+
 				"CURINDEX :="+index+";\n"+ 
 				"TOTAL := "+total+";\n";
 
@@ -198,29 +133,26 @@ public class PriceUtil {
 		statement.setInt(1,month);
 		statement.setInt(2,cycle);
 		statement.setString(3,pgm);
-		statement.setInt(4,from);
-		statement.setInt(5,to);
+		statement.setDate(4,new java.sql.Date(from.getTime()));
+		statement.setDate(5,new java.sql.Date(toDate.getTime()));
 		statement.setInt(6,index);
 		statement.setInt(7,total);
 
 		statement.execute();
 		statement.close();
-			}
-
-
-
+	}
 
 	public static PriceMonthInfo getRangeForMonth(String month) throws Exception 
 	{
 		Set<String[]> pricesAndProcedures=new HashSet();
 
 		String sql=
-				"select ps.lab_number, pr.price_code, ps.procedure_code  \n"+
-						"from pcs.practice_statement_labs ps  \n"+
-						"inner join pcs.practices pr on pr.practice=ps.practice where \n"+ 
+				"select ps.lab_number, pr.price_code, ps.procedure_code, lr.receive_date  \n"+
+						"from pcs.practice_statement_labs ps, pcs.practices pr, pcs.lab_requisitions lr  \n"+
+						"where  pr.practice=ps.practice and \n"+
+						"lr.lab_number=ps.lab_number and \n"+
 						"ps.statement_id='"+month+"'  \n"+
-						"order by ps.lab_number asc";
-		//"select ps.lab_number, ps.price_code, ps.procedure_code from pcs.practice_statement_labs ps where statement_id='"+month+"' order by ps.lab_number asc";
+						"order by lr.receive_date asc";
 
 		Statement statement =
 				getStatement();
@@ -229,13 +161,22 @@ public class PriceUtil {
 
 		//TODO this could be more efficient
 		Integer[] labs=null;
+		Date[] dates=null;
 		while (rs.next())
 		{
 			Integer lab=rs.getInt(1);
+			java.sql.Date date = rs.getDate(4);
 			String[] priceAndProcedure=new String[2];
 			priceAndProcedure[0]=rs.getString(2);
 			priceAndProcedure[1]=rs.getString(3);
 
+			if (dates==null)
+			{
+				dates=new Date[2];
+				dates[0]=new Date(date.getTime());
+				dates[1]=new Date(date.getTime());
+			}
+			
 			if (labs==null)
 			{
 				labs=new Integer[2];
@@ -248,10 +189,11 @@ public class PriceUtil {
 				pricesAndProcedures.add(priceAndProcedure);
 			}
 			labs[1]=lab;
+			dates[1]=new Date(date.getTime());
 		}
 
 
-		PriceMonthInfo ret=new PriceMonthInfo(labs,pricesAndProcedures);
+		PriceMonthInfo ret=new PriceMonthInfo(labs,dates,pricesAndProcedures);
 		return ret;
 	}
 
@@ -275,6 +217,13 @@ public class PriceUtil {
 
 		@Override
 		public int compareTo(PriceChange priceChange) {
+			int rec=received.compareTo(priceChange.received);
+			
+			if (rec!=0)
+			{
+				return rec;
+			}
+			
 			int time=lab.compareTo(priceChange.lab);
 
 			if (time!=0)
@@ -313,8 +262,6 @@ public class PriceUtil {
 			return "DateChange [received=" + received + ", lab=" + lab
 					+ ", from=" + from + ", to=" + to + ", proc=" + proc + "]";
 		}
-
-
 	}
 
 	public static String combineWhereExpressions(String...expressions)
@@ -418,7 +365,7 @@ public class PriceUtil {
 			Map<String,Float>expectedChanges,
 			String month,
 			String program) throws Exception 
-			{
+	{
 		List<PriceChange> ret=new ArrayList();
 
 		String practiceTypeSql="";
@@ -449,7 +396,7 @@ public class PriceUtil {
 		{
 			cycleSql=" ps.billing_cycle="+cycle+" ";
 		}
-		
+
 		if (month!=null)
 		{
 			monthSql=" ps.statement_id='"+month+"' ";
@@ -460,12 +407,11 @@ public class PriceUtil {
 		String addl=combineWhereExpressions(practiceTypeSql,procedures,prices,
 				cycleSql,labFromSql,labToSql,fromQuery,toQuery,programSql,monthSql);
 
-		String query="select lr.receive_date, ps.date_collected,\n"+
-				" ps.item_amount, ps.lab_number from \n"+
+		String query="select lr.receive_date, ps.item_amount, ps.lab_number from \n"+
 				"pcs.practice_statement_labs ps, pcs.lab_requisitions lr, pcs.practices pr \n"+
 				"where pr.practice=ps.practice and pr.practice_type='WV' and lr.lab_number=ps.lab_number and \n"+
 				addl+
-				" order by ps.lab_number";
+				" order by lr.receive_date";
 
 		Statement statement = 
 				getStatement();
@@ -478,10 +424,8 @@ public class PriceUtil {
 		while (rs.next())
 		{
 			Date received=rs.getDate(1);
-			Date collected=rs.getDate(2);
-			Float price=rs.getFloat(3);
-			Integer lab=rs.getInt(4);
-			//String l_priceCode=rs.getString(6);
+			Float price=rs.getFloat(2);
+			Integer lab=rs.getInt(3);
 
 			if (prev==null)
 			{
@@ -515,7 +459,7 @@ public class PriceUtil {
 		}
 
 		return ret;
-			}
+	}
 
 	static boolean testMode=true;
 
@@ -543,7 +487,7 @@ public class PriceUtil {
 
 	public static int getStatementCount(String priceCode, String procedureCode,
 			Integer fromLabNumber, Integer toLabNumber, Boolean exclusiveTo) throws Exception 
-			{
+	{
 		String countSql=
 				"select count(*) from "+getStatementQuery(priceCode,procedureCode,
 						fromLabNumber,toLabNumber,exclusiveTo);
@@ -555,7 +499,7 @@ public class PriceUtil {
 		countRes.next();
 		int ret=countRes.getInt(1);
 		return ret;
-			}
+	}
 
 
 	private static String getStatementQuery(String priceCode,
@@ -576,15 +520,27 @@ public class PriceUtil {
 		return ret;
 	}
 
-
 	public static int updatePrices(double previousBase, double previousDiscount, double newBase, double newDiscount, String priceCode, String procedureCode,
-			Integer fromLabNumber, Integer toLabNumber, Boolean exclusiveTo, boolean update) throws Exception 
-			{		
+			Integer fromLabNumber, Integer toLabNumber, Boolean exclusiveTo, Timestamp receiveDate, boolean update,
+			boolean SPECIAL_CASE_REMOVE_AFTER_SINGLE_USE_is_lab_2013057609) throws Exception 
+	{
+		String formattedDate=
+				formatTimestamp(receiveDate);
 
-		String select="select ps.item_amount from pcs.practice_statement_labs ps \n"+
-				"inner join pcs.practices pr on pr.practice=ps.practice where \n"+
-				"pr.price_code='"+priceCode+"' and ps.lab_number>="+fromLabNumber+" TO_LAB \n"+
-				"and ps.procedure_code='"+procedureCode+"' and ps.item_amount=PRICE_AMT";
+		String select="select ps.item_amount from pcs.practice_statement_labs ps, pcs.practices pr, pcs.lab_requisitions lr \n"+
+				"  where \n"+
+				"pr.practice=ps.practice and lr.lab_number = ps.lab_number and pr.price_code='"+priceCode+"'\n"+
+				" FROM_LAB \n TO_LAB \n"+
+				"and ps.procedure_code='"+procedureCode+"' and ps.item_amount=PRICE_AMT \n"+
+				"and lr.receive_date >= TO_DATE('"+formattedDate+"','DD-MM-YY')";
+
+		if (fromLabNumber!=null)
+		{
+			select=select.replace("FROM_LAB"," and ps.lab_number>="+fromLabNumber);
+		} else
+		{
+			select=select.replace("FROM_LAB","");
+		}
 
 		if (toLabNumber!=null)
 		{
@@ -594,36 +550,35 @@ public class PriceUtil {
 			select=select.replace("TO_LAB","");
 		}
 
-		//Special case for a bug.
-		
+		//Special case for a bug.  As the variable name suggests,
+		//this can be removed after being run once.
 		String selectDiscount;
-		if (fromLabNumber==2013057609)
+		if (SPECIAL_CASE_REMOVE_AFTER_SINGLE_USE_is_lab_2013057609)
 		{
 			selectDiscount=select.replace("ps.item_amount=PRICE_AMT","(ps.item_amount=12.85 or ps.item_amount=11.95)");
 		} else
 		{
 			selectDiscount=select.replace("PRICE_AMT",""+previousDiscount);
 		}
-		
 
 		String selectBase=select.replace("PRICE_AMT",""+previousBase);
-
+	
 		if (update)
 		{
-
 			String updateDiscount = "update ("+selectDiscount+") i set i.item_amount = "+newDiscount;
 			String updateBase = "update ("+selectBase+") i set i.item_amount = "+newBase;
-
+			
 			Statement statement = 
 					getStatement();
 			statement.executeUpdate(updateDiscount);
 			statement.close();
-
+			
+			statement = 
+					getStatement();
 			statement = 
 					getStatement();
 			statement.executeUpdate(updateBase);
 			statement.close();
-
 			return 0;
 		} else
 		{
@@ -645,9 +600,47 @@ public class PriceUtil {
 
 			return discount+base;
 		}
+	}
+
+	static SimpleDateFormat dayMonthYear=new SimpleDateFormat("dd-MM-yy"); 
+	private static String formatTimestamp(Timestamp ts) 
+	{
+		Date date=new Date(ts.getTime());
+		return dayMonthYear.format(date);
+	}
+
+
+	public static Object getSingleValue(String table, String col,
+			String selectCol, Object selectVal) throws Exception
+	{
+		ResultSet rs =null;
+		Statement statement =
+				getStatement();
+		Object ret=null;
+
+		try {
+			if (selectVal instanceof String)
+			{
+				selectVal="'"+selectVal+"'";
 			}
 
+			String query="select "+col+" from "+table+" where "+selectCol+" = "+selectVal;
+			rs = statement.executeQuery(query);
 
+			if (rs.next())
+			{
+				ret=rs.getObject(1);
+			}
+		} finally
+		{
+			statement.close();
 
+			if (rs!=null)
+			{
+				rs.close();;
+			}
+		}
 
+		return ret;
+	}
 }

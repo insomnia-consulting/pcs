@@ -269,15 +269,14 @@ public class SimpleTestUtil
 
 				//allSql.add(sql1);
 
+			
+				allSql.add("select count(*) from pcs.lab_requisitions");
 				allSql.add("select count(*) from pcs.billing_queue");
 				allSql.add("select count(*) from pcs.lab_billings");
 				allSql.add("select count(*) from pcs.patient_accounts");
 				allSql.add("select count(*) from pcs.patient_statements");
 
-
-
 				Integer highestPatientId=null;
-
 
 				allSql.add("select count(*) from pcs.patients");
 
@@ -611,7 +610,7 @@ public class SimpleTestUtil
 			{
 				Component comp = (Component) e.getSource();
 
-				boolean output=false;
+				boolean output=true;
 
 				if (output)
 				{
