@@ -28,7 +28,7 @@ public class HpvRequestDbOpsTest {
 		dbLogin.driver = "oracle.jdbc.driver.OracleDriver";
 		dbLogin.URL = TestUtils.URL;
 		dbLogin.userName = "pcs";
-		dbLogin.userPassword = "ahb21";
+		dbLogin.userPassword = "abh21";
 		props.put("username", dbLogin.userName);
 		props.put("password", dbLogin.userPassword);
 		props.put("jdbc.connection", dbLogin.URL);

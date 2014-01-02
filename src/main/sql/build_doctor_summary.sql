@@ -851,7 +851,7 @@ BEGIN
          curr_line := RPAD (PC_description, 43) || char_buffer;
          UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
       END IF;
-   END LOOP;
+   END LOOP;	
 
    CLOSE adequacy_list;
 

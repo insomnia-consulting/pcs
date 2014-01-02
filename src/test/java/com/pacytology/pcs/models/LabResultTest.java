@@ -17,12 +17,12 @@ public class LabResultTest {
 	public void testGetLabResult() {
 		Properties props = new Properties();
 		props.put("username", "pcs");
-		props.put("password", "ahb21");
+		props.put("password", "abh21");
 		props.put("jdbc.connection", TestUtils.URL); 
 		PCSLabEntry.sqlSessionFactory(props) ;  
 		LabResult labResult = ResultDbOps.getLabResult(2013012687) ;  
 		assertNotNull(labResult) ;
-		assertEquals(1, labResult.getDetailCodes().size()) ; 
+		assertEquals(5, labResult.getDetailCodes().size()) ; 
 
 	}
 

@@ -67,7 +67,10 @@ public class DbConnection
                                  dbLogin.userName,
                                  dbLogin.userPassword);
         }
-        catch (SQLException e) { log.write(e.toString()); }
+        catch (SQLException e) {
+        	e.printStackTrace();
+        	log.write(e.toString());	
+        }
         catch (Exception e) { log.write(e); }
     }
     

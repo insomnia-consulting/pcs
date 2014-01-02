@@ -19,7 +19,7 @@ public class LabRequisitionTest {
 public void setup() {
 	
 	props.put("username", "pcs");
-	props.put("password", "ahb21");
+	props.put("password", "abh21");
 	props.put("jdbc.connection", TestUtils.URL); 
 }
 @Test
@@ -30,7 +30,7 @@ public void testGetPatient() {
 	Patient patient = labReq.getPatient() ;
 	assertNotNull(patient) ;
 	 assertEquals(2409511, patient.getPatient()) ;
-	 assertEquals("DOLLIE", patient.getLname()) ; 
+	 assertEquals("MOSHE", patient.getLname()) ; 
 }
 @Test
 public void testGetPractice() {
