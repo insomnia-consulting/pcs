@@ -265,7 +265,7 @@ public class DocStmtDialog extends PcsDialog
 				SQL += " WHERE (parent_account is null or parent_account = -1) and parent_account >= "
 						+ startPracticeNumber.getText() + "\n";
 			}
-			SQL += " WHERE (parent_account is not null and parent_account <> -1) " ; 
+			//SQL += " WHERE (parent_account is not null and parent_account <> -1) " ; 
 			SQL += " ORDER BY ";
 			if (!reportType.equals("STATEMENT"))
 				SQL += "parent_account, practice \n";
