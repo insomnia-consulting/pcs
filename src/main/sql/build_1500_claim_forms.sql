@@ -51,7 +51,8 @@ create or replace procedure build_1500_claim_forms
     c.provider_id,                                                                 
     bd.rebill_code,                                                                
     lr.slide_qty,                                                                  
-    lr.preparation                                                                 
+    lr.preparation,
+    c.id_number    
  from                                                                           
     pcs.carriers c, pcs.billing_details bd, pcs.patients p,                        
     pcs.practices pr, pcs.lab_billings lb, pcs.billing_queue bq,                   
@@ -68,7 +69,8 @@ create or replace procedure build_1500_claim_forms
     bq.billing_route=C_billing_route                                               
  order by c.billing_choice,c.name,p.lname,p.fname;                              
 
- carrier_idnum number;                                                          
+ carrier_idnum number; --carrier_id
+ carrier_id_number number; --id_number
  carrier_name varchar2(256);                                                    
  carrier_addr1 varchar2(128);                                                   
  carrier_addr2 varchar2(128);                                                   
@@ -261,7 +263,8 @@ create or replace procedure build_1500_claim_forms
        carrier_prov,                                                                  
        policy_rebill_code,                                                            
        lab_vials,                                                                     
-       lab_prep;                                                                      
+       lab_prep,
+       carrier_id_number;                                                               
     exit when claim_list%NOTFOUND;                                                 
 
     resubmitted:=0;                                                                
@@ -1187,12 +1190,16 @@ create or replace procedure build_1500_claim_forms
 
  end if;                                                                        
  cbuf3:=RPAD(' ',22);                                                           
- cbuf4:=RPAD(' ',27);                                                           
- if (carrier_idnum=1048) then                                                   
- curr_line:=margin||cbuf3||cbuf4||cbuf1||cbuf2;                                 
- else                                                                           
- curr_line:=margin||cbuf3||cbuf1||cbuf2||cbuf1||cbuf2;                          
- end if;                                                                        
+ cbuf4:=RPAD(' ',27);    
+ 
+  if (carrier_idnum=1048) then
+ curr_line:=margin||cbuf3||cbuf4||cbuf1||cbuf2;
+ elsif (carrier_id_number=10020 or carrier_id_number = 28025) then
+ curr_line:=margin||cbuf3||cbuf1||RPAD(' ',16)||cbuf1||cbuf2; 
+ else
+ curr_line:=margin||cbuf3||cbuf1||cbuf2||cbuf1||cbuf2;
+ end if;
+                                                                     
 
  UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
  UTL_FILE.NEW_LINE(file_handle,3);                                              
