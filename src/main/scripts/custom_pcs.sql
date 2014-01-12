@@ -9,8 +9,8 @@ create tablespace index_2 datafile '/u01/app/oracle/oradata/pcsdev/index_2.dbf' 
 create user pcs identified by abh21 ; 
 create user lritchey identified by lritchey ; 
 create role pcs_user not identified ;
-create or replace directory REPORTS_DIR as '/u01/reports';
-create or replace directory WV_REPORTS_DIR as '/u01/reports/LabInfoSystem/ElectronicReporting/wv';
+create or replace directory REPORTS_DIR as '/uTest/reports';
+create or replace directory WV_REPORTS_DIR as '/uTest/reports/LabInfoSystem/ElectronicReporting/wv';
 grant read, write on directory reports_dir to pcs ;
 grant read, write on directory wv_reports_dir to pcs ;
 grant connect to pcs_user ; 
