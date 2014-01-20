@@ -1,1320 +1,1671 @@
-create or replace procedure build_1500_claim_forms                                                
- (                                                                              
- C_directory in char,                                                           
- C_file in char,                                                                
- C_billing_route in char                                                        
- )                                                                              
- as                                                                             
-
- P_error_code number;                                                           
- P_error_message varchar2(512);                                                 
- P_proc_name varchar2(32);                                                      
- P_code_area varchar2(32);                                                      
-
-
- cursor claim_list is                                                           
- select                                                                         
-    c.carrier_id,                                                                  
-    SUBSTR(c.name,1,48),                                                           
-    c.address1,                                                                    
-    c.address2,                                                                    
-    c.city,                                                                        
-    c.state,                                                                       
-    c.zip,                                                                         
-    c.payer_id,                                                                    
-    bd.id_number,                                                                  
-    bd.group_number,                                                               
-    bd.subscriber,                                                                 
-    bd.sub_lname,                                                                  
-    bd.sub_fname,                                                                  
-    TO_CHAR(bd.sign_date,'MMDDYYYY'),                                              
-    p.lname,                                                                       
-    p.fname,                                                                       
-    p.mi,                                                                          
-    p.address1,                                                                    
-    p.city,                                                                        
-    p.state,                                                                       
-    p.zip,                                                                         
-    p.phone,                                                                       
-    p.patient,                                                                     
-    TO_CHAR(p.dob,'MMDDYYYY'),                                                     
-    pr.name,                                                                       
-    lb.bill_amount,                                                                
-    TO_CHAR(lr.date_collected,'MMDDYYYY'),                                         
-    bq.lab_number,                                                                 
-    bq.rebilling,                                                                  
-    pr.state,                                                                      
-    NVL(lb.balance,lb.bill_amount),                                                
-    lb.bill_amount-(NVL(lb.allowance,lb.bill_amount)),                             
-    TO_CHAR(lr.date_collected,'MM DD YY'),                                         
-    NVL(bd.claim_id,-1),                                                           
-    c.provider_id,                                                                 
-    bd.rebill_code,                                                                
-    lr.slide_qty,                                                                  
-    lr.preparation,
-    c.id_number    
- from                                                                           
-    pcs.carriers c, pcs.billing_details bd, pcs.patients p,                        
-    pcs.practices pr, pcs.lab_billings lb, pcs.billing_queue bq,                   
-    pcs.lab_requisitions lr, pcs.lab_results r                                     
- where                                                                          
-    bq.lab_number=lr.lab_number and                                                
-    lr.lab_number=r.lab_number and                                                 
-    lr.lab_number=bd.lab_number and                                                
-    lr.patient=p.patient and                                                       
-    lr.practice=pr.practice and                                                    
-    bd.carrier_id=c.carrier_id and                                                 
-    bd.lab_number=lb.lab_number and                                                
-    bq.rebilling=bd.rebilling and                                                  
-    bq.billing_route=C_billing_route                                               
- order by c.billing_choice,c.name,p.lname,p.fname;                              
-
- carrier_idnum number; --carrier_id
- carrier_id_number number; --id_number
- carrier_name varchar2(256);                                                    
- carrier_addr1 varchar2(128);                                                   
- carrier_addr2 varchar2(128);                                                   
- carrier_city varchar2(64);                                                     
- carrier_state char(2);                                                         
- carrier_zip varchar2(16);                                                      
- carrier_pid varchar2(64);                                                      
- carrier_prov varchar2(64);                                                     
- policy_id varchar2(64);                                                        
- policy_group varchar2(64);                                                     
- policy_lname varchar2(64);                                                     
- policy_fname varchar2(64);                                                     
- policy_subscriber varchar2(32);                                                
- policy_sign char(16);                                                          
- policy_rebill_code varchar2(16);                                               
- patient_lname varchar2(64);                                                    
- patient_fname varchar2(64);                                                    
- patient_mi char(1);                                                            
- patient_addr varchar2(128);                                                    
- patient_city varchar2(64);                                                     
- patient_state char(2);                                                         
- patient_zip varchar2(16);                                                      
- patient_phone char(16);                                                        
- patient_id number;                                                             
- patient_dob char(16);                                                          
- practice_name varchar2(128);                                                   
- lab_completed char(16);                                                        
- lab_collected char(16);                                                        
- claim_total number;                                                            
- claim_lab_number number;                                                       
- lab_rebilling number;                                                          
- practice_state char(2);                                                        
- lab_balance number;                                                            
- total_loss number;                                                             
- lab_claim_id number;                                                           
- total_payments number;                                                         
- lab_vials number;                                                              
- lab_prep number;                                                               
- dr_lname varchar2(128);                                                        
- dr_fname varchar2(64);                                                         
- dr_mi char(1);                                                                 
- dr_upin varchar(32);                                                           
- dr_number number;                                                              
- dr_license varchar2(32);                                                       
- dr_alt_license varchar2(32);                                                   
- dr_alt_state char(2);                                                          
- dr_title varchar2(32);                                                         
- dr_npi varchar2(16);                                                           
- diag_1 varchar2(32);                                                           
- diag_2 varchar2(32);                                                           
- diag_3 varchar2(32);                                                           
- diag_4 varchar2(32);                                                           
- diag_5 varchar2(32);                                                           
- diag_string varchar2(32);                                                      
- lab_CLIA varchar2(32);                                                         
- lab_tax_id varchar2(32);                                                       
- lab_pin_num varchar2(48);                                                      
- lab_npi varchar2(16);                                                          
- trav_med char(1);                                                              
-
- cursor diagnosis_list is                                                       
-    select * from pcs.lab_req_diagnosis                                            
-    where lab_number=claim_lab_number and rebilling=lab_rebilling                  
-    order by d_seq;                                                                
- diagnosis_fields diagnosis_list%ROWTYPE;                                       
-                                                                                
- cursor procedure_list is                                                       
-    select bi.lab_number,bi.price_code,bi.procedure_code,                          
-       bi.item_amount,bi.rebilling,p.p_seq                                            
-    from pcs.lab_billing_items bi, pcs.procedure_codes p                           
-    where bi.lab_number=claim_lab_number                                           
-    and bi.procedure_code=p.procedure_code                                         
-    and bi.item_amount>0                                                           
-    order by p.p_seq;                                                              
- procedure_fields procedure_list%ROWTYPE;                                       
-
- curr_line varchar2(512);                                                       
- cbuf1 varchar2(512);                                                           
- cbuf2 varchar2(512);                                                           
- cbuf3 varchar2(512);                                                           
- cbuf4 varchar2(512);                                                           
- margin varchar2(16);                                                           
- rcnt number;                                                                   
- curr_item number;                                                              
- claim_batch_number number;                                                     
- claim_ebill char(1);                                                           
- C_tpp varchar2(16);                                                            
- C_claims number;                                                               
- C_choice_code varchar2(16);                                                    
- check_point number;                                                            
- num_diags number(1);                                                           
- last_carrier number;                                                           
- max_rebilling number;                                                          
- resubmitted number;                                                            
- C_status varchar2(2);                                                          
- tmp_num number;                                                                
-
-
- lbl_fname varchar2(48);                                                        
- file_handle UTL_FILE.FILE_TYPE;                                                
- label_file UTL_FILE.FILE_TYPE;                                                 
-
- begin                                                                          
-
- P_proc_name:='BUILD_1500_CLAIM_FORMS';                                         
-                                                                             
- P_code_area:='PREP';                                                           
- check_point:=0;                                                                
- num_diags:=0;                                                                  
- last_carrier:=0;                                                               
- trav_med:='N';                                                                 
-
- select count(*) into C_claims                                                  
- from pcs.billing_queue where billing_route=C_billing_route;                    
-
- if (C_claims>0 and C_billing_route<>'DUP') then                                
- select pcs.claim_submission_seq.nextval into claim_batch_number from dual;     
- end if;                                                                        
- margin:='  ';                                                                  
- C_tpp:=C_billing_route;                                                        
-
- P_code_area:='BATCH';                                                          
- if (C_claims>0 and C_billing_route<>'DUP') then                                
- insert into pcs.claim_batches                                                  
-    (batch_number,e_billing,number_of_claims,datestamp,sys_user,tpp)               
- values                                                                         
-    (claim_batch_number,'N',C_claims,SysDate,UID,C_tpp);                           
-
- insert into pcs.payer_batch_amounts                                            
-    (carrier_id,batch_number,amount_submitted,amount_recorded,amount_received)     
-       select distinct bd.carrier_id,claim_batch_number,0,0,0                         
-       from pcs.billing_details bd, pcs.lab_billings lb, pcs.billing_queue bq         
-       where bd.lab_number=lb.lab_number and lb.lab_number=bq.lab_number              
-       and bd.rebilling=lb.rebilling and bq.billing_route=C_billing_route;            
- end if;                                                                        
-
- select id_number into lab_CLIA from pcs.business_id_nums where id_code='CLIA'; 
- select id_number into lab_tax_id from pcs.business_id_nums where id_code='TAXID';                                                                             
- select id_number into lab_npi from pcs.business_id_nums where id_code='NPI';   
-
- P_code_area:='CHECK_NPI';                                                      
- pcs.check_npi_numbers(C_billing_route);                                        
-
- file_handle:=UTL_FILE.FOPEN(C_directory,C_file,'w');                           
-
- if (C_billing_route='PPR') then                                                
- lbl_fname:=C_file||'.lbl';                                                     
- label_file:=UTL_FILE.FOPEN(C_directory,lbl_fname,'w');                         
- end if;                                                                        
-
- P_code_area:='CLAIMS';                                                         
- open claim_list;                                                               
-
- loop                                                                           
-    fetch claim_list into                                                          
-       carrier_idnum,                                                                 
-       carrier_name,                                                                  
-       carrier_addr1,                                                                 
-       carrier_addr2,                                                                 
-       carrier_city,                                                                  
-       carrier_state,                                                                 
-       carrier_zip,                                                                   
-       carrier_pid,                                                                   
-       policy_id,                                                                     
-       policy_group,                                                                  
-       policy_subscriber,                                                             
-       policy_lname,                                                                  
-       policy_fname,                                                                  
-       policy_sign,                                                                   
-       patient_lname,                                                                 
-       patient_fname,                                                                 
-       patient_mi,                                                                    
-       patient_addr,                                                                  
-       patient_city,                                                                  
-       patient_state,                                                                 
-       patient_zip,                                                                   
-       patient_phone,                                                                 
-       patient_id,                                                                    
-       patient_dob,                                                                   
-       practice_name,                                                                 
-       claim_total,                                                                   
-       lab_completed,                                                                 
-       claim_lab_number,                                                              
-       lab_rebilling,                                                                 
-       practice_state,                                                                
-       lab_balance,                                                                   
-       total_loss,                                                                    
-       lab_collected,                                                                 
-       lab_claim_id,                                                                  
-       carrier_prov,                                                                  
-       policy_rebill_code,                                                            
-       lab_vials,                                                                     
-       lab_prep,
-       carrier_id_number;                                                               
-    exit when claim_list%NOTFOUND;                                                 
-
-    resubmitted:=0;                                                                
-    C_status:='*';                                                                 
-    P_code_area:='CLAIMS Q1';                                                      
-   select count(*) into resubmitted from pcs.lab_claims                           
-   where lab_number=claim_lab_number and claim_id=lab_claim_id;                   
-   if (resubmitted>0) then                                                        
-      P_code_area:='CLAIMS Q2';                                                      
-      select claim_status into C_status                                              
-      from pcs.lab_claims where claim_id=lab_claim_id;                               
-      if (C_status<>'B') then                                                        
-         resubmitted:=0;                                                                
-      end if;                                                                        
-    end if;                                                                        
-
-    P_code_area:='CLAIMS Q3 '||to_char(claim_lab_number);                                   
-    select MAX(rebilling) into max_rebilling from pcs.billing_details              
-    where lab_number=claim_lab_number;                                             
-    if (max_rebilling>lab_rebilling) then                                          
-       P_code_area:='CLAIMS Q4 '||claim_lab_number||' and '||max_rebilling;                                                      
-       select                                                                         
-          c.carrier_id,c.name,c.address1,c.address2,c.city,c.state,                      
-          c.zip,c.payer_id,bd.id_number,bd.group_number,bd.subscriber,                   
-          bd.sub_lname,bd.sub_fname,TO_CHAR(bd.sign_date,'MMDDYYYY')                     
-       into                                                                           
-          carrier_idnum,carrier_name,carrier_addr1,carrier_addr2,                        
-          carrier_city,carrier_state,carrier_zip,carrier_pid,                            
-          policy_id,policy_group,policy_subscriber,policy_lname,                         
-          policy_fname,policy_sign                                                       
-       from pcs.billing_details bd, pcs.carriers c                                    
-       where bd.carrier_id=c.carrier_id and bd.rebilling=max_rebilling                
-       and bd.lab_number=claim_lab_number;                                            
-    end if;                                                                        
-
-
-    P_code_area:='CLAIMS Q3.1';                                                    
-    if ((C_billing_route='PPR'                                                     
-    or C_billing_route='DUP' or C_billing_route='ENV') 
-    and carrier_idnum<>1048) then                                                                               
-       UTL_FILE.NEW_LINE(file_handle);                                                
-       cbuf1:=LPAD(' ',40);                                                           
-       curr_line:=cbuf1||carrier_name;                                                
-       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-       curr_line:=cbuf1||carrier_addr1;                                               
-       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-       if (carrier_addr2 is not null) then                                            
-          curr_line:=cbuf1||carrier_addr2;                                               
-          UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-       end if;                                                                        
-
-       if (carrier_city is not null and carrier_state is not null                     
-       and carrier_zip is not null) then                                              
-          curr_line:=cbuf1||carrier_city||', '||carrier_state||' '||carrier_zip;         
-       else                                                                           
-          curr_line:='  ';                                                               
-       end if;                                                                        
-       UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-       if (carrier_addr2 is not null) then                                            
-          UTL_FILE.NEW_LINE(file_handle,3);                                              
-       else                                                                           
-          UTL_FILE.NEW_LINE(file_handle,4);                                              
-       end if;                                                                        
-    else                                                                           
-       UTL_FILE.NEW_LINE(file_handle,8);                                              
-    end if;                                                                        
-
-    P_code_area:='CLAIMS Q5';                                                      
-
-    select A.choice_code into C_choice_code                                        
-    from pcs.billing_choices A, pcs.carriers B                                     
-    where A.billing_choice=B.billing_choice and B.carrier_id=carrier_idnum;        
-
-    P_code_area:='CLAIMS Q6';                                                      
-    select NVL(SUM(payment_amount),0) into total_payments from pcs.payments P      
-    where P.payment_type<>'PLUS ADJUST' and P.lab_number=claim_lab_number;         
-
-    P_code_area:='CLAIMS Q6.001';                                                  
-
-    select NVL(SUM(payment_amount),0) into tmp_num from pcs.payments P             
-    where P.payment_type='PLUS ADJUST' and P.lab_number=claim_lab_number;          
-
-    P_code_area:='CLAIMS Q6.002';                                                  
-    total_payments:=total_payments-tmp_num;                                        
-    P_code_area:='CLAIMS Q6.003';                                                  
-
-    if (carrier_idnum<>last_carrier) then                                          
-          P_code_area:='CLAIMS Q6.334';                                                  
-          if (C_billing_route='PPR') then                                                
-             if (carrier_addr1 is NOT NULL and carrier_city is NOT NULL 
-             and carrier_state is NOT NULL and carrier_zip is NOT NULL) then                    
-             rcnt:=3;                                                                       
-             curr_line:=SUBSTR(carrier_name,1,32);                                          
-             UTL_FILE.PUTF(label_file,'%s\n',curr_line);                                    
-             curr_line:=SUBSTR(carrier_addr1,1,32);                                         
-             UTL_FILE.PUTF(label_file,'%s\n',curr_line);                                    
-             if (carrier_addr2 is not null) then                                            
-                rcnt:=2;                                                                       
-                curr_line:=SUBSTR(carrier_addr2,1,32);                                         
-                UTL_FILE.PUTF(label_file,'%s\n',curr_line);                                    
-             end if;                                                                        
-             cbuf1:=SUBSTR(carrier_zip,1,5);                                                
-             if (length(carrier_zip)>5) then                                                
-                cbuf2:=SUBSTR(carrier_zip,6,4);                                                
-                cbuf1:=cbuf1||'-'||cbuf2;                                                      
-             end if;                                                                        
-             curr_line:=SUBSTR(carrier_city||', '||carrier_state||' '||cbuf1,1,32);                                         
-             UTL_FILE.PUTF(label_file,'%s\n',curr_line);                                    
-             UTL_FILE.NEW_LINE(label_file,rcnt);                                            
-             rcnt:=0;                                                                       
-          end if;                                                                        
-       end if;                                                                        
-    end if;                                                                        
-
-    UTL_FILE.NEW_LINE(file_handle);                                                
-    cbuf1:=null;                                                                   
-    cbuf2:=null;                                                                   
-    curr_line:=null;                                                               
-    if (carrier_name='CHAMPUS') then                                               
-       cbuf1:=LPAD('X',14);                                                           
-    elsif (C_choice_code='DPA') then                                               
-    cbuf1:=LPAD('X',7);                                                            
-    policy_subscriber:='SELF';                                                     
-    if (carrier_state='WV') then                                                   
-       P_code_area:='CLAIMS Q8';                                                      
-       select id_number into lab_pin_num                                              
-       from pcs.business_id_nums where id_code='WVPR';                                
-       elsif (carrier_state='OH') then                                                
-       P_code_area:='CLAIMS Q9';                                                      
-       select '  '||id_number into lab_pin_num                                        
-    from pcs.business_id_nums where id_code='OHPR';                                
-    elsif (carrier_state='PA') then                                                
-       P_code_area:='CLAIMS Q10';                                                     
-       select id_number into lab_pin_num                                              
-       from pcs.business_id_nums where id_code='PAPR';                                
-    elsif (carrier_state='AL') then                                                
-    select id_number into lab_pin_num                                              
-    from pcs.business_id_nums where id_code='ALPR';                                
- end if;                                                                        
- elsif (C_choice_code='MED' and SUBSTR(policy_id,1,1)>='A'                      
- and SUBSTR(policy_id,1,1)<='Z') then                                           
-    cbuf1:='X';                                                                    
-    select id_number into lab_pin_num                                              
-    from pcs.business_id_nums where id_code='TMPR';                                
-    trav_med:='Y';                                                                 
- else                                                                           
-    cbuf1:=LPAD('X',44);                                                           
-    if (C_choice_code='BS') then                                                   
-    select id_number into lab_pin_num                                              
-    from pcs.business_id_nums where id_code='BSPR';                                
- end if;                                                                        
- end if;                                                                        
- curr_line:=RPAD(cbuf1,50)||policy_id;                                          
-
- curr_line:=margin||curr_line;                                                  
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- cbuf1:=rtrim(patient_lname)||', '||rtrim(patient_fname)||' '||patient_mi;      
- cbuf1:=substr(cbuf1,1,28);                                                     
- cbuf1:=RPAD(cbuf1,28);                                                         
-
- /* This block of code removed 04/18/13; it prevented the patient's DOB from * 
-    being printed on the form. Code commented out for now pending testing * of a 
-    batch of paper claims. The goto statement label must also be removed. 
-    if (C_choice_code='DPA' and carrier_state='OH') then goto skip_ln5; end if; */                
-
- if (patient_dob is not null) then                                              
- if (carrier_idnum=23744) then                                                  
- cbuf1:=cbuf1||' '||substr(patient_dob,1,2);                                    
- cbuf1:=cbuf1||' '||substr(patient_dob,3,2);                                    
- cbuf1:=cbuf1||' '||substr(patient_dob,7,2)||'  ';                              
- else                                                                           
- cbuf1:=cbuf1||' '||substr(patient_dob,1,2);                                    
- cbuf1:=cbuf1||' '||substr(patient_dob,3,2);                                    
- cbuf1:=cbuf1||' '||substr(patient_dob,5,4);                                    
- end if;                                                                        
-
- else                   
- cbuf1:=cbuf1||'           ';                                                          
- end if;                                                                        
- cbuf1:=cbuf1||LPAD('X',7);                                                         
- if (policy_subscriber='SELF' and C_billing_route<>'PPR') then                  
- cbuf1:=cbuf1||'  '||'SAME';                                                    
-
-
- elsif (carrier_idnum=1048) then                                                
- cbuf1:=cbuf1;                                                                  
- elsif (C_choice_code<>'MED') then                                              
- cbuf2:=rtrim(policy_lname)||', '||rtrim(policy_fname);                         
- cbuf2:=substr(cbuf2,1,29);                                                     
-
- cbuf1:=cbuf1||'   '||cbuf2;                                                    
- end if;                                                                        
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (C_choice_code='DPA' and carrier_state='OH') then                           
-
- cbuf1:=LPAD('X',33);                                                           
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-
-
-
- UTL_FILE.NEW_LINE(file_handle);                                                
- else                                                                           
- cbuf1:=rtrim(patient_addr);                                                    
- cbuf1:=substr(cbuf1,1,29);                                                     
- if (cbuf1 IS NULL) then                                                        
- cbuf1:=' ';                                                                    
- end if;                                                                        
- cbuf1:=RPAD(cbuf1,29);                                                         
-
- if (policy_subscriber='SELF') then                                             
- cbuf1:=cbuf1||'  X                   ';                                                   
- elsif (policy_subscriber='SPOUSE') then                                        
- cbuf1:=cbuf1||'          X           ';                                                   
- elsif (policy_subscriber='DEPENDENT') then                                     
- cbuf1:=cbuf1||'              X       ';                                               
- else                                                                           
- cbuf1:=cbuf1||'                  X   ';                                                      
- end if;                                                                        
- if (C_billing_route<>'PPR') then                                               
- cbuf1:=cbuf1||'SAME';                                                          
- end if;                                                                        
-
-
-
- curr_line:=margin||cbuf1;                                                      
-
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
- end if;                                                                        
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (C_choice_code='DPA' and carrier_state='OH') then                           
- UTL_FILE.NEW_LINE(file_handle,2);                                              
- else                                                                           
- cbuf1:=rtrim(patient_city);                                                    
- cbuf1:=substr(patient_city,1,24);                                              
-
- cbuf1:=RPAD(cbuf1,24)||' '||patient_state;                                     
- cbuf1:=RPAD(cbuf1,45)||'X';                                                    
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
- end if;                                                                        
-                                                                                
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (C_choice_code='DPA' and carrier_state='OH') then                           
-
- UTL_FILE.NEW_LINE(file_handle,2);                                              
- else                                                                           
- cbuf1:=rtrim(patient_zip);                                                     
- cbuf1:=RPAD(cbuf1,14);                                                         
- cbuf2:=substr(patient_phone,1,3);                                              
- cbuf1:=cbuf1||cbuf2;                                                           
- cbuf1:=RPAD(cbuf1,18);                                                         
- cbuf2:=substr(patient_phone,4,7);                                              
- cbuf1:=cbuf1||cbuf2;                                                           
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
- end if;                                                                        
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (C_choice_code='DPA') then                                                  
- UTL_FILE.NEW_LINE(file_handle,2);                                              
- else                                                                           
- if (C_choice_code='MED' or C_choice_code='OI') then                            
- cbuf1:='N/A';                                                                  
- else                                                                           
- cbuf1:='SAME';                                                                 
- end if;                                                                        
-
- cbuf1:=RPAD(cbuf1,49);                                                         
- if (C_choice_code='MED') then                                                  
- cbuf1:=cbuf1||'NONE';                                                          
- else                                                                           
- cbuf1:=cbuf1||substr(policy_group,1,29);                                       
- end if;                                                                        
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
-
- end if;                                                                        
-
- cbuf1:=null;                                                                   
-
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (C_choice_code='DPA' and carrier_state='WV') then                           
- UTL_FILE.NEW_LINE(file_handle,2);                                              
- else                                                                           
- cbuf1:=LPAD('X',40);                                                           
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
- end if;                                                                        
-
- cbuf1:=null;                                                                   
-
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (C_choice_code='DPA' and carrier_state='WV') then                           
- UTL_FILE.NEW_LINE(file_handle,2);                                              
-
- else                                                                           
- cbuf1:=LPAD('X',40);                                                           
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
- end if;                                                                        
-
- cbuf1:=null;                                                                   
-
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (C_choice_code='DPA' and carrier_state='WV') then                           
- UTL_FILE.NEW_LINE(file_handle,2);                                              
- else                                                                           
- cbuf1:=LPAD('X',40);                                                           
- cbuf1:=RPAD(cbuf1,49);                                                         
- if (C_billing_route='ENV') then                                                
- cbuf1:=cbuf1||carrier_pid;                                                     
- end if;                                                                        
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-
-
-
- UTL_FILE.NEW_LINE(file_handle);                                                
-
- end if;                                                                        
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (C_billing_route='ENV') then                                                
- if (carrier_pid is NULL) then                                                  
- cbuf1:=LPAD(' ',56);                                                           
- cbuf1:=cbuf1||'X';                                                             
- curr_line:=margin||cbuf1;                                                      
- else                                                                           
- cbuf1:=LPAD(' ',30)||carrier_pid;                                              
-
- cbuf1:=RPAD(cbuf1,54);                                                         
- cbuf1:=cbuf1||'X';                                                             
- curr_line:=margin||cbuf1;                                                      
- end if;                                                                        
- end if;                                                                        
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-
-
-
- UTL_FILE.NEW_LINE(file_handle);                                                
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-
- UTL_FILE.NEW_LINE(file_handle);                                                
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (C_billing_route='PPR' or C_billing_route='DUP') then                       
- if (C_choice_code<>'DPA') then                                                 
- cbuf1:=LPAD('SIGNATURE ON FILE',31);                                           
- cbuf2:=LPAD(lab_collected,22);                                                 
- curr_line:=cbuf1||cbuf2||LPAD('SIGNATURE ON FILE',22);                         
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
-
- elsif (carrier_idnum=1048) then                                                
-
-
-
- cbuf1:=LPAD('SIGNATURE EXCEPTION',27);                                         
- cbuf2:=LPAD(TO_CHAR(SysDate,'MMDDYYYY'),20);                                   
- curr_line:=cbuf1||cbuf2;                                                       
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
- else                                                                           
- UTL_FILE.NEW_LINE(file_handle,2);                                              
- end if;                                                                        
- else                                                                           
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
-
- end if;                                                                        
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
-
-
-
- curr_line:=null;                                                               
- P_code_area:='CLAIMS Q13';                                                     
-
- select doctor into dr_number from pcs.lab_requisitions                         
- where lab_number=claim_lab_number;                                             
- P_code_area:='CLAIMS Q14';                                                     
- select lname,fname,mi,upin,license,alt_license,alt_state,title,npi             
- into dr_lname,dr_fname,dr_mi,dr_upin,dr_license,dr_alt_license,                
- dr_alt_state,dr_title,dr_npi                                                   
- from pcs.doctors where doctor=dr_number;                                       
- cbuf1:=rtrim(dr_fname);                                                        
- if (dr_mi is not null) then                                                    
- cbuf1:=cbuf1||' '||dr_mi;                                                      
- end if;                                                                        
- cbuf1:=cbuf1||' '||rtrim(dr_lname);                                            
- if (dr_title is NOT NULL) then                                                 
-
- cbuf1:=cbuf1||' '||RTRIM(LTRIM(dr_title));                                     
- end if;                                                                        
- if (dr_upin is null) then                                                      
- cbuf2:='	 ';                                                                   
-
-
-
- elsif (C_choice_code='BS' or C_choice_code='MED') then                         
- cbuf2:='        ';                                                                   
- else                                                                           
- cbuf2:='1G '||dr_upin;                                                         
- end if;                                                                        
- if (C_choice_code='DPA') then                                                  
- cbuf2:=REPLACE(dr_license,' ');                                                
- if (dr_alt_state is NOT NULL and carrier_state=dr_alt_state) then              
- cbuf2:=REPLACE(dr_alt_license,' ');                                            
-
- end if;                                                                        
- cbuf2:='0B '||cbuf2;                                                           
- end if;                                                                        
- if (cbuf2 IS NOT NULL) then                                                    
- cbuf3:=' ';                                                                    
- cbuf3:=RPAD(cbuf3,31);                                                         
- curr_line:=cbuf3||cbuf2;                                                       
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- else                                                                           
- UTL_FILE.NEW_LINE(file_handle);                                                
- end if;                                                                        
-
-
-
- cbuf1:=RPAD(cbuf1,29);                                                         
-
- curr_line:=margin||cbuf1;                                                      
- if (dr_npi is NOT NULL) then                                                   
- curr_line:=curr_line||'   '||dr_npi;                                           
- end if;                                                                        
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
-
- if (carrier_idnum=1048 and policy_rebill_code='SEC') then                      
- curr_line:=margin||'AT11';                                                     
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
- else                                                                           
- UTL_FILE.NEW_LINE(file_handle,2);                                              
- end if;                                                                        
-
- diag_1:=null;                                                                  
- diag_2:=null;                                                                  
- diag_3:=null;                                                                  
-
- diag_4:=null;                                                                  
- P_code_area:='DIAGNOSIS';                                                      
- open diagnosis_list;                                                           
- loop                                                                           
- fetch diagnosis_list into diagnosis_fields;                                    
- exit when diagnosis_list%NOTFOUND;                                             
- if (diagnosis_fields.d_seq=1) then                                             
- diag_1:=diagnosis_fields.diagnosis_code;                                       
- elsif (diagnosis_fields.d_seq=2) then                                          
- diag_2:=diagnosis_fields.diagnosis_code;                                       
- elsif (diagnosis_fields.d_seq=3) then                                          
- diag_3:=diagnosis_fields.diagnosis_code;                                       
- elsif (diagnosis_fields.d_seq=4) then                                          
-
- diag_4:=diagnosis_fields.diagnosis_code;                                       
- end if;                                                                        
- end loop;                                                                      
-
-
-
- close diagnosis_list;                                                          
- if (carrier_idnum=1048) then                                                   
- diag_1:='LAB16 ';                                                              
- diag_2:=NULL;                                                                  
- diag_3:=NULL;                                                                  
- diag_4:=NULL;                                                                  
- end if;                                                                        
-
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (diag_1 is not null) then                                                   
- cbuf2:=REPLACE(diag_1,'.',' ');                                                
- cbuf1:='  '||cbuf2;                                                            
- end if;                                                                        
- if (diag_3 is not null) then                                                   
- cbuf2:=REPLACE(diag_3,'.',' ');                                                
- cbuf2:=LPAD(cbuf2,26);                                                         
- cbuf1:=cbuf1||cbuf2;                                                           
- end if;                                                                        
-
-
-
- curr_line:=margin||cbuf1;                                                       
-
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (diag_2 is not null) then                                                   
- cbuf2:=REPLACE(diag_2,'.',' ');                                                
- cbuf1:='  '||cbuf2;                                                            
- end if;                                                                        
- if (diag_4 is not null) then                                                   
- cbuf2:=REPLACE(diag_4,'.',' ');                                                
-
- cbuf2:=LPAD(cbuf2,27);                                                         
- cbuf1:=cbuf1||cbuf2;                                                           
- end if;                                                                        
- if (cbuf1 is null) then                                                        
- cbuf1:=RPAD(' ',49);                                                           
- else                                                                           
-
-
-
- cbuf1:=RPAD(cbuf1,49);                                                         
- end if;                                                                        
- if (C_billing_route='ENV' or C_choice_code='MED') then                         
- cbuf1:=cbuf1||rtrim(lab_CLIA);                                                 
- end if;                                                                        
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-
- UTL_FILE.NEW_LINE(file_handle);                                                
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-
- diag_5:=null;                                                                  
-
- if (diag_1 is not null) then                                                   
- diag_5:='1';                                                                   
- end if;                                                                        
- if (diag_2 is not null) then                                                   
-
-
-
- diag_5:=diag_5||'2';                                                           
- end if;                                                                        
- if (diag_3 is not null) then                                                   
- diag_5:=diag_5||'3';                                                           
- end if;                                                                        
- if (diag_4 is not null) then                                                   
- diag_5:=diag_5||'4';                                                           
- end if;                                                                        
- if (diag_5 is null) then                                                       
-
- diag_5:=' ';                                                                   
- end if;                                                                        
- rcnt:=0;                                                                       
- P_code_area:='PROCEDURE';                                                      
- open procedure_list;                                                           
- loop                                                                           
- fetch procedure_list into procedure_fields;                                    
- exit when procedure_list%NOTFOUND;                                             
- rcnt:=rcnt+1;                                                                  
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
-
-
-
- curr_line:=null;                                                               
-
- if (carrier_idnum=1048) then                                                   
- cbuf1:=lab_completed||'       ';                                               
- /*
- elsif (carrier_idnum=23744) then                                               
- cbuf2:=SUBSTR(lab_completed,1,2)||' ';                                         
- cbuf2:=cbuf2||SUBSTR(lab_completed,3,2)||' ';                                  
- cbuf2:=cbuf2||SUBSTR(lab_completed,7,2);                                       
- cbuf1:=cbuf2||' '||cbuf2;                                                      
- */
- else                                                                           
- cbuf1:=lab_completed||' '||lab_completed;                                      
- end if;                                                                        
-
-  if (carrier_idnum=22797 OR carrier_idnum=26254) then
-   cbuf1:=RPAD(cbuf1,8 )||' '||RPAD(cbuf1,8 )||' 81'; 
-   else
-   cbuf1:=RPAD(cbuf1,11 )||'       81';                                           
-  end if;
-  
- cbuf1:=RPAD(cbuf1,24)||procedure_fields.procedure_code;                        
- if (C_choice_code='MED' and policy_sign is NOT NULL) then                      
- cbuf1:=cbuf1||'  GA';                                                          
- elsif (C_choice_code='DPA' AND carrier_idnum NOT IN (1046,1047)) then          
- cbuf1:=cbuf1||'  FP';                                                          
-
-
-
- end if;                                                                        
-
-
- if (procedure_fields.procedure_code IN ('88141','87621')) then                 
- if (carrier_idnum=23744) then                                                  
- diag_string:='2';                                                              
- else                                                                           
- diag_string:=REPLACE(diag_5,'1,');                                             
- end if;                                                                        
- else                                                                           
- if (carrier_idnum=23744) then                                                  
- diag_string:='1';                                                              
- else                                                                           
-
- diag_string:=diag_5;                                                           
- end if;                                                                        
- end if;                                                                        
- if (trav_med='Y') then                                                         
- diag_string:='1';                                                              
- end if;                                                                        
- cbuf1:=RPAD(cbuf1,43)||RPAD(diag_string,7);                                    
-
-
-
- cbuf1:=RPAD(cbuf1,47);                                                         
- curr_item:=procedure_fields.item_amount;                                       
- curr_line:=TO_CHAR(curr_item,'99999.99');                                      
- cbuf2:=substr(curr_line,1,6);                                                  
- cbuf2:=LTRIM(cbuf2);                                                           
- cbuf2:=RTRIM(cbuf2);                                                           
-
- cbuf2:='  '||LPAD(cbuf2,5);                                                    
- cbuf1:=cbuf1||cbuf2||' ';                                                      
- cbuf2:=substr(curr_line,8,2);                                                  
- cbuf1:=cbuf1||cbuf2;                                                           
- if (lab_prep=6) then                                                           
- cbuf3:=RTRIM(LTRIM(TO_CHAR(lab_vials)));                                       
- else                                                                           
- cbuf3:='1';                                                                    
- end if;                                                                        
- cbuf1:=RPAD(cbuf1,58)||cbuf3;                                                  
-
-
- cbuf1:=cbuf1||'       '||lab_npi;                                              
- curr_line:=margin||cbuf1;                                                      
-
-
-
- curr_line:=REPLACE(curr_line,' 081 ','  81 ');                                 
- curr_line:=REPLACE(curr_line,' 181 ','  81 ');                                 
- if (carrier_idnum=1048) then                                                   
- cbuf1:=RPAD(' ',65)||'1D '||carrier_prov;                                      
- UTL_FILE.PUTF(file_handle,'%s\n',cbuf1);                                       
-
- elsif (trav_med='Y') then                                                      
- cbuf1:=RPAD(' ',65)||'1C';                                                     
- UTL_FILE.PUTF(file_handle,'%s\n',cbuf1);                                       
- else                                                                           
- UTL_FILE.NEW_LINE(file_handle);                                                
- end if;                                                                        
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- end loop;                                                                      
- close procedure_list;                                                          
- for ndx in (rcnt+1)..6 loop                                                    
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
-
- curr_line:=null;                                                               
- UTL_FILE.NEW_LINE(file_handle,2);                                              
-
-
-
- end loop;                                                                      
- UTL_FILE.NEW_LINE(file_handle);                                                
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
-
-
-
- cbuf1:=RPAD(lab_tax_id,18)||'X';                                               
- cbuf2:='	'||SUBSTR(RTRIM(LTRIM(TO_CHAR(claim_lab_number))),3);                 
- cbuf1:=cbuf1||cbuf2;                                                           
- if (C_choice_code='DPA') then                                                  
- cbuf1:=RPAD(cbuf1,37)||' ';                                                    
- else                                                                           
- cbuf1:=RPAD(cbuf1,35)||'X';                                                    
- end if;                                                                        
-
- cbuf1:=RPAD(cbuf1,47);                                                         
-
- cbuf2:=TO_CHAR(claim_total,'999990.99');                                       
-
-
-
-                                                                                
- curr_line:=substr(cbuf2,1,7);                                                  
- curr_line:=LTRIM(curr_line);                                                   
- curr_line:=RTRIM(curr_line);                                                   
- cbuf2:=LPAD(curr_line,7);                                                      
- cbuf1:=cbuf1||cbuf2||' ';                                                      
- cbuf2:=TO_CHAR(claim_total,'999990.99');                                       
- curr_line:=substr(cbuf2,9,2);                                                  
-
- cbuf1:=cbuf1||curr_line;                                                       
-
- if (carrier_idnum<>1048) then                                                  
- cbuf2:=TO_CHAR(total_payments,'99990.99');                                     
- curr_line:=substr(cbuf2,1,6);                                                  
- curr_line:=LTRIM(curr_line);                                                   
- curr_line:=RTRIM(curr_line);                                                   
- cbuf2:=LPAD(curr_line,6);                                                      
- cbuf3:=cbuf1||cbuf2||' ';                                                      
- cbuf2:=TO_CHAR(total_payments,'99990.99');                                     
- curr_line:=substr(cbuf2,8,2);                                                  
- cbuf3:=cbuf3||curr_line;                                                       
-
-
-
-                                                                                
- cbuf2:=TO_CHAR(claim_total-total_payments,'99990.99');                         
- curr_line:=substr(cbuf2,1,6);                                                  
- curr_line:=LTRIM(curr_line);                                                   
- curr_line:=RTRIM(curr_line);                                                   
- cbuf2:=LPAD(curr_line,6);                                                      
- cbuf1:=cbuf3||cbuf2||'  ';                                                     
- cbuf2:=TO_CHAR(claim_total-total_payments,'99990.99');                         
- curr_line:=substr(cbuf2,8,2);                                                  
- cbuf1:=cbuf1||curr_line;                                                       
- end if;                                                                        
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-
-
- cbuf2:=LPAD(' ',64);                                                           
- cbuf1:=cbuf2||'412 373 8300';                                                  
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-
- cbuf1:=null;                                                                   
-
-
-
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (C_billing_route='ENV') then                                                
- cbuf1:=LPAD('SAME',26);                                                        
- cbuf1:=RPAD(cbuf1,49);                                                         
-
- cbuf1:=cbuf1||'PA CYTOLOGY SERVICES G';                                        
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- elsif (carrier_idnum=1048) then                                                
- cbuf1:=LPAD(' ',26);                                                           
- cbuf1:=RPAD(cbuf1,49);                                                         
- cbuf1:=cbuf1||'PA CYTOLOGY SERVICES';                                          
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- else                                                                           
- if (C_choice_code='DPA' or C_choice_code='OI') then                            
- cbuf1:=LPAD('    ',26);                                                        
- cbuf1:=RPAD(cbuf1,49);                                                         
-
- if (carrier_idnum=1048) then                                                   
-
-
-
- cbuf1:=cbuf1||'				 ';                                                         
- else                                                                           
- cbuf1:=cbuf1||'PENNSYLVANIA CYTOLOGY SERV';                                    
- end if;                                                                        
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- elsif (C_choice_code='MED' or C_choice_code='BS') then                         
- cbuf1:=LPAD(' ',22)||'PENNSYLVANIA CYTOLOGY SERV';                             
- cbuf1:=RPAD(cbuf1,49);                                                         
- cbuf1:=cbuf1||'PENNSYLVANIA CYTOLOGY SERV';                                    
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-
- end if;                                                                        
- end if;                                                                        
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (C_billing_route='ENV') then                                                
- cbuf1:='339 OLD HAYMAKER ROAD';                                                
-
-
-
- cbuf2:=LPAD(' ',49);                                                           
- cbuf1:=cbuf2||cbuf1;                                                           
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-
- else                                                                           
- if (C_choice_code='DPA' or C_choice_code='OI') then                            
- if (C_choice_code='DPA') then                                                  
- cbuf1:=LPAD(' ',26);                                                           
- elsif (carrier_idnum=23663) then                                               
- cbuf1:='PA CYTOLOGY SERVICES  SAME';                                           
- else                                                                           
- cbuf1:=LPAD('SAME',26);                                                        
- end if;                                                                        
- cbuf1:=RPAD(cbuf1,49);                                                         
- cbuf1:=cbuf1||'339 HAYMAKER RD STE 1700';                                      
- curr_line:=margin||cbuf1;                                                      
-
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- elsif (C_choice_code='MED' or C_choice_code='BS') then                         
- cbuf1:=LPAD(' ',22)||'339 HAYMAKER RD S 1700';                                 
-
-
-
- cbuf1:=RPAD(cbuf1,49);                                                         
- cbuf1:=cbuf1||'339 HAYMAKER RD STE 1700';                                      
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- end if;                                                                        
- end if;                                                                        
-
- cbuf1:=null;                                                                   
- cbuf2:=null;                                                                   
-
- curr_line:=null;                                                               
- if (carrier_idnum in (2575,2695,4008)) then                                    
- cbuf2:=RPAD('R H SWEDARSKY  ',49);                                             
- cbuf1:=cbuf2||'MONROEVILLE PA	15146';                                          
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- elsif (carrier_idnum=23524) then                                               
- cbuf2:=RPAD('SIGNATURE ON FILE',49);                                           
- cbuf1:=cbuf2||'MONROEVILLE PA	15146';                                          
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
-
-
-
- else                                                                           
-
- if (C_choice_code='DPA' or C_choice_code='OI') then                            
- if (carrier_idnum=23663) then                                                  
- cbuf1:=LPAD('2478948',20)||'	 ';                                               
- else                                                                           
- cbuf1:=LPAD(' ',26);                                                           
- end if;                                                                        
- cbuf1:=RPAD(cbuf1,49);                                                         
- cbuf1:=cbuf1||'MONROEVILLE, PA 15146';                                         
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- elsif (C_choice_code='MED' or C_choice_code='BS') then                         
- cbuf1:=LPAD(' ',22)||'MONROEVILLE, PA 15146';                                  
-
- cbuf1:=RPAD(cbuf1,49);                                                         
- cbuf1:=cbuf1||'MONROEVILLE, PA 15146';                                         
- curr_line:=margin||cbuf1;                                                      
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- end if;                                                                        
- end if;                                                                        
-
-
-
-                                                                                
- cbuf1:=NULL;                                                                   
- cbuf2:=NULL;                                                                   
- cbuf3:=NULL;                                                                   
- cbuf2:=LPAD(' ',14);                                                           
- cbuf1:=RPAD(lab_npi,11);                                                       
-
- if (carrier_prov IS NOT NULL) then                                             
- if (C_choice_code='DPA') then                                                  
- cbuf2:=carrier_prov;                                                           
- elsif (C_choice_code='BS') then                                                
- cbuf2:='1B'||carrier_prov;                                                     
- elsif (C_choice_code='MED') then                                               
- cbuf2:='		   ';                                                                
- else                                                                           
- cbuf2:='G2'||carrier_prov;                                                     
- end if;                                                                        
- cbuf2:=RPAD(cbuf2,16);                                                         
- else                                                                           
- cbuf2:=RPAD(' ',16);                                                           
-
-
-
-
- end if;                                                                        
- cbuf3:=RPAD(' ',22);                                                           
- cbuf4:=RPAD(' ',27);    
- 
-  if (carrier_idnum=1048) then
- curr_line:=margin||cbuf3||cbuf4||cbuf1||cbuf2;
- elsif (carrier_id_number=10020 or carrier_id_number = 28025) then
- curr_line:=margin||cbuf3||cbuf1||RPAD(' ',16)||cbuf1||cbuf2; 
- else
- curr_line:=margin||cbuf3||cbuf1||cbuf2||cbuf1||cbuf2;
- end if;
-                                                                     
-
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle,3);                                              
-
- if (C_claims>0 and C_billing_route<>'DUP') then                                
- P_code_area:='CLAIMS Q15';                                                     
- update pcs.payer_batch_amounts set                                             
- amount_submitted=amount_submitted+(claim_total-total_payments)                 
- where carrier_id=carrier_idnum and batch_number=claim_batch_number;            
- if (resubmitted=0) then                                                        
- P_code_area:='CLAIMS Q16';                                                     
- select pcs.claim_seq.nextval into lab_claim_id from dual;                      
- insert into pcs.lab_claims (claim_id,lab_number,batch_number, claim_status,datestamp,change_date)                                            
-
- values (lab_claim_id,claim_lab_number,claim_batch_number,                      
- 'S',SysDate,SysDate);                                                          
- update pcs.billing_details                                                     
- set claim_id=lab_claim_id, date_sent=SysDate                                   
- where lab_number=claim_lab_number and rebilling=lab_rebilling;                 
- update pcs.lab_requisitions set finished=2                                     
- where lab_number=claim_lab_number and finished<=2;                             
- else                                                                           
- update pcs.lab_claims                                                          
- set batch_number=claim_batch_number,datestamp=SysDate,change_date=SysDate      
- where claim_id=lab_claim_id;                                                   
- end if;                                                                        
- end if;                                                                        
-
-
- last_carrier:=carrier_idnum;                                                   
-
- end loop;                                                                      
- close claim_list;                                                              
-
-
-
-                                                                                
- delete from pcs.billing_queue where billing_route=C_billing_route;             
- if (C_claims>0 and C_billing_route<>'DUP') then                                
- insert into pcs.claim_submissions (batch_number,tpp,submission_number,creation_date)                                                                           
-                                                                                
-                                                                                
- values (claim_batch_number,C_billing_route,1,SysDate);                         
- end if;                                                                        
-
- UTL_FILE.FCLOSE(file_handle);                                                  
-
- if (C_billing_route='PPR') then                                                
- UTL_FILE.FCLOSE(label_file);                                                   
- end if;                                                                        
- commit;                                                                        
-
- exception                                                                      
- when UTL_FILE.INVALID_PATH then                                                
- UTL_FILE.FCLOSE(file_handle);                                                  
- if (C_billing_route='PPR') then                                                
-
-
-
- UTL_FILE.FCLOSE(label_file);                                                   
- end if;                                                                        
- RAISE_APPLICATION_ERROR(-20051,'invalid path');                                
- when UTL_FILE.INVALID_MODE then                                                
-
- UTL_FILE.FCLOSE(file_handle);                                                  
- if (C_billing_route='PPR') then                                                
- UTL_FILE.FCLOSE(label_file);                                                   
- end if;                                                                        
- RAISE_APPLICATION_ERROR(-20052,'invalid mode');                                
- when UTL_FILE.INVALID_FILEHANDLE then                                          
- UTL_FILE.FCLOSE(file_handle);                                                  
- if (C_billing_route='PPR') then                                                
- UTL_FILE.FCLOSE(label_file);                                                   
- end if;                                                                        
- RAISE_APPLICATION_ERROR(-20053,'invalid file handle');                         
- when UTL_FILE.INVALID_OPERATION then                                           
- UTL_FILE.FCLOSE(file_handle);                                                  
-
- if (C_billing_route='PPR') then                                                
- UTL_FILE.FCLOSE(label_file);                                                   
-
-
-
- end if;                                                                        
- RAISE_APPLICATION_ERROR(-20054,'invalid operation');                           
- when UTL_FILE.READ_ERROR then                                                  
- UTL_FILE.FCLOSE(file_handle);                                                  
- if (C_billing_route='PPR') then                                                
- UTL_FILE.FCLOSE(label_file);                                                   
- end if;                                                                        
- RAISE_APPLICATION_ERROR(-20055,'read error');                                  
- when UTL_FILE.WRITE_ERROR then                                                 
- UTL_FILE.FCLOSE(file_handle);                                                  
- if (C_billing_route='PPR') then                                                
-
- UTL_FILE.FCLOSE(label_file);                                                   
- end if;                                                                        
- RAISE_APPLICATION_ERROR(-20056,'write error');                                 
- when OTHERS then                                                               
- UTL_FILE.FCLOSE(file_handle);                                                  
- if (C_billing_route='PPR') then                                                
- UTL_FILE.FCLOSE(label_file);                                                   
- end if;                                                                        
- P_error_code:=SQLCODE;                                                         
-
-
-
- P_error_message:=SQLERRM;                                                      
- insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)                                                             
- values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,claim_lab_number);                                                                    
- commit;                                                                        
-
- RAISE;                                                                         
- end; 
- 
-   
- -- grant execute on update_receive_dates to pcs_user
-
+CREATE OR REPLACE PROCEDURE build_1500_claim_forms (
+   C_directory       IN CHAR,
+   C_file            IN CHAR,
+   C_billing_route   IN CHAR)
+AS
+   P_error_code         NUMBER;
+   P_error_message      VARCHAR2 (512);
+   P_proc_name          VARCHAR2 (32);
+   P_code_area          VARCHAR2 (32);
+
+
+   CURSOR claim_list
+   IS
+        SELECT c.carrier_id,
+               SUBSTR (c.name, 1, 48),
+               c.address1,
+               c.address2,
+               c.city,
+               c.state,
+               c.zip,
+               c.payer_id,
+               bd.id_number,
+               bd.group_number,
+               bd.subscriber,
+               bd.sub_lname,
+               bd.sub_fname,
+               TO_CHAR (bd.sign_date, 'MMDDYYYY'),
+               p.lname,
+               p.fname,
+               p.mi,
+               p.address1,
+               p.city,
+               p.state,
+               p.zip,
+               p.phone,
+               p.patient,
+               TO_CHAR (p.dob, 'MMDDYYYY'),
+               pr.name,
+               lb.bill_amount,
+               TO_CHAR (lr.date_collected, 'MMDDYYYY'),
+               bq.lab_number,
+               bq.rebilling,
+               pr.state,
+               NVL (lb.balance, lb.bill_amount),
+               lb.bill_amount - (NVL (lb.allowance, lb.bill_amount)),
+               TO_CHAR (lr.date_collected, 'MM DD YY'),
+               NVL (bd.claim_id, -1),
+               c.provider_id,
+               bd.rebill_code,
+               lr.slide_qty,
+               lr.preparation,
+               c.id_number
+          FROM pcs.carriers c,
+               pcs.billing_details bd,
+               pcs.patients p,
+               pcs.practices pr,
+               pcs.lab_billings lb,
+               pcs.billing_queue bq,
+               pcs.lab_requisitions lr,
+               pcs.lab_results r
+         WHERE     bq.lab_number = lr.lab_number
+               AND lr.lab_number = r.lab_number
+               AND lr.lab_number = bd.lab_number
+               AND lr.patient = p.patient
+               AND lr.practice = pr.practice
+               AND bd.carrier_id = c.carrier_id
+               AND bd.lab_number = lb.lab_number
+               AND bq.rebilling = bd.rebilling
+               AND bq.billing_route = C_billing_route
+      ORDER BY c.billing_choice,
+               c.name,
+               p.lname,
+               p.fname;
+
+   carrier_idnum        NUMBER;                                   --carrier_id
+   carrier_id_number    NUMBER;                                    --id_number
+   carrier_name         VARCHAR2 (256);
+   carrier_addr1        VARCHAR2 (128);
+   carrier_addr2        VARCHAR2 (128);
+   carrier_city         VARCHAR2 (64);
+   carrier_state        CHAR (2);
+   carrier_zip          VARCHAR2 (16);
+   carrier_pid          VARCHAR2 (64);
+   carrier_prov         VARCHAR2 (64);
+   policy_id            VARCHAR2 (64);
+   policy_group         VARCHAR2 (64);
+   policy_lname         VARCHAR2 (64);
+   policy_fname         VARCHAR2 (64);
+   policy_subscriber    VARCHAR2 (32);
+   policy_sign          CHAR (16);
+   policy_rebill_code   VARCHAR2 (16);
+   patient_lname        VARCHAR2 (64);
+   patient_fname        VARCHAR2 (64);
+   patient_mi           CHAR (1);
+   patient_addr         VARCHAR2 (128);
+   patient_city         VARCHAR2 (64);
+   patient_state        CHAR (2);
+   patient_zip          VARCHAR2 (16);
+   patient_phone        CHAR (16);
+   patient_id           NUMBER;
+   patient_dob          CHAR (16);
+   practice_name        VARCHAR2 (128);
+   lab_completed        CHAR (16);
+   lab_collected        CHAR (16);
+   claim_total          NUMBER;
+   claim_lab_number     NUMBER;
+   lab_rebilling        NUMBER;
+   practice_state       CHAR (2);
+   lab_balance          NUMBER;
+   total_loss           NUMBER;
+   lab_claim_id         NUMBER;
+   total_payments       NUMBER;
+   lab_vials            NUMBER;
+   lab_prep             NUMBER;
+   dr_lname             VARCHAR2 (128);
+   dr_fname             VARCHAR2 (64);
+   dr_mi                CHAR (1);
+   dr_upin              VARCHAR (32);
+   dr_number            NUMBER;
+   dr_license           VARCHAR2 (32);
+   dr_alt_license       VARCHAR2 (32);
+   dr_alt_state         CHAR (2);
+   dr_title             VARCHAR2 (32);
+   dr_npi               VARCHAR2 (16);
+   diag_1               VARCHAR2 (32);
+   diag_2               VARCHAR2 (32);
+   diag_3               VARCHAR2 (32);
+   diag_4               VARCHAR2 (32);
+   diag_5               VARCHAR2 (32);
+   diag_string          VARCHAR2 (32);
+   lab_CLIA             VARCHAR2 (32);
+   lab_tax_id           VARCHAR2 (32);
+   lab_pin_num          VARCHAR2 (48);
+   lab_npi              VARCHAR2 (16);
+   trav_med             CHAR (1);
+
+   CURSOR diagnosis_list
+   IS
+        SELECT *
+          FROM pcs.lab_req_diagnosis
+         WHERE lab_number = claim_lab_number AND rebilling = lab_rebilling
+      ORDER BY d_seq;
+
+   diagnosis_fields     diagnosis_list%ROWTYPE;
+
+   CURSOR procedure_list
+   IS
+        SELECT bi.lab_number,
+               bi.price_code,
+               bi.procedure_code,
+               bi.item_amount,
+               bi.rebilling,
+               p.p_seq
+          FROM pcs.lab_billing_items bi, pcs.procedure_codes p
+         WHERE     bi.lab_number = claim_lab_number
+               AND bi.procedure_code = p.procedure_code
+               AND bi.item_amount > 0
+      ORDER BY p.p_seq;
+
+   procedure_fields     procedure_list%ROWTYPE;
+
+   curr_line            VARCHAR2 (512);
+   cbuf1                VARCHAR2 (512);
+   cbuf2                VARCHAR2 (512);
+   cbuf3                VARCHAR2 (512);
+   cbuf4                VARCHAR2 (512);
+   margin               VARCHAR2 (16);
+   rcnt                 NUMBER;
+   curr_item            NUMBER;
+   claim_batch_number   NUMBER;
+   claim_ebill          CHAR (1);
+   C_tpp                VARCHAR2 (16);
+   C_claims             NUMBER;
+   C_choice_code        VARCHAR2 (16);
+   check_point          NUMBER;
+   num_diags            NUMBER (1);
+   last_carrier         NUMBER;
+   max_rebilling        NUMBER;
+   resubmitted          NUMBER;
+   C_status             VARCHAR2 (2);
+   tmp_num              NUMBER;
+
+
+   lbl_fname            VARCHAR2 (48);
+   file_handle          UTL_FILE.FILE_TYPE;
+   label_file           UTL_FILE.FILE_TYPE;
+BEGIN
+   P_proc_name := 'BUILD_1500_CLAIM_FORMS';
+
+   P_code_area := 'PREP';
+   check_point := 0;
+   num_diags := 0;
+   last_carrier := 0;
+   trav_med := 'N';
+
+   SELECT COUNT (*)
+     INTO C_claims
+     FROM pcs.billing_queue
+    WHERE billing_route = C_billing_route;
+
+   IF (C_claims > 0 AND C_billing_route <> 'DUP')
+   THEN
+      SELECT pcs.claim_submission_seq.NEXTVAL
+        INTO claim_batch_number
+        FROM DUAL;
+   END IF;
+
+   margin := '  ';
+   C_tpp := C_billing_route;
+
+   P_code_area := 'BATCH';
+
+   IF (C_claims > 0 AND C_billing_route <> 'DUP')
+   THEN
+      INSERT INTO pcs.claim_batches (batch_number,
+                                     e_billing,
+                                     number_of_claims,
+                                     datestamp,
+                                     sys_user,
+                                     tpp)
+           VALUES (claim_batch_number,
+                   'N',
+                   C_claims,
+                   SYSDATE,
+                   UID,
+                   C_tpp);
+
+      INSERT INTO pcs.payer_batch_amounts (carrier_id,
+                                           batch_number,
+                                           amount_submitted,
+                                           amount_recorded,
+                                           amount_received)
+         SELECT DISTINCT bd.carrier_id,
+                         claim_batch_number,
+                         0,
+                         0,
+                         0
+           FROM pcs.billing_details bd,
+                pcs.lab_billings lb,
+                pcs.billing_queue bq
+          WHERE     bd.lab_number = lb.lab_number
+                AND lb.lab_number = bq.lab_number
+                AND bd.rebilling = lb.rebilling
+                AND bq.billing_route = C_billing_route;
+   END IF;
+
+   SELECT id_number
+     INTO lab_CLIA
+     FROM pcs.business_id_nums
+    WHERE id_code = 'CLIA';
+
+   SELECT id_number
+     INTO lab_tax_id
+     FROM pcs.business_id_nums
+    WHERE id_code = 'TAXID';
+
+   SELECT id_number
+     INTO lab_npi
+     FROM pcs.business_id_nums
+    WHERE id_code = 'NPI';
+
+   P_code_area := 'CHECK_NPI';
+   pcs.check_npi_numbers (C_billing_route);
+
+   file_handle := UTL_FILE.FOPEN (C_directory, C_file, 'w');
+
+   IF (C_billing_route = 'PPR')
+   THEN
+      lbl_fname := C_file || '.lbl';
+      label_file := UTL_FILE.FOPEN (C_directory, lbl_fname, 'w');
+   END IF;
+
+   P_code_area := 'CLAIMS';
+
+   OPEN claim_list;
+
+   LOOP
+      FETCH claim_list
+         INTO carrier_idnum,
+              carrier_name,
+              carrier_addr1,
+              carrier_addr2,
+              carrier_city,
+              carrier_state,
+              carrier_zip,
+              carrier_pid,
+              policy_id,
+              policy_group,
+              policy_subscriber,
+              policy_lname,
+              policy_fname,
+              policy_sign,
+              patient_lname,
+              patient_fname,
+              patient_mi,
+              patient_addr,
+              patient_city,
+              patient_state,
+              patient_zip,
+              patient_phone,
+              patient_id,
+              patient_dob,
+              practice_name,
+              claim_total,
+              lab_completed,
+              claim_lab_number,
+              lab_rebilling,
+              practice_state,
+              lab_balance,
+              total_loss,
+              lab_collected,
+              lab_claim_id,
+              carrier_prov,
+              policy_rebill_code,
+              lab_vials,
+              lab_prep,
+              carrier_id_number;
+
+      EXIT WHEN claim_list%NOTFOUND;
+
+      resubmitted := 0;
+      C_status := '*';
+      P_code_area := 'CLAIMS Q1';
+
+      SELECT COUNT (*)
+        INTO resubmitted
+        FROM pcs.lab_claims
+       WHERE lab_number = claim_lab_number AND claim_id = lab_claim_id;
+
+      IF (resubmitted > 0)
+      THEN
+         P_code_area := 'CLAIMS Q2';
+
+         SELECT claim_status
+           INTO C_status
+           FROM pcs.lab_claims
+          WHERE claim_id = lab_claim_id;
+
+         IF (C_status <> 'B')
+         THEN
+            resubmitted := 0;
+         END IF;
+      END IF;
+
+      P_code_area := 'CLAIMS Q3 ' || TO_CHAR (claim_lab_number);
+
+      SELECT MAX (rebilling)
+        INTO max_rebilling
+        FROM pcs.billing_details
+       WHERE lab_number = claim_lab_number;
+
+      IF (max_rebilling > lab_rebilling)
+      THEN
+         P_code_area :=
+            'CLAIMS Q4 ' || claim_lab_number || ' and ' || max_rebilling;
+
+         SELECT c.carrier_id,
+                c.name,
+                c.address1,
+                c.address2,
+                c.city,
+                c.state,
+                c.zip,
+                c.payer_id,
+                bd.id_number,
+                bd.group_number,
+                bd.subscriber,
+                bd.sub_lname,
+                bd.sub_fname,
+                TO_CHAR (bd.sign_date, 'MMDDYYYY')
+           INTO carrier_idnum,
+                carrier_name,
+                carrier_addr1,
+                carrier_addr2,
+                carrier_city,
+                carrier_state,
+                carrier_zip,
+                carrier_pid,
+                policy_id,
+                policy_group,
+                policy_subscriber,
+                policy_lname,
+                policy_fname,
+                policy_sign
+           FROM pcs.billing_details bd, pcs.carriers c
+          WHERE     bd.carrier_id = c.carrier_id
+                AND bd.rebilling = max_rebilling
+                AND bd.lab_number = claim_lab_number;
+      END IF;
+
+
+      P_code_area := 'CLAIMS Q3.1';
+
+      IF (    (   C_billing_route = 'PPR'
+               OR C_billing_route = 'DUP'
+               OR C_billing_route = 'ENV')
+          AND carrier_idnum <> 1048)
+      THEN
+         UTL_FILE.NEW_LINE (file_handle);
+         cbuf1 := LPAD (' ', 40);
+         curr_line := cbuf1 || carrier_name;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         curr_line := cbuf1 || carrier_addr1;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+
+         IF (carrier_addr2 IS NOT NULL)
+         THEN
+            curr_line := cbuf1 || carrier_addr2;
+            UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         END IF;
+
+         IF (    carrier_city IS NOT NULL
+             AND carrier_state IS NOT NULL
+             AND carrier_zip IS NOT NULL)
+         THEN
+            curr_line :=
+                  cbuf1
+               || carrier_city
+               || ', '
+               || carrier_state
+               || ' '
+               || carrier_zip;
+         ELSE
+            curr_line := '  ';
+         END IF;
+
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+
+         IF (carrier_addr2 IS NOT NULL)
+         THEN
+            UTL_FILE.NEW_LINE (file_handle, 3);
+         ELSE
+            UTL_FILE.NEW_LINE (file_handle, 4);
+         END IF;
+      ELSE
+         UTL_FILE.NEW_LINE (file_handle, 8);
+      END IF;
+
+      P_code_area := 'CLAIMS Q5';
+
+      SELECT A.choice_code
+        INTO C_choice_code
+        FROM pcs.billing_choices A, pcs.carriers B
+       WHERE     A.billing_choice = B.billing_choice
+             AND B.carrier_id = carrier_idnum;
+
+      P_code_area := 'CLAIMS Q6';
+
+      SELECT NVL (SUM (payment_amount), 0)
+        INTO total_payments
+        FROM pcs.payments P
+       WHERE     P.payment_type <> 'PLUS ADJUST'
+             AND P.lab_number = claim_lab_number;
+
+      P_code_area := 'CLAIMS Q6.001';
+
+      SELECT NVL (SUM (payment_amount), 0)
+        INTO tmp_num
+        FROM pcs.payments P
+       WHERE     P.payment_type = 'PLUS ADJUST'
+             AND P.lab_number = claim_lab_number;
+
+      P_code_area := 'CLAIMS Q6.002';
+      total_payments := total_payments - tmp_num;
+      P_code_area := 'CLAIMS Q6.003';
+
+      IF (carrier_idnum <> last_carrier)
+      THEN
+         P_code_area := 'CLAIMS Q6.334';
+
+         IF (C_billing_route = 'PPR')
+         THEN
+            IF (    carrier_addr1 IS NOT NULL
+                AND carrier_city IS NOT NULL
+                AND carrier_state IS NOT NULL
+                AND carrier_zip IS NOT NULL)
+            THEN
+               rcnt := 3;
+               curr_line := SUBSTR (carrier_name, 1, 32);
+               UTL_FILE.PUTF (label_file, '%s\n', curr_line);
+               curr_line := SUBSTR (carrier_addr1, 1, 32);
+               UTL_FILE.PUTF (label_file, '%s\n', curr_line);
+
+               IF (carrier_addr2 IS NOT NULL)
+               THEN
+                  rcnt := 2;
+                  curr_line := SUBSTR (carrier_addr2, 1, 32);
+                  UTL_FILE.PUTF (label_file, '%s\n', curr_line);
+               END IF;
+
+               cbuf1 := SUBSTR (carrier_zip, 1, 5);
+
+               IF (LENGTH (carrier_zip) > 5)
+               THEN
+                  cbuf2 := SUBSTR (carrier_zip, 6, 4);
+                  cbuf1 := cbuf1 || '-' || cbuf2;
+               END IF;
+
+               curr_line :=
+                  SUBSTR (
+                     carrier_city || ', ' || carrier_state || ' ' || cbuf1,
+                     1,
+                     32);
+               UTL_FILE.PUTF (label_file, '%s\n', curr_line);
+               UTL_FILE.NEW_LINE (label_file, rcnt);
+               rcnt := 0;
+            END IF;
+         END IF;
+      END IF;
+
+      UTL_FILE.NEW_LINE (file_handle);
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (carrier_name = 'CHAMPUS')
+      THEN
+         cbuf1 := LPAD ('X', 14);
+      ELSIF (C_choice_code = 'DPA')
+      THEN
+         cbuf1 := LPAD ('X', 7);
+         policy_subscriber := 'SELF';
+
+         IF (carrier_state = 'WV')
+         THEN
+            P_code_area := 'CLAIMS Q8';
+
+            SELECT id_number
+              INTO lab_pin_num
+              FROM pcs.business_id_nums
+             WHERE id_code = 'WVPR';
+         ELSIF (carrier_state = 'OH')
+         THEN
+            P_code_area := 'CLAIMS Q9';
+
+            SELECT '  ' || id_number
+              INTO lab_pin_num
+              FROM pcs.business_id_nums
+             WHERE id_code = 'OHPR';
+         ELSIF (carrier_state = 'PA')
+         THEN
+            P_code_area := 'CLAIMS Q10';
+
+            SELECT id_number
+              INTO lab_pin_num
+              FROM pcs.business_id_nums
+             WHERE id_code = 'PAPR';
+         ELSIF (carrier_state = 'AL')
+         THEN
+            SELECT id_number
+              INTO lab_pin_num
+              FROM pcs.business_id_nums
+             WHERE id_code = 'ALPR';
+         END IF;
+      ELSIF (    C_choice_code = 'MED'
+             AND SUBSTR (policy_id, 1, 1) >= 'A'
+             AND SUBSTR (policy_id, 1, 1) <= 'Z')
+      THEN
+         cbuf1 := 'X';
+
+         SELECT id_number
+           INTO lab_pin_num
+           FROM pcs.business_id_nums
+          WHERE id_code = 'TMPR';
+
+         trav_med := 'Y';
+      ELSE
+         cbuf1 := LPAD ('X', 44);
+
+         IF (C_choice_code = 'BS')
+         THEN
+            SELECT id_number
+              INTO lab_pin_num
+              FROM pcs.business_id_nums
+             WHERE id_code = 'BSPR';
+         END IF;
+      END IF;
+
+      curr_line := RPAD (cbuf1, 50) || policy_id;
+
+      curr_line := margin || curr_line;
+      UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+      UTL_FILE.NEW_LINE (file_handle);
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+      cbuf1 :=
+            RTRIM (patient_lname)
+         || ', '
+         || RTRIM (patient_fname)
+         || ' '
+         || patient_mi;
+      cbuf1 := SUBSTR (cbuf1, 1, 28);
+      cbuf1 := RPAD (cbuf1, 28);
+
+      /* This block of code removed 04/18/13; it prevented the patient's DOB from *
+         being printed on the form. Code commented out for now pending testing * of a
+         batch of paper claims. The goto statement label must also be removed.
+         if (C_choice_code='DPA' and carrier_state='OH') then goto skip_ln5; end if; */
+
+      IF (patient_dob IS NOT NULL)
+      THEN
+         IF (carrier_idnum = 23744)
+         THEN
+            cbuf1 := cbuf1 || ' ' || SUBSTR (patient_dob, 1, 2);
+            cbuf1 := cbuf1 || ' ' || SUBSTR (patient_dob, 3, 2);
+            cbuf1 := cbuf1 || ' ' || SUBSTR (patient_dob, 7, 2) || '  ';
+         ELSE
+            cbuf1 := cbuf1 || ' ' || SUBSTR (patient_dob, 1, 2);
+            cbuf1 := cbuf1 || ' ' || SUBSTR (patient_dob, 3, 2);
+            cbuf1 := cbuf1 || ' ' || SUBSTR (patient_dob, 5, 4);
+         END IF;
+      ELSE
+         cbuf1 := cbuf1 || '           ';
+      END IF;
+
+      cbuf1 := cbuf1 || LPAD ('X', 7);
+
+      IF (policy_subscriber = 'SELF' AND C_billing_route <> 'PPR')
+      THEN
+         cbuf1 := cbuf1 || '  ' || 'SAME';
+      ELSIF (carrier_idnum = 1048)
+      THEN
+         cbuf1 := cbuf1;
+      ELSIF (C_choice_code <> 'MED')
+      THEN
+         cbuf2 := RTRIM (policy_lname) || ', ' || RTRIM (policy_fname);
+         cbuf2 := SUBSTR (cbuf2, 1, 29);
+
+         cbuf1 := cbuf1 || '   ' || cbuf2;
+      END IF;
+
+      curr_line := margin || cbuf1;
+      UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+      UTL_FILE.NEW_LINE (file_handle);
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (C_choice_code = 'DPA' AND carrier_state = 'OH')
+      THEN
+         cbuf1 := LPAD ('X', 33);
+         curr_line := margin || cbuf1;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+
+
+
+         UTL_FILE.NEW_LINE (file_handle);
+      ELSE
+         cbuf1 := RTRIM (patient_addr);
+         cbuf1 := SUBSTR (cbuf1, 1, 29);
+
+         IF (cbuf1 IS NULL)
+         THEN
+            cbuf1 := ' ';
+         END IF;
+
+         cbuf1 := RPAD (cbuf1, 29);
+
+         IF (policy_subscriber = 'SELF')
+         THEN
+            cbuf1 := cbuf1 || '  X                   ';
+         ELSIF (policy_subscriber = 'SPOUSE')
+         THEN
+            cbuf1 := cbuf1 || '          X           ';
+         ELSIF (policy_subscriber = 'DEPENDENT')
+         THEN
+            cbuf1 := cbuf1 || '              X       ';
+         ELSE
+            cbuf1 := cbuf1 || '                  X   ';
+         END IF;
+
+         IF (C_billing_route <> 'PPR')
+         THEN
+            cbuf1 := cbuf1 || 'SAME';
+         END IF;
+
+
+
+         curr_line := margin || cbuf1;
+
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         UTL_FILE.NEW_LINE (file_handle);
+      END IF;
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (C_choice_code = 'DPA' AND carrier_state = 'OH')
+      THEN
+         UTL_FILE.NEW_LINE (file_handle, 2);
+      ELSE
+         cbuf1 := RTRIM (patient_city);
+         cbuf1 := SUBSTR (patient_city, 1, 24);
+
+         cbuf1 := RPAD (cbuf1, 24) || ' ' || patient_state;
+         cbuf1 := RPAD (cbuf1, 45) || 'X';
+         curr_line := margin || cbuf1;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         UTL_FILE.NEW_LINE (file_handle);
+      END IF;
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (C_choice_code = 'DPA' AND carrier_state = 'OH')
+      THEN
+         UTL_FILE.NEW_LINE (file_handle, 2);
+      ELSE
+         cbuf1 := RTRIM (patient_zip);
+         cbuf1 := RPAD (cbuf1, 14);
+         cbuf2 := SUBSTR (patient_phone, 1, 3);
+         cbuf1 := cbuf1 || cbuf2;
+         cbuf1 := RPAD (cbuf1, 18);
+         cbuf2 := SUBSTR (patient_phone, 4, 7);
+         cbuf1 := cbuf1 || cbuf2;
+         curr_line := margin || cbuf1;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         UTL_FILE.NEW_LINE (file_handle);
+      END IF;
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (C_choice_code = 'DPA')
+      THEN
+         UTL_FILE.NEW_LINE (file_handle, 2);
+      ELSE
+         IF (C_choice_code = 'MED' OR C_choice_code = 'OI')
+         THEN
+            cbuf1 := 'N/A';
+         ELSE
+            cbuf1 := 'SAME';
+         END IF;
+
+         cbuf1 := RPAD (cbuf1, 49);
+
+         IF (C_choice_code = 'MED')
+         THEN
+            cbuf1 := cbuf1 || 'NONE';
+         ELSE
+            cbuf1 := cbuf1 || SUBSTR (policy_group, 1, 29);
+         END IF;
+
+         curr_line := margin || cbuf1;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         UTL_FILE.NEW_LINE (file_handle);
+      END IF;
+
+      cbuf1 := NULL;
+
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (C_choice_code = 'DPA' AND carrier_state = 'WV')
+      THEN
+         UTL_FILE.NEW_LINE (file_handle, 2);
+      ELSE
+         cbuf1 := LPAD ('X', 40);
+         curr_line := margin || cbuf1;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         UTL_FILE.NEW_LINE (file_handle);
+      END IF;
+
+      cbuf1 := NULL;
+
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (C_choice_code = 'DPA' AND carrier_state = 'WV')
+      THEN
+         UTL_FILE.NEW_LINE (file_handle, 2);
+      ELSE
+         cbuf1 := LPAD ('X', 40);
+         curr_line := margin || cbuf1;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         UTL_FILE.NEW_LINE (file_handle);
+      END IF;
+
+      cbuf1 := NULL;
+
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (C_choice_code = 'DPA' AND carrier_state = 'WV')
+      THEN
+         UTL_FILE.NEW_LINE (file_handle, 2);
+      ELSE
+         cbuf1 := LPAD ('X', 40);
+         cbuf1 := RPAD (cbuf1, 49);
+
+         IF (C_billing_route = 'ENV')
+         THEN
+            cbuf1 := cbuf1 || carrier_pid;
+         END IF;
+
+         curr_line := margin || cbuf1;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+
+
+
+         UTL_FILE.NEW_LINE (file_handle);
+      END IF;
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (C_billing_route = 'ENV')
+      THEN
+         IF (carrier_pid IS NULL)
+         THEN
+            cbuf1 := LPAD (' ', 56);
+            cbuf1 := cbuf1 || 'X';
+            curr_line := margin || cbuf1;
+         ELSE
+            cbuf1 := LPAD (' ', 30) || carrier_pid;
+
+            cbuf1 := RPAD (cbuf1, 54);
+            cbuf1 := cbuf1 || 'X';
+            curr_line := margin || cbuf1;
+         END IF;
+      END IF;
+
+      UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+
+
+
+      UTL_FILE.NEW_LINE (file_handle);
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+      UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+
+      UTL_FILE.NEW_LINE (file_handle);
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (C_billing_route = 'PPR' OR C_billing_route = 'DUP')
+      THEN
+         IF (C_choice_code <> 'DPA')
+         THEN
+            cbuf1 := LPAD ('SIGNATURE ON FILE', 31);
+            cbuf2 := LPAD (lab_collected, 22);
+            curr_line := cbuf1 || cbuf2 || LPAD ('SIGNATURE ON FILE', 22);
+            UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+            UTL_FILE.NEW_LINE (file_handle);
+         ELSIF (carrier_idnum = 1048)
+         THEN
+            cbuf1 := LPAD ('SIGNATURE EXCEPTION', 27);
+            cbuf2 := LPAD (TO_CHAR (SYSDATE, 'MMDDYYYY'), 20);
+            curr_line := cbuf1 || cbuf2;
+            UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+            UTL_FILE.NEW_LINE (file_handle);
+         ELSE
+            UTL_FILE.NEW_LINE (file_handle, 2);
+         END IF;
+      ELSE
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         UTL_FILE.NEW_LINE (file_handle);
+      END IF;
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+      UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+
+
+
+      curr_line := NULL;
+      P_code_area := 'CLAIMS Q13';
+
+      SELECT doctor
+        INTO dr_number
+        FROM pcs.lab_requisitions
+       WHERE lab_number = claim_lab_number;
+
+      P_code_area := 'CLAIMS Q14';
+
+      SELECT lname,
+             fname,
+             mi,
+             upin,
+             license,
+             alt_license,
+             alt_state,
+             title,
+             npi
+        INTO dr_lname,
+             dr_fname,
+             dr_mi,
+             dr_upin,
+             dr_license,
+             dr_alt_license,
+             dr_alt_state,
+             dr_title,
+             dr_npi
+        FROM pcs.doctors
+       WHERE doctor = dr_number;
+
+      cbuf1 := RTRIM (dr_fname);
+
+      IF (dr_mi IS NOT NULL)
+      THEN
+         cbuf1 := cbuf1 || ' ' || dr_mi;
+      END IF;
+
+      cbuf1 := cbuf1 || ' ' || RTRIM (dr_lname);
+
+      IF (dr_title IS NOT NULL)
+      THEN
+         cbuf1 := cbuf1 || ' ' || RTRIM (LTRIM (dr_title));
+      END IF;
+
+      IF (dr_upin IS NULL)
+      THEN
+         cbuf2 := '	 ';
+      ELSIF (C_choice_code = 'BS' OR C_choice_code = 'MED')
+      THEN
+         cbuf2 := '        ';
+      ELSE
+         cbuf2 := '1G ' || dr_upin;
+      END IF;
+
+      IF (C_choice_code = 'DPA')
+      THEN
+         cbuf2 := REPLACE (dr_license, ' ');
+
+         IF (dr_alt_state IS NOT NULL AND carrier_state = dr_alt_state)
+         THEN
+            cbuf2 := REPLACE (dr_alt_license, ' ');
+         END IF;
+
+         cbuf2 := '0B ' || cbuf2;
+      END IF;
+
+      IF (cbuf2 IS NOT NULL)
+      THEN
+         cbuf3 := ' ';
+         cbuf3 := RPAD (cbuf3, 31);
+         curr_line := cbuf3 || cbuf2;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+      ELSE
+         UTL_FILE.NEW_LINE (file_handle);
+      END IF;
+
+
+
+      cbuf1 := RPAD (cbuf1, 29);
+
+      curr_line := margin || cbuf1;
+
+      IF (dr_npi IS NOT NULL)
+      THEN
+         curr_line := curr_line || '   ' || dr_npi;
+      END IF;
+
+      UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+      UTL_FILE.NEW_LINE (file_handle);
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (carrier_idnum = 1048 AND policy_rebill_code = 'SEC')
+      THEN
+         curr_line := margin || 'AT11';
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         UTL_FILE.NEW_LINE (file_handle);
+      ELSE
+         UTL_FILE.NEW_LINE (file_handle, 2);
+      END IF;
+
+      diag_1 := NULL;
+      diag_2 := NULL;
+      diag_3 := NULL;
+
+      diag_4 := NULL;
+      P_code_area := 'DIAGNOSIS';
+
+      OPEN diagnosis_list;
+
+      LOOP
+         FETCH diagnosis_list INTO diagnosis_fields;
+
+         EXIT WHEN diagnosis_list%NOTFOUND;
+
+         IF (diagnosis_fields.d_seq = 1)
+         THEN
+            diag_1 := diagnosis_fields.diagnosis_code;
+         ELSIF (diagnosis_fields.d_seq = 2)
+         THEN
+            diag_2 := diagnosis_fields.diagnosis_code;
+         ELSIF (diagnosis_fields.d_seq = 3)
+         THEN
+            diag_3 := diagnosis_fields.diagnosis_code;
+         ELSIF (diagnosis_fields.d_seq = 4)
+         THEN
+            diag_4 := diagnosis_fields.diagnosis_code;
+         END IF;
+      END LOOP;
+
+
+
+      CLOSE diagnosis_list;
+
+      IF (carrier_idnum = 1048)
+      THEN
+         diag_1 := 'LAB16 ';
+         diag_2 := NULL;
+         diag_3 := NULL;
+         diag_4 := NULL;
+      END IF;
+
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (diag_1 IS NOT NULL)
+      THEN
+         cbuf2 := REPLACE (diag_1, '.', ' ');
+         cbuf1 := '  ' || cbuf2;
+      END IF;
+
+      IF (diag_3 IS NOT NULL)
+      THEN
+         cbuf2 := REPLACE (diag_3, '.', ' ');
+         cbuf2 := LPAD (cbuf2, 26);
+         cbuf1 := cbuf1 || cbuf2;
+      END IF;
+
+
+
+      curr_line := margin || cbuf1;
+
+      UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+      UTL_FILE.NEW_LINE (file_handle);
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (diag_2 IS NOT NULL)
+      THEN
+         cbuf2 := REPLACE (diag_2, '.', ' ');
+         cbuf1 := '  ' || cbuf2;
+      END IF;
+
+      IF (diag_4 IS NOT NULL)
+      THEN
+         cbuf2 := REPLACE (diag_4, '.', ' ');
+
+         cbuf2 := LPAD (cbuf2, 27);
+         cbuf1 := cbuf1 || cbuf2;
+      END IF;
+
+      IF (cbuf1 IS NULL)
+      THEN
+         cbuf1 := RPAD (' ', 49);
+      ELSE
+         cbuf1 := RPAD (cbuf1, 49);
+      END IF;
+
+      IF (C_billing_route = 'ENV' OR C_choice_code = 'MED')
+      THEN
+         cbuf1 := cbuf1 || RTRIM (lab_CLIA);
+      END IF;
+
+      curr_line := margin || cbuf1;
+      UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+
+      UTL_FILE.NEW_LINE (file_handle);
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+      UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+
+      diag_5 := NULL;
+
+      IF (diag_1 IS NOT NULL)
+      THEN
+         diag_5 := '1';
+      END IF;
+
+      IF (diag_2 IS NOT NULL)
+      THEN
+         diag_5 := diag_5 || '2';
+      END IF;
+
+      IF (diag_3 IS NOT NULL)
+      THEN
+         diag_5 := diag_5 || '3';
+      END IF;
+
+      IF (diag_4 IS NOT NULL)
+      THEN
+         diag_5 := diag_5 || '4';
+      END IF;
+
+      IF (diag_5 IS NULL)
+      THEN
+         diag_5 := ' ';
+      END IF;
+
+      rcnt := 0;
+      P_code_area := 'PROCEDURE';
+
+      OPEN procedure_list;
+
+      LOOP
+         FETCH procedure_list INTO procedure_fields;
+
+         EXIT WHEN procedure_list%NOTFOUND;
+         rcnt := rcnt + 1;
+         cbuf1 := NULL;
+         cbuf2 := NULL;
+
+
+
+         curr_line := NULL;
+
+         IF (carrier_idnum = 1048)
+         THEN
+            cbuf1 := lab_completed || '       ';
+         /*
+         elsif (carrier_idnum=23744) then
+         cbuf2:=SUBSTR(lab_completed,1,2)||' ';
+         cbuf2:=cbuf2||SUBSTR(lab_completed,3,2)||' ';
+         cbuf2:=cbuf2||SUBSTR(lab_completed,7,2);
+         cbuf1:=cbuf2||' '||cbuf2;
+         */
+         ELSE
+            cbuf1 := lab_completed || ' ' || lab_completed;
+         END IF;
+
+         IF (carrier_idnum = 22797 OR carrier_idnum = 26254)
+         THEN
+            cbuf1 := RPAD (cbuf1, 8) || ' ' || RPAD (cbuf1, 8) || ' 81';
+         ELSE
+            cbuf1 := RPAD (cbuf1, 11) || '       81';
+         END IF;
+
+         cbuf1 := RPAD (cbuf1, 24) || procedure_fields.procedure_code;
+
+         IF (C_choice_code = 'MED' AND policy_sign IS NOT NULL)
+         THEN
+            cbuf1 := cbuf1 || '  GA';
+         ELSIF (C_choice_code = 'DPA' AND carrier_idnum NOT IN (1046, 1047))
+         THEN
+            cbuf1 := cbuf1 || '  FP';
+         END IF;
+
+
+         IF (procedure_fields.procedure_code IN ('88141', '87621'))
+         THEN
+            IF (carrier_idnum = 23744)
+            THEN
+               diag_string := '2';
+            ELSE
+               diag_string := REPLACE (diag_5, '1,');
+            END IF;
+         ELSE
+            IF (carrier_idnum = 23744)
+            THEN
+               diag_string := '1';
+            ELSE
+               diag_string := diag_5;
+            END IF;
+         END IF;
+
+         IF (trav_med = 'Y')
+         THEN
+            diag_string := '1';
+         END IF;
+
+         cbuf1 := RPAD (cbuf1, 43) || RPAD (diag_string, 7);
+
+
+
+         cbuf1 := RPAD (cbuf1, 47);
+         curr_item := procedure_fields.item_amount;
+         curr_line := TO_CHAR (curr_item, '99999.99');
+         cbuf2 := SUBSTR (curr_line, 1, 6);
+         cbuf2 := LTRIM (cbuf2);
+         cbuf2 := RTRIM (cbuf2);
+
+         cbuf2 := '  ' || LPAD (cbuf2, 5);
+         cbuf1 := cbuf1 || cbuf2 || ' ';
+         cbuf2 := SUBSTR (curr_line, 8, 2);
+         cbuf1 := cbuf1 || cbuf2;
+
+         IF (lab_prep = 6)
+         THEN
+            cbuf3 := RTRIM (LTRIM (TO_CHAR (lab_vials)));
+         ELSE
+            cbuf3 := '1';
+         END IF;
+
+         cbuf1 := RPAD (cbuf1, 58) || cbuf3;
+
+
+         cbuf1 := cbuf1 || '       ' || lab_npi;
+         curr_line := margin || cbuf1;
+
+
+
+         curr_line := REPLACE (curr_line, ' 081 ', '  81 ');
+         curr_line := REPLACE (curr_line, ' 181 ', '  81 ');
+
+         IF (carrier_idnum = 1048)
+         THEN
+            cbuf1 := RPAD (' ', 65) || '1D ' || carrier_prov;
+            UTL_FILE.PUTF (file_handle, '%s\n', cbuf1);
+         ELSIF (trav_med = 'Y')
+         THEN
+            cbuf1 := RPAD (' ', 65) || '1C';
+            UTL_FILE.PUTF (file_handle, '%s\n', cbuf1);
+         ELSE
+            UTL_FILE.NEW_LINE (file_handle);
+         END IF;
+
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+      END LOOP;
+
+      CLOSE procedure_list;
+
+      FOR ndx IN (rcnt + 1) .. 6
+      LOOP
+         cbuf1 := NULL;
+         cbuf2 := NULL;
+
+         curr_line := NULL;
+         UTL_FILE.NEW_LINE (file_handle, 2);
+      END LOOP;
+
+      UTL_FILE.NEW_LINE (file_handle);
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+
+
+      cbuf1 := RPAD (lab_tax_id, 18) || 'X';
+      cbuf2 := '	' || SUBSTR (RTRIM (LTRIM (TO_CHAR (claim_lab_number))), 3);
+      cbuf1 := cbuf1 || cbuf2;
+
+      IF (C_choice_code = 'DPA')
+      THEN
+         cbuf1 := RPAD (cbuf1, 37) || ' ';
+      ELSE
+         cbuf1 := RPAD (cbuf1, 35) || 'X';
+      END IF;
+
+      cbuf1 := RPAD (cbuf1, 47);
+
+      cbuf2 := TO_CHAR (claim_total, '999990.99');
+
+
+
+      curr_line := SUBSTR (cbuf2, 1, 7);
+      curr_line := LTRIM (curr_line);
+      curr_line := RTRIM (curr_line);
+      cbuf2 := LPAD (curr_line, 7);
+      cbuf1 := cbuf1 || cbuf2 || ' ';
+      cbuf2 := TO_CHAR (claim_total, '999990.99');
+      curr_line := SUBSTR (cbuf2, 9, 2);
+
+      cbuf1 := cbuf1 || curr_line;
+
+      IF (carrier_idnum <> 1048)
+      THEN
+         cbuf2 := TO_CHAR (total_payments, '99990.99');
+         curr_line := SUBSTR (cbuf2, 1, 6);
+         curr_line := LTRIM (curr_line);
+         curr_line := RTRIM (curr_line);
+         cbuf2 := LPAD (curr_line, 6);
+         cbuf3 := cbuf1 || cbuf2 || ' ';
+         cbuf2 := TO_CHAR (total_payments, '99990.99');
+         curr_line := SUBSTR (cbuf2, 8, 2);
+         cbuf3 := cbuf3 || curr_line;
+
+
+
+         cbuf2 := TO_CHAR (claim_total - total_payments, '99990.99');
+         curr_line := SUBSTR (cbuf2, 1, 6);
+         curr_line := LTRIM (curr_line);
+         curr_line := RTRIM (curr_line);
+         cbuf2 := LPAD (curr_line, 6);
+         cbuf1 := cbuf3 || cbuf2 || '  ';
+         cbuf2 := TO_CHAR (claim_total - total_payments, '99990.99');
+         curr_line := SUBSTR (cbuf2, 8, 2);
+         cbuf1 := cbuf1 || curr_line;
+      END IF;
+
+      curr_line := margin || cbuf1;
+      UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+
+
+      cbuf2 := LPAD (' ', 64);
+      cbuf1 := cbuf2 || '412 373 8300';
+      curr_line := margin || cbuf1;
+      UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+
+      cbuf1 := NULL;
+
+
+
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (C_billing_route = 'ENV')
+      THEN
+         cbuf1 := LPAD ('SAME', 26);
+         cbuf1 := RPAD (cbuf1, 49);
+
+         cbuf1 := cbuf1 || 'PA CYTOLOGY SERVICES G';
+         curr_line := margin || cbuf1;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+      ELSIF (carrier_idnum = 1048)
+      THEN
+         cbuf1 := LPAD (' ', 26);
+         cbuf1 := RPAD (cbuf1, 49);
+         cbuf1 := cbuf1 || 'PA CYTOLOGY SERVICES';
+         curr_line := margin || cbuf1;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+      ELSE
+         IF (C_choice_code = 'DPA' OR C_choice_code = 'OI')
+         THEN
+            cbuf1 := LPAD ('    ', 26);
+            cbuf1 := RPAD (cbuf1, 49);
+
+            IF (carrier_idnum = 1048)
+            THEN
+               cbuf1 := cbuf1 || '				 ';
+            ELSE
+               cbuf1 := cbuf1 || 'PENNSYLVANIA CYTOLOGY SERV';
+            END IF;
+
+            curr_line := margin || cbuf1;
+            UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         ELSIF (C_choice_code = 'MED' OR C_choice_code = 'BS')
+         THEN
+            cbuf1 := LPAD (' ', 22) || 'PENNSYLVANIA CYTOLOGY SERV';
+            cbuf1 := RPAD (cbuf1, 49);
+            cbuf1 := cbuf1 || 'PENNSYLVANIA CYTOLOGY SERV';
+            curr_line := margin || cbuf1;
+            UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         END IF;
+      END IF;
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      curr_line := NULL;
+
+      IF (C_billing_route = 'ENV')
+      THEN
+         cbuf1 := '339 OLD HAYMAKER ROAD';
+
+
+
+         cbuf2 := LPAD (' ', 49);
+         cbuf1 := cbuf2 || cbuf1;
+         curr_line := margin || cbuf1;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+      ELSE
+         IF (C_choice_code = 'DPA' OR C_choice_code = 'OI')
+         THEN
+            IF (C_choice_code = 'DPA')
+            THEN
+               cbuf1 := LPAD (' ', 26);
+            ELSIF (carrier_idnum = 23663)
+            THEN
+               cbuf1 := 'PA CYTOLOGY SERVICES  SAME';
+            ELSE
+               cbuf1 := LPAD ('SAME', 26);
+            END IF;
+
+            cbuf1 := RPAD (cbuf1, 49);
+            cbuf1 := cbuf1 || '339 HAYMAKER RD STE 1700';
+            curr_line := margin || cbuf1;
+
+            UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         ELSIF (C_choice_code = 'MED' OR C_choice_code = 'BS')
+         THEN
+            cbuf1 := LPAD (' ', 22) || '339 HAYMAKER RD S 1700';
+
+
+
+            cbuf1 := RPAD (cbuf1, 49);
+            cbuf1 := cbuf1 || '339 HAYMAKER RD STE 1700';
+            curr_line := margin || cbuf1;
+            UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         END IF;
+      END IF;
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+
+      curr_line := NULL;
+
+      IF (carrier_idnum IN (2575, 2695, 4008))
+      THEN
+         cbuf2 := RPAD ('R H SWEDARSKY  ', 49);
+         cbuf1 := cbuf2 || 'MONROEVILLE PA	15146';
+         curr_line := margin || cbuf1;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+      ELSIF (carrier_idnum = 23524)
+      THEN
+         cbuf2 := RPAD ('SIGNATURE ON FILE', 49);
+         cbuf1 := cbuf2 || 'MONROEVILLE PA	15146';
+         curr_line := margin || cbuf1;
+         UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+      ELSE
+         IF (C_choice_code = 'DPA' OR C_choice_code = 'OI')
+         THEN
+            IF (carrier_idnum = 23663)
+            THEN
+               cbuf1 := LPAD ('2478948', 20) || '	 ';
+            ELSE
+               cbuf1 := LPAD (' ', 26);
+            END IF;
+
+            cbuf1 := RPAD (cbuf1, 49);
+            cbuf1 := cbuf1 || 'MONROEVILLE, PA 15146';
+            curr_line := margin || cbuf1;
+            UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         ELSIF (C_choice_code = 'MED' OR C_choice_code = 'BS')
+         THEN
+            cbuf1 := LPAD (' ', 22) || 'MONROEVILLE, PA 15146';
+
+            cbuf1 := RPAD (cbuf1, 49);
+            cbuf1 := cbuf1 || 'MONROEVILLE, PA 15146';
+            curr_line := margin || cbuf1;
+            UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+         END IF;
+      END IF;
+
+
+
+      cbuf1 := NULL;
+      cbuf2 := NULL;
+      cbuf3 := NULL;
+      cbuf2 := LPAD (' ', 14);
+      cbuf1 := RPAD (lab_npi, 11);
+
+      IF (carrier_prov IS NOT NULL)
+      THEN
+         IF (C_choice_code = 'DPA')
+         THEN
+            cbuf2 := carrier_prov;
+         ELSIF (C_choice_code = 'BS')
+         THEN
+            cbuf2 := '1B' || carrier_prov;
+         ELSIF (C_choice_code = 'MED')
+         THEN
+            cbuf2 := '		   ';
+         ELSE
+            cbuf2 := 'G2' || carrier_prov;
+         END IF;
+
+         cbuf2 := RPAD (cbuf2, 16);
+      ELSE
+         cbuf2 := RPAD (' ', 16);
+      END IF;
+
+      cbuf3 := RPAD (' ', 22);
+      cbuf4 := RPAD (' ', 27);
+
+      IF (carrier_idnum = 1048)
+      THEN
+         curr_line := margin || cbuf3 || cbuf4 || cbuf1 || cbuf2;
+      ELSIF (carrier_id_number = 10020 OR carrier_id_number = 28025)
+      THEN
+         curr_line := margin || cbuf3 || cbuf1 || RPAD (' ', 16) || cbuf1 || cbuf2;
+      ELSE
+         curr_line := margin || cbuf3 || cbuf1 || cbuf2 || cbuf1 || cbuf2;
+      END IF;
+
+
+      UTL_FILE.PUTF (file_handle, '%s\n', curr_line);
+      UTL_FILE.NEW_LINE (file_handle, 3);
+
+      IF (C_claims > 0 AND C_billing_route <> 'DUP')
+      THEN
+         P_code_area := 'CLAIMS Q15';
+
+         UPDATE pcs.payer_batch_amounts
+            SET amount_submitted =
+                   amount_submitted + (claim_total - total_payments)
+          WHERE     carrier_id = carrier_idnum
+                AND batch_number = claim_batch_number;
+
+         IF (resubmitted = 0)
+         THEN
+            P_code_area := 'CLAIMS Q16';
+
+            SELECT pcs.claim_seq.NEXTVAL INTO lab_claim_id FROM DUAL;
+
+            INSERT INTO pcs.lab_claims (claim_id,
+                                        lab_number,
+                                        batch_number,
+                                        claim_status,
+                                        datestamp,
+                                        change_date)
+                 VALUES (lab_claim_id,
+                         claim_lab_number,
+                         claim_batch_number,
+                         'S',
+                         SYSDATE,
+                         SYSDATE);
+
+            UPDATE pcs.billing_details
+               SET claim_id = lab_claim_id, date_sent = SYSDATE
+             WHERE     lab_number = claim_lab_number
+                   AND rebilling = lab_rebilling;
+
+            UPDATE pcs.lab_requisitions
+               SET finished = 2
+             WHERE lab_number = claim_lab_number AND finished <= 2;
+         ELSE
+            UPDATE pcs.lab_claims
+               SET batch_number = claim_batch_number,
+                   datestamp = SYSDATE,
+                   change_date = SYSDATE
+             WHERE claim_id = lab_claim_id;
+         END IF;
+      END IF;
+
+
+      last_carrier := carrier_idnum;
+   END LOOP;
+
+   CLOSE claim_list;
+
+
+
+   DELETE FROM pcs.billing_queue
+         WHERE billing_route = C_billing_route;
+
+   IF (C_claims > 0 AND C_billing_route <> 'DUP')
+   THEN
+      INSERT INTO pcs.claim_submissions (batch_number,
+                                         tpp,
+                                         submission_number,
+                                         creation_date)
+           VALUES (claim_batch_number,
+                   C_billing_route,
+                   1,
+                   SYSDATE);
+   END IF;
+
+   UTL_FILE.FCLOSE (file_handle);
+
+   IF (C_billing_route = 'PPR')
+   THEN
+      UTL_FILE.FCLOSE (label_file);
+   END IF;
+
+   COMMIT;
+EXCEPTION
+   WHEN UTL_FILE.INVALID_PATH
+   THEN
+      UTL_FILE.FCLOSE (file_handle);
+
+      IF (C_billing_route = 'PPR')
+      THEN
+         UTL_FILE.FCLOSE (label_file);
+      END IF;
+
+      RAISE_APPLICATION_ERROR (-20051, 'invalid path');
+   WHEN UTL_FILE.INVALID_MODE
+   THEN
+      UTL_FILE.FCLOSE (file_handle);
+
+      IF (C_billing_route = 'PPR')
+      THEN
+         UTL_FILE.FCLOSE (label_file);
+      END IF;
+
+      RAISE_APPLICATION_ERROR (-20052, 'invalid mode');
+   WHEN UTL_FILE.INVALID_FILEHANDLE
+   THEN
+      UTL_FILE.FCLOSE (file_handle);
+
+      IF (C_billing_route = 'PPR')
+      THEN
+         UTL_FILE.FCLOSE (label_file);
+      END IF;
+
+      RAISE_APPLICATION_ERROR (-20053, 'invalid file handle');
+   WHEN UTL_FILE.INVALID_OPERATION
+   THEN
+      UTL_FILE.FCLOSE (file_handle);
+
+      IF (C_billing_route = 'PPR')
+      THEN
+         UTL_FILE.FCLOSE (label_file);
+      END IF;
+
+      RAISE_APPLICATION_ERROR (-20054, 'invalid operation');
+   WHEN UTL_FILE.READ_ERROR
+   THEN
+      UTL_FILE.FCLOSE (file_handle);
+
+      IF (C_billing_route = 'PPR')
+      THEN
+         UTL_FILE.FCLOSE (label_file);
+      END IF;
+
+      RAISE_APPLICATION_ERROR (-20055, 'read error');
+   WHEN UTL_FILE.WRITE_ERROR
+   THEN
+      UTL_FILE.FCLOSE (file_handle);
+
+      IF (C_billing_route = 'PPR')
+      THEN
+         UTL_FILE.FCLOSE (label_file);
+      END IF;
+
+      RAISE_APPLICATION_ERROR (-20056, 'write error');
+   WHEN OTHERS
+   THEN
+      UTL_FILE.FCLOSE (file_handle);
+
+      IF (C_billing_route = 'PPR')
+      THEN
+         UTL_FILE.FCLOSE (label_file);
+      END IF;
+
+      P_error_code := SQLCODE;
+
+
+
+      P_error_message := SQLERRM;
+
+      INSERT INTO pcs.error_log (ERROR_CODE,
+                                 error_message,
+                                 proc_name,
+                                 code_area,
+                                 datestamp,
+                                 sys_user,
+                                 ref_id)
+           VALUES (P_error_code,
+                   P_error_message,
+                   P_proc_name,
+                   P_code_area,
+                   SYSDATE,
+                   UID,
+                   claim_lab_number);
+
+      COMMIT;
+
+      RAISE;
+END;
+
+
+-- grant execute on update_receive_dates to pcs_user
