@@ -761,8 +761,9 @@ public class PCSLabEntry extends PcsFrame {
 			// to be set to the Look and Feel of the native system.
 			try {
 				UIManager.setLookAndFeel(UIManager
-						.getCrossPlatformLookAndFeelClassName());
-						//.getSystemLookAndFeelClassName());
+						.getSystemLookAndFeelClassName());
+						//.getCrossPlatformLookAndFeelClassName());
+						
 			} catch (Exception e) {
 			}
 			// Create a new instance of our application's frame, and make it
