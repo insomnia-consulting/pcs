@@ -44,6 +44,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.JTextComponent;
 
 import com.pacytology.pcs.DbConnection;
+import com.pacytology.pcs.Detail49_51Report;
 import com.pacytology.pcs.LabForm;
 import com.pacytology.pcs.Login;
 import com.pacytology.pcs.PCSLabEntry;
@@ -60,7 +61,12 @@ public class SimpleTestUtil
 	{
 		if (false)
 		{
-
+			test4951();
+			return;
+		}
+		
+		if (false)
+		{
 			return;
 		}
 
@@ -125,8 +131,36 @@ public class SimpleTestUtil
 		setUp();
 	}
 
-
-
+	private static void test4951() throws Exception {
+		Detail49_51Report rep = new Detail49_51Report();
+		DbConnection l_conn = setUp();
+		try {
+		
+		new Thread()
+		{
+			public void run()
+			{
+				System.out.println("sleeping...");
+				try {
+					Thread.sleep(4000);
+					System.out.println("Starting...");
+					Robot robot = new Robot();
+					robot.keyPress(KeyEvent.VK_ENTER);
+					robot.keyRelease(KeyEvent.VK_ENTER);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+		}.start();
+		rep.generateReport(2012,2,l_conn.process());
+		
+		Runtime.getRuntime().exec("mv /home/oracle/Desktop/51_Detail_Report.pdf  /home/oracle/Desktop/reports/51_Detail_Report_"+System.currentTimeMillis()+".pdf");
+		} finally
+		{
+			l_conn.close();
+		}
+	}
 
 	private static void testPriceCodes() throws Exception 
 	{
@@ -272,6 +306,8 @@ public class SimpleTestUtil
 			
 				allSql.add("select count(*) from pcs.lab_requisitions");
 				allSql.add("select count(*) from pcs.billing_queue");
+				allSql.add("select count(*) from pcs.billing_details");
+				
 				allSql.add("select count(*) from pcs.lab_billings");
 				allSql.add("select count(*) from pcs.patient_accounts");
 				allSql.add("select count(*) from pcs.patient_statements");
@@ -477,10 +513,11 @@ public class SimpleTestUtil
 
 	public static DbConnection setUp() throws Exception 
 	{
+		System.out.println("Setting up...");
 		Login dbLogin = new Login();
 		dbLogin.dateToday = new Date().toString();
 		dbLogin.driver = "oracle.jdbc.driver.OracleDriver";
-		dbLogin.URL = "jdbc:oracle:thin:@192.168.0.103:1521:pcsdev";
+		dbLogin.URL = "jdbc:oracle:thin:@localhost:1521:pcsdev";
 		dbLogin.userName = "pcs";
 		dbLogin.userPassword = "abh21";
 		props.put("username", dbLogin.userName);
@@ -493,6 +530,8 @@ public class SimpleTestUtil
 		Vector params=new Vector();
 		params.add(new com.pacytology.pcs.SQLValue(
 				-2));
+		
+		System.out.println("Set up finished");
 		return conn;
 	}
 
