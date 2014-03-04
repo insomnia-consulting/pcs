@@ -92,16 +92,17 @@ public class Detail49_51Report extends AbsractMonthlyReptDialog
 	{
 		final int labX=20;
 		final int nameX=110;
-		final int commentX=380;
+		final int detailX=380;
+		final int commentX=465;
 		final int pageX=725;
 		
-		final int commentColumnLength=50;
+		final int commentColumnLength=45;
 
 		final int rowHeight=16;
 		final int startData=60;
 		
-		List<Integer>positions=PriceUtil.makeList(labX,nameX,commentX);
-		List<String>header=PriceUtil.makeList("Lab #","Name","Comment");
+		List<Integer>positions=PriceUtil.makeList(labX,nameX,detailX,commentX);
+		List<String>header=PriceUtil.makeList("Lab #","Name","Detail Code","Comment");
 		
 		setSansSerif(g,11,Font.BOLD);
 		
@@ -121,11 +122,11 @@ public class Detail49_51Report extends AbsractMonthlyReptDialog
 
 		g.drawString(""+lab,labX,yPos);
 		g.drawString(name,nameX,yPos);
+		
+		g.drawString(""+detailCode,detailX,yPos);
 
 		int lastCommentPosition=0;
 
-		int size=(int) (Math.random()*1000);
-		
 		if (commentText!=null)
 		{
  			boolean end=false;
