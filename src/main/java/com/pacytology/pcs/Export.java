@@ -867,7 +867,7 @@ public class Export implements Runnable
 		writeIndexFile(r, fOUT);
 		fOUT.close();
 		// Send that file to the server
-		FileTransfer.sendFile(filePath.trim() + fileName, "/u01/reports/" + fileName);
+		FileTransfer.sendFile(filePath.trim() + fileName, Utils.SERVER_DIR + fileName);
 
 	}
 

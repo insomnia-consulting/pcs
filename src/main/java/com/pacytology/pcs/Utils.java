@@ -97,7 +97,9 @@ public class Utils {
 	final public static Integer EMPHASIZED = new Integer(69);
 	public static final String TMP_DIR = System.getProperty("java.io.tmpdir");
 	public static final String UTL_FILE_DIR = "REPORTS_DIR";
-	public static final String SERVER_DIR = "/u01/reports/";
+
+	public static final String SERVER_DIR = (System.getProperty("server.dir") != null) ? System	
+			.getProperty("server.dir") : "/u01/reports";
 	public static final String LOG_PATH = (System.getProperty("log.dir") != null) ? System
 			.getProperty("log.dir") : new File(".").getAbsolutePath();
 	public static final String RESOURCE_DIR = (System.getProperty("resource.dir") != null) ? System 
