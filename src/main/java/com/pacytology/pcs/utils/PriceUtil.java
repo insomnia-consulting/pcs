@@ -643,4 +643,24 @@ public class PriceUtil {
 
 		return ret;
 	}
+	
+	public static Integer safeParseInteger(String str)
+	{
+		try {
+			return Integer.parseInt(str);
+		} catch (NumberFormatException e)
+		{
+			return null;
+		}
+	}
+
+	public static List makeList(Object...obj) {
+		List ret=new ArrayList();
+		
+		for (Object cur : obj)
+		{
+			ret.add(cur);
+		}
+		return ret;
+	}
 }

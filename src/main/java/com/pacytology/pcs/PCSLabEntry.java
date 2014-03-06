@@ -104,7 +104,7 @@ public class PCSLabEntry extends PcsFrame {
 		}
 		return INSTANCE;
 	}
-	
+
 	public PCSLabEntry() {
 		
 		dbLogin = new Login();
@@ -537,6 +537,9 @@ public class PCSLabEntry extends PcsFrame {
 		WVreportsMenu.setText("WV Reports");
 		WVreportsMenu.setActionCommand("WV Reports");
 		mgmtReptMenu.add(WVreportsMenu);
+		detail49_51Item.setText("Detail 49/51 Report");
+		detail49_51Item.setActionCommand("Detail 49/51 Report");
+		mgmtReptMenu.add(detail49_51Item);
 		generateInvSummItemFPP.setText("Generate FPP Inv. Summ.");
 		WVreportsMenu.add(generateInvSummItemFPP);
 		generateInvSummItemBCCSP.setText("Generate BCCSP Inv. Summ.");
@@ -710,6 +713,7 @@ public class PCSLabEntry extends PcsFrame {
 		clinCaseItem.addActionListener(lSymAction);
 		turnAroundItem.addActionListener(lSymAction);
 		ascusHpvItem.addActionListener(lSymAction);
+		detail49_51Item.addActionListener(lSymAction);
 		ADPHsummaryItem.addActionListener(lSymAction);
 		TissuePathItem.addActionListener(lSymAction);
 		commissionItem.addActionListener(lSymAction);
@@ -762,8 +766,6 @@ public class PCSLabEntry extends PcsFrame {
 			try {
 				UIManager.setLookAndFeel(UIManager
 						.getSystemLookAndFeelClassName());
-						//.getCrossPlatformLookAndFeelClassName());
-						
 			} catch (Exception e) {
 			}
 			// Create a new instance of our application's frame, and make it
@@ -936,6 +938,7 @@ public class PCSLabEntry extends PcsFrame {
 	JMenuItem invSummMidItem = new JMenuItem();
 	JMenuItem invSummEomItem = new JMenuItem();
 	JMenu WVreportsMenu = new JMenu();
+	JMenuItem detail49_51Item = new JMenuItem();
 	JMenuItem generateInvSummItemFPP = new JMenuItem();
 	JMenuItem generateInvSummItemBCCSP = new JMenuItem();
 	JMenuItem invSummItemFPP = new JMenuItem();
@@ -1167,6 +1170,8 @@ public class PCSLabEntry extends PcsFrame {
 				turnAroundItem_actionPerformed(event);
 			else if (object == ascusHpvItem)
 				ascusHpvItem_actionPerformed(event);
+			else if (object == detail49_51Item)
+				detail49_51Item_actionPerformed();
 			else if (object == ADPHsummaryItem)
 				ADPHsummaryItem_actionPerformed(event);
 			else if (object == TissuePathItem)
@@ -2398,6 +2403,12 @@ public class PCSLabEntry extends PcsFrame {
 		(new MonthlyReptDialog("tat")).setVisible(true);
 	}
 
+	void detail49_51Item_actionPerformed() {
+		AbsractMonthlyReptDialog dialog = new Detail49_51Report();
+		dialog.setVisible(true);
+		dialog.toFront();
+	}
+	
 	void ascusHpvItem_actionPerformed(java.awt.event.ActionEvent event) {
 		printMonthlyReport("ahp");
 	}
