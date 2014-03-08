@@ -20,9 +20,11 @@ import com.pacytology.pcs.utils.PriceUtil;
 public class Detail49_51Report extends AbsractMonthlyReptDialog
 {
 
+	private String getCommentText(Connection connection, long lab, int detailCode) throws Exception {
+		String sql="select la.comment_text from lab_req_details ld\n"+
+				"inner join lab_req_details_additional la on ld.detail_id = la.detail_id\n"
+				+"where lab_number = "+lab +" and ld.detail_code = "+detailCode;
 
-	private String getCommentText(Connection connection, long lab) throws Exception {
-		String sql="select comment_text from lab_req_comments where lab_number="+lab;
 		PreparedStatement stat = connection.prepareStatement(sql);
 		ResultSet res=null;
 		try {
@@ -30,7 +32,9 @@ public class Detail49_51Report extends AbsractMonthlyReptDialog
 
 			if (res.next())
 			{
-				return res.getString(1);
+				String ret = res.getString(1);
+				
+				return ret;
 			}
 		} finally
 		{
@@ -51,9 +55,8 @@ public class Detail49_51Report extends AbsractMonthlyReptDialog
 		int endData=(int) (dimension.getHeight()-40);
 
 		String sql=
-				"  select lr.lab_number,  RPAD(pt.lname||', '||pt.fname,30), pt.mi, lr.patient,\n"+
-						"ld.detail_code\n"+
-						"from lab_requisitions lr, lab_req_details ld, patients pt\n"+
+				"  select lr.lab_number,  RPAD(pt.lname||', '||pt.fname,30), pt.mi, lr.patient, ld.detail_code\n"+
+						"  from lab_requisitions lr, lab_req_details ld, patients pt\n"+
 						"  where lr.lab_number = ld.lab_number\n"+
 						"        and pt.patient= lr.patient\n"+
 						"        and (ld.detail_code=49 or ld.detail_code=51)\n"+
@@ -116,7 +119,7 @@ public class Detail49_51Report extends AbsractMonthlyReptDialog
 		long lab = res.getLong(1);
 		String name=res.getString(2);
 		Integer detailCode = res.getInt(5);
-		String commentText=getCommentText(connection,lab);
+		String commentText = getCommentText(connection,lab,detailCode); 
 
 		setSansSerif(g,11,Font.PLAIN);
 
