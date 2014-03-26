@@ -66,7 +66,7 @@ public class TextImageOverlay {
 			String sourceImage, 
 			String destImage,
 			int width) throws Exception {
-		String text=FileUtils.readFileToString(new File("/home/oracle/reports/ppr_single.txt"));
+		String text=FileUtils.readFileToString(new File(textFile));
 
 		Font font = new Font("Courier New", Font.PLAIN, 20);
 		FontRenderContext frc = new FontRenderContext(null, true, true);

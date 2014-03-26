@@ -517,7 +517,6 @@ create or replace procedure build_1500_claim_forms
  cbuf1:=substr(patient_city,1,24);                                              
 
  cbuf1:=RPAD(cbuf1,24)||' '||patient_state;                                     
- cbuf1:=RPAD(cbuf1,45)||'X';                                                    
  curr_line:=margin||cbuf1;                                                      
  UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
  UTL_FILE.NEW_LINE(file_handle);                                                
@@ -623,8 +622,7 @@ create or replace procedure build_1500_claim_forms
  cbuf1:=cbuf1||'X';                                                             
  curr_line:=margin||cbuf1;                                                      
  else                                                                           
- cbuf1:=LPAD(' ',30)||carrier_pid;                                              
-
+ cbuf1:=LPAD(' ',30)||carrier_pid;
  cbuf1:=RPAD(cbuf1,54);                                                         
  cbuf1:=cbuf1||'X';                                                             
  curr_line:=margin||cbuf1;                                                      
@@ -741,21 +739,20 @@ create or replace procedure build_1500_claim_forms
 
  cbuf1:=null;                                                                   
  cbuf2:=null;                                                                   
- curr_line:=null;                                                               
-
- if (carrier_idnum=1048 and policy_rebill_code='SEC') then                      
- curr_line:=margin||'AT11';                                                     
- UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
- UTL_FILE.NEW_LINE(file_handle);                                                
- else                                                                           
- UTL_FILE.NEW_LINE(file_handle,2);                                              
- end if;                                                                        
+ curr_line:=null;         
+                                                       
+ UTL_FILE.NEW_LINE(file_handle,1);  
+ cbuf1:='9';
+ cbuf1:=LPAD(cbuf1,44);  
+ UTL_FILE.PUTF(file_handle,'%s',cbuf1);                                                                 
+ UTL_FILE.NEW_LINE(file_handle,1);  
+ cbuf1:=null;
 
  diag_1:=null;                                                                  
  diag_2:=null;                                                                  
  diag_3:=null;                                                                  
-
  diag_4:=null;                                                                  
+ 
  P_code_area:='DIAGNOSIS';                                                      
  open diagnosis_list;                                                           
  loop                                                                           
@@ -783,20 +780,30 @@ create or replace procedure build_1500_claim_forms
  diag_4:=NULL;                                                                  
  end if;                                                                        
 
-
  cbuf1:=null;                                                                   
  cbuf2:=null;                                                                   
- curr_line:=null;                                                               
- if (diag_1 is not null) then                                                   
- cbuf2:=REPLACE(diag_1,'.',' ');                                                
- cbuf1:='  '||cbuf2;                                                            
- end if;                                                                        
- if (diag_3 is not null) then                                                   
- cbuf2:=REPLACE(diag_3,'.',' ');                                                
- cbuf2:=LPAD(cbuf2,26);                                                         
+ curr_line:=null;  
+                                                              
+ if (diag_1 is not null) then                                                                                                   
+ cbuf1:='  '||diag_1;                                                            
+ end if;   
+  if (diag_2 is not null) then                                                   
+ cbuf2:=diag_2;                                               
+ cbuf2:=LPAD(cbuf2,14);      
+ cbuf1:=cbuf1||cbuf2;    
+ end if; 
+ 
+  if (diag_3 is not null) then                                                   
+ cbuf2:=diag_3;                                                
+ cbuf2:=LPAD(cbuf2,12);                                                         
  cbuf1:=cbuf1||cbuf2;                                                           
  end if;                                                                        
 
+ if (diag_4 is not null) then                                                   
+ cbuf2:=diag_4;
+ cbuf2:=LPAD(cbuf2,13);                                                         
+ cbuf1:=cbuf1||cbuf2;                                                           
+ end if; 
 
 
  curr_line:=margin||cbuf1;                                                       
@@ -807,16 +814,8 @@ create or replace procedure build_1500_claim_forms
  cbuf1:=null;                                                                   
  cbuf2:=null;                                                                   
  curr_line:=null;                                                               
- if (diag_2 is not null) then                                                   
- cbuf2:=REPLACE(diag_2,'.',' ');                                                
- cbuf1:='  '||cbuf2;                                                            
- end if;                                                                        
- if (diag_4 is not null) then                                                   
- cbuf2:=REPLACE(diag_4,'.',' ');                                                
-
- cbuf2:=LPAD(cbuf2,27);                                                         
- cbuf1:=cbuf1||cbuf2;                                                           
- end if;                                                                        
+                                                                       
+                                                                       
  if (cbuf1 is null) then                                                        
  cbuf1:=RPAD(' ',49);                                                           
  else                                                                           
@@ -1025,11 +1024,10 @@ create or replace procedure build_1500_claim_forms
  curr_line:=substr(cbuf2,1,6);                                                  
  curr_line:=LTRIM(curr_line);                                                   
  curr_line:=RTRIM(curr_line);                                                   
- cbuf2:=LPAD(curr_line,6);                                                      
- cbuf1:=cbuf3||cbuf2||'  ';                                                     
+ cbuf2:=LPAD(curr_line,6);                                                                                                     
+ cbuf1:=cbuf3;
  cbuf2:=TO_CHAR(claim_total-total_payments,'99990.99');                         
- curr_line:=substr(cbuf2,8,2);                                                  
- cbuf1:=cbuf1||curr_line;                                                       
+ curr_line:=substr(cbuf2,8,2);                                                                                                      
  end if;                                                                        
  curr_line:=margin||cbuf1;                                                      
  UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   

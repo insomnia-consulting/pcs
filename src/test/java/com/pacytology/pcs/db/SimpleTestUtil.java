@@ -14,11 +14,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -30,22 +30,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.JTextComponent;
 
 import com.pacytology.pcs.DbConnection;
 import com.pacytology.pcs.Detail49_51Report;
-import com.pacytology.pcs.LabForm;
 import com.pacytology.pcs.Login;
 import com.pacytology.pcs.PCSLabEntry;
 public class SimpleTestUtil
@@ -59,6 +59,12 @@ public class SimpleTestUtil
 
 	public static void main(String args[]) throws Exception
 	{
+		if (false)
+		{
+			markUpSql();
+			return;
+		}
+		
 		if (false)
 		{
 			test4951();
@@ -129,6 +135,70 @@ public class SimpleTestUtil
 
 		if (true)return;
 		setUp();
+	}
+
+	/**
+	 * Designed to put line numbers on the Xs in reports to make it easier
+	 * to associate the output with its code. 
+	 */
+	
+	private static void markUpSql() throws Exception {
+		String file="/home/oracle/Desktop/notes/scratch/162/1500_pre_changes.txt";
+		File out=new File("/home/oracle/Desktop/notes/scratch/162/1500_pre_changes_marked_up.txt");
+		
+		Scanner scanner=new Scanner(new File(file));
+		writeFile(out,"",false);
+		int counter=1;
+		Pattern putf=Pattern.compile("(.*?UTL_FILE.PUTF\\()(.*?)(\\).*?)$");
+		while (scanner.hasNextLine())
+		{
+			String line=scanner.nextLine();
+			
+			Matcher matcher=putf.matcher(line);
+			if (matcher.find())
+			{
+				String start=matcher.group(1);
+				String mid=matcher.group(2);
+				
+				String[] args = mid.split(",");
+				
+				mid="";
+				
+				for (int index=0;index<args.length;index++)
+				{
+					if (index!=0)
+					{
+						mid+=",";
+					}
+					
+					String cur=args[index];
+
+					if (index==args.length-1)
+					{
+						cur=cur+"||''||'("+counter+")'";
+					}
+					
+					mid+=cur;
+			
+				}
+				
+				String end=matcher.group(3);
+				
+				line=start+mid+end;
+			}
+			writeFile(out,line,true);
+			writeFile(out,"\n",true);
+	
+
+			// UTL_FILE.PUTF(label_file,'%s\n',curr_line);  
+			/*
+			line=line.replaceAll("'X'","'X"+counter+"'");
+			writeFile(out,line,true);
+			writeFile(out,"\n",true);
+			*/
+			counter++;
+		}
+		System.out.println("out: "+out);
 	}
 
 	private static void test4951() throws Exception {
@@ -816,6 +886,16 @@ public class SimpleTestUtil
 
 
 		ImageIO.write(bi, "png", new File(path+file));
+
+	}
+	
+	public static void writeFile(File file, String buff, boolean append)
+			throws Exception {
+			
+			FileWriter fileWriter = new FileWriter(file, append);
+			fileWriter.write(buff.toCharArray());
+			fileWriter.flush();
+			fileWriter.close();
 
 	}
 

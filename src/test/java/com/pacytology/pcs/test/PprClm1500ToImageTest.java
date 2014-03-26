@@ -11,8 +11,10 @@ import com.pacytology.pcs.util.Utility;
 public class PprClm1500ToImageTest {
 	public static void main(String args[]) throws Exception
 	{
-		//Run the report
+		//Run the report--doesn't work I don't think
 		boolean newReport=false;
+		
+		boolean newForm=true;
 		
 		if (newReport)
 		{
@@ -24,19 +26,45 @@ public class PprClm1500ToImageTest {
             cstmt.setString(2,"ppr_clm");
             cstmt.setString(3,"PPR");
             cstmt.executeUpdate();
-		}		
+		}	
 		
 		//TODO copy the report to the below location and strip it of all but one
 		//page, or add multi-page functionality.
+		boolean grid=false;
+		boolean markedUp=false;
 		
-		String single="/home/oracle/reports/ppr_single.txt";
+		String single=
+				"/u01/reports/ppr_clm";
+				//"/home/oracle/reports/ppr_single.txt";
 		
-		boolean newForm=false;
+		if (grid)
+		{
+			single="/home/oracle/Desktop/notes/scratch/162/ppr_clm_grid.txt";
+		}
+		
+		if (markedUp)
+		{
+			single="/home/oracle/Desktop/notes/scratch/162/ppr_clm_marked_up";
+		}
+		
+
 		
 		//Superimpose the report to the form.
 		String cms1500=getCmsForm(newForm);
 		
-		String fileName =(newForm?"NEW":"OLD")+"_cms1500_"+Utility.currentTimeFormattedForFileSystems()+".png";
+		String fileName;
+		
+		if (markedUp)
+		{
+			fileName="MARKED_UP.png";
+		} else
+		if (grid)
+		{
+			fileName="GRID.png";
+		} else
+		{
+			fileName=(newForm?"NEW":"OLD")+"_cms1500_"+Utility.currentTimeFormattedForFileSystems()+".png";
+		}
 		String destImage="/home/oracle/reports/"+fileName;
 		
 		TextImageOverlay.superimposeTextOnImage(single,
