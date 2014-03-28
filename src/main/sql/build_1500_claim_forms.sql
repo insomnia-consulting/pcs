@@ -740,8 +740,16 @@ create or replace procedure build_1500_claim_forms
  cbuf1:=null;                                                                   
  cbuf2:=null;                                                                   
  curr_line:=null;         
-                                                       
+                    
+ if (carrier_idnum=1048 and policy_rebill_code='SEC') then                      
+ curr_line:=margin||'AT11';
+ UTL_FILE.PUTF(file_handle,'%s\n',curr_line); 
+ else
  UTL_FILE.NEW_LINE(file_handle,1);  
+ end if;
+
+ curr_line:=null;         
+ 
  cbuf1:='9';
  cbuf1:=LPAD(cbuf1,44);  
  UTL_FILE.PUTF(file_handle,'%s',cbuf1);                                                                 
