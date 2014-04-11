@@ -728,7 +728,7 @@ create or replace procedure build_1500_claim_forms
 
 
 
- cbuf1:=RPAD(cbuf1,29);                                                         
+ cbuf1:='   '||RPAD(cbuf1,26);                                                         
 
  curr_line:=margin||cbuf1;                                                      
  if (dr_npi is NOT NULL) then                                                   
@@ -848,19 +848,19 @@ create or replace procedure build_1500_claim_forms
  diag_5:=null;                                                                  
 
  if (diag_1 is not null) then                                                   
- diag_5:='1';                                                                   
+ diag_5:='A';                                                                   
  end if;                                                                        
  if (diag_2 is not null) then                                                   
 
 
 
- diag_5:=diag_5||'2';                                                           
+ diag_5:=diag_5||'B';                                                           
  end if;                                                                        
  if (diag_3 is not null) then                                                   
- diag_5:=diag_5||'3';                                                           
+ diag_5:=diag_5||'C';                                                           
  end if;                                                                        
  if (diag_4 is not null) then                                                   
- diag_5:=diag_5||'4';                                                           
+ diag_5:=diag_5||'D';                                                           
  end if;                                                                        
  if (diag_5 is null) then                                                       
 
@@ -912,20 +912,20 @@ create or replace procedure build_1500_claim_forms
 
  if (procedure_fields.procedure_code IN ('88141','87621')) then                 
  if (carrier_idnum=23744) then                                                  
- diag_string:='2';                                                              
+ diag_string:='B';                                                              
  else                                                                           
- diag_string:=REPLACE(diag_5,'1,');                                             
+ diag_string:=REPLACE(diag_5,'A,');                                             
  end if;                                                                        
  else                                                                           
  if (carrier_idnum=23744) then                                                  
- diag_string:='1';                                                              
+ diag_string:='A';                                                              
  else                                                                           
 
  diag_string:=diag_5;                                                           
  end if;                                                                        
  end if;                                                                        
  if (trav_med='Y') then                                                         
- diag_string:='1';                                                              
+ diag_string:='A';                                                              
  end if;                                                                        
  cbuf1:=RPAD(cbuf1,43)||RPAD(diag_string,7);                                    
 
@@ -1024,18 +1024,9 @@ create or replace procedure build_1500_claim_forms
  cbuf2:=TO_CHAR(total_payments,'99990.99');                                     
  curr_line:=substr(cbuf2,8,2);                                                  
  cbuf3:=cbuf3||curr_line;                                                       
-
-
-
-                                                                                
- cbuf2:=TO_CHAR(claim_total-total_payments,'99990.99');                         
- curr_line:=substr(cbuf2,1,6);                                                  
- curr_line:=LTRIM(curr_line);                                                   
- curr_line:=RTRIM(curr_line);                                                   
- cbuf2:=LPAD(curr_line,6);                                                                                                     
+                                                                                                    
  cbuf1:=cbuf3;
- cbuf2:=TO_CHAR(claim_total-total_payments,'99990.99');                         
- curr_line:=substr(cbuf2,8,2);                                                                                                      
+                                                                                                    
  end if;                                                                        
  curr_line:=margin||cbuf1;                                                      
  UTL_FILE.PUTF(file_handle,'%s\n',curr_line);                                   
