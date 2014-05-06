@@ -99,7 +99,7 @@ public class Utils {
 	public static final String UTL_FILE_DIR = "REPORTS_DIR";
 
 	public static final String SERVER_DIR = (System.getProperty("server.dir") != null) ? System	
-			.getProperty("server.dir") : "/u01/reports/";
+			.getProperty("server.dir") : "/uTest/reports/";
 	public static final String LOG_PATH = (System.getProperty("log.dir") != null) ? System
 			.getProperty("log.dir") : new File(".").getAbsolutePath();
 	public static final String RESOURCE_DIR = (System.getProperty("resource.dir") != null) ? System 
