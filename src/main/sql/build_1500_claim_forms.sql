@@ -726,9 +726,12 @@ create or replace procedure build_1500_claim_forms
  UTL_FILE.NEW_LINE(file_handle);                                                
  end if;                                                                        
 
+ if (length(cbuf1)>22) then
+   cbuf1:=substr(cbuf1,1,22);
+ end if;
 
 
- cbuf1:='   '||RPAD(cbuf1,26);                                                         
+ cbuf1:='DK  '||RPAD(cbuf1,26);                                                         
 
  curr_line:=margin||cbuf1;                                                      
  if (dr_npi is NOT NULL) then                                                   
@@ -1314,4 +1317,5 @@ create or replace procedure build_1500_claim_forms
  
    
  -- grant execute on update_receive_dates to pcs_user
+
 
