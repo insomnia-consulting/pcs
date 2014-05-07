@@ -890,18 +890,23 @@ public class ResultCodeForm extends PcsFrame
 
 	void category_keyTyped(java.awt.event.KeyEvent event)
 	{
-		Utils.forceUpper(event,1);
-		int key=event.getKeyCode();
+
+		char key=event.getKeyChar();
 		if (category.getText().length()>0) {
 		    category.setText(null);
             msgLabel.setText("Valid Categories are D, G, R, and S");		    
         }
-		else if ((key!=java.awt.event.KeyEvent.VK_D)&&
-		         (key!=java.awt.event.KeyEvent.VK_G)&&
-		         (key!=java.awt.event.KeyEvent.VK_R)&&
-		         (key!=java.awt.event.KeyEvent.VK_S))
-            msgLabel.setText("Valid Categories are D, G, R, and S");		    
-        else msgLabel.setText(null);
+		else if ( (key!='D')&&(key!='d')&&
+		         (key!='G')&&(key!='g')&&
+		         (key!='R')&&(key!='r')&&
+		         (key!='S')&&(key!='s')) {
+            msgLabel.setText("Valid Categories are D, G, R, and S");
+            
+		}
+        else {
+        	msgLabel.setText(null);
+        	Utils.forceUpper(event, 1);
+        }
 	}
 
 	void papClass_keyTyped(java.awt.event.KeyEvent event)
