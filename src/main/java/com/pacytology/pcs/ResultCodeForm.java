@@ -11,6 +11,8 @@ import java.awt.event.KeyEvent;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -890,23 +892,22 @@ public class ResultCodeForm extends PcsFrame
 
 	void category_keyTyped(java.awt.event.KeyEvent event)
 	{
+		String cat = ((JTextField)event.getComponent()).getText();
+		
+		String upperCat = cat.toUpperCase();
+		((JTextField)event.getComponent()).setText(upperCat);
+		List<String> dan = Arrays.asList("R", "D", "G", "S");
 
-		char key=event.getKeyChar();
-		if (category.getText().length()>0) {
-		    category.setText(null);
-            msgLabel.setText("Valid Categories are D, G, R, and S");		    
-        }
-		else if ( (key!='D')&&(key!='d')&&
-		         (key!='G')&&(key!='g')&&
-		         (key!='R')&&(key!='r')&&
-		         (key!='S')&&(key!='s')) {
-            msgLabel.setText("Valid Categories are D, G, R, and S");
-            
-		}
-        else {
-        	msgLabel.setText(null);
-        	Utils.forceUpper(event, 1);
-        }
+		boolean contains = dan.contains(upperCat);
+	    if (contains) {
+	    	msgLabel.setText(null);
+	    	
+	    }
+	    else {
+	    	msgLabel.setText("Valid Categories are D, G, R, and S");
+	    	category.setText(null);
+	    }
+
 	}
 
 	void papClass_keyTyped(java.awt.event.KeyEvent event)
