@@ -1046,7 +1046,7 @@ public class PriceListForm extends PcsFrame
 
             try {
 
-            	Timestamp receivedDate=(Timestamp) PriceUtil.getSingleValue("lab_requisitions","receive_date","lab_number",labNumber);
+            	Timestamp receivedDate=(Timestamp) PriceUtil.getSingleValue("pcs.lab_requisitions","receive_date","lab_number",labNumber);
             	
             	if (receivedDate==null)
             	{
