@@ -1051,7 +1051,9 @@ public class Export implements Runnable
 		fOUT.write(s.toString() + "\n");
 		fOUT.write("(HPV TYPES 16, 18, 31, 33\n");
 		fOUT.write("35, 39, 45, 51, 52, 56, 58\n");
-		fOUT.write("59, 68)\n\n\n\n\n\n\n\n\n");
+		fOUT.write("59, 68)\n\n");
+		fOUT.write("Reference Interval: NEGATIVE\n");
+		fOUT.write("\n\n\n\n\n\n");
 		s = new StringBuffer();
 		s.append("CYTOTECHNOLOGIST:  ");
 		s.append(labReport.cytotech_code.trim());
