@@ -866,6 +866,8 @@ public class HPVReport extends javax.swing.JFrame
 	    pgraphics.drawString("59, 68)",30,y);
 	    
         y+=20;
+        pgraphics.drawString("Reference Internal: N E G A T I V E",30,y);
+        y+=20;
 	    
         String cytotech = new String("CYTOTECHNOLOGIST:    "+
             labReport.cytotech_code.trim());
