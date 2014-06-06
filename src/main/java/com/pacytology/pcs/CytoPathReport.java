@@ -1111,8 +1111,18 @@ public class CytoPathReport extends javax.swing.JFrame
         if (labReport.iDatestamp>=20090407) printNegativeReportMessage=true;
 	    for (int i=0;i<4;i++) {
 	        boolean printCategory=true;
+	        
+	        Vector<ResultCodeRec> currentVect = labReport.resultVect;
+	        if (i==2) //descriptions
+	        {
+	        	currentVect=Export.sortResults(currentVect,false);
+	        } else if (i==3) //remarks
+	        {
+	        	currentVect=Export.sortResults(currentVect,true);
+	        }
+
 	        for (int j=0;j<labReport.numResults;j++) {
-	            ResultCodeRec resultCodeRec = (ResultCodeRec)labReport.resultVect.elementAt(j);
+	            ResultCodeRec resultCodeRec = currentVect.elementAt(j);
 	            if (resultCodeRec.bethesda_code.equals("014")
 	            ||  resultCodeRec.bethesda_code.equals("011")
 	            ||  resultCodeRec.bethesda_code.equals("013")

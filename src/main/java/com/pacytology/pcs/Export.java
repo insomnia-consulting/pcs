@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 
 import org.rev6.scf.ScpDownload;
@@ -554,6 +556,16 @@ public class Export implements Runnable
 
 	private Vector extractResults(String category, Vector r) {
 		Vector v = new Vector();
+		//description is descending by result code; remarks are ascending
+		if (category.equals("R"))
+		{
+			r=sortResults(r,true);
+		} else if (category.equals("D"))
+		{
+			r=sortResults(r,false);
+		}
+		
+		
 		for (int i = 0; i < r.size(); i++) {
 			ResultCodeRec rCodeRec = (ResultCodeRec) r.elementAt(i);
 			if (rCodeRec.category.equals(category))
@@ -561,6 +573,37 @@ public class Export implements Runnable
 		}
 		return (v);
 	}
+	public static Vector sortResults(Vector vector, final boolean ascending) {
+		Vector ret=new Vector();
+		ret.addAll(vector);
+		Collections.sort(ret,new Comparator<ResultCodeRec>() {
+			@Override
+			public int compare(ResultCodeRec o1, ResultCodeRec o2) {
+				//Replacing characters with 0s.  Not sure if that's correct, but it
+				//keeps it from failing.
+				String str1 = o1.bethesda_code;
+				str1=str1.replaceAll("\\D","0");
+				
+				String str2 = o2.bethesda_code;
+				str2=str2.replaceAll("\\D","0");
+				
+				Integer code1=Integer.parseInt(str1);
+				Integer code2=Integer.parseInt(str2);
+
+				if (code1<code2)
+				{
+					return ascending?-1:1;
+				} else if (code1>code2)
+				{
+					return ascending?1:-1;
+				}
+				
+				return Integer.compare(o1.hashCode(),o2.hashCode());
+			}
+		});
+		return ret;
+	}
+
 	/**
 	 * This code is the same as @see writeDetail() 
 	 * Except it won't print the SOURCE header if one doesn't exist 
