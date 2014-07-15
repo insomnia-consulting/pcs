@@ -597,8 +597,9 @@ public class Export implements Runnable
 				{
 					return ascending?1:-1;
 				}
-				
-				return Integer.compare(o1.hashCode(),o2.hashCode());
+				//If they're equal, just compare on hashcode
+				return  Integer.valueOf(o1.hashCode()).compareTo(Integer.valueOf(o2.hashCode())) ; 
+
 			}
 		});
 		return ret;
