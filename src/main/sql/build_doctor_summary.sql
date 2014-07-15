@@ -374,6 +374,9 @@ BEGIN
    -- Need to decide here if the file needs to be printed
    -- Those need printed are not marked as 'N', 'B' needs printed and transmitted, 'Y' is just transmitted
    -- prepare both filenames.. if e_reporting is a 'B' then at the end of the procedure we copy from one file to the other; otherwise, we just use one filename
+   IF (P_parent = -1) THEN
+   	P_parent := S_practice ; 
+END IF ; 
    trans_file_name :=
          LTRIM (RTRIM (TO_CHAR (P_parent, '009')))
       || '_'
