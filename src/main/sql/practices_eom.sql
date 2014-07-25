@@ -439,4 +439,7 @@ EXCEPTION
 
       COMMIT;
       RAISE;
-END\grant execute on practices_eom to pcs_user\
+END;
+\
+grant execute on practices_eom to pcs_user
+\
