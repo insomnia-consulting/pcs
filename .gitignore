@@ -7,4 +7,5 @@ target/
 .metadata/
 *.pcs
 logs/
+bin/
 *.class
