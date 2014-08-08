@@ -518,6 +518,7 @@ public class CytoPathReport extends javax.swing.JFrame
                         holdForHPV=true;
                     }
                 }
+                if (!labReport.e_reporting.equals("Y")) {
                 for (int j=0;j<labReport.report_copies;j++) {
                     if (canPrint) {
                         pgraphics=pjob.getGraphics();
@@ -528,6 +529,7 @@ public class CytoPathReport extends javax.swing.JFrame
                             pgraphics.dispose();
                         }
                     }
+                }
                 }
                 if (hasFaxFinals && i==labReportVect.size()-1) {
                     pgraphics=pjob.getGraphics();

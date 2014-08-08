@@ -1,7 +1,8 @@
-CREATE OR REPLACE PROCEDURE build_1500_claim_forms (
+CREATE OR REPLACE PROCEDURE build_1500_claim_forms_labnum (
    C_directory       IN CHAR,
    C_file            IN CHAR,
-   C_billing_route   IN CHAR)
+   C_billing_route   IN CHAR,
+   C_labnum          IN CHAR)
 AS
    P_error_code         NUMBER;
    P_error_message      VARCHAR2 (512);
@@ -67,6 +68,7 @@ AS
                AND bd.lab_number = lb.lab_number
                AND bq.rebilling = bd.rebilling
                AND bq.billing_route = C_billing_route
+               AND bq.lab_number = C_labnum
       ORDER BY c.billing_choice,
                c.name,
                p.lname,
@@ -185,7 +187,7 @@ AS
    file_handle          UTL_FILE.FILE_TYPE;
    label_file           UTL_FILE.FILE_TYPE;
 BEGIN
-   P_proc_name := 'BUILD_1500_CLAIM_FORMS_labnum';
+   P_proc_name := 'BUILD_1500_CLAIM_FORMS';
 
    P_code_area := 'PREP';
    check_point := 0;
@@ -196,7 +198,7 @@ BEGIN
    SELECT COUNT (*)
      INTO C_claims
      FROM pcs.billing_queue
-    WHERE billing_route = C_billing_route;
+    WHERE billing_route = C_billing_route AND lab_number = C_labnum;
 
    IF (C_claims > 0 AND C_billing_route <> 'DUP')
    THEN
@@ -241,7 +243,8 @@ BEGIN
           WHERE     bd.lab_number = lb.lab_number
                 AND lb.lab_number = bq.lab_number
                 AND bd.rebilling = lb.rebilling
-                AND bq.billing_route = C_billing_route;
+                AND bq.billing_route = C_billing_route
+                AND bd.lab_number = C_labnum;
    END IF;
 
    SELECT id_number
@@ -1170,14 +1173,14 @@ BEGIN
             cbuf1 := cbuf1 || '  FP';
          END IF;
 
-		 
+         DBMS_OUTPUT.put_line ('Checking for diag code stuff');
+
          IF (procedure_fields.procedure_code IN ('88141', '87621'))
          THEN
             IF (carrier_idnum = 23744)
             THEN
                diag_string := 'B';
-			ELSE
-		
+            ELSE
                diag_string := REPLACE (diag_5, 'A,');
             END IF;
          ELSE
@@ -1185,6 +1188,7 @@ BEGIN
             THEN
                diag_string := 'A';
             ELSE
+               DBMS_OUTPUT.put_line ('But not 23744'||diag_5||'.');
                diag_string := diag_5;
             END IF;
          END IF;
@@ -1665,6 +1669,7 @@ EXCEPTION
 
       RAISE;
 END;
+\
 
-
--- grant execute on update_receive_dates to pcs_user
+grant execute on update_receive_dates to pcs_user;
+\
