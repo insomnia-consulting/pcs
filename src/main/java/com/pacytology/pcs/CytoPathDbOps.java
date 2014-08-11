@@ -1783,7 +1783,7 @@ public class CytoPathDbOps implements Runnable {
 		Vector eReports = new Vector();
 		for (int i = 0; i < v.size(); i++) {
 			LabReportRec rept = (LabReportRec) v.elementAt(i);
-			if (parent.printMode == Lab.CURR_FINAL) {
+			if (parent.printMode == Lab.CURR_FINAL || parent.printMode == Lab.CURR_HPV) {
 				if (rept.e_reporting.equals("Y")
 						|| rept.e_reporting.equals("B"))
 					eReports.addElement(rept);
