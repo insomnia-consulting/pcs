@@ -188,7 +188,7 @@ public class Export implements Runnable
 			else
 				fOUT.write("~");
 		}
-		fOUT.write(labReport.cytotech_code + "|");
+		fOUT.write(labReport.getCytotech_code() + "|");
 		fOUT.write(Utils.isNull(labReport.qc_cytotech_code, "") + "|");
 		fOUT.write(Utils.isNull(labReport.superficial, "") + "|");
 		fOUT.write(Utils.isNull(labReport.intermediate, "") + "|");
@@ -514,7 +514,7 @@ public class Export implements Runnable
 			fOUT.write("ADENOCARCINOMAS OR OTHER CANCERS.\n\n");
 		}
 		s = new StringBuffer();
-		s.append("CYTOTECHNOLOGIST:  " + labReport.cytotech_code.trim());
+		s.append("CYTOTECHNOLOGIST:  " + labReport.getCytotech_code().trim());
 		if (!Utils.isNull(labReport.qc_cytotech_code))
 			s.append("/" + labReport.qc_cytotech_code);
 		fOUT.write(s.toString() + "\n");
@@ -1100,7 +1100,7 @@ public class Export implements Runnable
 		fOUT.write("\n\n\n\n\n\n");
 		s = new StringBuffer();
 		s.append("CYTOTECHNOLOGIST:  ");
-		s.append(labReport.cytotech_code.trim());
+		s.append(labReport.getCytotech_code().trim());
 		fOUT.write(s.toString() + "\n\n\n");
 		fOUT.write("-----------------------------------------------------------------------------------------\n");
 	}

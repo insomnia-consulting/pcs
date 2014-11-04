@@ -103,7 +103,7 @@ public class CytoPathDbOps implements Runnable {
 						parent.amendedCodes);
 				eFile.write(eReports);
 			}
-			parent.cytoPathReport();
+			parent.cytoPathReport(createERept);
 			parent.closingActions();
 		}
 		// otherwise reset the CytoPathReport screen
@@ -308,7 +308,7 @@ public class CytoPathDbOps implements Runnable {
 				labReport.doc_lname = rs.getString(24);
 				labReport.doc_fname = rs.getString(25);
 				labReport.pat_last_lab = rs.getInt(26);
-				labReport.cytotech_code = rs.getString(28);
+				labReport.setCytotech_code(rs.getString(28));
 				labReport.pathologist_code = rs.getString(29);
 				labReport.qc_status = rs.getString(30);
 				labReport.remarks = rs.getString(31);
@@ -768,7 +768,7 @@ public class CytoPathDbOps implements Runnable {
 				labReport.doc_lname = rs.getString(24);
 				labReport.doc_fname = rs.getString(25);
 				labReport.pat_last_lab = rs.getInt(26);
-				labReport.cytotech_code = rs.getString(28);
+				labReport.setCytotech_code(rs.getString(28));
 				labReport.pathologist_code = rs.getString(29);
 				labReport.qc_status = rs.getString(30);
 				labReport.remarks = rs.getString(31);
@@ -1780,13 +1780,23 @@ public class CytoPathDbOps implements Runnable {
 	}
 
 	public Vector extractElectronicReports(Vector v) {
-		Vector eReports = new Vector();
+		Vector<LabReportRec> eReports = new Vector<LabReportRec>();
 		for (int i = 0; i < v.size(); i++) {
 			LabReportRec rept = (LabReportRec) v.elementAt(i);
-			if (parent.printMode == Lab.CURR_FINAL || parent.printMode == Lab.CURR_HPV) {
+
+			if (parent.printMode == Lab.CURR_FINAL 
+						|| parent.printMode == Lab.CURR_HPV) {
 				if (rept.e_reporting.equals("Y")
 						|| rept.e_reporting.equals("B"))
-					eReports.addElement(rept);
+					if (rept.hold_final.equals("Y")
+		                    && Utils.equals(rept.test_sent,"P")
+		                    && Utils.isNull(rept.biopsy_code)
+		                    && rept.path_status.equals("Y")) {
+						this.holdReportForHPV(rept.lab_number);
+					}
+					else {
+						eReports.addElement(rept);
+					}
 			} else if (parent.printMode == Lab.FINAL) {
 				if (createERept)
 					eReports.addElement(rept);

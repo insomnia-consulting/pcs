@@ -30,9 +30,9 @@ import javax.swing.JPanel;
 public class HPVReport extends javax.swing.JFrame
 {
     public Login dbLogin;                       // database user and general info
-    public int startingLabNumber;               // starting and ending values used
-    public int endingLabNumber;                 //    for non-queued print requests
-    public Vector labReportVect = new Vector(); // vector of labReport objects
+    private int startingLabNumber;               // starting and ending values used
+    private int endingLabNumber;                 //    for non-queued print requests
+    private Vector labReportVect = new Vector(); // vector of labReport objects
     public int NUM_REPORTS=0;                   // number of reports to be printed
     public int maxY=0;                          // vertical place holder
     public String reportDate;                   // current date
@@ -40,7 +40,7 @@ public class HPVReport extends javax.swing.JFrame
     final int MAX_CONDITION=44;                 // max number of condition details
     public boolean hasFaxFinals = false;
     
-    public int printMode=Lab.NO_PRINT;          // print mode selected
+    private int printMode=Lab.NO_PRINT;          // print mode selected
     int numFinals=0;                            // number of FINAL reports queued
     int queueSize=0;                            // total reports queued for printing
     public HPVDbOps dbOps;                      // database operations for this screen
@@ -236,24 +236,24 @@ public class HPVReport extends javax.swing.JFrame
         String logMsg = null;
         boolean gotFirstFax = true;
         int x,y;
-        if (!verifyReports(labReportVect)) {
+        if (!verifyReports(getLabReportVect())) {
             Utils.createErrMsg("Insufficent data for HPV report(s)");
             return;
         }
         pjob=getToolkit().getPrintJob(this,name,p);
         if (pjob!=null) {
             // set a log file message to indicate print mode selected
-            switch (printMode) {
+            switch (getPrintMode()) {
                 case Lab.CURR_FINAL:    logMsg="CURR_FINAL"; break;
                 case Lab.FINAL:         logMsg="FINAL"; break;
                 case Lab.NO_PRINT:      logMsg="NO_PRINT"; break;
                 default:            logMsg=" ";
             }
             log.write("PRINT MODE = "+logMsg);
-            log.write("REPORTS    = "+labReportVect.size());
-            for (int i=0;i<labReportVect.size();i++) {
+            log.write("REPORTS    = "+getLabReportVect().size());
+            for (int i=0;i<getLabReportVect().size();i++) {
                 boolean canPrint = true;
-                LabReportRec labReport = (LabReportRec)labReportVect.elementAt(i);
+                LabReportRec labReport = (LabReportRec)getLabReportVect().elementAt(i);
                 log.write("--------------------");
                 log.write("LAB:  "+labReport.lab_number);
                 log.write(labReport.prac_name+" ("+labReport.practice+")");
@@ -275,7 +275,7 @@ public class HPVReport extends javax.swing.JFrame
                    electroncially, then no hard copy; all other modes
                    the report will get printed to the printer.
                 */
-                if (printMode==Lab.CURR_FINAL) {
+                if (getPrintMode()==Lab.CURR_FINAL) {
                     if (labReport.e_reporting.equals("Y"))
                         canPrint=false;
                 }
@@ -296,7 +296,7 @@ public class HPVReport extends javax.swing.JFrame
                         }
                     }
                 //}
-                if (hasFaxFinals && i==labReportVect.size()-1) {
+                if (hasFaxFinals && i==getLabReportVect().size()-1) {
                     pgraphics=pjob.getGraphics();
                     if (pgraphics!=null) {
                         log.write("PRINTING faxTrailer");
@@ -342,7 +342,7 @@ public class HPVReport extends javax.swing.JFrame
 	public boolean printButtonCheck()
 	{
         boolean status=true;
-        if (printMode==Lab.FINAL) {
+        if (getPrintMode()==Lab.FINAL) {
 		    if (Utils.isNull(startingLab.getText())) {
 		        Utils.createErrMsg("Error: Missing Starting Lab");
 		        startingLab.requestFocus();
@@ -363,21 +363,21 @@ public class HPVReport extends javax.swing.JFrame
 	    /*  For non-queue requests must get the values for the
 	        range of lab numbers to print reports for.
 	    */
-	    if (printMode==Lab.FINAL) {
-	        startingLabNumber=(int)Integer.parseInt(startingLab.getText());
+	    if (getPrintMode()==Lab.FINAL) {
+	        setStartingLabNumber((int)Integer.parseInt(startingLab.getText()));
 	        /*  If there is no ending lab number entered, set the value
 	            of the ending lab to the starting lab; i.e. request was
 	            for one report only.
 	        */
 	        if (Utils.isNull(endingLab.getText()))
-	            endingLabNumber=startingLabNumber;
+	            setEndingLabNumber(getStartingLabNumber());
 	        else {
 	            /*  If an ending lab number was entered, make sure that the
 	                end value entered is larger than the start value;
 	                otherwise display an error message.
 	            */
-	            endingLabNumber=(int)Integer.parseInt(endingLab.getText());
-	            if (endingLabNumber-startingLabNumber<0) {
+	            setEndingLabNumber((int)Integer.parseInt(endingLab.getText()));
+	            if (getEndingLabNumber()-getStartingLabNumber()<0) {
 	                Utils.createErrMsg("Error: Ending lab less then staring lab");
 	                endingLab.requestFocus();
 	                return;
@@ -401,7 +401,7 @@ public class HPVReport extends javax.swing.JFrame
 	    /*  If the type of report is a draft the word "DRAFT"
 	        is printed in large type across the top of the report
 	    */
-	    if ((printMode==Lab.DRAFT)||(printMode==Lab.CURR_DRAFT)) {
+	    if ((getPrintMode()==Lab.DRAFT)||(getPrintMode()==Lab.CURR_DRAFT)) {
 	        x+=75;
 	        y+=40;
             pgraphics.setFont(new Font("SansSerif",Font.BOLD,30));
@@ -870,7 +870,7 @@ public class HPVReport extends javax.swing.JFrame
         y+=20;
 	    
         String cytotech = new String("CYTOTECHNOLOGIST:    "+
-            labReport.cytotech_code.trim());
+            labReport.getCytotech_code().trim());
         if (!Utils.isNull(labReport.qc_cytotech_code))
             cytotech = new String(cytotech+"/"+labReport.qc_cytotech_code);
         pgraphics.setFont(new Font("SansSerif",Font.PLAIN,10));            
@@ -922,7 +922,7 @@ public class HPVReport extends javax.swing.JFrame
 	    printModePanel.setEnabled(false);
 	    if (currentFinals.isSelected()==true) {
 	        if (numFinals>0) {
-	            printMode=Lab.CURR_FINAL;
+	            setPrintMode(Lab.CURR_FINAL);
 	            startingLab.setEnabled(false);
 	            endingLab.setEnabled(false);
 	            cancelButton.setEnabled(true);
@@ -936,7 +936,7 @@ public class HPVReport extends javax.swing.JFrame
 	        }
 	    }
 	    else if (finalCopy.isSelected()==true) {
-	        printMode=Lab.FINAL;
+	        setPrintMode(Lab.FINAL);
 	        startingLab.setEnabled(true);
 	        endingLab.setEnabled(true);
 	        printButton.setEnabled(true);
@@ -971,7 +971,7 @@ public class HPVReport extends javax.swing.JFrame
 		printModePanel.setEnabled(true);
 		currentFinals.setEnabled(true);
 		finalCopy.setEnabled(true);
-		printMode=Lab.NO_PRINT;
+		setPrintMode(Lab.NO_PRINT);
 		NUM_REPORTS=0;
         maxY=0;
         reportDate = new String();
@@ -1055,5 +1055,37 @@ public class HPVReport extends javax.swing.JFrame
         y+=54;
         pgraphics.drawString("*  *  *  *  F  A  X  E  S  *  *  *  *",x,y);
     }
+
+	public int getPrintMode() {
+		return printMode;
+	}
+
+	public void setPrintMode(int printMode) {
+		this.printMode = printMode;
+	}
+
+	public int getStartingLabNumber() {
+		return startingLabNumber;
+	}
+
+	public void setStartingLabNumber(int startingLabNumber) {
+		this.startingLabNumber = startingLabNumber;
+	}
+
+	public int getEndingLabNumber() {
+		return endingLabNumber;
+	}
+
+	public void setEndingLabNumber(int endingLabNumber) {
+		this.endingLabNumber = endingLabNumber;
+	}
+
+	public Vector getLabReportVect() {
+		return labReportVect;
+	}
+
+	public void setLabReportVect(Vector labReportVect) {
+		this.labReportVect = labReportVect;
+	}
 	
 }

@@ -12,22 +12,40 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<powermock.version>1.5.6</powermock.version>
 		<!-- <db.host.ip>10.211.55.18</db.host.ip> -->
 		<!-- <db.host.ip>192.168.1.110</db.host.ip> -->
 		<!-- <sid>pcs</sid> -->
 		<!-- <sid>pcsprod</sid> -->
 	</properties>
 	<dependencies>
-<dependency>
-	<groupId>joda-time</groupId>
-	<artifactId>joda-time</artifactId>
-	<version>2.2</version>
-</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.2</version>
+		</dependency>
 		<dependency>
 			<groupId>oracle</groupId>
 			<artifactId>ojdbc</artifactId>
 			<version>6</version>
-
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.groboutils</groupId>
+			<artifactId>groboutils-core</artifactId>
+			<version>5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.10.8</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>1.5.6</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -45,22 +63,36 @@
 			<version>0.2</version>
 		</dependency>
 		<dependency>
-	  		<groupId>org.mybatis</groupId>
-  			<artifactId>mybatis</artifactId>
-  			<version>3.2.2</version>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.2.2</version>
 		</dependency>
 		<dependency>
-	      <groupId>junit</groupId>
-	      <artifactId>junit</artifactId>
-	      <version>4.11</version>
-	      <type>jar</type>
-	      <scope>test</scope>
-	      <optional>true</optional>
-	    </dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<type>jar</type>
+			<scope>test</scope>
+			<optional>true</optional>
+		</dependency>
+
 	</dependencies>
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>

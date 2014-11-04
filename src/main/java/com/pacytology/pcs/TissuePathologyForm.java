@@ -1627,7 +1627,7 @@ public class TissuePathologyForm extends PcsFrame
         y+=20;
         String cytotech = new String("VERIFIED:  "+
             Utils.addDateMask(resultRec.date_completed)+" - "+
-            labReport.cytotech_code.trim());
+            labReport.getCytotech_code().trim());
         pgraphics.setFont(new Font("SansSerif",Font.PLAIN,10));            
         pgraphics.drawString(cytotech,30,y);
         y+=30;

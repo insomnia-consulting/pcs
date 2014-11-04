@@ -67,7 +67,6 @@ as
       where a.lab_number=b.lab_number
       and a.lab_number=c.lab_number
       and c.bethesda_code in ('092','096','098','207')
-
       and a.cytotech=d.cytotech
       and b.test_sent='Y'
       and to_number(to_char(a.datestamp,'YYYYMM'))=S_month
@@ -122,6 +121,7 @@ begin
 	 LPAD(TO_CHAR(S_hpv_pos),16)||
 	 LPAD(TO_CHAR(S_pcnt,'990.99'),16);
       UTL_FILE.PUTF(file_handle,'\n%s\n',curr_line);
+	  DBMS_OUTPUT.PUT_LINE('ASCUS'||to_char(S_ascus)) ; 
       ttl_ascus:=ttl_ascus+S_ascus;
 
       ttl_hpv_pos:=ttl_hpv_pos+S_hpv_pos;
@@ -130,7 +130,13 @@ begin
    S_tech:='LAB';
    S_ascus:=ttl_ascus;
    S_hpv_pos:=ttl_hpv_pos;
-   S_pcnt:=ttl_hpv_pos/ttl_ascus*100;
+   DBMS_OUTPUT.PUT_LINE('Total ASCUS'||to_char(ttl_ascus)) ; 
+   if (ttl_ascus = 0) then
+   		S_pcnt := 0 ; 
+   else
+		S_pcnt:=ttl_hpv_pos/ttl_ascus*100;
+	end if ;	
+   
    commit;
 
    UTL_FILE.PUTF(file_handle,'\n%s\n',dline);
@@ -147,7 +153,8 @@ begin
    where a.lab_number=b.lab_number
    and b.test_sent in ('Q','Y')
    and to_number(to_char(a.datestamp,'YYYYMM'))=S_month;
-
+   DBMS_OUTPUT.PUT_LINE('TOTAL HPV '||to_char(ttl_hpv)||' for '||S_month);
+   
    select count(*) into ttl_hpv_plus
    from pcs.lab_results a, pcs.hpv_requests b
    where a.lab_number=b.lab_number
@@ -226,35 +233,35 @@ begin
 
    UTL_FILE.FCLOSE(file_handle);
 
-exception
-   when UTL_FILE.INVALID_PATH then
-      UTL_FILE.FCLOSE(file_handle);
-      RAISE_APPLICATION_ERROR(-20051,'invalid path');
-   when UTL_FILE.INVALID_MODE then
-      UTL_FILE.FCLOSE(file_handle);
-      RAISE_APPLICATION_ERROR(-20052,'invalid mode');
-   when UTL_FILE.INVALID_FILEHANDLE then
-      UTL_FILE.FCLOSE(file_handle);
-
-      RAISE_APPLICATION_ERROR(-20053,'invalid file handle');
-   when UTL_FILE.INVALID_OPERATION then
-      UTL_FILE.FCLOSE(file_handle);
-      RAISE_APPLICATION_ERROR(-20054,'invalid operation');
-   when UTL_FILE.READ_ERROR then
-      UTL_FILE.FCLOSE(file_handle);
-      RAISE_APPLICATION_ERROR(-20055,'read error');
-   when UTL_FILE.WRITE_ERROR then
-      UTL_FILE.FCLOSE(file_handle);
-      RAISE_APPLICATION_ERROR(-20056,'write error');
-   when OTHERS then
-      UTL_FILE.FCLOSE(file_handle);
-      P_error_code:=SQLCODE;
-
-      P_error_message:=SQLERRM;
-      insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)
-      values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,S_cytotech);
-      commit;
-      RAISE;
+--exception
+--   when UTL_FILE.INVALID_PATH then
+--	  UTL_FILE.FCLOSE(file_handle);
+--	  RAISE_APPLICATION_ERROR(-20051,'invalid path');
+--   when UTL_FILE.INVALID_MODE then
+--	  UTL_FILE.FCLOSE(file_handle);
+--	  RAISE_APPLICATION_ERROR(-20052,'invalid mode');
+--   when UTL_FILE.INVALID_FILEHANDLE then
+--	  UTL_FILE.FCLOSE(file_handle);
+--
+--	  RAISE_APPLICATION_ERROR(-20053,'invalid file handle');
+--   when UTL_FILE.INVALID_OPERATION then
+--	  UTL_FILE.FCLOSE(file_handle);
+--	  RAISE_APPLICATION_ERROR(-20054,'invalid operation');
+--   when UTL_FILE.READ_ERROR then
+--	  UTL_FILE.FCLOSE(file_handle);
+--	  RAISE_APPLICATION_ERROR(-20055,'read error');
+--   when UTL_FILE.WRITE_ERROR then
+--	  UTL_FILE.FCLOSE(file_handle);
+--	  RAISE_APPLICATION_ERROR(-20056,'write error');
+--   when OTHERS then
+--	  UTL_FILE.FCLOSE(file_handle);
+--	  P_error_code:=SQLCODE;
+--
+--	  P_error_message:=SQLERRM;
+--	  insert into pcs.error_log (error_code,error_message,proc_name,code_area,datestamp,sys_user,ref_id)
+--	  values (P_error_code,P_error_message,P_proc_name,P_code_area,SysDate,UID,S_cytotech);
+--	  commit;
+--	  RAISE;
 
 end;
 \

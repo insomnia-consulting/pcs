@@ -337,7 +337,7 @@ public class CytoPathReport extends javax.swing.JFrame
     /*
         Method that controls printing of the reports
     */
-    public void cytoPathReport() {
+    public void cytoPathReport(boolean createERept) {
         PrintJob pjob;
         Properties p = new java.util.Properties();
         Graphics pgraphics;
@@ -508,8 +508,9 @@ public class CytoPathReport extends javax.swing.JFrame
                    the report will get printed to the printer.
                 */
                 if (printMode==Lab.CURR_FINAL) {
-                    if (labReport.e_reporting.equals("Y"))
+                    if (labReport.e_reporting.equals("Y")) {
                         canPrint=false;
+                    }
                     if (labReport.hold_final.equals("Y")
                     && Utils.equals(labReport.test_sent,"P")
                     && Utils.isNull(labReport.biopsy_code)
@@ -518,18 +519,22 @@ public class CytoPathReport extends javax.swing.JFrame
                         holdForHPV=true;
                     }
                 }
-                if (!labReport.e_reporting.equals("Y")) {
-                for (int j=0;j<labReport.report_copies;j++) {
-                    if (canPrint) {
-                        pgraphics=pjob.getGraphics();
-                        if (pgraphics!=null) {
-                            PCSHeader(pgraphics,labReport);     // header part of report
-                            labData(pgraphics,labReport);       // requisition data
-                            resultsData(pgraphics,labReport);   // result data
-                            pgraphics.dispose();
-                        }
-                    }
-                }
+                if (!labReport.e_reporting.equals("Y") 
+                	 || ((printMode==Lab.DRAFT) 
+                		|| (printMode==Lab.CURR_DRAFT 
+                		|| (printMode==Lab.FINAL && !createERept ))
+                	))  {
+	                for (int j=0;j<labReport.report_copies;j++) {
+	                    if (canPrint) {
+	                        pgraphics=pjob.getGraphics();
+	                        if (pgraphics!=null) {
+	                            PCSHeader(pgraphics,labReport);     // header part of report
+	                            labData(pgraphics,labReport);       // requisition data
+	                            resultsData(pgraphics,labReport);   // result data
+	                            pgraphics.dispose();
+	                        }
+	                    }
+	                }
                 }
                 if (hasFaxFinals && i==labReportVect.size()-1) {
                     pgraphics=pjob.getGraphics();
@@ -1349,7 +1354,7 @@ public class CytoPathReport extends javax.swing.JFrame
         else y=660;
         
         String cytotech = new String("CYTOTECHNOLOGIST:    "+
-            labReport.cytotech_code.trim());
+            labReport.getCytotech_code().trim());
         if (!Utils.isNull(labReport.qc_cytotech_code))
             cytotech = new String(cytotech+"/"+labReport.qc_cytotech_code);
         pgraphics.setFont(new Font("SansSerif",Font.PLAIN,9));            

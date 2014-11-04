@@ -15,16 +15,22 @@ package com.pacytology.pcs;
     Date/Staff      Description:
 */
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.JRootPane;
+import javax.swing.JTextField;
 
 import com.pacytology.pcs.ui.PcsDialog;
 import com.pacytology.pcs.ui.Square;
-import java.sql.*;
-import java.util.Vector;
 
 public class HPVTestDialog extends PcsDialog
 {

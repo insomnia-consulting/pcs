@@ -65,14 +65,14 @@ public class HPVDbOps implements Runnable
 	        use straight query that indicates the lab number range
 	        requested.
 	    */
-        if (parent.printMode==Lab.FINAL) {
+        if (parent.getPrintMode()==Lab.FINAL) {
             createERept=false;
-            rv=query(parent.startingLabNumber,parent.endingLabNumber);
+            rv=query(parent.getStartingLabNumber(),parent.getEndingLabNumber());
             if (rv) {
                 LabReportRec r = new LabReportRec();
-                r = (LabReportRec) parent.labReportVect.elementAt(0);
-                if (Utils.isNull(r.cytotech_code)) rv=false;
-                else if (r.cytotech_code.equals("HPV")) rv=false;
+                r = (LabReportRec) parent.getLabReportVect().elementAt(0);
+                if (Utils.isNull(r.getCytotech_code())) rv=false;
+                else if (r.getCytotech_code().equals("HPV")) rv=false;
             }
             if (!rv) {
                 Utils.createErrMsg("No Data Located!");
@@ -96,7 +96,7 @@ public class HPVDbOps implements Runnable
         // if labReport objects exist call parents print method and exit
         if (rv) {
             Vector eReports = new Vector();
-            eReports=extractElectronicReports(parent.labReportVect);
+            eReports=extractElectronicReports(parent.getLabReportVect());
             if (eReports.size()>0) {
                 Export eFile = new Export(Lab.HPV_REPORTS);
                 eFile.write(eReports);
@@ -209,7 +209,7 @@ public class HPVDbOps implements Runnable
                 "   lab.lab_number>="+sLab+" and \n"+
                 "   lab.lab_number<="+eLab+" \n");
                 
-            if (parent.printMode==Lab.FINAL) 
+            if (parent.getPrintMode()==Lab.FINAL) 
                 SQL+="ORDER BY pr.practice, lab.lab_number \n";
             else
                 SQL+="ORDER BY lab.lab_number \n";
@@ -253,7 +253,7 @@ public class HPVDbOps implements Runnable
                 labReport.doc_lname=rs.getString(24);
                 labReport.doc_fname=rs.getString(25);
                 labReport.pat_last_lab=rs.getInt(26);
-                labReport.cytotech_code=rs.getString(28);
+                labReport.setCytotech_code(rs.getString(28));
                 labReport.pathologist_code=rs.getString(29);
                 labReport.qc_status=rs.getString(30);
                 labReport.remarks=rs.getString(31);
@@ -293,7 +293,7 @@ public class HPVDbOps implements Runnable
                     and retrieve those results
                 */
                 setDirector(labReport);
-                parent.labReportVect.addElement(labReport);
+                parent.getLabReportVect().addElement(labReport);
                 e_report=labReport.e_reporting;
             }
             parent.msgLabel.setText(null);
@@ -305,8 +305,8 @@ public class HPVDbOps implements Runnable
             exitStatus=false;
             parent.msgLabel.setText("Operation Failed");
         }
-        if (parent.printMode==Lab.FINAL 
-        && parent.labReportVect.size()==1 
+        if (parent.getPrintMode()==Lab.FINAL 
+        && parent.getLabReportVect().size()==1 
         && (e_report.equals("Y")||e_report.equals("B"))) {
 	        JOptionPane confirmERept = new javax.swing.JOptionPane();
             int rv = confirmERept.showConfirmDialog(
@@ -317,7 +317,7 @@ public class HPVDbOps implements Runnable
                 createERept=true;
             }
         }
-        if (parent.labReportVect.size()==0) exitStatus=false;
+        if (parent.getLabReportVect().size()==0) exitStatus=false;
         return(exitStatus);            
     }
 	
@@ -534,13 +534,13 @@ public class HPVDbOps implements Runnable
                 "   res.lab_number=q.lab_number and \n"+
                 "   hpv.cytotech=ct.cytotech and \n"+
                 "   res.lab_number=rem.lab_number(+) and \n"+
-                "   q.first_print="+parent.printMode+" \n");
+                "   q.first_print="+parent.getPrintMode()+" \n");
 
             /*  If the print mode is for FINAL reports the sort order puts
                 biopsy request labs first as these ones are tagged to be
                 faxed.
             */
-            if (parent.printMode==Lab.CURR_FINAL) 
+            if (parent.getPrintMode()==Lab.CURR_FINAL) 
                 SQL+="ORDER BY pr.practice, lab.lab_number \n";
             else SQL+="ORDER BY lab.lab_number \n";
 
@@ -553,7 +553,7 @@ public class HPVDbOps implements Runnable
             ResultSet rs = stmt.executeQuery(dateQuery);
             while (rs.next()) { parent.reportDate=rs.getString(1); }  
             
-            if (parent.printMode==Lab.CURR_FINAL) 
+            if (parent.getPrintMode()==Lab.CURR_FINAL) 
                 parent.NUM_REPORTS=parent.numFinals;
                 
             int ndx=0;
@@ -594,7 +594,7 @@ public class HPVDbOps implements Runnable
                 labReport.doc_lname=rs.getString(24);
                 labReport.doc_fname=rs.getString(25);
                 labReport.pat_last_lab=rs.getInt(26);
-                labReport.cytotech_code=rs.getString(28);
+                labReport.setCytotech_code(rs.getString(28));
                 labReport.pathologist_code=rs.getString(29);
                 labReport.qc_status=rs.getString(30);
                 labReport.remarks=rs.getString(31);
@@ -646,17 +646,17 @@ public class HPVDbOps implements Runnable
                     appears
                 */
                 reportCounter--;
-                if (parent.printMode==Lab.CURR_FINAL) {
+                if (parent.getPrintMode()==Lab.CURR_FINAL) {
                     parent.finalPrints.setText(Integer.toString(reportCounter));
                 }
                 parent.repaint();
-                if (parent.printMode==Lab.CURR_FINAL
+                if (parent.getPrintMode()==Lab.CURR_FINAL
                 && labReport.send_fax.equals("Y"))
                 {
                     faxVect.addElement(labReport);
                 }
                 else
-                    parent.labReportVect.addElement(labReport);
+                    parent.getLabReportVect().addElement(labReport);
             }
             int numFaxes = 0;
             if (faxVect.size()>0) {
@@ -664,11 +664,11 @@ public class HPVDbOps implements Runnable
                 numFaxes=faxVect.size();
                 for (int i=0; i<faxVect.size(); i++) {
                     LabReportRec r = (LabReportRec)faxVect.elementAt(i);
-                    parent.labReportVect.addElement(r);
+                    parent.getLabReportVect().addElement(r);
                 }
             }
             parent.log.write(
-                "   close labReportVect cursor ["+parent.labReportVect.size()+"]");
+                "   close labReportVect cursor ["+parent.getLabReportVect().size()+"]");
             try { rs.close(); stmt.close(); }
             catch (SQLException e) { parent.log.write(e); exitStatus=false; }
         }
@@ -687,13 +687,13 @@ public class HPVDbOps implements Runnable
         report being printed must be recorded.
     */
     public boolean dequeue(int labNum)  {
-        parent.log.write("dequeue("+labNum+","+parent.printMode+")");
+        parent.log.write("dequeue("+labNum+","+parent.getPrintMode()+")");
         boolean exitStatus=true;
         try  {
             String SQL = new String(
                 "DELETE FROM pcs.hpv_print_queue \n"+
                 "WHERE lab_number="+labNum+" and \n"+
-                "   first_print="+parent.printMode+" \n");
+                "   first_print="+parent.getPrintMode()+" \n");
                 
             Statement stmt = DbConnection.process().createStatement();
             int rs = stmt.executeUpdate(SQL);
@@ -709,7 +709,7 @@ public class HPVDbOps implements Runnable
             */
             SQL = new String(
                 "INSERT INTO pcs.hpv_history (lab_number,first_print,print_date) \n"+
-                "VALUES ("+labNum+","+parent.printMode+",SysDate) \n");
+                "VALUES ("+labNum+","+parent.getPrintMode()+",SysDate) \n");
             rs=stmt.executeUpdate(SQL);
             try { stmt.close(); }
             catch (SQLException e) { parent.log.write(e); exitStatus=false; }                
@@ -756,11 +756,11 @@ public class HPVDbOps implements Runnable
         Vector eReports = new Vector();
         for (int i=0; i<v.size(); i++) {
             LabReportRec rept = (LabReportRec)v.elementAt(i);
-            if (parent.printMode==Lab.CURR_FINAL) {
+            if (parent.getPrintMode()==Lab.CURR_FINAL) {
                 if (rept.e_reporting.equals("Y")||rept.e_reporting.equals("B")) 
                     eReports.addElement(rept);
             }
-            else if (parent.printMode==Lab.FINAL) {
+            else if (parent.getPrintMode()==Lab.FINAL) {
                 if (createERept) eReports.addElement(rept);
             }
         }

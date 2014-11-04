@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JRootPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -308,8 +309,9 @@ public class BillingForm extends PcsFrame
 		JScrollPane1.setEnabled(false);
 		historyPanel.add(JScrollPane1);
 		JScrollPane1.setBounds(8,18,286,94);
+		
 		historyList.setEnabled(false);
-		JScrollPane1.getViewport().add(historyList);
+		JScrollPane1.getViewport().add(historyList);		
 		historyList.setFont(new Font("DialogInput", Font.PLAIN, 10));
 		historyList.setBounds(0,0,283,91);
 		titledBorder5.setTitleFont(new java.awt.Font("Dialog", java.awt.Font.PLAIN, 11));
