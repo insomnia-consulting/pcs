@@ -42,9 +42,9 @@ public class HPVReport extends javax.swing.JFrame
     
     private int printMode=Lab.NO_PRINT;          // print mode selected
     int numFinals=0;                            // number of FINAL reports queued
-    int queueSize=0;                            // total reports queued for printing
-    public HPVDbOps dbOps;                      // database operations for this screen
-    LogFile log;                                // log file for this screen
+    private int queueSize=0;                            // total reports queued for printing
+    private HPVDbOps dbOps;                      // database operations for this screen
+    private LogFile log;                                // log file for this screen
     
     /*
         Default constructor; builds screen based on values and layout as indicated
@@ -162,12 +162,12 @@ public class HPVReport extends javax.swing.JFrame
 		setTitle("HPV Reports");
 		this.dbLogin=dbLogin;
 		// instansiate LogFile object
-        this.log = new LogFile(
-            dbLogin.logPath,"HPVReport",dbLogin.dateToday,dbLogin.userName);
+        this.setLog(new LogFile(
+            dbLogin.logPath,"HPVReport",dbLogin.dateToday,dbLogin.userName));
         // instansiate database operations object; takes this object as a param.
-		this.dbOps = new HPVDbOps(this);
+		this.setDbOps(new HPVDbOps(this));
 		this.resetForm();
-		this.queueSize=dbOps.checkQueue();
+		this.setQueueSize(getDbOps().checkQueue());
 		this.finalPrints.setText(Integer.toString(numFinals));
 	}
 
@@ -221,6 +221,7 @@ public class HPVReport extends javax.swing.JFrame
 	javax.swing.border.TitledBorder titledBorder1 = new javax.swing.border.TitledBorder("");
 	javax.swing.JOptionPane printerConfirm = new javax.swing.JOptionPane();
 	//}}
+	private Export eFile;
 
 	//{{DECLARE_MENUS
 	//}}
@@ -249,21 +250,27 @@ public class HPVReport extends javax.swing.JFrame
                 case Lab.NO_PRINT:      logMsg="NO_PRINT"; break;
                 default:            logMsg=" ";
             }
-            log.write("PRINT MODE = "+logMsg);
-            log.write("REPORTS    = "+getLabReportVect().size());
+            getLog().write("PRINT MODE = "+logMsg);
+            getLog().write("REPORTS    = "+getLabReportVect().size());
             for (int i=0;i<getLabReportVect().size();i++) {
                 boolean canPrint = true;
                 LabReportRec labReport = (LabReportRec)getLabReportVect().elementAt(i);
-                log.write("--------------------");
-                log.write("LAB:  "+labReport.lab_number);
-                log.write(labReport.prac_name+" ("+labReport.practice+")");
-                log.write(labReport.pat_lname+", "+labReport.pat_fname+
+                Vector<LabReportRec> eReports = new Vector<LabReportRec>();
+                if (labReport.getE_reporting().equals("Y")||labReport.getE_reporting().equals("B")) { 
+                	eReports.add(labReport) ; 
+
+                    geteFile().write(eReports);
+                }
+                getLog().write("--------------------");
+                getLog().write("LAB:  "+labReport.lab_number);
+                getLog().write(labReport.prac_name+" ("+labReport.practice+")");
+                getLog().write(labReport.pat_lname+", "+labReport.pat_fname+
                     " : "+labReport.doctor_text);
                 if (hasFaxFinals && labReport.send_fax.equals("Y") && gotFirstFax) {
                     gotFirstFax=false;
                     pgraphics=pjob.getGraphics();
                     if (pgraphics!=null) {
-                        log.write("PRINTING faxHeader");
+                        getLog().write("PRINTING faxHeader");
                         faxHeader(pgraphics);
                         pgraphics.dispose();
                     }
@@ -272,11 +279,11 @@ public class HPVReport extends javax.swing.JFrame
                 */
                 labReport.report_copies=1;
                 /* In Current Finals mode if the report is to sent
-                   electroncially, then no hard copy; all other modes
+                   electronically, then no hard copy; all other modes
                    the report will get printed to the printer.
                 */
                 if (getPrintMode()==Lab.CURR_FINAL) {
-                    if (labReport.e_reporting.equals("Y"))
+                    if (labReport.getE_reporting().equals("Y"))
                         canPrint=false;
                 }
                 //for (int j=0;j<labReport.report_copies;j++) {
@@ -299,13 +306,23 @@ public class HPVReport extends javax.swing.JFrame
                 if (hasFaxFinals && i==getLabReportVect().size()-1) {
                     pgraphics=pjob.getGraphics();
                     if (pgraphics!=null) {
-                        log.write("PRINTING faxTrailer");
+                        getLog().write("PRINTING faxTrailer");
                         faxTrailer(pgraphics);
                         pgraphics.dispose();
                     }
                 }
                 // dequeue the current lab number from the print queue
-                dbOps.dequeue(labReport.lab_number);
+                //join the export thread before executing getDbOps()
+                this.geteFile().getFileExportThread().join() ; 
+                if (this.geteFile().getErrors().size() == 0 ) {
+                	getDbOps().dequeue(labReport.lab_number);
+                }
+                else {
+                	for (String error :this.geteFile().getErrors()) {
+                		log.file.write(error) ;
+                		//write to a database table?
+                	}
+                }
             }
             pjob.end();
         }
@@ -387,9 +404,9 @@ public class HPVReport extends javax.swing.JFrame
 	    /*  Database operations object method that retrieves
 	        data for the current set of reports requested
 	    */
-	    log.stamp("Calling dbOps.getReports()");
-        dbOps.getReports();
-        log.stamp("Return dbOps.getReports()");
+	    getLog().stamp("Calling dbOps.getReports()");
+        getDbOps().getReports();
+        getLog().stamp("Return dbOps.getReports()");
 	}
 	
     /*
@@ -883,7 +900,7 @@ public class HPVReport extends javax.swing.JFrame
 
 	void cancelButton_actionPerformed(java.awt.event.ActionEvent event)
 	{
-	    dbOps.kill();
+	    getDbOps().kill();
 		closingActions();
 	}
 
@@ -932,7 +949,7 @@ public class HPVReport extends javax.swing.JFrame
 	        else {
 	            resetForm();
 	            Utils.createErrMsg("No HPV Reports to Print!");
-	            log.write("NO HPV REPORTS TO PRINT");
+	            getLog().write("NO HPV REPORTS TO PRINT");
 	        }
 	    }
 	    else if (finalCopy.isSelected()==true) {
@@ -1007,8 +1024,8 @@ public class HPVReport extends javax.swing.JFrame
     */
 	void closingActions()
 	{
-	    log.stop();
-	    dbOps.close();
+	    getLog().stop();
+	    getDbOps().close();
 	    this.dispose();
 	}
 	
@@ -1086,6 +1103,38 @@ public class HPVReport extends javax.swing.JFrame
 
 	public void setLabReportVect(Vector labReportVect) {
 		this.labReportVect = labReportVect;
+	}
+
+	LogFile getLog() {
+		return log;
+	}
+
+	void setLog(LogFile log) {
+		this.log = log;
+	}
+
+	int getQueueSize() {
+		return queueSize;
+	}
+
+	void setQueueSize(int queueSize) {
+		this.queueSize = queueSize;
+	}
+
+	public Export geteFile() {
+		return eFile;
+	}
+
+	public void seteFile(Export eFile) {
+		this.eFile = eFile;
+	}
+
+	public HPVDbOps getDbOps() {
+		return dbOps;
+	}
+
+	public void setDbOps(HPVDbOps dbOps) {
+		this.dbOps = dbOps;
 	}
 	
 }

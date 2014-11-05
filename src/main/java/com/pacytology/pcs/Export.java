@@ -15,8 +15,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Vector;
 
 import org.rev6.scf.ScpDownload;
@@ -34,6 +36,7 @@ public class Export implements Runnable
 	Vector data;
 	String fileName;
 	String filePath = "c:\\";
+	private List<String> errors = new ArrayList<String>();
 	/*
 	 * static final int HL7 = 101; static final int TEXT = 102;
 	 */
@@ -1066,6 +1069,9 @@ public class Export implements Runnable
 			}
 		} catch (Exception e) {
 			System.out.println(e);
+			e.printStackTrace();
+			getErrors().add("Error occurred while creating HPV Report for Lab Number " +
+						labReportRec.lab_number + ".  " + e.getMessage());	
 		}
 	}
 
@@ -1105,6 +1111,17 @@ public class Export implements Runnable
 		fOUT.write("-----------------------------------------------------------------------------------------\n");
 	}
 
+	public Thread getFileExportThread() {
+		return this.fileExportThread;
+	}
+
+	List<String> getErrors() {
+		return errors;
+	}
+
+	void setErrors(List<String> errors) {
+		this.errors = errors;
+	}
 	
 	
 }

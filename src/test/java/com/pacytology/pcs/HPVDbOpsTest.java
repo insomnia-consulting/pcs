@@ -2,12 +2,16 @@ package com.pacytology.pcs;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
+import java.awt.PrintJob;
+import java.awt.Toolkit;
+import java.util.List;
 import java.util.Vector;
+
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -16,64 +20,86 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ HPVReport.class, HPVDbOps.class, Export.class })
+@PrepareForTest({ HPVDbOps.class })
+@PowerMockIgnore("javax.swing.*")
 public class HPVDbOpsTest {
-	 DateTime writeOutStamp;
-	 DateTime hpvReportOutStamp;
+	DateTime writeOutStamp;
+	DateTime hpvReportOutStamp;
 	@Spy
 	HPVDbOps dbSpy = new HPVDbOps();
 
+	Vector labReportVector ;
+	Vector eReportVector ; 
+	LabReportRec labReport ;
+	HPVReport reportSpy;
+	
+
 	@Before
-	public void setup() {
+	public void setup() throws UnsupportedLookAndFeelException {
+		 labReportVector = mock(Vector.class);
+		 eReportVector = mock(Vector.class);
+		 labReport = mock(LabReportRec.class);
+		 
 		MockitoAnnotations.initMocks(this);
+		UIManager.setLookAndFeel(new FakeLookAndFeel());
+		HPVReport report = new HPVReport();
+		reportSpy = PowerMockito.spy(report);
+		Toolkit toolkit = mock(Toolkit.class);
+		PrintJob pjob = mock(PrintJob.class);
+		when(reportSpy.getToolkit()).thenReturn(toolkit);
+		when(
+				toolkit.getPrintJob(eq(reportSpy), Mockito.anyString(),
+						Mockito.any(java.util.Properties.class))).thenReturn(
+				pjob);
+		when(reportSpy.getPrintMode()).thenReturn(Lab.CURR_FINAL);
+		LogFile logFile = mock(LogFile.class);
+		when(reportSpy.getLog()).thenReturn(logFile);
+		labReport = mock(LabReportRec.class);
+		labReportVector = mock(Vector.class);
+		eReportVector = mock(Vector.class);
+
+		doReturn("Y").when(labReport).getE_reporting();
+		dbSpy.parent = reportSpy;
+
+		when(reportSpy.getPrintMode()).thenReturn(Lab.CURR_FINAL);
+		when(reportSpy.getStartingLabNumber()).thenReturn(2014035573);
+		when(reportSpy.getLabReportVect()).thenReturn(labReportVector);
+		when(reportSpy.getQueueSize()).thenReturn(1);
+		doReturn(true).when(reportSpy).verifyReports(any(Vector.class));
+
+		when(labReportVector.elementAt(0)).thenReturn(labReport);
+		when(labReport.getCytotech_code()).thenReturn("SEC");
+		doReturn(true).when(dbSpy).query(anyInt(), anyInt());
+		doReturn(true).when(dbSpy).queryQueue();
+		doReturn(true).when(dbSpy).dequeue(anyInt());
+		doReturn(eReportVector).when(dbSpy).extractElectronicReports(
+				labReportVector);
+
+		when(eReportVector.size()).thenReturn(1);
+		when(labReportVector.size()).thenReturn(1);
+		when(labReportVector.size()).thenReturn(1);
+		
+		// when(export.write(eReportVector)
+		// ).withArguments(anyObject()).thenReturn(null);
+		
+		when(reportSpy.getDbOps()).thenReturn(dbSpy);
 	}
 
 	@Test
 	public void hpvReportTest() throws Throwable {
 		
-		
-		
-		HPVReport report = mock(HPVReport.class);
-		Vector labReportVector = mock(Vector.class);
-		Vector eReportVector = mock(Vector.class);
-		LabReportRec labReport = mock(LabReportRec.class);
-		dbSpy.parent = report;
-		when(report.getPrintMode()).thenReturn(Lab.FINAL);
-		when(report.getStartingLabNumber()).thenReturn(2014035573);
-		when(report.getLabReportVect()).thenReturn(labReportVector);
-		when(labReportVector.elementAt(0)).thenReturn(labReport);
-		when(labReport.getCytotech_code()).thenReturn("SEC");
-		doReturn(true).when(dbSpy).query(anyInt(), anyInt());
-		doReturn(eReportVector).when(dbSpy).extractElectronicReports(
-				labReportVector);
-		when(eReportVector.size()).thenReturn(1);
-		Export export = mock(Export.class);
-		// when(export.write(eReportVector)
-		// ).withArguments(anyObject()).thenReturn(null);
-		PowerMockito.whenNew(Export.class).withArguments(Lab.HPV_REPORTS)
-				.thenReturn(export);
-		Mockito.doAnswer(new Answer<Void>() {
-			public Void answer(InvocationOnMock invocation) {
-				System.out.println("#### Calling parent.hpvReport()");
-				try {
-					
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					fail("Thread1.sleep died");
-				}
-				hpvReportOutStamp = DateTime.now();
-				System.out.println("#### Done calling parent.hpvReport()");
-				return null;
-			}
-		}).when(report).hpvReport();
-		Mockito.doAnswer(new Answer<Void>() {
+		final Export export = mock(Export.class);
+		when(reportSpy.geteFile()).thenReturn(export);
+		Answer exportWriteAnswer = new Answer<Void>() {
 			public Void answer(InvocationOnMock invocation) {
 				System.out.println("#### Calling Export.write()");
 
@@ -81,6 +107,52 @@ public class HPVDbOpsTest {
 					public void run() {
 
 						try {
+							System.out
+									.println("Starting the mock export.write thread");
+							Thread.sleep(5000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						System.out.println("Completed the thread");
+						writeOutStamp = DateTime.now();
+					}
+				};
+				doReturn(t).when(export).getFileExportThread();
+				t.start();
+
+				System.out.println("#### Done calling Export.write()");
+				return null;
+			}
+		};
+		Mockito.doAnswer(exportWriteAnswer).when(export)
+				.write(any(Vector.class));
+
+		dbSpy.run();
+
+		assertNotNull(writeOutStamp);
+		if (DateTime.now().isBefore(writeOutStamp))
+			fail("The report completed before the export could finish");
+
+		// Need to verify that hpvReport doesn't complete before export.write
+		// assertThat(new Export("random string").check(), equalTo("test"));
+
+	}
+	@Test
+	public void hpvReportTestWithExportError() throws Throwable {
+		
+		final Export export = mock(Export.class);
+		when(reportSpy.geteFile()).thenReturn(export);
+		Answer exportWriteAnswer = new Answer<Void>() {
+			public Void answer(InvocationOnMock invocation) {
+				System.out.println("#### Calling Export.write()");
+
+				Thread t = new Thread() {
+					public void run() {
+
+						try {
+							System.out
+									.println("Starting the mock export.write thread");
 							Thread.sleep(5000);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
@@ -90,19 +162,25 @@ public class HPVDbOpsTest {
 						writeOutStamp = DateTime.now();
 					}
 				};
+				doReturn(t).when(export).getFileExportThread();
 				t.start();
-				
-				
+
 				System.out.println("#### Done calling Export.write()");
 				return null;
 			}
-		}).when(export).write(eReportVector);
-
+		};
+		Mockito.doAnswer(exportWriteAnswer).when(export)
+				.write(any(Vector.class));
+		List<String> errorList = mock(List.class);
+		when(errorList.size()).thenReturn(1);
+		when(export.getErrors()).thenReturn(errorList);
 		dbSpy.run();
-		assertNotNull(hpvReportOutStamp) ; 
-		assertNotNull(writeOutStamp) ; 
-		if (hpvReportOutStamp.isBefore(writeOutStamp)) fail("The report completed before the export could finish") ;  
-			
+		
+		assertNotNull(writeOutStamp);
+		if (DateTime.now().isBefore(writeOutStamp))
+			fail("The report completed before the export could finish");
+
+		verify(dbSpy, never()).dequeue(anyInt());
 		// Need to verify that hpvReport doesn't complete before export.write
 		// assertThat(new Export("random string").check(), equalTo("test"));
 

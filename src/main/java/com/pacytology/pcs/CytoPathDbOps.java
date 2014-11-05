@@ -333,7 +333,7 @@ public class CytoPathDbOps implements Runnable {
 				labReport.test_sent = rs.getString(48);
 				labReport.verified_on = rs.getString(49);
 				labReport.verified_by = rs.getString(50);
-				labReport.e_reporting = rs.getString(51);
+				labReport.setE_reporting(rs.getString(51));
 				labReport.program = rs.getString(52);
 				labReport.parent_account = rs.getInt(53);
 				labReport.pap_class = rs.getInt(54);
@@ -380,7 +380,7 @@ public class CytoPathDbOps implements Runnable {
 							|| labReport.test_sent.equals("P"))
 						labReport.HPVmessage = true;
 				}
-				e_report = labReport.e_reporting;
+				e_report = labReport.getE_reporting();
 				parent.labReportVect.addElement(labReport);
 			}
 			parent.msgLabel.setText(null);
@@ -796,7 +796,7 @@ public class CytoPathDbOps implements Runnable {
 				labReport.send_fax = rs.getString(52);
 				labReport.verified_on = rs.getString(53);
 				labReport.verified_by = rs.getString(54);
-				labReport.e_reporting = rs.getString(55);
+				labReport.setE_reporting(rs.getString(55));
 				labReport.program = rs.getString(56);
 				labReport.parent_account = rs.getInt(57);
 				labReport.pap_class = rs.getInt(58);
@@ -1786,8 +1786,8 @@ public class CytoPathDbOps implements Runnable {
 
 			if (parent.printMode == Lab.CURR_FINAL 
 						|| parent.printMode == Lab.CURR_HPV) {
-				if (rept.e_reporting.equals("Y")
-						|| rept.e_reporting.equals("B"))
+				if (rept.getE_reporting().equals("Y")
+						|| rept.getE_reporting().equals("B"))
 					if (rept.hold_final.equals("Y")
 		                    && Utils.equals(rept.test_sent,"P")
 		                    && Utils.isNull(rept.biopsy_code)

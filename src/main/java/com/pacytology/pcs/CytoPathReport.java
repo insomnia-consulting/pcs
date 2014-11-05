@@ -508,7 +508,7 @@ public class CytoPathReport extends javax.swing.JFrame
                    the report will get printed to the printer.
                 */
                 if (printMode==Lab.CURR_FINAL) {
-                    if (labReport.e_reporting.equals("Y")) {
+                    if (labReport.getE_reporting().equals("Y")) {
                         canPrint=false;
                     }
                     if (labReport.hold_final.equals("Y")
@@ -519,7 +519,7 @@ public class CytoPathReport extends javax.swing.JFrame
                         holdForHPV=true;
                     }
                 }
-                if (!labReport.e_reporting.equals("Y") 
+                if (!labReport.getE_reporting().equals("Y") 
                 	 || ((printMode==Lab.DRAFT) 
                 		|| (printMode==Lab.CURR_DRAFT 
                 		|| (printMode==Lab.FINAL && !createERept ))

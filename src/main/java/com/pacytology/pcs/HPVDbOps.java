@@ -51,7 +51,7 @@ public class HPVDbOps implements Runnable
     ****************************************************************************/
     public void kill() {
         try { dbThread.stop(); }
-        catch (Exception e) { parent.log.write(e); }
+        catch (Exception e) { parent.getLog().write(e); }
     }
     public void getReports() {
         dbThread = new Thread(this);
@@ -86,7 +86,7 @@ public class HPVDbOps implements Runnable
         */
         else {
             // call queryQueue() only if there is data in the queue
-            if (parent.queueSize>0) { rv=queryQueue(); }
+            if (parent.getQueueSize()>0) { rv=queryQueue(); }
             // otherwise do no printing (since no data) and display error
             else {
                 rv=false;
@@ -95,13 +95,9 @@ public class HPVDbOps implements Runnable
         }
         // if labReport objects exist call parents print method and exit
         if (rv) {
-            Vector eReports = new Vector();
-            eReports=extractElectronicReports(parent.getLabReportVect());
-            if (eReports.size()>0) {
-                Export eFile = new Export(Lab.HPV_REPORTS);
-                eFile.write(eReports);
-            }
+            
 	        try {
+	        	parent.seteFile(new Export(Lab.HPV_REPORTS)) ;  
 				parent.hpvReport();
 			} catch (Exception e) {
 				
@@ -122,7 +118,7 @@ public class HPVDbOps implements Runnable
 	    print queue
 	*/
     public boolean query(int sLab, int eLab)  {
-        parent.log.write("query("+sLab+".."+eLab+")");
+        parent.getLog().write("query("+sLab+".."+eLab+")");
         boolean exitStatus = true;
         String e_report = null;
         try  {
@@ -277,7 +273,7 @@ public class HPVDbOps implements Runnable
                 labReport.test_sent=rs.getString(48);
                 labReport.verified_on=rs.getString(49);
                 labReport.verified_by=rs.getString(50);
-                labReport.e_reporting=rs.getString(51);
+                labReport.setE_reporting(rs.getString(51));
                 labReport.program=rs.getString(52);
                 labReport.parent_account=rs.getInt(53);
                 labReport.test_results=rs.getString(54);
@@ -294,14 +290,14 @@ public class HPVDbOps implements Runnable
                 */
                 setDirector(labReport);
                 parent.getLabReportVect().addElement(labReport);
-                e_report=labReport.e_reporting;
+                e_report=labReport.getE_reporting();
             }
             parent.msgLabel.setText(null);
             try { rs.close(); stmt.close(); }
-            catch (SQLException e) { parent.log.write(e); exitStatus=false; }                
+            catch (SQLException e) { parent.getLog().write(e); exitStatus=false; }                
         }
         catch (Exception e) {
-            parent.log.write(e);
+            parent.getLog().write(e);
             exitStatus=false;
             parent.msgLabel.setText("Operation Failed");
         }
@@ -339,10 +335,10 @@ public class HPVDbOps implements Runnable
 	        ResultSet rs = pstmt.executeQuery();
 	        while (rs.next()) { labReport.director_name = rs.getString(1); }
             try { rs.close(); pstmt.close(); }
-            catch (SQLException e) { parent.log.write(e); }                
+            catch (SQLException e) { parent.getLog().write(e); }                
 	    }
-	    catch (SQLException e) { parent.log.write(e.toString()); }
-	    catch (Exception e) { parent.log.write(e); }
+	    catch (SQLException e) { parent.getLog().write(e.toString()); }
+	    catch (Exception e) { parent.getLog().write(e); }
 	}
 	
 	/*
@@ -425,10 +421,10 @@ public class HPVDbOps implements Runnable
                 dCodeRec = new DetailCodeRec();
             }
             try { rs.close(); stmt.close(); }
-            catch (SQLException e) { parent.log.write(e); exitStatus=false; }
+            catch (SQLException e) { parent.getLog().write(e); exitStatus=false; }
         }
         catch (Exception e) {
-            parent.log.write(e);
+            parent.getLog().write(e);
             exitStatus=false;
             parent.msgLabel.setText("Operation Failed");
         }
@@ -443,7 +439,7 @@ public class HPVDbOps implements Runnable
     */
     public boolean queryQueue()  
     {
-        parent.log.write("queryQueue()");
+        parent.getLog().write("queryQueue()");
         boolean exitStatus=true;
         Vector tmpVect = new Vector();
         Vector faxVect = new Vector();
@@ -558,11 +554,11 @@ public class HPVDbOps implements Runnable
                 
             int ndx=0;
             try { rs=stmt.executeQuery(SQL); }
-            catch (SQLException e) { parent.log.write(e); }
+            catch (SQLException e) { parent.getLog().write(e); }
             int reportCounter=parent.NUM_REPORTS;
             iDatestamp=0;
             int iToday=0;
-            parent.log.write("   open labReportVect cursor");
+            parent.getLog().write("   open labReportVect cursor");
             /*  Retrieve the data; the date for each lab number is
                 stored in a LabReportRec class; each individual lab
                 report object is then stored in a vector of report objects.
@@ -621,7 +617,7 @@ public class HPVDbOps implements Runnable
                 labReport.send_fax=rs.getString(52);
                 labReport.verified_on=rs.getString(53);
                 labReport.verified_by=rs.getString(54);
-                labReport.e_reporting=rs.getString(55);
+                labReport.setE_reporting(rs.getString(55));
                 labReport.program=rs.getString(56);
                 labReport.parent_account=rs.getInt(57);
                 labReport.test_results=rs.getString(58);
@@ -667,13 +663,13 @@ public class HPVDbOps implements Runnable
                     parent.getLabReportVect().addElement(r);
                 }
             }
-            parent.log.write(
+            parent.getLog().write(
                 "   close labReportVect cursor ["+parent.getLabReportVect().size()+"]");
             try { rs.close(); stmt.close(); }
-            catch (SQLException e) { parent.log.write(e); exitStatus=false; }
+            catch (SQLException e) { parent.getLog().write(e); exitStatus=false; }
         }
         catch (Exception e) {
-            parent.log.write(e);
+            parent.getLog().write(e);
             exitStatus=false;
             parent.msgLabel.setText("Operation Failed");
         }
@@ -687,7 +683,7 @@ public class HPVDbOps implements Runnable
         report being printed must be recorded.
     */
     public boolean dequeue(int labNum)  {
-        parent.log.write("dequeue("+labNum+","+parent.getPrintMode()+")");
+        parent.getLog().write("dequeue("+labNum+","+parent.getPrintMode()+")");
         boolean exitStatus=true;
         try  {
             String SQL = new String(
@@ -712,10 +708,10 @@ public class HPVDbOps implements Runnable
                 "VALUES ("+labNum+","+parent.getPrintMode()+",SysDate) \n");
             rs=stmt.executeUpdate(SQL);
             try { stmt.close(); }
-            catch (SQLException e) { parent.log.write(e); exitStatus=false; }                
+            catch (SQLException e) { parent.getLog().write(e); exitStatus=false; }                
         }
         catch (Exception e) {
-            parent.log.write(e);
+            parent.getLog().write(e);
             exitStatus=false;
             parent.msgLabel.setText("Operation Failed");
         }
@@ -743,10 +739,10 @@ public class HPVDbOps implements Runnable
                 if (pMode==Lab.CURR_FINAL) parent.numFinals=rs.getInt(2);
             }
             try { rs.close(); stmt.close(); }
-            catch (SQLException e) { parent.log.write(e); }                
+            catch (SQLException e) { parent.getLog().write(e); }                
         }
-        catch (Exception e) { parent.log.write(e); }
-        parent.log.write(
+        catch (Exception e) { parent.getLog().write(e); }
+        parent.getLog().write(
             "RETURNING checkQueue("+(parent.numFinals)+")");
         return(parent.numFinals);            
     }
@@ -757,7 +753,7 @@ public class HPVDbOps implements Runnable
         for (int i=0; i<v.size(); i++) {
             LabReportRec rept = (LabReportRec)v.elementAt(i);
             if (parent.getPrintMode()==Lab.CURR_FINAL) {
-                if (rept.e_reporting.equals("Y")||rept.e_reporting.equals("B")) 
+                if (rept.getE_reporting().equals("Y")||rept.getE_reporting().equals("B")) 
                     eReports.addElement(rept);
             }
             else if (parent.getPrintMode()==Lab.FINAL) {
@@ -772,7 +768,7 @@ public class HPVDbOps implements Runnable
     */
     public void close()
     {
-        parent.log.write("CLOSING HPVDbOps");
+        parent.getLog().write("CLOSING HPVDbOps");
     }
 	
 }
