@@ -1,6 +1,10 @@
 package com.pacytology.pcs;
  
-/*    PENNSYLVANIA CYTOLOGY SERVICES    LABORATORY INFORMATION SYSTEM V1.0    Copyright (C) 2001 by John Cardella    All Rights Reserved        File:       Export.java
+/*    PENNSYLVANIA CYTOLOGY SERVICES    
+LABORATORY INFORMATION SYSTEM V1.0    
+Copyright (C) 2001 by John Cardella    
+All Rights Reserved        
+File:       Export.java
     Created By: John Cardella, Software Engineer
     
     Function:   Class used to export final report data
