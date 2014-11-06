@@ -1164,7 +1164,9 @@ public class Utils {
 					}
 					fIN.close();
 				} catch (Exception e) {
-					System.out.println(e);
+					System.out.println(e.getMessage());
+					e.printStackTrace();
+					createErrMsg("The file (:  " + RESOURCE_DIR + "NoProgram.csv) is not formatted correctly.");
 				}
 			}
 		} else
