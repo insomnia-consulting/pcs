@@ -25,7 +25,7 @@ public class FileTransfer {
 	 * @param sourceFileName
 	 * @param destFilename
 	 */
-	public static void sendFile(String sourceFileName, String destFilename) {
+	public static void sendFile(String sourceFileName, String destFilename) throws SshException{
 		String host = Utils.HOST_IP;
 		String username = "oracle";
 		String password = Utils.HOST_PWD;
@@ -38,9 +38,10 @@ public class FileTransfer {
 			ssh.connect();
 			ScpFile scpFile = new ScpFile(new File(sourceFileName),
 					destFilename);
+
 			ssh.executeTask(new ScpUpload(scpFile));
 		} catch (SshException e) {
-			e.printStackTrace();
+			throw new SshException("Error while transmitting "+sourceFileName,e) ; 
 		} finally {
 			if (ssh != null) {
 				ssh.disconnect();

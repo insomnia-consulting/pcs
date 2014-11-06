@@ -5,7 +5,7 @@
 <mapper namespace="com.pacytology.pcs.sqlmaps.ExportErrorMapper">
 
   <insert id="insertExportError" parameterType="int" >
-    insert into pcs.export_errors (lab_number, datestamp, error ) values (#{lab_number}, #{datestamp}, #{error})
+    insert into pcs.export_errors (lab_number, datestamp, error ) values ( #{lab_number}, #{datestamp}, #{error})
   </insert>
   
 </mapper>

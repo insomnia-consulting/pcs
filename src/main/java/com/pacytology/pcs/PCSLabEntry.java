@@ -85,8 +85,7 @@ public class PCSLabEntry extends PcsFrame {
 	static SqlSessionFactory INSTANCE = null;
 	public synchronized static SqlSessionFactory sqlSessionFactory(Properties props) {
 
-		String username ;
-		String password ;  
+		
 
 		if (INSTANCE == null) {
 			Reader reader = null;
@@ -96,10 +95,10 @@ public class PCSLabEntry extends PcsFrame {
 				e.printStackTrace();
 			}
 			if (props == null) {
-				INSTANCE = new SqlSessionFactoryBuilder().build(reader, "localdev");
+				INSTANCE = new SqlSessionFactoryBuilder().build(reader, "development");
 			}
 			else {
-				INSTANCE = new SqlSessionFactoryBuilder().build(reader, "localdev", props);
+				INSTANCE = new SqlSessionFactoryBuilder().build(reader, "development", props);
 			}
 		}
 		return INSTANCE;

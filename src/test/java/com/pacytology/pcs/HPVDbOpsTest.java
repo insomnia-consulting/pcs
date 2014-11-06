@@ -7,7 +7,10 @@ import static org.mockito.Mockito.*;
 
 import java.awt.PrintJob;
 import java.awt.Toolkit;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.UIManager;
@@ -28,6 +31,9 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
+import com.pacytology.pcs.db.ExportDbOps;
+import com.pacytology.pcs.models.ExportError;
+
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ HPVDbOps.class })
 @PowerMockIgnore("javax.swing.*")
@@ -36,12 +42,13 @@ public class HPVDbOpsTest {
 	DateTime hpvReportOutStamp;
 	@Spy
 	HPVDbOps dbSpy = new HPVDbOps();
+	
 
 	Vector labReportVector ;
 	Vector eReportVector ; 
 	LabReportRec labReport ;
 	HPVReport reportSpy;
-	
+	Properties props = new Properties();
 
 	@Before
 	public void setup() throws UnsupportedLookAndFeelException {
@@ -58,10 +65,11 @@ public class HPVDbOpsTest {
 		when(reportSpy.getToolkit()).thenReturn(toolkit);
 		when(
 				toolkit.getPrintJob(eq(reportSpy), Mockito.anyString(),
-						Mockito.any(java.util.Properties.class))).thenReturn(
-				pjob);
+						Mockito.any(Properties.class))).thenReturn(pjob);
 		when(reportSpy.getPrintMode()).thenReturn(Lab.CURR_FINAL);
 		LogFile logFile = mock(LogFile.class);
+		PrintWriter writer = mock(PrintWriter.class);
+		
 		when(reportSpy.getLog()).thenReturn(logFile);
 		labReport = mock(LabReportRec.class);
 		labReportVector = mock(Vector.class);
@@ -92,6 +100,16 @@ public class HPVDbOpsTest {
 		// ).withArguments(anyObject()).thenReturn(null);
 		
 		when(reportSpy.getDbOps()).thenReturn(dbSpy);
+		Login dbLogin = new Login();
+		dbLogin.dateToday = DateTime.now().toString();
+		dbLogin.driver = "oracle.jdbc.driver.OracleDriver";
+		dbLogin.URL = TestUtils.URL;
+		dbLogin.userName = "pcs";
+		dbLogin.userPassword = "abh21";
+		props.put("username", dbLogin.userName);
+		props.put("password", dbLogin.userPassword);
+		props.put("jdbc.connection", dbLogin.URL);
+
 	}
 
 	@Test
@@ -171,9 +189,11 @@ public class HPVDbOpsTest {
 		};
 		Mockito.doAnswer(exportWriteAnswer).when(export)
 				.write(any(Vector.class));
-		List<String> errorList = mock(List.class);
-		when(errorList.size()).thenReturn(1);
+		List<String> errorList = new ArrayList<String>();
+		
+		errorList.add("An error occurred") ;
 		when(export.getErrors()).thenReturn(errorList);
+		PCSLabEntry.sqlSessionFactory(props) ;  
 		dbSpy.run();
 		
 		assertNotNull(writeOutStamp);
@@ -181,6 +201,8 @@ public class HPVDbOpsTest {
 			fail("The report completed before the export could finish");
 
 		verify(dbSpy, never()).dequeue(anyInt());
+		
+		
 		// Need to verify that hpvReport doesn't complete before export.write
 		// assertThat(new Export("random string").check(), equalTo("test"));
 

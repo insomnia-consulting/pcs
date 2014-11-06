@@ -918,7 +918,11 @@ public class Export implements Runnable
 		writeIndexFile(r, fOUT);
 		fOUT.close();
 		// Send that file to the server
-		FileTransfer.sendFile(filePath.trim() + fileName, Utils.SERVER_DIR + fileName);
+		try {
+			FileTransfer.sendFile(filePath.trim() + fileName, Utils.SERVER_DIR + fileName);
+		} catch (SshException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -1038,6 +1042,7 @@ public class Export implements Runnable
 				"/"+
 				"ElectronicReporting"+
 				"/";
+		LabReportRec labReport = null; 
 		try {
 			for (int i = 0; i < data.size(); i++) {
 				fileName = null;
@@ -1045,7 +1050,7 @@ public class Export implements Runnable
 				conditionsPrinted = 0;
 				conditionHeader = false;
 				clientNoteHeader = false;
-				LabReportRec labReport = (LabReportRec) data.elementAt(i);
+				labReport = (LabReportRec) data.elementAt(i);
 				String webID = null;
 				if (labReport.parent_account > 0)
 					webID = Utils.formatPractice(labReport.parent_account);
@@ -1072,10 +1077,9 @@ public class Export implements Runnable
 				FileTransfer.sendFile(filePath + fileName, destPath+reportName +".rtf");
 			}
 		} catch (Exception e) {
-			System.out.println(e);
+			System.out.println(e.getMessage());
 			e.printStackTrace();
-			getErrors().add("Error occurred while creating HPV Report for Lab Number " +
-						labReportRec.lab_number + ".  " + e.getMessage());	
+			getErrors().add("Error occurred while creating HPV Report for Lab Number " + labReport.lab_number + ".  " + e.getMessage());	
 		}
 	}
 

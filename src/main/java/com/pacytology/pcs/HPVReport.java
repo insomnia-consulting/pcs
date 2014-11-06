@@ -16,6 +16,7 @@ package com.pacytology.pcs;
 */
 
 import java.awt.Dimension;
+import java.awt.DisplayMode;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
@@ -24,6 +25,11 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JPanel;
+
+import org.joda.time.DateTime;
+
+import com.pacytology.pcs.db.ExportDbOps;
+import com.pacytology.pcs.models.ExportError;
 
 
 
@@ -252,6 +258,7 @@ public class HPVReport extends javax.swing.JFrame
             }
             getLog().write("PRINT MODE = "+logMsg);
             getLog().write("REPORTS    = "+getLabReportVect().size());
+            boolean displayErrorMsg = false ; 
             for (int i=0;i<getLabReportVect().size();i++) {
                 boolean canPrint = true;
                 LabReportRec labReport = (LabReportRec)getLabReportVect().elementAt(i);
@@ -318,13 +325,21 @@ public class HPVReport extends javax.swing.JFrame
                 	getDbOps().dequeue(labReport.lab_number);
                 }
                 else {
-                	for (String error :this.geteFile().getErrors()) {
-                		log.file.write(error) ;
-                		//write to a database table?
+                	for (String error : this.geteFile().getErrors()) {
+                		getLog().write(error) ;
+                		ExportError expError = new ExportError();
+                		expError.setLab_number(labReport.lab_number) ; 
+                		expError.setDatestamp(DateTime.now().toDate()) ; 
+                		expError.setError(error) ;  
+                		ExportDbOps.insert(expError) ;
+                		displayErrorMsg = true ; 
                 	}
                 }
             }
             pjob.end();
+            if (displayErrorMsg) {
+            	Utils.createErrMsg("Some of the HPVs didn't transmit correctly.  Refer to EXPORT_ERRORS for more information");
+            }
         }
     }
 
