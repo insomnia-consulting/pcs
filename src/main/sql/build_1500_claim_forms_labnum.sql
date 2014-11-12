@@ -1671,5 +1671,5 @@ EXCEPTION
 END;
 \
 
-grant execute on update_receive_dates to pcs_user;
+grant execute on update_receive_dates to pcs_user
 \
