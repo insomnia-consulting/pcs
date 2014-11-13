@@ -1066,7 +1066,7 @@ public class Export implements Runnable
 				hpvResults(labReport, fOUT);
 				fOUT.close();
 				FileMap<String, String, Integer> fileMap1 = new FileMap<String, String, Integer>(
-						filePath + fileName, destPath+reportName, labReport.lab_number) ;
+						filePath + fileName, destPath+fileName, labReport.lab_number) ;
 				files.add(fileMap1) ; 
 				fileName = reportName + ".rtf";
 				fOUT = new PrintWriter(
@@ -1075,7 +1075,7 @@ public class Export implements Runnable
 				writeIndexFile(labReport, fOUT);
 				fOUT.close();
 				FileMap<String, String, Integer> fileMap2 = new FileMap<String, String, Integer>(
-						filePath + fileName, destPath+reportName, labReport.lab_number) ;
+						filePath + fileName, destPath+fileName, labReport.lab_number) ;
 				files.add(fileMap2) ; 
 			}
 			FileTransfer.sendFiles(files) ;
