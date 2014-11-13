@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
 import org.rev6.scf.ScpDownload;
@@ -47,6 +50,44 @@ public class FileTransfer {
 				ssh.disconnect();
 			}
 		}
+	}
+	
+	/**
+	 * Using https://github.com/akinsgre/securechannelfacade to transfer files
+	 * 
+	 * @param sourceFileName
+	 * @param destFilename
+	 */
+	public static boolean sendFiles(Map<String, String> fileMap) throws SshException{
+		String host = Utils.HOST_IP;
+		String username = "oracle";
+		String password = Utils.HOST_PWD;
+
+		SshConnection ssh = null;
+
+		try {
+			ssh = new SshConnection(host, username, password);
+			ssh.setPort(Integer.parseInt(Utils.HOST_PORT));
+			ssh.connect();
+			
+
+			for(Entry<String, String> entry : fileMap.entrySet()) {
+				
+				ScpFile scpFile = new ScpFile(new File(entry.getKey()),
+					entry.getValue());
+
+				ssh.executeTask(new ScpUpload(scpFile));
+			}
+			
+		} catch (SshException e) {
+			throw new SshException("Error while transmitting ",e) ; 
+		} finally {
+			if (ssh != null) {
+				ssh.disconnect();
+			}
+		}
+		return true;
+		
 	}
 	
 	/**

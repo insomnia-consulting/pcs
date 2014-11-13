@@ -2,8 +2,14 @@ package com.pacytology.pcs;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.awt.PrintJob;
 import java.awt.Toolkit;
@@ -23,15 +29,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
-import com.pacytology.pcs.db.ExportDbOps;
 import com.pacytology.pcs.models.ExportError;
 
 @RunWith(PowerMockRunner.class)
@@ -44,8 +48,8 @@ public class HPVDbOpsTest {
 	HPVDbOps dbSpy = new HPVDbOps();
 	
 
-	Vector labReportVector ;
-	Vector eReportVector ; 
+	Vector<LabReportRec> labReportVector ;
+	Vector<LabReportRec> eReportVector ; 
 	LabReportRec labReport ;
 	HPVReport reportSpy;
 	Properties props = new Properties();
@@ -71,11 +75,15 @@ public class HPVDbOpsTest {
 		PrintWriter writer = mock(PrintWriter.class);
 		
 		when(reportSpy.getLog()).thenReturn(logFile);
-		labReport = mock(LabReportRec.class);
-		labReportVector = mock(Vector.class);
+		labReport = new LabReportRec();
+		labReport.setE_reporting("Y");
+		labReport.setCytotech_code("SEC");
+		labReportVector = new Vector<LabReportRec>();
+		
+		labReportVector.add(labReport) ; 
 		eReportVector = mock(Vector.class);
 
-		doReturn("Y").when(labReport).getE_reporting();
+		
 		dbSpy.parent = reportSpy;
 
 		when(reportSpy.getPrintMode()).thenReturn(Lab.CURR_FINAL);
@@ -84,8 +92,8 @@ public class HPVDbOpsTest {
 		when(reportSpy.getQueueSize()).thenReturn(1);
 		doReturn(true).when(reportSpy).verifyReports(any(Vector.class));
 
-		when(labReportVector.elementAt(0)).thenReturn(labReport);
-		when(labReport.getCytotech_code()).thenReturn("SEC");
+		
+		
 		doReturn(true).when(dbSpy).query(anyInt(), anyInt());
 		doReturn(true).when(dbSpy).queryQueue();
 		doReturn(true).when(dbSpy).dequeue(anyInt());
@@ -93,8 +101,8 @@ public class HPVDbOpsTest {
 				labReportVector);
 
 		when(eReportVector.size()).thenReturn(1);
-		when(labReportVector.size()).thenReturn(1);
-		when(labReportVector.size()).thenReturn(1);
+		
+		
 		
 		// when(export.write(eReportVector)
 		// ).withArguments(anyObject()).thenReturn(null);
@@ -117,7 +125,7 @@ public class HPVDbOpsTest {
 		
 		final Export export = mock(Export.class);
 		when(reportSpy.geteFile()).thenReturn(export);
-		Answer exportWriteAnswer = new Answer<Void>() {
+		Answer<Void> exportWriteAnswer = new Answer<Void>() {
 			public Void answer(InvocationOnMock invocation) {
 				System.out.println("#### Calling Export.write()");
 
@@ -173,7 +181,7 @@ public class HPVDbOpsTest {
 									.println("Starting the mock export.write thread");
 							Thread.sleep(5000);
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
+
 							e.printStackTrace();
 						}
 						System.out.println("blah");
@@ -189,18 +197,23 @@ public class HPVDbOpsTest {
 		};
 		Mockito.doAnswer(exportWriteAnswer).when(export)
 				.write(any(Vector.class));
-		List<String> errorList = new ArrayList<String>();
+		List<ExportError> errorList = new ArrayList<ExportError>();
+		ExportError error = new ExportError() ; 
+		error.setLab_number(0) ; 
+		error.setDatestamp(DateTime.now().toDate()) ;
+		error.setError("This was an error");
 		
-		errorList.add("An error occurred") ;
+		errorList.add(error) ;
 		when(export.getErrors()).thenReturn(errorList);
 		PCSLabEntry.sqlSessionFactory(props) ;  
 		dbSpy.run();
+		
 		
 		assertNotNull(writeOutStamp);
 		if (DateTime.now().isBefore(writeOutStamp))
 			fail("The report completed before the export could finish");
 
-		verify(dbSpy, never()).dequeue(anyInt());
+		verify(dbSpy, never()).dequeue(0);
 		
 		
 		// Need to verify that hpvReport doesn't complete before export.write

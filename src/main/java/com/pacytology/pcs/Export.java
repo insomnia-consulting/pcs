@@ -15,24 +15,21 @@ File:       Export.java
     07/02/2009      Created
 */
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
-import org.rev6.scf.ScpDownload;
-import org.rev6.scf.ScpFile;
-import org.rev6.scf.ScpOutput;
-import org.rev6.scf.ScpUpload;
-import org.rev6.scf.SshConnection;
+import org.joda.time.DateTime;
 import org.rev6.scf.SshException;
 
 import com.pacytology.pcs.io.FileTransfer;
+import com.pacytology.pcs.models.ExportError;
 
 public class Export implements Runnable
 {
@@ -40,7 +37,7 @@ public class Export implements Runnable
 	Vector data;
 	String fileName;
 	String filePath = "c:\\";
-	private List<String> errors = new ArrayList<String>();
+	private List<ExportError> errors = new ArrayList<ExportError>();
 	/*
 	 * static final int HL7 = 101; static final int TEXT = 102;
 	 */
@@ -304,7 +301,7 @@ public class Export implements Runnable
 		fOUT.write("-----------------------------------------------------------------------------------------\n");
 	}
 
-	private void labPatient(LabReportRec labReport, PrintWriter fOUT) {
+	void labPatient(LabReportRec labReport, PrintWriter fOUT) {
 		int col1[] = { BLANK, BLANK, BLANK, BLANK };
 		int col2[] = { BLANK, BLANK, BLANK, BLANK };
 		StringBuffer s = new StringBuffer();
@@ -339,7 +336,7 @@ public class Export implements Runnable
 		fOUT.write("-----------------------------------------------------------------------------------------\n");
 	}
 
-	private void labDetails(LabReportRec labReport, PrintWriter fOUT) {
+	void labDetails(LabReportRec labReport, PrintWriter fOUT) {
 		StringBuffer s = new StringBuffer();
 		DetailCodeRec dCodeRec = null;
 		s.append("LAB #" + labReport.lab_number);
@@ -1043,6 +1040,7 @@ public class Export implements Runnable
 				"ElectronicReporting"+
 				"/";
 		LabReportRec labReport = null; 
+		Map<String, String> files = new HashMap<String, String>();
 		try {
 			for (int i = 0; i < data.size(); i++) {
 				fileName = null;
@@ -1067,23 +1065,31 @@ public class Export implements Runnable
 				labDetails(labReport, fOUT);
 				hpvResults(labReport, fOUT);
 				fOUT.close();
-				FileTransfer.sendFile(filePath + fileName, destPath+reportName +".hpv");
+				files.put(filePath + fileName, destPath+reportName +".hpv");
 				fileName = reportName + ".rtf";
 				fOUT = new PrintWriter(
 						new BufferedOutputStream(new FileOutputStream(
 								filePath.trim() + fileName, false)), true);
 				writeIndexFile(labReport, fOUT);
 				fOUT.close();
-				FileTransfer.sendFile(filePath + fileName, destPath+reportName +".rtf");
+				files.put(filePath + fileName, destPath+reportName +".rtf");
 			}
+			FileTransfer.sendFiles(files) ;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
-			getErrors().add("Error occurred while creating HPV Report for Lab Number " + labReport.lab_number + ".  " + e.getMessage());	
+			String errMsg = "Error occurred while creating HPV Report for Lab Number " + labReport.lab_number + ".  " + e.getMessage() ; 
+
+			ExportError expError = new ExportError();
+			expError.setLab_number(labReport.lab_number);
+			expError.setDatestamp(DateTime.now().toDate());
+			expError.setError(errMsg);
+			getErrors().add(expError);
+			
 		}
 	}
 
-	private void hpvResults(LabReportRec labReport, PrintWriter fOUT) {
+	void hpvResults(LabReportRec labReport, PrintWriter fOUT) {
 		StringBuffer s = new StringBuffer();
 		StringBuffer t = new StringBuffer();
 		StringBuffer descr = new StringBuffer();
@@ -1123,11 +1129,11 @@ public class Export implements Runnable
 		return this.fileExportThread;
 	}
 
-	List<String> getErrors() {
+	List<ExportError> getErrors() {
 		return errors;
 	}
 
-	void setErrors(List<String> errors) {
+	void setErrors(List<ExportError> errors) {
 		this.errors = errors;
 	}
 	
