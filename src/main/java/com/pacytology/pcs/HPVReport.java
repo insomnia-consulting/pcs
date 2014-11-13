@@ -383,13 +383,13 @@ public class HPVReport extends javax.swing.JFrame {
 		}
 		if (displayErrorMsg) {
 			Utils.createErrMsg("Some of the HPVs didn't transmit correctly.  Refer to EXPORT_ERRORS for more information");
-		} else {
-			for (int i = 0; i < getLabReportVect().size(); i++) {
-				LabReportRec labReport = (LabReportRec) getLabReportVect()
-						.elementAt(i);
-				getDbOps().dequeue(labReport.lab_number);
-			}
 		}
+		for (int i = 0; i < getLabReportVect().size(); i++) {
+			LabReportRec labReport = (LabReportRec) getLabReportVect()
+					.elementAt(i);
+			getDbOps().dequeue(labReport.lab_number);
+		}
+
 	}
 
 	class SymAction implements java.awt.event.ActionListener {

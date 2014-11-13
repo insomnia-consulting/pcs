@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -18,7 +19,9 @@ import org.rev6.scf.SshCommand;
 import org.rev6.scf.SshConnection;
 import org.rev6.scf.SshException;
 
+import com.pacytology.pcs.FileMap;
 import com.pacytology.pcs.Utils;
+import com.pacytology.pcs.exceptions.TransferException;
 
 public class FileTransfer {
 	
@@ -58,29 +61,29 @@ public class FileTransfer {
 	 * @param sourceFileName
 	 * @param destFilename
 	 */
-	public static boolean sendFiles(Map<String, String> fileMap) throws SshException{
+	public static boolean sendFiles(List<FileMap<String, String, Integer>> fileList) throws SshException{
 		String host = Utils.HOST_IP;
 		String username = "oracle";
 		String password = Utils.HOST_PWD;
 
 		SshConnection ssh = null;
-
+		int labNumber = 0 ;
 		try {
 			ssh = new SshConnection(host, username, password);
 			ssh.setPort(Integer.parseInt(Utils.HOST_PORT));
 			ssh.connect();
 			
 
-			for(Entry<String, String> entry : fileMap.entrySet()) {
+			for(FileMap<String, String, Integer> entry : fileList) {
+				labNumber = entry.getThree().intValue();
+				ScpFile scpFile = new ScpFile(new File(entry.getOne()),
+					entry.getTwo());
 				
-				ScpFile scpFile = new ScpFile(new File(entry.getKey()),
-					entry.getValue());
-
 				ssh.executeTask(new ScpUpload(scpFile));
 			}
 			
 		} catch (SshException e) {
-			throw new SshException("Error while transmitting ",e) ; 
+			throw new TransferException("Error while transmitting ",e, labNumber) ; 
 		} finally {
 			if (ssh != null) {
 				ssh.disconnect();

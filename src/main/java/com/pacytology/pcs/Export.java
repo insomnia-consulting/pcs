@@ -1040,7 +1040,7 @@ public class Export implements Runnable
 				"ElectronicReporting"+
 				"/";
 		LabReportRec labReport = null; 
-		Map<String, String> files = new HashMap<String, String>();
+		List<FileMap<String, String, Integer>> files = new ArrayList<FileMap<String, String, Integer>>();
 		try {
 			for (int i = 0; i < data.size(); i++) {
 				fileName = null;
@@ -1065,14 +1065,18 @@ public class Export implements Runnable
 				labDetails(labReport, fOUT);
 				hpvResults(labReport, fOUT);
 				fOUT.close();
-				files.put(filePath + fileName, destPath+reportName +".hpv");
+				FileMap<String, String, Integer> fileMap1 = new FileMap<String, String, Integer>(
+						filePath + fileName, destPath+reportName, labReport.lab_number) ;
+				files.add(fileMap1) ; 
 				fileName = reportName + ".rtf";
 				fOUT = new PrintWriter(
 						new BufferedOutputStream(new FileOutputStream(
 								filePath.trim() + fileName, false)), true);
 				writeIndexFile(labReport, fOUT);
 				fOUT.close();
-				files.put(filePath + fileName, destPath+reportName +".rtf");
+				FileMap<String, String, Integer> fileMap2 = new FileMap<String, String, Integer>(
+						filePath + fileName, destPath+reportName, labReport.lab_number) ;
+				files.add(fileMap2) ; 
 			}
 			FileTransfer.sendFiles(files) ;
 		} catch (Exception e) {

@@ -2,11 +2,9 @@ package com.pacytology.pcs;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
 
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Vector;
 
 import org.junit.Test;
@@ -31,7 +29,7 @@ public class ExportTest {
 		doNothing().when(export).labDetails(any(LabReportRec.class), any(PrintWriter.class)) ; 
 		doNothing().when(export).hpvResults(any(LabReportRec.class), any(PrintWriter.class)) ; 
 		PowerMockito.mockStatic(FileTransfer.class);
-		Mockito.when(FileTransfer.sendFiles(any(Map.class))).thenReturn(Boolean.TRUE);
+		Mockito.when(FileTransfer.sendFiles(any(List.class))).thenReturn(Boolean.TRUE);
 
 		Vector<LabReportRec> labs = new Vector<LabReportRec>();
 		LabReportRec rec1 = new LabReportRec();
