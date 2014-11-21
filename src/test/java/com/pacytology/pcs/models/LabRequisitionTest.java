@@ -30,7 +30,7 @@ public void testGetPatient() {
 	Patient patient = labReq.getPatient() ;
 	assertNotNull(patient) ;
 	 assertEquals(2409511, patient.getPatient()) ;
-	 assertEquals("LAWANDA", patient.getLname()) ; 
+	 assertEquals("VILMA", patient.getLname()) ; 
 }
 @Test
 public void testGetPractice() {
